@@ -1,0 +1,165 @@
+import { useRef, useState } from 'react'
+import { IconDownload, IconInfo, IconRight, IconTrash, IconUpload } from '../icons'
+import { Label, Screen, Toggle } from '../ui'
+import { dateKey } from '../util'
+import { clearAll, exportSnapshot, importSnapshot, updateSettings } from '../kontorStore'
+import type { Settings as SettingsData, ViewProps } from '../types'
+
+function Settings({ ctx }: ViewProps) {
+  const { settings, entries, accounts, back, push, refresh, onExit } = ctx
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [status, setStatus] = useState<string | null>(null)
+  const [armed, setArmed] = useState(false)
+
+  const set = (patch: Partial<SettingsData>) => {
+    updateSettings(patch)
+    refresh()
+  }
+
+  const doExport = () => {
+    try {
+      const blob = new Blob([JSON.stringify(exportSnapshot(), null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `kontor-${dateKey()}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      setStatus('Export gestartet.')
+    } catch {
+      setStatus('Export fehlgeschlagen.')
+    }
+  }
+
+  const doImport = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        importSnapshot(JSON.parse(String(reader.result)))
+        refresh()
+        setStatus('Daten ersetzt.')
+      } catch (err) {
+        setStatus(`Import fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`)
+      }
+    }
+    reader.onerror = () => setStatus('Datei konnte nicht gelesen werden.')
+    reader.readAsText(file)
+  }
+
+  return (
+    <Screen title="Einstellungen" onBack={back}>
+      <Label>Anzeige</Label>
+      <div className="k-card k-list-card">
+        <div className="k-set-row">
+          <span className="grow">Woche beginnt</span>
+          <div className="k-mini-seg">
+            <button
+              type="button"
+              className={settings.weekStart === 1 ? 'on' : ''}
+              onClick={() => set({ weekStart: 1 })}
+            >
+              Montag
+            </button>
+            <button
+              type="button"
+              className={settings.weekStart === 0 ? 'on' : ''}
+              onClick={() => set({ weekStart: 0 })}
+            >
+              Sonntag
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <Label>Berechnung</Label>
+      <div className="k-card k-pad16">
+        <div className="k-row-card bare">
+          <div className="grow">
+            <div className="k-row-title">Umbuchungen über die Grenze zählen</div>
+            <div className="k-row-hint">
+              An: Geld auf ein Konto außerhalb der Gesamtbalance zählt als Ausgabe.
+            </div>
+          </div>
+          <Toggle
+            on={settings.countBoundaryTransfers}
+            label="Umbuchungen über die Grenze zählen"
+            onChange={(on) => set({ countBoundaryTransfers: on })}
+          />
+        </div>
+      </div>
+
+      <Label>Daten</Label>
+      <div className="k-card k-list-card">
+        <button type="button" className="k-set-row press" onClick={doExport}>
+          <span className="k-set-ic"><IconDownload /></span>
+          <span className="grow">Export als JSON</span>
+          <span className="k-set-val">
+            {entries.length} {entries.length === 1 ? 'Buchung' : 'Buchungen'}
+          </span>
+        </button>
+        <button type="button" className="k-set-row press" onClick={() => fileRef.current?.click()}>
+          <span className="k-set-ic"><IconUpload /></span>
+          <span className="grow">Import aus JSON</span>
+          <span className="k-set-val">ersetzt alles</span>
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) doImport(f)
+            e.target.value = ''
+          }}
+        />
+      </div>
+
+      <div className="k-card k-list-card">
+        <button type="button" className="k-set-row press" onClick={() => push({ name: 'about' })}>
+          <span className="k-set-ic"><IconInfo /></span>
+          <span className="grow">Über Kontor</span>
+          <span className="k-set-chev"><IconRight /></span>
+        </button>
+      </div>
+
+      <div className="k-card k-list-card">
+        <button
+          type="button"
+          className="k-set-row press danger"
+          onClick={() => {
+            if (!armed) {
+              setArmed(true)
+              return
+            }
+            clearAll()
+            refresh()
+          }}
+        >
+          <span className="k-set-ic"><IconTrash /></span>
+          <span className="grow">{armed ? 'Wirklich alles löschen?' : 'Alle Daten löschen'}</span>
+          {armed ? <span className="k-set-val danger">Tippen bestätigt</span> : null}
+        </button>
+      </div>
+
+      {status ? <div className="k-saved static">{status}</div> : null}
+
+      <div className="k-stack">
+        <button type="button" className="k-ghost" onClick={onExit}>
+          Zurück zu allen Apps
+        </button>
+      </div>
+
+      <div className="k-footer">
+        <div className="k-brand small">Kontor</div>
+        <div className="k-meta center">
+          {accounts.length} {accounts.length === 1 ? 'Konto' : 'Konten'} · alles liegt nur auf diesem
+          Gerät. Kein Konto, keine Cloud, kein Sync. Gesichert wird über das Backup im Launcher
+          (Zahnrad) oder den Export hier.
+        </div>
+      </div>
+    </Screen>
+  )
+}
+
+export default Settings

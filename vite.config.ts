@@ -33,7 +33,7 @@ const STATIC = [
 /** Kopiert die statischen Dateien und schreibt die Offline-Liste für den Service Worker. */
 function staticFiles(): Plugin {
   return {
-    name: 'meine-apps:static',
+    name: 'appdeck:static',
     apply: 'build',
     closeBundle() {
       for (const entry of STATIC) {
@@ -46,7 +46,11 @@ function staticFiles(): Plugin {
       // Alle gebauten JS/CSS-Dateien, damit Ionic-Apps auch offline starten,
       // die noch nie geöffnet wurden. Die Build-ID sorgt dafür, dass der
       // Service Worker nach jedem Deploy alte Dateien aufräumt.
-      const assets = listFiles(resolve(OUT, 'assets')).map((f) => relative(OUT, f).replaceAll('\\', '/'));
+      // .woff bleibt draussen: jeder aktuelle Browser nimmt .woff2, und die
+      // Fallback-Dateien wuerden die Installation nur unnoetig vergroessern.
+      const assets = listFiles(resolve(OUT, 'assets'))
+        .map((f) => relative(OUT, f).replaceAll('\\', '/'))
+        .filter((f) => !f.endsWith('.woff'));
       const buildId = new Date().toISOString();
       writeFileSync(
         resolve(OUT, 'precache.js'),
@@ -65,7 +69,7 @@ function listFiles(dir: string): string[] {
 
 export default defineConfig({
   root: ROOT,
-  base: './',            // relative Pfade → funktioniert unter /meine-apps/ genauso wie lokal
+  base: './',            // relative Pfade → funktioniert unter /appdeck/ genauso wie lokal
   appType: 'mpa',        // mehrere Seiten: Launcher + eine Seite pro App
   publicDir: false,
   plugins: [react(), staticFiles()],

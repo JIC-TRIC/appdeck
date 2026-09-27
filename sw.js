@@ -13,7 +13,7 @@ importScripts('apps.js');   // liefert self.APPS
 // Ändert sich nach jedem Deploy → Browser installiert den Service Worker neu und räumt alte Dateien weg.
 try { importScripts('precache.js'); } catch (e) { /* lokal ohne Build */ }
 
-const CACHE = 'meine-apps-' + (self.BUILD_ID || 'dev');
+const CACHE = 'appdeck-' + (self.BUILD_ID || 'dev');
 
 const CORE = [
   './',

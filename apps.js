@@ -10,4 +10,5 @@
  * Neue App: npm run new -- <id> "<Name>" [emoji] [farbe]  – trägt die Zeile hier automatisch ein.
  */
 self.APPS = [
+  { id: 'kontor', name: 'Kontor', icon: 'icons/kontor.svg', color: '#1F1D1A', path: 'apps/kontor/' },
 ];

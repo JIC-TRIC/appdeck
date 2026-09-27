@@ -1,4 +1,4 @@
-# Meine Apps
+# appdeck
 
 Alle eigenen iPhone-Apps in **einem** Repo, mit **einem** Icon auf dem Home-Bildschirm.
 Beim Öffnen erscheint ein Launcher im iOS-Stil, von dort geht's in die einzelnen Apps –
@@ -47,7 +47,7 @@ npm install
 2. Unter **Build and deployment → Source** „**GitHub Actions**“ auswählen
    (nicht mehr „Deploy from a branch“). Speichern ist nicht nötig, die Auswahl gilt sofort.
 3. Pushen. Unter **Actions** siehst du den Lauf „Deploy to GitHub Pages“; nach ca. 1–2 Minuten
-   ist alles unter `https://DEINNAME.github.io/meine-apps/` erreichbar.
+   ist alles unter `https://jic-tric.github.io/appdeck/` erreichbar.
 
 Ab dann gilt: **jeder Push auf `main` = neue Version online.** Schlägt der Build fehl
 (z. B. TypeScript-Fehler), bleibt die alte Version online und du bekommst eine Mail von GitHub.
@@ -140,8 +140,8 @@ Safari und von allen anderen Icons. Die neue Launcher-App sieht die Daten deiner
 deshalb **nicht automatisch**. Umzug per Backup:
 
 **Fall A – die alte App lief in Safari (Lesezeichen, mit Adressleiste):**
-1. In **Safari** (nicht im neuen Icon!) `https://DEINNAME.github.io/meine-apps/` öffnen.
-   Weil alle deine GitHub-Pages-Seiten dieselbe Adresse `DEINNAME.github.io` haben, sieht
+1. In **Safari** (nicht im neuen Icon!) `https://jic-tric.github.io/appdeck/` öffnen.
+   Weil alle deine GitHub-Pages-Seiten dieselbe Adresse `jic-tric.github.io` haben, sieht
    der Launcher dort die alten Daten.
 2. Zahnrad → **In Zwischenablage kopieren** (oder „Backup sichern …“ → In Dateien sichern).
 3. Die neue Launcher-App vom Home-Bildschirm öffnen → Zahnrad →
@@ -150,12 +150,17 @@ deshalb **nicht automatisch**. Umzug per Backup:
 **Fall B – die alte App war schon als eigenes Icon auf dem Home-Bildschirm:**
 1. In der `index.html` der **alten** App (im alten Repo) diese Zeile vor `</body>` einfügen und pushen:
    ```html
-   <script src="https://DEINNAME.github.io/meine-apps/shared/backup.js" data-ui="button"></script>
+   <script src="https://jic-tric.github.io/appdeck/shared/backup.js" data-ui="button"></script>
    ```
 2. Alte App öffnen (ggf. zweimal, damit die neue Version lädt) → oben rechts **Backup** →
    „In Zwischenablage kopieren“.
 3. Neue Launcher-App → Zahnrad → **Aus Zwischenablage einfügen**.
 4. Für jede alte App wiederholen. Erst wenn alles da ist, die alten Icons löschen.
+
+**Kontor (früher in k-deploy):** Kontor übernimmt seine alten Daten beim ersten Start von selbst,
+sofern sie im selben Speicher liegen (Schlüssel `k-deploy:proj:kontor`). Also: den alten Stand wie oben
+per Launcher-Backup herüberholen, danach Kontor öffnen – fertig. Alternativ eine alte Kontor-Exportdatei
+in Kontor unter Einstellungen → **Import aus JSON** einlesen.
 
 > **Ein Icon löschen = seine Daten löschen.** Deshalb ab und zu ein Backup in „Dateien“ (iCloud Drive) sichern.
 > Auch keine Extra-Icons für einzelne Apps aus diesem Repo anlegen – die hätten wieder eigenen, getrennten Speicher.

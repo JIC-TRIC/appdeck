@@ -1,6 +1,6 @@
 {
-  "name": "Meine Apps",
-  "short_name": "Apps",
+  "name": "appdeck",
+  "short_name": "appdeck",
   "description": "Meine eigenen kleinen Apps an einem Ort.",
   "lang": "de",
   "start_url": "./",

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Kontor: der Donut der Startseite in den Farben der Standardkategorien -->
+  <rect width="180" height="180" fill="#1F1D1A"/>
+  <g transform="rotate(-90 90 90)" fill="none" stroke-width="20">
+    <circle cx="90" cy="90" r="48" stroke="#2A2724"/>
+    <circle cx="90" cy="90" r="48" stroke="#E2685F" stroke-dasharray="109.6 191.99" stroke-dashoffset="-2.5"/>
+    <circle cx="90" cy="90" r="48" stroke="#D99A2B" stroke-dasharray="67.38 234.21" stroke-dashoffset="-117.1"/>
+    <circle cx="90" cy="90" r="48" stroke="#4A6FA5" stroke-dasharray="61.35 240.24" stroke-dashoffset="-189.49"/>
+    <circle cx="90" cy="90" r="48" stroke="#2E9E6B" stroke-dasharray="43.25 258.34" stroke-dashoffset="-255.84"/>
+  </g>
+</svg>

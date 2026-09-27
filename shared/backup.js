@@ -5,7 +5,7 @@
 
    Für den Umzug einer ALTEN App: diese eine Zeile in deren index.html einfügen,
    dann erscheint dort oben rechts ein "Backup"-Button:
-     <script src="https://DEINNAME.github.io/meine-apps/shared/backup.js" data-ui="button"></script>
+     <script src="https://jic-tric.github.io/appdeck/shared/backup.js" data-ui="button"></script>
 
    API: Backup.json()  Backup.save()  Backup.copy()
         Backup.restore(text)  Backup.pickFile()  Backup.readClipboard()  Backup.stats()
@@ -13,7 +13,7 @@
 (function () {
   'use strict';
 
-  var FORMAT = 'meine-apps-backup';
+  var FORMAT = 'appdeck-backup';
   var script = document.currentScript;
 
   function allData() {
@@ -40,7 +40,7 @@
   function fileName() {
     var d = new Date();
     var pad = function (n) { return String(n).padStart(2, '0'); };
-    return 'apps-backup-' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+    return 'appdeck-backup-' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
       '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.json';
   }
 
