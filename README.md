@@ -28,8 +28,8 @@ scripts/new-app.mjs      `npm run new` – neue App anlegen
 
 - **Ionic-React-Apps** (TypeScript + Vite) – erkennbar an `apps/<name>/src/main.tsx`.
   Werden beim Build übersetzt. Standard für alles Neue.
-- **Vanilla-Apps** (reines HTML/JS, z. B. `zaehler`, `notizen`) – ohne `src/main.tsx`.
-  Werden unverändert kopiert und laufen weiter wie bisher.
+- **Vanilla-Apps** (reines HTML/JS) – ohne `src/main.tsx`. Werden unverändert kopiert.
+  Praktisch, um eine bestehende alte App ohne Umbau zu übernehmen (siehe Abschnitt 3).
 
 ---
 
@@ -189,7 +189,7 @@ Ohne Internet startet alles aus dem Offline-Speicher.
 **Tipps für eigene Apps**
 - Ionic-Apps: Ionic-Komponenten erledigen das meiste davon schon (Listen, Alerts, Toasts, Sheets).
 - Vanilla-Apps: die Bausteine aus `shell.css` nutzen: `.navbar`, `.large-title`, `.group` + `.row`, `.btn`, `dialog.sheet`.
-  Die Vorlage und die zwei Beispiel-Apps zeigen, wie.
+  Der Launcher (`index.html`) zeigt, wie.
 - `prompt()`, `confirm()` und `alert()` erscheinen auf dem iPhone als native iOS-Dialoge – für
   kleine Eingaben völlig okay.
 - Touch-Ziele mindestens 44 × 44 px, keine Hover-Effekte.
