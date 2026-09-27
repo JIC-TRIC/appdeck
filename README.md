@@ -174,6 +174,13 @@ in Safari öffnen → Teilen → „In Dateien sichern". Dann in Kontor beim Ers
 wiederherstellen" oder unter Einstellungen → „Import aus JSON". **Der Import ersetzt alle Kontor-Daten** –
 echte Daten vorher exportieren. Ein Test (`npm test`) prüft, dass die Datei zum Datenmodell passt.
 
+**Steady-Testdaten:** `apps/steady/testdaten/steady-beispiel.json` – sieben Gewohnheiten (Gym 3× pro Woche,
+Creatin, Bett gemacht, Kalorien und Protein als Mengen, Kein Handy im Bett, Lesen) von Juni bis 26. September
+2026, dazu zwei archivierte. Aufs iPhone wie oben über
+https://raw.githubusercontent.com/JIC-TRIC/appdeck/main/apps/steady/testdaten/steady-beispiel.json, dann in Steady
+beim Erststart „Aus Exportdatei wiederherstellen“ oder unter Einstellungen → „Import aus JSON“. **Der Import ersetzt
+alle Steady-Daten.** Konzept und Regeln: `apps/steady/konzept.md`.
+
 > **Ein Icon löschen = seine Daten löschen.** Deshalb ab und zu ein Backup in „Dateien“ (iCloud Drive) sichern.
 > Auch keine Extra-Icons für einzelne Apps aus diesem Repo anlegen – die hätten wieder eigenen, getrennten Speicher.
 

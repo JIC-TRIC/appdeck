@@ -1,0 +1,2100 @@
+/* =========================
+   Steady - nur dunkel.
+
+   Graphit als Grund, die Oberflaeche selbst schwarz-weiss. Farbe gehoert
+   ausschliesslich den Gewohnheiten (--h, pro Zeile gesetzt) und der Serie
+   (Bernstein). Verpasst ist grau, nie rot; Rot gibt es nur fuers endgueltige
+   Loeschen. Werte und Begruendungen: konzept.md, Abschnitt "Design".
+
+   Die Tokens haengen an :root und nicht an .steady: Ionic haengt Blaetter und
+   Meldungen direkt unter ion-app ein, also ausserhalb der App-Huelle.
+   ========================= */
+
+:root {
+  --bg: #0f1113;
+  --surface: #171a1d;
+  --surface-2: #1f2327;
+  --surface-3: #2a2f35;
+  --seg-on: #394047;
+  --line: #2a2f34;
+  --line-soft: #1e2226;
+  --text: #edeff1;
+  --text-2: #9aa1a9;
+  --text-3: #6b727a;
+  --streak: #f2b84b;
+  --danger: #f06a5e;
+  --ink: #0f1113;
+  --h: #f2785c;
+
+  --f-ui: "Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-disp: "Bricolage Grotesque", "Onest", system-ui, -apple-system, sans-serif;
+
+  /* Was Ionic selbst zeichnet, soll nach Steady aussehen. */
+  --ion-font-family: var(--f-ui);
+  --ion-background-color: var(--bg);
+  --ion-text-color: var(--text);
+  --ion-color-primary: #edeff1;
+  --ion-color-primary-rgb: 237, 239, 241;
+  --ion-color-primary-contrast: #0f1113;
+  --ion-color-primary-contrast-rgb: 15, 17, 19;
+  --ion-color-primary-shade: #d1d2d4;
+  --ion-color-primary-tint: #eff1f2;
+}
+
+/* ---------- Seite ---------- */
+
+/* Dunkel bis an jeden Rand - auch hinter Statusleiste und Home-Balken. */
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  color-scheme: dark;
+}
+
+body {
+  /* Ein Wisch nach rechts ist in Safari sonst Zurueck-Navigation - in Steady
+     blaettert er das Raster. */
+  overscroll-behavior: contain;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+input,
+textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.steady {
+  /* Den Abstand zur Statusleiste traegt die Huelle, unten legen ihn die
+     Bereiche selbst in ihr padding - sonst endet die Flaeche ueber der
+     Gestenleiste und darunter bleibt ein Streifen (Kontors Lehre). */
+  min-height: 100%;
+  padding-top: env(safe-area-inset-top);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.steady *,
+.steady *::before,
+.steady *::after,
+.s-sheet-modal *,
+.s-sheet-modal *::before,
+.s-sheet-modal *::after {
+  box-sizing: border-box;
+}
+
+/* Reset ueber :where() - sonst waere ".steady button" spezifischer als jede
+   s-Klasse und wuerde deren Flaeche ueberschreiben (wie bei Kontor). */
+:where(.steady, .s-sheet-modal) :where(button) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ionic setzt fuer jeden button line-height: 1 - diese Zeile ist genauso
+   stark und gewinnt, weil sie spaeter kommt. */
+:where(.steady, .s-sheet-modal) button {
+  line-height: inherit;
+}
+
+:where(.steady, .s-sheet-modal) :where(button:disabled) {
+  cursor: default;
+}
+
+:where(.steady, .s-sheet-modal) :where(input) {
+  font: inherit;
+  color: inherit;
+}
+
+:where(.steady, .s-sheet-modal) :where(svg) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+:where(.steady, .s-sheet-modal) :where(button:focus-visible, input:focus-visible) {
+  outline: 2px solid var(--text-2);
+  outline-offset: 2px;
+}
+
+/* ---------- Geruest ---------- */
+
+/* 100dvh statt 100vh, abzueglich der Statusleiste, die .steady schon traegt.
+   Das Dokument scrollt nicht; gescrollt wird nur im Raster-Koerper und im
+   Inhalt der Unterseiten. */
+.s-main,
+.s-screen {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - env(safe-area-inset-top));
+  height: calc(100dvh - env(safe-area-inset-top));
+  max-width: 460px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.s-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 16px calc(32px + env(safe-area-inset-bottom));
+}
+
+/* Ohne das quetschen sich Karten zusammen, statt ueberzulaufen - dann scrollt
+   die Seite nie (bei Kontor genau so passiert). */
+.s-body > *,
+.s-body > * > * {
+  flex-shrink: 0;
+}
+
+.s-nav {
+  flex: none;
+  height: 52px;
+  display: grid;
+  grid-template-columns: 96px 1fr 96px;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.s-nav-r {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.s-nav-mid {
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s-back {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.s-back svg {
+  width: 24px;
+  height: 24px;
+}
+
+.s-textbtn {
+  padding: 10px 6px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 10px;
+}
+
+.s-textbtn.strong {
+  font-weight: 700;
+}
+
+.s-textbtn:disabled {
+  color: var(--text-3);
+}
+
+.s-ib {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  transition: transform 0.12s, background-color 0.12s;
+}
+
+.s-ib svg {
+  width: 19px;
+  height: 19px;
+}
+
+.s-ib.small {
+  width: 30px;
+  height: 30px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.s-ib.small svg {
+  width: 16px;
+  height: 16px;
+}
+
+.s-ib.plain {
+  background: none;
+  color: var(--text-2);
+}
+
+.s-ib.plain svg {
+  width: 20px;
+  height: 20px;
+}
+
+.s-ib:disabled {
+  opacity: 0.3;
+}
+
+.s-ib:not(:disabled):active {
+  transform: scale(0.9);
+  background-color: var(--surface-3);
+}
+
+/* ---------- Hauptansicht ---------- */
+
+.s-hdr {
+  flex: none;
+  height: 58px;
+  display: grid;
+  grid-template-columns: 84px 1fr 84px;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.s-hdr-l,
+.s-hdr-r {
+  display: flex;
+  gap: 8px;
+}
+
+.s-hdr-r {
+  justify-content: flex-end;
+}
+
+.s-ttl {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.steady .s-ttl b {
+  display: block;
+  max-width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s-ttl .kurz {
+  display: none;
+}
+
+.s-ttl small {
+  display: block;
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+/* Der Titel kommt von der Seite, aus der das neue Fenster kommt. */
+.s-ttl[data-dir='1'] {
+  animation: s-rein-rechts 0.24s ease-out;
+}
+
+.s-ttl[data-dir='-1'] {
+  animation: s-rein-links 0.24s ease-out;
+}
+
+.s-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 4px;
+  padding: 4px 8px 4px 11px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.s-pill svg {
+  width: 13px;
+  height: 13px;
+}
+
+.s-grid-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Der Querwisch gehoert der App, nicht dem Browser. */
+  touch-action: pan-y;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+.s-track {
+  display: flex;
+  will-change: transform;
+}
+
+/* Einrasten und Zurueckfedern - waehrend des Ziehens ohne Uebergang, sonst
+   haengt das Raster dem Finger hinterher. Dauer passt zu GLEITEN_MS. */
+.s-track.gleitet {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.s-page {
+  flex: 0 0 100%;
+  min-width: 0;
+  padding: 0 16px;
+}
+
+.s-page.ghost {
+  pointer-events: none;
+}
+
+.s-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(6, 28px) 56px 34px;
+  height: 56px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.s-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 46px;
+  background: var(--bg);
+  border-bottom-color: var(--line);
+}
+
+.s-hd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.15;
+}
+
+.s-hd .wd {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.s-hd .dn {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.s-hd.last .wd {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.s-hd.last .dn {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Die Wochengrenze: eine feine Linie links vom Montag, durch Kopf und alle
+   Zeilen. Links die alte Kalenderwoche, rechts die laufende. */
+.mon {
+  box-shadow: inset 1px 0 0 var(--line);
+}
+
+.s-nm {
+  align-self: stretch;
+  min-width: 0;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: var(--h);
+}
+
+.s-nm b {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s-nm small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.3;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+button.s-nm:active {
+  opacity: 0.6;
+}
+
+.s-cell,
+.s-wide {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.s-strk {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Ein Tag: gefuellt = erledigt, Ring = Ruhetag, Kreuz = verpasst,
+   winziger Punkt = noch nicht begonnen. */
+.s-c {
+  display: grid;
+  place-items: center;
+}
+
+.s-c i {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.s-c.d i {
+  background: var(--h);
+}
+
+.s-c.r i {
+  box-shadow: inset 0 0 0 2px var(--h);
+}
+
+.s-c.x i {
+  width: 9px;
+  height: 9px;
+  border-radius: 0;
+  background:
+    linear-gradient(45deg, transparent 42%, var(--text-3) 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, var(--text-3) 42% 58%, transparent 58%);
+}
+
+.s-c.n i {
+  width: 3px;
+  height: 3px;
+  background: var(--text-3);
+  opacity: 0.8;
+}
+
+.s-c.o i {
+  box-shadow: inset 0 0 0 1.5px var(--text-2);
+}
+
+.s-c.f i {
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+.s-c.pop i,
+.s-t.pop {
+  animation: s-pop 0.34s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.s-cell:not(:disabled):active .s-c i {
+  transform: scale(0.8);
+}
+
+/* Der breite Kasten fuer heute bzw. den juengsten Tag im Fenster. */
+.s-t {
+  position: relative;
+  width: 50px;
+  height: 36px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.12s;
+}
+
+.s-t.due {
+  box-shadow: inset 0 0 0 1.5px var(--h);
+}
+
+.s-t.done,
+.s-t.met {
+  background: var(--h);
+  box-shadow: none;
+  color: var(--ink);
+}
+
+.s-t.done svg {
+  width: 19px;
+  height: 19px;
+}
+
+.s-t.over {
+  color: var(--text-3);
+}
+
+.s-t .u {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.s-t .bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--h);
+}
+
+.s-t.rest i,
+.s-t.miss i,
+.s-t.off i {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.s-t.rest i {
+  box-shadow: inset 0 0 0 2px var(--h);
+}
+
+.s-t.miss i {
+  width: 9px;
+  height: 9px;
+  border-radius: 0;
+  background:
+    linear-gradient(45deg, transparent 42%, var(--text-3) 42% 58%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, var(--text-3) 42% 58%, transparent 58%);
+}
+
+.s-t.off i {
+  width: 3px;
+  height: 3px;
+  background: var(--text-3);
+}
+
+.s-wide:not(:disabled):active .s-t {
+  transform: scale(0.94);
+}
+
+.s-st {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.s-st svg {
+  width: 10px;
+  height: 12px;
+  color: var(--streak);
+}
+
+.s-st em {
+  font-style: normal;
+  color: var(--text-3);
+}
+
+.s-st .tick {
+  display: inline-block;
+  animation: s-tick 0.36s ease-out;
+}
+
+.s-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0 32px 80px;
+  color: var(--text-2);
+}
+
+/* Schmale Handys (bis 360 px): etwas enger, damit fuer den Namen Platz bleibt. */
+@media (max-width: 360px) {
+  .s-page {
+    padding: 0 10px;
+  }
+
+  .s-row {
+    grid-template-columns: minmax(0, 1fr) repeat(6, 25px) 50px 30px;
+  }
+
+  .s-t {
+    width: 46px;
+  }
+
+  .s-hdr {
+    grid-template-columns: 44px 1fr 84px;
+    padding: 0 10px;
+  }
+
+  .s-ttl .lang {
+    display: none;
+  }
+
+  .s-ttl .kurz {
+    display: inline;
+  }
+}
+
+/* ---------- Knoepfe ---------- */
+
+.s-btn {
+  height: 50px;
+  padding: 0 18px;
+  border-radius: 14px;
+  display: inline-grid;
+  place-items: center;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  background: var(--surface-2);
+  color: var(--text);
+  transition: transform 0.12s, opacity 0.12s;
+}
+
+.s-btn.block {
+  display: grid;
+  width: 100%;
+}
+
+.s-btn.pri {
+  background: var(--text);
+  color: var(--ink);
+}
+
+.s-btn.hab {
+  background: var(--h);
+  color: var(--ink);
+}
+
+.s-btn.small {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 14px;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--ink);
+}
+
+.s-btn.danger {
+  background: var(--surface);
+  color: var(--danger);
+}
+
+.s-btn.danger.armed {
+  background: var(--danger);
+  color: var(--ink);
+}
+
+.s-btn:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+
+.s-link {
+  color: var(--text-2);
+  font-size: 14.5px;
+  padding: 6px;
+}
+
+/* ---------- Blaetter ---------- */
+
+ion-modal.s-sheet-modal {
+  --height: auto;
+  --width: 100%;
+  --max-width: 460px;
+  --background: var(--surface);
+  --border-radius: 24px;
+  --box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+  --backdrop-opacity: 0.62;
+  --ion-backdrop-color: #050607;
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+ion-modal.s-sheet-modal::part(handle) {
+  width: 38px;
+  height: 5px;
+  background: var(--surface-3);
+}
+
+/* Ohne das nimmt Ionics Seitenhuelle die volle Hoehe ein, und --height: auto
+   haette nichts zu messen (wie Kontor). */
+ion-modal.s-sheet-modal .ion-page {
+  position: relative;
+  display: block;
+  contain: none;
+}
+
+.s-sheet {
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px 16px max(16px, env(safe-area-inset-bottom));
+}
+
+.s-sheet-title {
+  font-size: 17px;
+  font-weight: 600;
+  padding: 0 4px 12px;
+}
+
+.s-menu-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.s-menu {
+  background: var(--surface-2);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.s-mi {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 16px;
+  font-size: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-mi:last-child {
+  border-bottom: 0;
+}
+
+.s-mi:disabled {
+  color: var(--text-3);
+}
+
+.s-mi em {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-style: normal;
+  color: var(--text-2);
+}
+
+.s-mi svg {
+  width: 17px;
+  height: 17px;
+  color: var(--text-3);
+}
+
+.s-mi:not(:disabled):active {
+  background: var(--surface-3);
+}
+
+/* Menge eintragen */
+.s-amount {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.s-sh-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.s-sh-head b {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--h);
+}
+
+.s-sh-head small {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.s-amt {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.s-amt .num {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-amt.empty .num {
+  color: var(--text-3);
+}
+
+.s-amt .un {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.s-amt .num.tickt {
+  animation: s-tickt 0.16s ease-out;
+}
+
+.s-amt .num.wackelt {
+  animation: s-wackelt 0.28s ease-in-out;
+}
+
+.s-goal {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.s-prog {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.s-prog i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--h);
+  transition: width 0.2s ease-out;
+}
+
+.s-prog i.over {
+  background: var(--text-3);
+}
+
+.s-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.s-key {
+  height: 52px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 23px;
+  font-weight: 500;
+  transition: background-color 0.1s;
+}
+
+.s-key svg {
+  width: 24px;
+  height: 24px;
+}
+
+.s-key.pressed {
+  background: var(--seg-on);
+  transition: none;
+}
+
+.s-acts {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+}
+
+/* Meldung unten (Ionic-Toast, haengt unter ion-app) */
+ion-toast.s-toast {
+  --background: #2b3036;
+  --color: #edeff1;
+  --button-color: #edeff1;
+  --border-radius: 16px;
+  --box-shadow: 0 16px 34px -10px rgba(0, 0, 0, 0.85);
+  --max-width: 440px;
+  font-family: var(--f-ui);
+}
+
+ion-toast.s-toast::part(message) {
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+ion-toast.s-toast::part(button) {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ---------- Karten, Listen, Beschriftungen ---------- */
+
+.s-card {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.s-card-h {
+  margin: 0 0 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.s-card-aside {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.s-label {
+  padding: 10px 4px 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.s-note {
+  margin: 0;
+  padding: 0 6px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+.center {
+  text-align: center;
+}
+
+.s-cap {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.s-cap b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.s-list {
+  display: block;
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.s-li {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  font-size: 16px;
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--surface);
+}
+
+.s-li:last-child {
+  border-bottom: 0;
+}
+
+button.s-li:active {
+  background: var(--surface-2);
+}
+
+.s-li .v {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.s-li .v svg {
+  width: 17px;
+  height: 17px;
+  color: var(--text-3);
+}
+
+.s-li.danger,
+.s-li .v.danger {
+  color: var(--danger);
+}
+
+.s-li .two {
+  min-width: 0;
+}
+
+.s-li .two b {
+  display: block;
+  font-weight: 500;
+  color: var(--h);
+}
+
+.s-li .two small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.s-status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 13.5px;
+  color: var(--text);
+}
+
+.s-status.error {
+  color: var(--danger);
+}
+
+.s-wordmark {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 62px;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.s-wordmark.small {
+  font-size: 26px;
+  letter-spacing: -0.035em;
+}
+
+.s-footer {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding-top: 20px;
+}
+
+/* ---------- Segment, Formular ---------- */
+
+.s-seg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--surface-2);
+}
+
+.s-seg button {
+  padding: 8px 0;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.s-seg button.on {
+  background: var(--seg-on);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.s-seg.locked {
+  opacity: 0.5;
+}
+
+.s-form-body,
+.s-detail-body,
+.s-stats-body,
+.s-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.s-form-body > *,
+.s-detail-body > *,
+.s-stats-body > *,
+.s-rules > * {
+  flex-shrink: 0;
+}
+
+/* 22 px Schrift: iOS zoomt erst unter 16 px ins Feld, und der Name ist das
+   Wichtigste auf der Seite. */
+.s-inp {
+  width: 100%;
+  padding: 15px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--h);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  caret-color: var(--text);
+  outline: none;
+}
+
+.s-inp::placeholder {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.s-err {
+  margin: -4px 0 0;
+  padding: 0 6px;
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.s-swatches {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  justify-items: center;
+  padding: 16px 12px;
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.s-swatches button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c);
+  transition: box-shadow 0.15s;
+}
+
+.s-swatches button.on {
+  box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--c);
+}
+
+.s-hint {
+  margin: 0;
+  padding: 0 4px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+.s-hint.box {
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.s-row2 {
+  display: grid;
+  grid-template-columns: 1fr 112px;
+  gap: 8px;
+}
+
+.s-box {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+
+.s-box::placeholder {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.s-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.s-chips button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.s-chips button.on {
+  background: var(--seg-on);
+  color: var(--text);
+}
+
+.s-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.s-stepper button {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.s-stepper button:disabled {
+  color: var(--text-3);
+}
+
+.s-stepper b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Datum: sichtbar ist die Zeile, darueber liegt das echte Datumsfeld,
+   unsichtbar - ein Tipp oeffnet den Kalender des Systems. */
+.s-date {
+  position: relative;
+}
+
+.s-date input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.s-preview {
+  padding: 4px 12px;
+}
+
+.s-preview .s-head {
+  position: static;
+  background: none;
+}
+
+.s-preview .s-row:last-child {
+  border-bottom: 0;
+}
+
+/* ---------- Detail ---------- */
+
+.s-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.s-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 10px 4px 0;
+}
+
+.s-hero .big {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 88px;
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  color: var(--h);
+  font-variant-numeric: tabular-nums;
+}
+
+.s-hero .lbl {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.s-hero .rec {
+  text-align: right;
+  padding-bottom: 2px;
+}
+
+.s-hero .rec small {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.s-hero .rec b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-rule {
+  padding: 0 4px 4px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.s-wk {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 6px;
+  text-align: center;
+}
+
+.s-wk .s-c {
+  height: 26px;
+}
+
+.s-wk small {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.s-wk small.now {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.s-today-amt {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.s-today-amt b {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-today-amt span {
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.s-today-amt em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.s-card .s-btn.block {
+  margin-top: 14px;
+  height: 44px;
+  font-size: 15px;
+}
+
+.s-q3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.s-q3 b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-q3 small {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
+.s-arrows {
+  display: flex;
+  gap: 2px;
+  margin: -6px -8px -6px 0;
+}
+
+.s-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.s-chart-legend b {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Diagramme ---------- */
+
+.s-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  font-family: var(--f-ui);
+}
+
+.s-chart .grid {
+  stroke: #23282d;
+  stroke-width: 1;
+}
+
+.s-chart .lbl {
+  font-size: 10px;
+  fill: var(--text-3);
+}
+
+.s-chart .lbl.strong {
+  fill: var(--text);
+  font-weight: 600;
+}
+
+.s-chart .bar {
+  fill: var(--h);
+}
+
+.s-chart .bar.weak {
+  fill-opacity: 0.3;
+}
+
+.s-chart .bar.today {
+  fill: none;
+  stroke: var(--h);
+  stroke-width: 1.5;
+}
+
+.s-chart .goal {
+  stroke: var(--text);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+.s-chart .qbar {
+  fill: #454c54;
+}
+
+.s-chart .qbar.perfect {
+  fill: var(--streak);
+}
+
+.s-chart .qbar.today {
+  fill: none;
+  stroke: var(--text-2);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 2;
+}
+
+.s-chart .stub {
+  fill: var(--line);
+}
+
+.s-legend-perfect {
+  color: var(--streak);
+}
+
+.s-vbars {
+  display: grid;
+  gap: 8px;
+  align-items: end;
+  margin-top: 18px;
+}
+
+.s-vbars > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.s-vbars i {
+  width: 100%;
+  max-width: 34px;
+  border-radius: 6px 6px 3px 3px;
+  background: var(--h);
+}
+
+.s-vbars em {
+  font-style: normal;
+  font-size: 11.5px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.s-vbars span {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* Wochentage: grau, nur der schwaechste Tag hebt sich ab - hier gibt es
+   keine Gewohnheit, deren Farbe gelten koennte. */
+.s-vbars.neutral i {
+  background: #454c54;
+}
+
+.s-vbars .hi i {
+  background: var(--text);
+}
+
+.s-vbars .hi em {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Monatskalender */
+.s-cal {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 6px;
+  text-align: center;
+}
+
+.s-cal-h {
+  padding-bottom: 2px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.s-cd {
+  width: 34px;
+  height: 34px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.s-cd.d {
+  background: var(--h);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.s-cd.r {
+  box-shadow: inset 0 0 0 2px var(--h);
+  color: var(--text);
+}
+
+.s-cd.x {
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+
+.s-cd.o {
+  box-shadow: inset 0 0 0 1.5px var(--text-2);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.s-cd.f,
+.s-cd.n {
+  color: var(--text-3);
+  opacity: 0.5;
+}
+
+.s-mc {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
+  padding-top: 8px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--surface-2);
+  color: var(--text-3);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-mc small {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--text-3);
+}
+
+.s-mc.d {
+  background: var(--h);
+  color: var(--ink);
+}
+
+.s-mc.d small {
+  color: rgba(15, 17, 19, 0.6);
+}
+
+.s-mc.r {
+  background: none;
+  box-shadow: inset 0 0 0 2px var(--h);
+  color: var(--text);
+}
+
+.s-mc.o {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--h);
+  color: var(--text);
+}
+
+.s-mc.o small {
+  color: var(--text-2);
+}
+
+.s-mc.f,
+.s-mc.n {
+  background: none;
+  opacity: 0.5;
+}
+
+.s-cd:not(:disabled):active,
+.s-mc:not(:disabled):active {
+  transform: scale(0.9);
+}
+
+/* Heatmap */
+.s-hm-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+
+.s-hm-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.s-hm {
+  display: grid;
+  grid-auto-rows: 11px;
+  gap: 3px;
+  width: max-content;
+}
+
+.s-hm-m {
+  height: 14px;
+  font-size: 10.5px;
+  line-height: 14px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.s-hm-wd {
+  font-size: 9.5px;
+  line-height: 11px;
+  color: var(--text-3);
+}
+
+.s-hm i {
+  border-radius: 3px;
+}
+
+.s-hm i.d {
+  background: var(--h);
+}
+
+.s-hm i.r {
+  background: color-mix(in srgb, var(--h) 30%, var(--surface));
+}
+
+.s-hm i.x {
+  background: #3a4047;
+}
+
+.s-hm i.o {
+  box-shadow: inset 0 0 0 1.5px var(--text-2);
+}
+
+.s-hm i.f {
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+}
+
+/* ---------- Statistik ---------- */
+
+.s-period {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.s-period-mid {
+  text-align: center;
+}
+
+.s-period-mid b {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.s-period-mid small {
+  display: block;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.s-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.s-kpi {
+  min-width: 0;
+  padding: 14px 12px;
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.s-kpi b {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-kpi b svg {
+  width: 14px;
+  height: 17px;
+  color: var(--streak);
+}
+
+.s-kpi small {
+  display: block;
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--text-2);
+}
+
+.s-rank {
+  display: grid;
+  gap: 4px;
+}
+
+.s-rk {
+  display: grid;
+  grid-template-columns: 100px 1fr 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 14px;
+}
+
+.s-rk b {
+  font-weight: 500;
+  color: var(--h);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.s-rk .tr {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.s-rk .tr i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--h);
+}
+
+.s-rk em {
+  font-style: normal;
+  white-space: nowrap;
+  text-align: right;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.s-rk:active {
+  opacity: 0.6;
+}
+
+/* ---------- Reihenfolge ---------- */
+
+.s-reorder .s-li {
+  padding-right: 6px;
+}
+
+.s-grip {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+}
+
+.s-grip svg {
+  width: 20px;
+  height: 20px;
+}
+
+.s-reorder .reorder-selected {
+  background: var(--surface-3);
+  box-shadow: 0 18px 30px -10px rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+}
+
+/* ---------- So zaehlt Steady ---------- */
+
+.s-lg-row {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.s-lg-row:first-child {
+  padding-top: 0;
+}
+
+.s-lg-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.s-lg-row .smp {
+  display: grid;
+  place-items: center;
+  height: 36px;
+}
+
+.s-lg-row .smp .s-c {
+  width: 28px;
+  height: 28px;
+}
+
+.s-lg-row b {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.s-lg-row small {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+
+.s-txt {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.s-txt b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---------- Erststart ---------- */
+
+.s-onb {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - env(safe-area-inset-top));
+  height: calc(100dvh - env(safe-area-inset-top));
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 0 24px calc(28px + env(safe-area-inset-bottom));
+}
+
+.s-onb-mid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.s-ghost {
+  display: grid;
+  gap: 16px;
+}
+
+.s-ghost div {
+  display: flex;
+  gap: 14px;
+}
+
+.s-ghost i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+.s-ghost i.f {
+  background: var(--c);
+  box-shadow: none;
+}
+
+.s-ghost i.r {
+  box-shadow: inset 0 0 0 2px var(--c);
+}
+
+.s-onb-bot {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+
+/* ---------- Bewegung ---------- */
+
+@keyframes s-pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes s-tick {
+  from { transform: translateY(60%); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes s-tickt {
+  from { transform: scale(1.06); }
+  to { transform: none; }
+}
+
+@keyframes s-wackelt {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+@keyframes s-rein-rechts {
+  from { transform: translateX(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes s-rein-links {
+  from { transform: translateX(-24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steady *,
+  .steady *::before,
+  .steady *::after,
+  .s-sheet-modal *,
+  .s-sheet-modal *::before,
+  .s-sheet-modal *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

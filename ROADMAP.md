@@ -65,7 +65,16 @@ dem Gerät; wer das Icon löscht, löscht sie.
   bewusst zurückgestellt.
 - **Splitbuchung, Tags, CSV-Export** – siehe „Nicht im MVP" in `apps/kontor/konzept.md`.
 
+## Steady
+
+- **Weiches Umblenden beim Nachtragen**: rutschen Ruhetage um (× wird ◌), springen die Zellen heute nur um.
+- **Wischen im Monatskalender** der Detailansicht (heute nur Pfeile).
+- **Notiz pro Eintrag** (z. B. am Gym-Tag „Beine, 100 kg Kniebeuge“), **Startvorlagen** beim Erststart.
+- **Zähler** (mehrmals am Tag antippen), **feste Wochentage** und **„alle N Tage“** als Rhythmus – bewusst
+  draußen, damit das Raster lesbar bleibt. Siehe „Nicht im MVP“ in `apps/steady/konzept.md`.
+
 ## Geht nicht / bewusst nicht
 
 - Erinnerung per Push (bräuchte auf iOS einen eigenen Server), Widgets (für Web-Apps nicht möglich).
 - Kontor: keine Bankanbindung, kein Dark Mode (siehe Konzept).
+- Steady: keine Pausen/Urlaubsmodus, kein heller Modus, keine Symbole pro Gewohnheit (siehe Konzept).

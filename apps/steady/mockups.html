@@ -1,0 +1,817 @@
+<meta charset="utf-8">
+<title>Steady Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Onest:wght@400;500;600;700&display=swap">
+<style>
+/* Steady ist nur dunkel – die Seite auch. Alle Farben aus diesen Tokens. */
+:root {
+  color-scheme: dark;
+  --page: #0A0B0D;
+  --bg: #0F1113;
+  --surface: #171A1D;
+  --surface-2: #1F2327;
+  --surface-3: #2A2F35;
+  --seg-on: #394047;
+  --line: #2A2F34;
+  --line-soft: #1E2226;
+  --text: #EDEFF1;
+  --text-2: #9AA1A9;
+  --text-3: #6B727A;
+  --streak: #F2B84B;
+  --danger: #F06A5E;
+  --ink: #0F1113;
+  --f-ui: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-disp: "Bricolage Grotesque", "Onest", system-ui, -apple-system, sans-serif;
+}
+html, body { background: var(--page); color: var(--text); }
+body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+
+/* ---------- Seite ---------- */
+.pg { max-width: 1340px; margin: 0 auto; padding-inline: 20px; padding-block: 48px 96px; }
+.pg-intro { display: grid; gap: 26px; margin-bottom: 64px; }
+.pg-brand { display: flex; align-items: center; gap: 18px; }
+.pg-brand svg { width: 68px; height: 68px; flex: none; }
+.pg-wm { font-family: var(--f-disp); font-weight: 800; font-size: clamp(44px, 8vw, 68px); letter-spacing: -0.045em; line-height: .85; margin: 0; }
+.pg-brand p { margin: 8px 0 0; color: var(--text-2); font-size: 15px; }
+.pg-lede { max-width: 66ch; color: var(--text-2); font-size: 16px; margin: 0; text-wrap: pretty; }
+.pg-lede strong { color: var(--text); font-weight: 600; }
+.pg-toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.pg-toc a { color: var(--text-2); text-decoration: none; background: var(--surface); border-radius: 999px; padding: 6px 13px; font-size: 13.5px; }
+.pg-toc a:hover, .pg-toc a:focus-visible { color: var(--text); background: var(--surface-2); outline: none; }
+.pg-toc a b { color: var(--text-3); font-weight: 600; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.pg-sec { margin-bottom: 72px; }
+.pg-h2 { font-family: var(--f-disp); font-weight: 700; font-size: 30px; letter-spacing: -0.025em; margin: 0 0 6px; text-wrap: balance; }
+.pg-sub { color: var(--text-2); margin: 0 0 22px; max-width: 66ch; }
+.pg-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 10px; }
+.pg-lg { display: flex; gap: 14px; align-items: center; background: var(--surface); border-radius: 14px; padding: 12px 14px; }
+.pg-lg .smp { flex: none; width: 56px; height: 40px; display: grid; place-items: center; }
+.pg-lg .smp .c { width: 28px; height: 28px; }
+.pg-lg b { display: block; font-weight: 600; font-size: 14.5px; }
+.pg-lg small { display: block; color: var(--text-2); font-size: 13px; line-height: 1.35; }
+.pg-pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 118px), 1fr)); gap: 10px; }
+.pg-sw { background: var(--surface); border-radius: 14px; padding: 10px; display: grid; gap: 8px; }
+.pg-sw i { display: block; height: 34px; border-radius: 9px; }
+.pg-sw b { font-size: 13.5px; font-weight: 600; }
+.pg-sw small { display: block; color: var(--text-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+.pg-screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 402px), 1fr)); gap: 80px 44px; align-items: start; }
+.pg-shot { margin: 0; display: grid; gap: 22px; min-width: 0; scroll-margin-top: 24px; }
+.pg-fit { width: 100%; max-width: 402px; }
+.pg-cap { max-width: 402px; }
+.pg-cap h3 { margin: 0 0 8px; font: 600 19px/1.3 var(--f-ui); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.pg-cap h3 span { font-family: var(--f-disp); color: var(--text-3); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pg-cap h3 em { font-style: normal; font-size: 12px; font-weight: 500; color: var(--text-3); border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px; }
+.pg-cap ul { margin: 0; padding-left: 18px; color: var(--text-2); font-size: 14px; display: grid; gap: 5px; }
+.pg-foot { color: var(--text-3); font-size: 13px; border-top: 1px solid var(--line-soft); padding-top: 20px; }
+
+/* ---------- Gerät ---------- */
+.device { width: 402px; border-radius: 58px; padding: 6px; background: #1A1D21; box-shadow: 0 0 0 1px #2C3036, 0 40px 80px -30px rgba(0,0,0,.8); }
+.screen { width: 390px; height: 844px; border-radius: 52px; overflow: hidden; background: var(--bg); position: relative; display: flex; flex-direction: column; }
+.screen.long { height: auto; min-height: 844px; }
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 8; }
+.sb { height: 54px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 8px 32px 0 44px; font: 600 16px/1 var(--f-ui); color: var(--text); }
+.sb .ico { display: flex; gap: 6px; align-items: center; }
+.homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 136px; height: 5px; border-radius: 3px; background: var(--text); z-index: 9; }
+
+/* ---------- App: Kopfzeile ---------- */
+.hdr { flex: none; height: 58px; display: grid; grid-template-columns: 84px 1fr 84px; align-items: center; padding: 0 16px; }
+.hdr .l { display: flex; gap: 8px; }
+.hdr .r { display: flex; gap: 8px; justify-content: flex-end; }
+.ib { width: 36px; height: 36px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; color: var(--text); }
+.ib svg { width: 19px; height: 19px; }
+.ttl { text-align: center; min-width: 0; }
+.ttl b { display: block; font: 600 16px/1.25 var(--f-ui); white-space: nowrap; }
+.ttl small { display: block; font-size: 12.5px; color: var(--text-2); line-height: 1.3; margin-top: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 2px; background: var(--surface-2); color: var(--text); font: 600 12px/1 var(--f-ui); padding: 5px 8px 5px 11px; border-radius: 999px; margin-top: 4px; }
+.pill svg { width: 13px; height: 13px; }
+
+/* ---------- App: Wochenraster ---------- */
+.grid { padding: 0 16px; }
+.g-row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(6, 28px) 56px 34px; height: 56px; border-bottom: 1px solid var(--line-soft); }
+.g-head { height: 46px; border-bottom-color: var(--line); }
+.g-head > div { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.15; }
+.g-head .wd { font-size: 11px; font-weight: 500; color: var(--text-3); }
+.g-head .dn { font-size: 14.5px; font-weight: 500; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.g-head .today .wd { color: var(--text); font-weight: 600; }
+.g-head .today .dn { color: var(--text); font-weight: 700; }
+.mon { box-shadow: inset 1px 0 0 var(--line); }
+.nm { align-self: center; min-width: 0; padding-right: 6px; color: var(--h); }
+.nm b { display: block; font: 500 15px/1.2 var(--f-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nm small { display: block; font-size: 11.5px; color: var(--text-3); line-height: 1.3; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c { display: grid; place-items: center; }
+.c i { display: block; width: 16px; height: 16px; border-radius: 50%; }
+.c.d i { background: var(--h); }
+.c.r i { box-shadow: inset 0 0 0 2px var(--h); }
+.c.x i { width: 9px; height: 9px; border-radius: 0; background: linear-gradient(45deg, transparent 42%, var(--text-3) 42% 58%, transparent 58%), linear-gradient(-45deg, transparent 42%, var(--text-3) 42% 58%, transparent 58%); }
+.c.n i { width: 3px; height: 3px; background: var(--text-3); opacity: .8; }
+.c.pulse i { box-shadow: 0 0 0 5px color-mix(in srgb, var(--h) 28%, transparent); }
+.w { display: grid; place-items: center; }
+.t { width: 50px; height: 36px; border-radius: 11px; display: grid; place-items: center; position: relative; overflow: hidden; font: 600 14px/1 var(--f-ui); font-variant-numeric: tabular-nums; box-shadow: inset 0 0 0 1.5px var(--line); color: var(--text); }
+.t.due { box-shadow: inset 0 0 0 1.5px var(--h); }
+.t.done, .t.met { background: var(--h); box-shadow: none; color: var(--ink); }
+.t.done svg { width: 19px; height: 19px; }
+.t .u { font-size: 11px; font-weight: 500; color: var(--text-3); }
+.t .bar { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--h); }
+.st { display: flex; align-items: center; justify-content: flex-end; gap: 3px; font: 500 13px/1 var(--f-ui); color: var(--text-2); font-variant-numeric: tabular-nums; }
+.st svg { width: 10px; height: 12px; color: var(--streak); }
+.st em { font-style: normal; color: var(--text-3); }
+
+/* ---------- App: Blätter, Meldung ---------- */
+.scrim { position: absolute; inset: 0; background: rgba(5, 6, 7, .66); z-index: 3; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; background: var(--surface); border-radius: 24px 24px 0 0; padding: 8px 16px 34px; display: flex; flex-direction: column; gap: 14px; }
+.handle { width: 38px; height: 5px; border-radius: 3px; background: var(--surface-3); margin: 0 auto 2px; }
+.sh-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.sh-head b { font: 600 17px/1.2 var(--f-ui); color: var(--h); }
+.sh-head small { display: block; color: var(--text-2); font-size: 13px; margin-top: 3px; }
+.sh-head .ib { width: 30px; height: 30px; background: var(--surface-2); color: var(--text-2); }
+.sh-head .ib svg { width: 16px; height: 16px; }
+.amt { display: flex; align-items: baseline; justify-content: center; gap: 8px; padding-top: 4px; }
+.amt .num { font: 700 66px/1 var(--f-disp); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.amt .un { font: 500 22px/1 var(--f-ui); color: var(--text-2); }
+.goal { text-align: center; color: var(--text-2); font-size: 13.5px; }
+.goal b { color: var(--text); font-weight: 600; }
+.prog { height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.prog i { display: block; height: 100%; background: var(--h); border-radius: 3px; }
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pad span { height: 52px; border-radius: 14px; background: var(--surface-2); display: grid; place-items: center; font: 500 23px/1 var(--f-ui); }
+.pad span svg { width: 24px; height: 24px; }
+.acts { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
+.btn { height: 50px; border-radius: 14px; display: grid; place-items: center; font: 600 16px/1 var(--f-ui); background: var(--surface-2); color: var(--text); }
+.btn.pri { background: var(--text); color: var(--ink); }
+.btn.hab { background: var(--h); color: var(--ink); }
+.toast { position: absolute; left: 12px; right: 12px; bottom: 34px; z-index: 6; background: #2B3036; border-radius: 16px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14.5px; box-shadow: 0 16px 34px -10px rgba(0,0,0,.85); }
+.toast em { font-style: normal; color: var(--h); font-weight: 600; }
+.toast b { font-weight: 700; }
+.menu { background: var(--surface-2); border-radius: 16px; overflow: hidden; }
+.mi { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px; font-size: 16px; border-bottom: 1px solid var(--line); }
+.mi:last-child { border-bottom: 0; }
+.mi em { font-style: normal; color: var(--text-2); display: flex; gap: 4px; align-items: center; }
+.mi svg { width: 17px; height: 17px; color: var(--text-3); }
+
+/* ---------- App: Unterseiten ---------- */
+.nav { flex: none; height: 52px; display: grid; grid-template-columns: 100px 1fr 100px; align-items: center; padding: 0 14px; }
+.nav .back { display: flex; align-items: center; color: var(--text); }
+.nav .back svg { width: 24px; height: 24px; }
+.nav .txt { font: 500 16px/1 var(--f-ui); color: var(--text); }
+.nav .mid { text-align: center; font: 600 16px/1.2 var(--f-ui); white-space: nowrap; }
+.nav .act { text-align: right; font: 500 16px/1 var(--f-ui); color: var(--text); }
+.nav .act.strong { font-weight: 700; }
+.scroll { padding: 4px 16px 56px; display: flex; flex-direction: column; gap: 14px; }
+.card { background: var(--surface); border-radius: 18px; padding: 16px; }
+.card h4 { margin: 0 0 14px; font: 600 14px/1 var(--f-ui); color: var(--text); display: flex; justify-content: space-between; align-items: center; }
+.card h4 span { font-weight: 500; font-size: 13px; color: var(--text-3); display: flex; align-items: center; gap: 10px; }
+.card h4 span svg { width: 18px; height: 18px; color: var(--text-2); }
+.card .cap { margin: 12px 0 0; font-size: 13.5px; color: var(--text-2); }
+.card .cap b { color: var(--text); font-weight: 600; }
+.hero { display: flex; justify-content: space-between; align-items: flex-end; padding: 10px 4px 0; }
+.hero .big { font: 700 88px/.82 var(--f-disp); letter-spacing: -0.045em; color: var(--h); font-variant-numeric: tabular-nums; }
+.hero .lbl { color: var(--text-2); font-size: 14px; margin-top: 10px; }
+.hero .rec { text-align: right; padding-bottom: 2px; }
+.hero .rec b { display: block; font: 700 32px/1 var(--f-disp); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.hero .rec small { display: block; color: var(--text-2); font-size: 13px; margin-bottom: 4px; }
+.rule { color: var(--text-2); font-size: 14px; padding: 0 4px 4px; }
+.wk { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; row-gap: 6px; }
+.wk .c { height: 26px; }
+.wk .c.o i { box-shadow: inset 0 0 0 1.5px var(--text-2); }
+.wk .c.f i { box-shadow: inset 0 0 0 1.5px var(--line); }
+.wk small { font-size: 11px; color: var(--text-3); }
+.wk small.now { color: var(--text); font-weight: 600; }
+.q3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.q3 b { display: block; font: 700 30px/1 var(--f-disp); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.q3 small { display: block; color: var(--text-2); font-size: 12px; margin-top: 5px; line-height: 1.3; }
+.vbars { display: grid; gap: 10px; align-items: end; margin-top: 18px; }
+.vbars div { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.vbars i { width: 100%; max-width: 34px; border-radius: 6px 6px 3px 3px; background: var(--h); }
+.vbars em { font-style: normal; font-size: 11.5px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.vbars span { font-size: 11px; color: var(--text-3); }
+.vbars .lo i { background: var(--text); }
+.vbars .lo em { color: var(--text); font-weight: 600; }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 6px; text-align: center; }
+.cal .h { font-size: 11px; color: var(--text-3); padding-bottom: 2px; }
+.cd { width: 34px; height: 34px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; font: 500 13px/1 var(--f-ui); color: var(--text-2); font-variant-numeric: tabular-nums; }
+.cd.s-d { background: var(--h); color: var(--ink); font-weight: 600; }
+.cd.s-r { box-shadow: inset 0 0 0 2px var(--h); color: var(--text); }
+.cd.s-x { background: var(--surface-3); color: var(--text-3); }
+.cd.s-o { box-shadow: inset 0 0 0 1.5px var(--text-2); color: var(--text); font-weight: 700; }
+.cd.s-f { color: var(--text-3); opacity: .5; }
+.mc { width: 42px; height: 42px; margin: 0 auto; border-radius: 11px; position: relative; display: grid; place-items: center; padding-top: 8px; font: 600 12.5px/1 var(--f-ui); font-variant-numeric: tabular-nums; background: var(--surface-2); color: var(--text-3); }
+.mc small { position: absolute; top: 4px; left: 6px; font-size: 9.5px; font-weight: 500; color: var(--text-3); }
+.mc.s-d { background: var(--h); color: var(--ink); }
+.mc.s-d small { color: rgba(15, 17, 19, .6); }
+.mc.s-o { background: transparent; box-shadow: inset 0 0 0 1.5px var(--h); color: var(--text); }
+.mc.s-o small { color: var(--text-2); }
+.hm-wrap { display: grid; grid-template-columns: 18px auto; column-gap: 6px; row-gap: 5px; justify-content: start; }
+.hm-m { display: grid; grid-template-columns: repeat(22, 11px); column-gap: 3px; font-size: 10.5px; color: var(--text-3); height: 14px; line-height: 14px; }
+.hm-m span { white-space: nowrap; }
+.hm-wd { display: grid; grid-template-rows: repeat(7, 11px); row-gap: 3px; font-size: 9.5px; line-height: 11px; color: var(--text-3); }
+.hm { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 11px); grid-auto-columns: 11px; gap: 3px; }
+.hm i { border-radius: 3px; }
+.hm i.s-d { background: var(--h); }
+.hm i.s-r { background: color-mix(in srgb, var(--h) 30%, var(--surface)); }
+.hm i.s-x { background: #3A4047; }
+.hm i.s-o { box-shadow: inset 0 0 0 1.5px var(--text-2); }
+.hm i.s-f { box-shadow: inset 0 0 0 1px var(--line-soft); }
+.chart-legend { display: flex; gap: 16px; margin-top: 10px; font-size: 12.5px; color: var(--text-2); flex-wrap: wrap; }
+.chart-legend b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.today-amt { display: flex; align-items: baseline; gap: 6px; margin-bottom: 10px; }
+.today-amt b { font: 700 34px/1 var(--f-disp); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.today-amt span { color: var(--text-2); font-size: 15px; }
+.today-amt em { margin-left: auto; font-style: normal; color: var(--text-2); font-size: 13px; }
+.card .btn { margin-top: 14px; height: 44px; font-size: 15px; }
+
+/* Segment, Formular, Listen */
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--surface-2); border-radius: 11px; padding: 3px; }
+.seg span { text-align: center; padding: 8px 0; border-radius: 8px; font: 500 14px/1.2 var(--f-ui); color: var(--text-2); }
+.seg .on { background: var(--seg-on); color: var(--text); font-weight: 600; }
+.seg.locked { opacity: .5; }
+.period { display: flex; justify-content: space-between; align-items: center; padding: 2px 2px; }
+.period b { font: 600 16px/1 var(--f-ui); }
+.period svg { width: 22px; height: 22px; color: var(--text-2); }
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kpi { background: var(--surface); border-radius: 16px; padding: 14px 12px; }
+.kpi b { display: flex; align-items: center; gap: 4px; font: 700 30px/1 var(--f-disp); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.kpi b svg { width: 14px; height: 17px; color: var(--streak); }
+.kpi small { display: block; margin-top: 7px; font-size: 12px; color: var(--text-2); line-height: 1.3; }
+.rank { display: grid; gap: 13px; }
+.rk { display: grid; grid-template-columns: 100px 1fr 38px; align-items: center; gap: 10px; font-size: 14px; }
+.rk b { font-weight: 500; color: var(--h); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk .tr { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.rk .tr i { display: block; height: 100%; background: var(--h); border-radius: 4px; }
+.rk em { font-style: normal; text-align: right; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.f-lbl { font: 600 11.5px/1 var(--f-ui); color: var(--text-3); letter-spacing: .07em; text-transform: uppercase; padding: 8px 4px 0; }
+.inp { background: var(--surface); border-radius: 16px; padding: 15px 16px; font: 600 22px/1.2 var(--f-ui); color: var(--h); display: flex; align-items: center; }
+.inp .caret { display: inline-block; width: 2px; height: 26px; background: var(--text); margin-left: 2px; border-radius: 1px; }
+.swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; justify-items: center; background: var(--surface); border-radius: 16px; padding: 16px 12px; }
+.swatches i { width: 40px; height: 40px; border-radius: 50%; background: var(--c); }
+.swatches i.on { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--c); }
+.row2 { display: grid; grid-template-columns: 1fr 108px; gap: 8px; }
+.box { background: var(--surface); border-radius: 14px; padding: 13px 14px; font: 600 20px/1.2 var(--f-ui); display: flex; justify-content: space-between; align-items: baseline; font-variant-numeric: tabular-nums; }
+.box small { font-size: 12px; color: var(--text-3); font-weight: 500; }
+.stepper { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border-radius: 14px; padding: 7px; }
+.stepper span { width: 42px; height: 42px; border-radius: 11px; background: var(--surface-2); display: grid; place-items: center; font: 500 24px/1 var(--f-ui); }
+.stepper b { font: 600 17px/1 var(--f-ui); }
+.hint { font-size: 12.5px; color: var(--text-2); padding: 0 4px; line-height: 1.45; margin: 0; }
+.hint.box2 { background: var(--surface); border-radius: 12px; padding: 11px 13px; color: var(--text); }
+.prev .g-row { border-bottom: 0; }
+.list { background: var(--surface); border-radius: 16px; overflow: hidden; }
+.li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line-soft); font-size: 16px; }
+.li:last-child { border-bottom: 0; }
+.li .v { color: var(--text-2); display: flex; align-items: center; gap: 2px; white-space: nowrap; }
+.li .v svg { width: 17px; height: 17px; color: var(--text-3); }
+.li.danger { color: var(--danger); }
+.li .two b { display: block; font-weight: 500; color: var(--h); }
+.li .two small { display: block; font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+.li .grip svg { width: 20px; height: 20px; color: var(--text-3); }
+.li.lift { background: var(--surface-3); border-radius: 12px; margin: -2px -6px; padding: 16px 22px; box-shadow: 0 18px 30px -10px rgba(0,0,0,.8); position: relative; z-index: 2; border-bottom: 0; }
+.li.lift .grip svg { color: var(--text); }
+.li.gap { height: 8px; padding: 0; background: var(--bg); border-bottom: 0; }
+.sec { font: 600 11.5px/1 var(--f-ui); color: var(--text-3); letter-spacing: .07em; text-transform: uppercase; padding: 10px 6px 0; }
+.note { font-size: 12.5px; color: var(--text-2); padding: 0 6px; line-height: 1.45; margin: 0; }
+.center { text-align: center; }
+.lg-row { display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+.lg-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.lg-row:first-child { padding-top: 0; }
+.lg-row .smp { display: grid; place-items: center; height: 36px; }
+.lg-row .smp .c { width: 28px; height: 28px; }
+.lg-row b { display: block; font-size: 14.5px; font-weight: 600; }
+.lg-row small { display: block; font-size: 12.5px; color: var(--text-2); line-height: 1.35; }
+.card p.txt { margin: 0; font-size: 14px; color: var(--text-2); line-height: 1.5; }
+.card p.txt b { color: var(--text); font-weight: 600; }
+.onb { flex: 1; display: flex; flex-direction: column; padding: 0 24px 46px; }
+.onb-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; }
+.onb .wm { font: 800 62px/1 var(--f-disp); letter-spacing: -0.045em; }
+.ghost { display: grid; gap: 16px; }
+.ghost div { display: flex; gap: 14px; }
+.ghost i { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--line); }
+.ghost i.f { background: var(--c); box-shadow: none; }
+.ghost i.r { box-shadow: inset 0 0 0 2px var(--c); }
+.onb-bot { display: grid; gap: 18px; justify-items: center; }
+.onb-bot .btn { width: 100%; }
+.onb-bot span.link { color: var(--text-2); font-size: 14.5px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pg-toc a { transition: background .15s, color .15s; }
+}
+</style>
+
+<main class="pg">
+  <header class="pg-intro">
+    <div class="pg-brand">
+      <svg viewBox="0 0 64 64" role="img" aria-label="App-Symbol Steady">
+        <rect x="0.5" y="0.5" width="63" height="63" rx="15" fill="#0F1113" stroke="#2A2F34"/>
+        <circle cx="18" cy="18" r="5.5" fill="#F2785C"/><circle cx="32" cy="18" r="5.5" fill="#5AAEF0"/><circle cx="46" cy="18" r="5.5" fill="#E9C84A"/>
+        <circle cx="18" cy="32" r="5.5" fill="#B58AF0"/><circle cx="32" cy="32" r="4.5" fill="none" stroke="#F2785C" stroke-width="2"/><circle cx="46" cy="32" r="5.5" fill="#5DC486"/>
+        <circle cx="18" cy="46" r="5.5" fill="#8190F5"/><circle cx="32" cy="46" r="5.5" fill="#F59E45"/><circle cx="46" cy="46" r="5.5" fill="#5AAEF0"/>
+      </svg>
+      <div>
+        <h1 class="pg-wm">steady</h1>
+        <p>Mockups aller Ansichten · Konzeptstand 27. September 2026</p>
+      </div>
+    </div>
+    <p class="pg-lede">
+      Habit Tracker für appdeck: ein Wochenraster mit den <strong>letzten 7 Tagen</strong>, abhaken oder
+      Tageswert eintragen, Ruhetage bei „x-mal pro Woche“ zählen automatisch. Beispieldatum ist
+      <strong>Mittwoch, 30. September 2026</strong>, die Beispieldaten sind deine sieben Gewohnheiten.
+      Die Regeln im Detail stehen in <strong>konzept.md</strong>. Die Nummern entsprechen den Ansichten dort.
+    </p>
+    <nav class="pg-toc" id="toc" aria-label="Ansichten"></nav>
+  </header>
+
+  <section class="pg-sec" aria-labelledby="h-legend">
+    <h2 class="pg-h2" id="h-legend">Die Zeichen im Raster</h2>
+    <p class="pg-sub">Farbe heißt „diese Gewohnheit“, nicht „gut“ oder „schlecht“. Ein verpasster Tag ist eine graue Lücke, kein roter Alarm.</p>
+    <div class="pg-legend" id="legend"></div>
+  </section>
+
+  <section class="pg-sec" aria-labelledby="h-pal">
+    <h2 class="pg-h2" id="h-pal">Farben</h2>
+    <p class="pg-sub">Zehn Gewohnheitsfarben auf gleicher Helligkeit. Die Oberfläche selbst bleibt schwarz-weiß, nur die Serie trägt Bernstein.</p>
+    <div class="pg-pal" id="palette"></div>
+  </section>
+
+  <section class="pg-sec" aria-labelledby="h-screens">
+    <h2 class="pg-h2" id="h-screens">Ansichten</h2>
+    <p class="pg-sub">Gerät 390 × 844 (iPhone 13–16). Lange Seiten sind in voller Länge gezeigt, in der App scrollen sie.</p>
+    <div class="pg-screens" id="screens"></div>
+  </section>
+
+  <footer class="pg-foot">Steady · Konzept, nichts gebaut · apps/steady/konzept.md</footer>
+</main>
+
+<script>
+(function () {
+  // ---------- Bausteine ----------
+  const C = {
+    coral: '#F2785C', orange: '#F59E45', yellow: '#E9C84A', lime: '#A5CF5A', green: '#5DC486',
+    teal: '#45C2C0', sky: '#5AAEF0', indigo: '#8190F5', violet: '#B58AF0', pink: '#EE80B5',
+  };
+  const S = (body, sw = 2) =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+  const I = {
+    stats: S('<path d="M6 20v-7M12 20V5M18 20v-10"/>'),
+    plus: S('<path d="M12 5v14M5 12h14"/>'),
+    more: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.9" fill="currentColor"/><circle cx="12" cy="12" r="1.9" fill="currentColor"/><circle cx="18.5" cy="12" r="1.9" fill="currentColor"/></svg>',
+    left: S('<path d="M15 5l-7 7 7 7"/>', 2.2),
+    right: S('<path d="M9 5l7 7-7 7"/>', 2.2),
+    check: S('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 3),
+    grip: S('<path d="M5 9h14M5 15h14"/>'),
+    close: S('<path d="M7 7l10 10M17 7L7 17"/>'),
+    bksp: S('<path d="M9 5h11v14H9l-6-7z"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"/>', 1.8),
+    flame: '<svg viewBox="0 0 12 14" aria-hidden="true"><path fill="currentColor" d="M6.2.4c.3 2.3 4.3 4 4.3 8A4.5 4.5 0 0 1 1.5 8.6c0-1.9 1-3.2 2.2-4 .1 1.4.7 2.3 1.6 2.7C5.7 5.1 5.3 2.6 6.2.4z"/></svg>',
+  };
+  const SB_ICONS =
+    '<svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>' +
+    '<svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true"><path d="M1 4.2a10 10 0 0 1 14 0M3.4 6.8a6.6 6.6 0 0 1 9.2 0M5.8 9.3a3.2 3.2 0 0 1 4.4 0" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>' +
+    '<svg width="27" height="13" viewBox="0 0 27 13" aria-hidden="true"><rect x="0.5" y="0.5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".45"/><rect x="2.5" y="2.5" width="17" height="8" rx="2" fill="currentColor"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity=".45"/></svg>';
+
+  const device = (inner, long = false) =>
+    `<div class="device"><div class="screen${long ? ' long' : ''}"><div class="island"></div>` +
+    `<div class="sb"><span>9:41</span><span class="ico">${SB_ICONS}</span></div>${inner}<div class="homebar"></div></div></div>`;
+
+  const nav = (left, mid, right, midColor) =>
+    `<div class="nav"><span class="${left === 'back' ? 'back' : 'txt'}">${left === 'back' ? I.left : left}</span>` +
+    `<span class="mid"${midColor ? ` style="color:${midColor}"` : ''}>${mid}</span>${right}</div>`;
+
+  // ---------- Beispieldaten ----------
+  const H = {
+    gym:   { name: 'Gym', rule: '3× pro Woche', c: C.coral },
+    cre:   { name: 'Creatin', rule: '', c: C.sky },
+    bed:   { name: 'Bett gemacht', rule: '', c: C.yellow },
+    kcal:  { name: 'Kalorien', rule: '≥ 2800 kcal', c: C.orange },
+    pro:   { name: 'Protein', rule: '≥ 150 g', c: C.violet },
+    phone: { name: 'Kein Handy im Bett', rule: '', c: C.indigo },
+    read:  { name: 'Lesen', rule: '', c: C.green },
+  };
+  const ALL = ['d', 'd', 'd', 'd', 'd', 'd'];
+
+  // Letzte 7 Tage bis Mi 30.9. – Montag ist Spalte 4 (Wochengrenze davor)
+  const DAYS_NOW = [['Do', '24'], ['Fr', '25'], ['Sa', '26'], ['So', '27'], ['Mo', '28'], ['Di', '29']];
+  const ROWS_NOW = [
+    [H.gym,   ['r', 'd', 'r', 'r', 'r', 'd'], { s: 'open' }, 23],
+    [H.cre,   ALL, { s: 'done' }, 41],
+    [H.bed,   ['d', 'd', 'x', 'd', 'd', 'd'], { s: 'done' }, 4],
+    [H.kcal,  ['d', 'd', 'x', 'd', 'd', 'x'], { s: 'empty', u: 'kcal' }, 0],
+    [H.pro,   ['d', 'd', 'd', 'x', 'd', 'd'], { s: 'part', v: '148', p: 98.7 }, 2],
+    [H.phone, ['d', 'x', 'd', 'd', 'd', 'd'], { s: 'open' }, 4],
+    [H.read,  ['d', 'd', 'x', 'd', 'd', 'd'], { s: 'done' }, 4],
+  ];
+  // Eine Woche zurückgeblättert: Do 17. – Mi 23.9.
+  const DAYS_PAST = [['Do', '17'], ['Fr', '18'], ['Sa', '19'], ['So', '20'], ['Mo', '21'], ['Di', '22']];
+  const ROWS_PAST = [
+    [H.gym,   ['d', 'r', 'r', 'd', 'd', 'd pulse'], { s: 'done' }, 23],
+    [H.cre,   ALL, { s: 'done' }, 41],
+    [H.bed,   ['d', 'd', 'd', 'x', 'd', 'd'], { s: 'done' }, 4],
+    [H.kcal,  ['d', 'd', 'x', 'd', 'd', 'x'], { s: 'met', v: '3050' }, 0],
+    [H.pro,   ['d', 'd', 'd', 'd', 'x', 'd'], { s: 'met', v: '171' }, 2],
+    [H.phone, ['d', 'd', 'x', 'd', 'd', 'd'], { s: 'done' }, 4],
+    [H.read,  ['d', 'x', 'd', 'd', 'd', 'd'], { s: 'done' }, 4],
+  ];
+
+  // ---------- Raster ----------
+  function wide(w) {
+    switch (w.s) {
+      case 'done': return `<div class="t done">${I.check}</div>`;
+      case 'met': return `<div class="t met">${w.v}</div>`;
+      case 'part': return `<div class="t">${w.v}<i class="bar" style="width:${w.p}%"></i></div>`;
+      case 'empty': return `<div class="t"><span class="u">${w.u}</span></div>`;
+      case 'due': return '<div class="t due"></div>';
+      default: return '<div class="t"></div>';
+    }
+  }
+  function row(h, cells, w, streak, mon = 4) {
+    return `<div class="g-row" style="--h:${h.c}">` +
+      `<div class="nm"><b>${h.name}</b>${h.rule ? `<small>${h.rule}</small>` : ''}</div>` +
+      cells.map((c, i) => `<div class="c ${c}${i === mon ? ' mon' : ''}"><i></i></div>`).join('') +
+      `<div class="w">${wide(w)}</div>` +
+      `<div class="st">${streak ? I.flame + streak : '<em>–</em>'}</div></div>`;
+  }
+  function head(days, last, mon = 4) {
+    return '<div class="g-row g-head"><div></div>' +
+      days.map((d, i) => `<div${i === mon ? ' class="mon"' : ''}><span class="wd">${d[0]}</span><span class="dn">${d[1]}</span></div>`).join('') +
+      `<div class="today"><span class="wd">${last[0]}</span><span class="dn">${last[1]}</span></div><div></div></div>`;
+  }
+  const mainHeader = (title, sub) =>
+    `<div class="hdr"><div class="l"><span class="ib">${I.stats}</span></div>` +
+    `<div class="ttl"><b>${title}</b>${sub}</div>` +
+    `<div class="r"><span class="ib">${I.plus}</span><span class="ib">${I.more}</span></div></div>`;
+  const gridNow = () =>
+    `<div class="grid">${head(DAYS_NOW, ['Heute', '30'])}${ROWS_NOW.map((r) => row(...r)).join('')}</div>`;
+  const mainNow = () => mainHeader('Mittwoch, 30. September', '<small>3 von 6 erledigt</small>') + gridNow();
+
+  // ---------- Diagramme ----------
+  function heatmap(weeks) {
+    const months = { 0: 'Mai', 4: 'Jun', 8: 'Jul', 12: 'Aug', 17: 'Sep' };
+    let m = '<div class="hm-m">';
+    for (let i = 0; i < weeks.length; i++) m += `<span>${months[i] || ''}</span>`;
+    m += '</div>';
+    let g = '<div class="hm">';
+    weeks.forEach((w) => { for (const ch of w) g += `<i class="s-${ch}"></i>`; });
+    g += '</div>';
+    const wd = '<div class="hm-wd"><span>Mo</span><span></span><span>Mi</span><span></span><span>Fr</span><span></span><span>So</span></div>';
+    return `<div class="hm-wrap"><span></span>${m}${wd}${g}</div>`;
+  }
+  const WD = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+  function calCheck(states, lead) {
+    let s = '<div class="cal">' + WD.map((d) => `<span class="h">${d}</span>`).join('');
+    for (let i = 0; i < lead; i++) s += '<span></span>';
+    [...states].forEach((st, i) => { s += `<span class="cd s-${st}">${i + 1}</span>`; });
+    return s + '</div>';
+  }
+  function calAmount(vals, target, lead, todayIdx) {
+    let s = '<div class="cal">' + WD.map((d) => `<span class="h">${d}</span>`).join('');
+    for (let i = 0; i < lead; i++) s += '<span></span>';
+    vals.forEach((v, i) => {
+      const cls = i === todayIdx ? 's-o' : v >= target ? 's-d' : 's-x';
+      s += `<span class="mc ${cls}"><small>${i + 1}</small>${v}</span>`;
+    });
+    return s + '</div>';
+  }
+  function amountChart(vals, target, color, todayIdx) {
+    const W = 326, Hh = 158, top = 8, bottom = 20, left = 30, max = 200;
+    const ph = Hh - top - bottom, pw = W - left, band = pw / vals.length, bw = 6.4;
+    const y = (v) => top + ph * (1 - v / max);
+    let s = `<svg viewBox="0 0 ${W} ${Hh}" width="100%" role="img" aria-label="Protein pro Tag im September, Ziel 150 g">`;
+    [0, 100, 200].forEach((v) => {
+      s += `<line x1="${left}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="#23282D" stroke-width="1"/>`;
+      s += `<text x="${left - 7}" y="${y(v) + 3.5}" text-anchor="end" font-size="10" fill="#6B727A" font-family="Onest, system-ui, sans-serif">${v}</text>`;
+    });
+    vals.forEach((v, i) => {
+      const x = left + i * band + (band - bw) / 2, h = ph * v / max;
+      if (i === todayIdx) {
+        s += `<rect x="${x + 0.75}" y="${y(v) + 0.75}" width="${bw - 1.5}" height="${h - 1.5}" rx="2" fill="none" stroke="${color}" stroke-width="1.5"/>`;
+      } else {
+        s += `<rect x="${x}" y="${y(v)}" width="${bw}" height="${h}" rx="2" fill="${color}" fill-opacity="${v >= target ? 1 : 0.3}"/>`;
+      }
+    });
+    s += `<line x1="${left}" x2="${W}" y1="${y(target)}" y2="${y(target)}" stroke="#EDEFF1" stroke-width="1.2" stroke-dasharray="3 3"/>`;
+    s += `<text x="${left - 7}" y="${y(target) + 3.5}" text-anchor="end" font-size="10" font-weight="600" fill="#EDEFF1" font-family="Onest, system-ui, sans-serif">${target}</text>`;
+    [0, 7, 14, 21, 28].forEach((i) => {
+      s += `<text x="${left + i * band + band / 2}" y="${Hh - 5}" text-anchor="middle" font-size="10" fill="#6B727A" font-family="Onest, system-ui, sans-serif">${i + 1}.</text>`;
+    });
+    return s + '</svg>';
+  }
+  function dayQuoteChart() {
+    // Erfüllte Gewohnheiten pro Tag (von 7), 1.–29. September; heute 3 von 6 fälligen
+    const vals = [7, 5, 6, 5, 5, 5, 7, 5, 5, 7, 5, 5, 6, 7, 5, 5, 7, 6, 5, 6, 6, 6, 7, 7, 6, 4, 6, 7, 6];
+    const W = 326, Hh = 132, top = 10, bottom = 20, n = 30, pw = W - 36, band = pw / n, bw = 6.2;
+    const ph = Hh - top - bottom;
+    let s = `<svg viewBox="0 0 ${W} ${Hh}" width="100%" role="img" aria-label="Anteil erfüllter Gewohnheiten pro Tag im September">`;
+    [[1, '100 %'], [0.5, '50 %']].forEach(([f, l]) => {
+      const yy = top + ph * (1 - f);
+      s += `<line x1="0" x2="${pw}" y1="${yy}" y2="${yy}" stroke="#23282D" stroke-width="1"/>`;
+      s += `<text x="${W}" y="${yy + 3.5}" text-anchor="end" font-size="10" fill="#6B727A" font-family="Onest, system-ui, sans-serif">${l}</text>`;
+    });
+    vals.forEach((v, i) => {
+      const h = ph * v / 7, x = i * band + (band - bw) / 2;
+      s += `<rect x="${x}" y="${top + ph - h}" width="${bw}" height="${h}" rx="2" fill="${v === 7 ? '#F2B84B' : '#454C54'}"/>`;
+    });
+    const th = ph * 0.5, tx = 29 * band + (band - bw) / 2;
+    s += `<rect x="${tx + 0.75}" y="${top + ph - th + 0.75}" width="${bw - 1.5}" height="${th - 1.5}" rx="2" fill="none" stroke="#9AA1A9" stroke-width="1.5" stroke-dasharray="2 2"/>`;
+    [0, 7, 14, 21, 28].forEach((i) => {
+      s += `<text x="${i * band + band / 2}" y="${Hh - 5}" text-anchor="middle" font-size="10" fill="#6B727A" font-family="Onest, system-ui, sans-serif">${i + 1}.</text>`;
+    });
+    return s + '</svg>';
+  }
+  function vbars(items, areaH, color) {
+    // items: [label, prozent, hervorheben?]
+    return `<div class="vbars" style="grid-template-columns:repeat(${items.length},1fr);--h:${color}">` +
+      items.map(([l, v, lo]) => `<div${lo ? ' class="lo"' : ''}><em>${v} %</em><i style="height:${Math.round(areaH * v / 100)}px"></i><span>${l}</span></div>`).join('') +
+      '</div>';
+  }
+
+  // ---------- Ansichten ----------
+  const V = {};
+
+  V.main = () => device(mainNow());
+
+  V.past = () => device(
+    mainHeader('17.–23. September', `<span class="pill">Heute ${I.right}</span>`) +
+    `<div class="grid">${head(DAYS_PAST, ['Mi', '23'])}${ROWS_PAST.map((r) => row(...r)).join('')}</div>` +
+    `<div class="toast" style="--h:${C.coral}"><span><em>Gym</em> · Di 22.9. eingetragen</span><b>Rückgängig</b></div>`,
+  );
+
+  V.amount = () => device(
+    mainNow() + '<div class="scrim"></div>' +
+    `<div class="sheet" style="--h:${C.violet}"><div class="handle"></div>` +
+    `<div class="sh-head"><div><b>Protein</b><small>Heute · Mittwoch, 30. September</small></div><span class="ib">${I.close}</span></div>` +
+    '<div class="amt"><span class="num">148</span><span class="un">g</span></div>' +
+    '<div class="goal">Ziel mindestens <b>150 g</b> · noch 2 g</div>' +
+    '<div class="prog"><i style="width:98.7%"></i></div>' +
+    `<div class="pad">${['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0'].map((k) => `<span>${k}</span>`).join('')}<span>${I.bksp}</span></div>` +
+    '<div class="acts"><span class="btn">Leeren</span><span class="btn hab">Sichern</span></div></div>',
+  );
+
+  const GYM_WEEKS = [
+    'drdrdrr', 'rdrrrxd', 'rdrdrrd', 'drrdrdr', 'drdrdrr', 'rdrdrrd', 'drrdrrx', 'drdrdrr',
+    'rdrdrdr', 'drrdrdr', 'drdrdrr', 'rrdrrxd', 'rdrdrrd', 'drdrdrr', 'drrdrdr', 'rdrdrrd',
+    'drdrdrr', 'rrrdrdx', 'drdrrdr', 'rdrdrrd', 'drdrdrr', 'rdoffff',
+  ];
+  V.gym = () => device(
+    nav('back', 'Gym', '<span class="act">Bearbeiten</span>', C.coral) +
+    `<div class="scroll" style="--h:${C.coral}">` +
+    '<div class="hero"><div><div class="big">23</div><div class="lbl">Tage in Folge</div></div><div class="rec"><small>Rekord</small><b>42</b></div></div>' +
+    '<div class="rule">3× pro Woche · seit 4. Mai 2026</div>' +
+    '<div class="card"><h4>Diese Woche <span>KW 40</span></h4><div class="wk">' +
+    ['r', 'd', 'o', 'f', 'f', 'f', 'f'].map((c) => `<div class="c ${c}"><i></i></div>`).join('') +
+    WD.map((d, i) => `<small${i === 2 ? ' class="now"' : ''}>${d}</small>`).join('') +
+    '</div><p class="cap"><b>1 von 3</b> · noch 3 Ruhetage</p></div>' +
+    '<div class="card"><h4>Erfolgsquote</h4><div class="q3">' +
+    '<div><b>97 %</b><small>letzte 30 Tage</small></div><div><b>97 %</b><small>seit Beginn</small></div><div><b>17/21</b><small>Wochen geschafft</small></div></div>' +
+    vbars([['Mai', 96], ['Jun', 97], ['Jul', 97], ['Aug', 100], ['Sep', 97]], 64, C.coral) + '</div>' +
+    `<div class="card"><h4>September 2026 <span>${I.left}${I.right}</span></h4>` +
+    calCheck('rrdrdx' + 'drdrrdr' + 'rdrdrrd' + 'drdrdrr' + 'rdo', 1) +
+    '<p class="cap">Tipp auf einen Tag trägt nach.</p></div>' +
+    `<div class="card"><h4>Seit Beginn <span>22 Wochen</span></h4>${heatmap(GYM_WEEKS)}</div>` +
+    '</div>', true,
+  );
+
+  const PRO = [162, 141, 155, 168, 131, 158, 176, 152, 139, 163, 157, 128, 150, 171, 160, 144, 166, 159, 153, 181, 137, 164, 171, 158, 192, 151, 142, 167, 156, 148];
+  V.protein = () => device(
+    nav('back', 'Protein', '<span class="act">Bearbeiten</span>', C.violet) +
+    `<div class="scroll" style="--h:${C.violet}">` +
+    '<div class="hero"><div><div class="big">2</div><div class="lbl">Tage in Folge</div></div><div class="rec"><small>Rekord</small><b>19</b></div></div>' +
+    '<div class="rule">Täglich · mindestens 150 g · seit 1. Juni 2026</div>' +
+    '<div class="card"><h4>Heute</h4><div class="today-amt"><b>148</b><span>g</span><em>noch 2 g</em></div>' +
+    '<div class="prog"><i style="width:98.7%"></i></div><span class="btn">Eintragen</span></div>' +
+    `<div class="card"><h4>Werteverlauf <span>September</span></h4>${amountChart(PRO, 150, C.violet, 29)}` +
+    '<div class="chart-legend"><span>Ø <b>157 g</b></span><span>bester Tag <b>192 g</b></span><span>blass = unter Ziel</span></div></div>' +
+    '<div class="card"><h4>Erfolgsquote</h4><div class="q3"><div><b>77 %</b><small>letzte 30 Tage</small></div><div><b>81 %</b><small>seit Beginn</small></div><div><b>22/29</b><small>Tage im September</small></div></div></div>' +
+    `<div class="card"><h4>September 2026 <span>${I.left}${I.right}</span></h4>${calAmount(PRO, 150, 1, 29)}</div>` +
+    '</div>', true,
+  );
+
+  const PAL = [C.coral, C.orange, C.yellow, C.lime, C.green, C.teal, C.sky, C.indigo, C.violet, C.pink];
+  const swatches = (sel) => `<div class="swatches">${PAL.map((c) => `<i style="--c:${c}"${c === sel ? ' class="on"' : ''}></i>`).join('')}</div>`;
+  const seg = (items, on, extra = '') => `<div class="seg${extra}">${items.map((t, i) => `<span${i === on ? ' class="on"' : ''}>${t}</span>`).join('')}</div>`;
+
+  V.newHabit = () => device(
+    nav('Abbrechen', 'Neue Gewohnheit', '<span class="act strong">Sichern</span>') +
+    `<div class="scroll" style="--h:${C.violet}">` +
+    '<div class="inp">Protein<span class="caret"></span></div>' +
+    '<div class="f-lbl">Farbe</div>' + swatches(C.violet) +
+    '<div class="f-lbl">Messart</div>' + seg(['Abhaken', 'Menge'], 1) +
+    '<div class="f-lbl">Ziel</div>' + seg(['mindestens', 'höchstens'], 0) +
+    '<div class="row2"><div class="box">150</div><div class="box">g <small>Einheit</small></div></div>' +
+    '<div class="f-lbl">Rhythmus</div>' + seg(['Täglich', 'Pro Woche'], 0) +
+    '<div class="f-lbl">Beginnt</div>' +
+    `<div class="list"><div class="li">Heute, 30. September<span class="v">${I.right}</span></div></div>` +
+    '<div class="f-lbl">Vorschau</div>' +
+    `<div class="card prev" style="padding:4px 12px"><div class="grid" style="padding:0">${row(H.pro, ['n', 'n', 'n', 'n', 'n', 'n'], { s: 'empty', u: 'g' }, 0)}</div></div>` +
+    '</div>', true,
+  );
+
+  V.editHabit = () => device(
+    nav('Abbrechen', 'Bearbeiten', '<span class="act strong">Sichern</span>') +
+    `<div class="scroll" style="--h:${C.coral}">` +
+    '<div class="inp">Gym</div>' +
+    '<div class="f-lbl">Farbe</div>' + swatches(C.coral) +
+    '<div class="f-lbl">Messart</div>' + seg(['Abhaken', 'Menge'], 0, ' locked') +
+    '<p class="hint">Nach dem ersten Eintrag fest. Für eine andere Messart archivieren und neu anlegen.</p>' +
+    '<div class="f-lbl">Rhythmus</div>' + seg(['Täglich', 'Pro Woche'], 1) +
+    '<div class="stepper"><span>−</span><b>4× pro Woche</b><span>+</span></div>' +
+    '<p class="hint">3 Ruhetage pro Woche. Sie zählen zur Serie, solange sie reichen.</p>' +
+    '<p class="hint box2">Gilt ab dieser Woche (KW 40). Frühere Wochen bleiben bei 3× pro Woche.</p>' +
+    '<div class="f-lbl">Beginnt</div>' +
+    `<div class="list"><div class="li">4. Mai 2026<span class="v">${I.right}</span></div></div>` +
+    '<div class="f-lbl">&nbsp;</div>' +
+    '<span class="btn">Archivieren</span>' +
+    '<p class="hint center">Verschwindet aus dem Raster, die Historie bleibt. Löschen geht nur im Archiv.</p>' +
+    '</div>', true,
+  );
+
+  const RANK = [[H.cre, 100], [H.gym, 97], [H.read, 86], [H.bed, 83], [H.phone, 79], [H.pro, 76], [H.kcal, 62]];
+  V.stats = () => device(
+    nav('back', 'Statistik', '<span></span>') +
+    '<div class="scroll">' +
+    seg(['Woche', 'Monat', 'Jahr'], 1) +
+    `<div class="period">${I.left}<b>September 2026</b>${I.right}</div>` +
+    '<div class="kpis">' +
+    '<div class="kpi"><b>83 %</b><small>erfüllt</small></div>' +
+    '<div class="kpi"><b>8</b><small>perfekte Tage von 29</small></div>' +
+    `<div class="kpi"><b>${I.flame}41</b><small>längste Serie · <span style="color:${C.sky}">Creatin</span></small></div></div>` +
+    `<div class="card"><h4>Tagesquote <span style="color:#F2B84B">■ perfekt</span></h4>${dayQuoteChart()}</div>` +
+    '<div class="card"><h4>Gewohnheiten</h4><div class="rank">' +
+    RANK.map(([h, v]) => `<div class="rk" style="--h:${h.c}"><b>${h.name}</b><div class="tr"><i style="width:${v}%"></i></div><em>${v} %</em></div>`).join('') +
+    '</div></div>' +
+    '<div class="card"><h4>Wochentage</h4>' +
+    vbars([['Mo', 90], ['Di', 88], ['Mi', 87], ['Do', 85], ['Fr', 79], ['Sa', 68, true], ['So', 84]], 72, '#3A4047') +
+    '<p class="cap"><b>Samstag</b> ist dein schwächster Tag (68 %).</p></div>' +
+    '</div>', true,
+  );
+
+  V.menu = () => device(
+    mainNow() + '<div class="scrim"></div>' +
+    '<div class="sheet"><div class="handle"></div>' +
+    `<div class="menu"><div class="mi">Archiv<em>2${I.right}</em></div><div class="mi">Reihenfolge ändern<em>${I.right}</em></div><div class="mi">Einstellungen<em>${I.right}</em></div></div>` +
+    `<div class="menu"><div class="mi">Alle Apps<em>${I.right}</em></div></div></div>`,
+  );
+
+  V.archive = () => device(
+    nav('back', 'Archiv', '<span></span>') +
+    '<div class="scroll"><div class="list">' +
+    `<div class="li" style="--h:${C.teal}"><div class="two"><b>Kalt duschen</b><small>12. Mai – 30. Aug 2026 · 81 % · Rekord 34</small></div><span class="v">${I.right}</span></div>` +
+    `<div class="li" style="--h:${C.pink}"><div class="two"><b>Meditation</b><small>3. Jan – 14. Apr 2026 · 64 % · Rekord 12</small></div><span class="v">${I.right}</span></div>` +
+    '</div><p class="note">Archivierte Gewohnheiten zählen in der Statistik für die Zeit, in der sie liefen. Im Detail: Wiederherstellen (startet eine neue Serie) oder endgültig löschen.</p></div>',
+  );
+
+  V.reorder = () => device(
+    nav('', 'Reihenfolge', '<span class="act strong">Fertig</span>') +
+    '<div class="scroll"><div class="list" style="overflow:visible">' +
+    [H.gym, H.cre, H.bed, 'lift', H.kcal, H.phone, H.read].map((h) => {
+      if (h === 'lift') {
+        return `<div class="li lift" style="--h:${H.pro.c}"><div class="two"><b>${H.pro.name}</b><small>${H.pro.rule}</small></div><span class="grip">${I.grip}</span></div>`;
+      }
+      return `<div class="li" style="--h:${h.c}"><div class="two"><b>${h.name}</b>${h.rule ? `<small>${h.rule}</small>` : ''}</div><span class="grip">${I.grip}</span></div>`;
+    }).join('') +
+    '</div><p class="note">Am Griff ziehen. Die Reihenfolge gilt für das Raster.</p></div>',
+  );
+
+  V.settings = () => device(
+    nav('back', 'Einstellungen', '<span></span>') +
+    '<div class="scroll">' +
+    '<div class="sec">Tag</div>' +
+    `<div class="list"><div class="li">Tageswechsel<span class="v">3:00 Uhr${I.right}</span></div></div>` +
+    '<p class="note">Bis 3:00 Uhr nachts gilt noch der Vortag. Wochen beginnen immer am Montag.</p>' +
+    '<div class="sec">Daten</div>' +
+    `<div class="list"><div class="li">Export als JSON<span class="v">${I.right}</span></div><div class="li">Import aus JSON<span class="v">${I.right}</span></div></div>` +
+    '<p class="note">Der Import ersetzt alle Steady-Daten.</p>' +
+    '<div class="list"><div class="li danger">Alle Daten löschen</div></div>' +
+    '<div class="sec">Hilfe</div>' +
+    `<div class="list"><div class="li">So zählt Steady<span class="v">${I.right}</span></div></div>` +
+    '<p class="note center" style="margin-top:18px">Deine Daten liegen nur auf diesem Gerät.</p>' +
+    '</div>',
+  );
+
+  const LEGEND = [
+    ['<div class="c d"><i></i></div>', 'Erledigt', 'abgehakt oder Ziel erreicht'],
+    ['<div class="c r"><i></i></div>', 'Ruhetag', 'automatisch gedeckt, zählt zur Serie'],
+    ['<div class="c x"><i></i></div>', 'Verpasst', 'nicht erledigt, die Serie beginnt neu'],
+    ['<div class="c n"><i></i></div>', 'Noch nicht begonnen', 'vor dem Beginn-Datum'],
+    ['<div class="t"></div>', 'Heute offen', 'zählt noch, bricht nichts'],
+    ['<div class="t due"></div>', 'Heute fällig', 'keine Ruhetage mehr übrig'],
+    [`<div class="t done">${I.check}</div>`, 'Heute erledigt', 'abgehakt'],
+    ['<div class="t">148<i class="bar" style="width:98.7%"></i></div>', 'Menge unter Ziel', 'Balken zeigt den Fortschritt'],
+    ['<div class="t met">3050</div>', 'Menge erfüllt', 'Tageswert erreicht das Ziel'],
+  ];
+
+  V.rules = () => device(
+    nav('back', 'So zählt Steady', '<span></span>') +
+    `<div class="scroll" style="--h:${C.coral}">` +
+    '<div class="card">' + LEGEND.slice(0, 6).map(([smp, b, s]) => `<div class="lg-row"><div class="smp">${smp}</div><div><b>${b}</b><small>${s}</small></div></div>`).join('') + '</div>' +
+    '<div class="card"><h4>Ruhetage</h4><p class="txt">Bei <b>3× pro Woche</b> hat jede Woche 4 Ruhetage. Jeder Tag ohne Training wird automatisch einer, bis sie aufgebraucht sind. Danach ist jeder freie Tag verpasst.</p></div>' +
+    '<div class="card"><h4>Woche</h4><p class="txt">Montag bis Sonntag. Übrige Ruhetage verfallen am Sonntag. Im Raster trennt eine Linie die Wochen.</p></div>' +
+    '<div class="card"><h4>Serie</h4><p class="txt">Tage in Folge mit ● oder ◌. Heute zählt mit, sobald es erledigt ist. Es gibt <b>keine Pausen</b>: krank oder Urlaub beginnt eine neue Serie.</p></div>' +
+    '<div class="card"><h4>Tageswechsel</h4><p class="txt">Bis 3:00 Uhr nachts zählt noch der Vortag. Einstellbar unter Einstellungen.</p></div>' +
+    '</div>', true,
+  );
+
+  const ghostRow = (cells) => `<div>${cells.map(([k, c]) => `<i${k ? ` class="${k}"` : ''}${c ? ` style="--c:${c}"` : ''}></i>`).join('')}</div>`;
+  V.onboarding = () => device(
+    '<div class="onb"><div class="onb-mid"><div class="wm">steady</div><div class="ghost">' +
+    ghostRow([['f', C.coral], ['r', C.coral], ['f', C.coral], ['r', C.coral], ['', ''], ['', ''], ['', '']]) +
+    ghostRow([['f', C.sky], ['f', C.sky], ['f', C.sky], ['', ''], ['', ''], ['', ''], ['', '']]) +
+    ghostRow([['f', C.green], ['', ''], ['f', C.green], ['f', C.green], ['', ''], ['', ''], ['', '']]) +
+    '</div></div><div class="onb-bot"><span class="btn pri">Erste Gewohnheit anlegen</span><span class="link">Aus Exportdatei wiederherstellen</span></div></div>',
+  );
+
+  // ---------- Seite füllen ----------
+  const SCREENS = [
+    ['v1', '1', 'Hauptansicht', V.main, '', [
+      'Die letzten 7 Tage, heute rechts in der breiten Spalte. Die feine Linie vor Montag trennt die Kalenderwochen.',
+      'Tipp auf eine Zelle: abhaken bzw. Menge eintragen. Tipp auf den Namen: Detail.',
+      'Gym hat noch Ruhetage übrig, ist heute also optional und fehlt im Zähler „3 von 6“.',
+      'Kalorien gestern verfehlt, darum Serie „–“. Protein steht bei 148 von 150 g, der Balken im Kasten zeigt das.',
+    ]],
+    ['v1b', '1b', 'Zurückgeblättert', V.past, '', [
+      'Wisch nach rechts blättert 7 Tage zurück. Der Titel zeigt den Bereich, „Heute“ springt zurück.',
+      'Die breite Spalte zeigt immer den jüngsten Tag im Fenster, hier Mi 23. mit dessen Werten.',
+      'Gym am Di 22. nachgetragen: aus ◌ wird ●. Für Tage vor heute kommt eine Meldung mit Rückgängig.',
+    ]],
+    ['v2', '2', 'Menge eintragen', V.amount, 'Blatt', [
+      'Öffnet sich beim Tipp auf eine Mengen-Zelle, für genau diesen Tag.',
+      'Eingetragen wird die Tagessumme, sie ersetzt den alten Wert.',
+      'Ziel und Rest direkt unter der Zahl. Eigenes Ziffernfeld, kein System-Keyboard.',
+      '„Sichern“ trägt die Farbe der Gewohnheit, „Leeren“ entfernt den Wert.',
+    ]],
+    ['v3', '3', 'Detail: Gym', V.gym, 'ganze Seite', [
+      'Serie groß in der Gewohnheitsfarbe, Rekord daneben.',
+      '„Diese Woche“ zeigt, was das Raster weglässt: Stand und übrige Ruhetage.',
+      'Kalender: Tipp auf einen Tag trägt nach. KW 36 zeigt den Bruch, am 6.9. war es der fünfte freie Tag.',
+      'Heatmap seit Beginn: Training voll, Ruhetag blass, verpasst grau.',
+    ]],
+    ['v3b', '3b', 'Detail: Protein', V.protein, 'ganze Seite', [
+      'Bei Mengen: heutiger Wert mit Fortschritt und direktem „Eintragen“.',
+      'Werteverlauf mit gestrichelter Ziellinie; Tage unter dem Ziel blass, heute umrandet.',
+      'Der Kalender zeigt die Tageswerte statt Punkten.',
+    ]],
+    ['v4', '4', 'Neue Gewohnheit', V.newHabit, 'ganze Seite', [
+      'Name, Farbe, Messart, Ziel (nur bei Menge), Rhythmus, Beginn.',
+      'Vorgewählt ist die erste Farbe, die noch keine Gewohnheit trägt.',
+      'Die Vorschau zeigt die künftige Rasterzeile; vor dem Beginn stehen nur Punkte (·).',
+    ]],
+    ['v4b', '4b', 'Bearbeiten', V.editHabit, 'ganze Seite', [
+      'Die Messart ist nach dem ersten Eintrag fest.',
+      'Rhythmus von 3× auf 4× geändert: der Hinweis sagt, ab wann es gilt.',
+      'Archivieren ganz unten. Löschen gibt es nur im Archiv.',
+    ]],
+    ['v5', '5', 'Statistik', V.stats, 'ganze Seite', [
+      'Über alle Gewohnheiten. Woche, Monat, Jahr; blättern mit Pfeilen oder Wischen.',
+      'Tagesquote: perfekte Tage in Bernstein, heute gestrichelt.',
+      'Rangliste antippbar (→ Detail). Wochentage zeigen, wo es hakt.',
+    ]],
+    ['v6', '6', 'Menü', V.menu, 'Blatt', [
+      'Über ⋯ oben rechts. Archiv mit Anzahl, Reihenfolge, Einstellungen, zurück zum Launcher.',
+    ]],
+    ['v7', '7', 'Archiv', V.archive, '', [
+      'Beendete Gewohnheiten mit Zeitraum, Quote und Rekord.',
+      'Tipp öffnet das Detail im archivierten Zustand: Wiederherstellen oder endgültig löschen.',
+    ]],
+    ['v8', '8', 'Reihenfolge ändern', V.reorder, '', [
+      'Aus dem Menü. Zeilen am Griff ziehen, die gezogene Zeile hebt sich ab.',
+    ]],
+    ['v9', '9', 'Einstellungen', V.settings, '', [
+      'Tageswechsel (Standard 3:00 Uhr), Export und Import als JSON, alles löschen.',
+      'Rot nur hier, beim endgültigen Löschen.',
+    ]],
+    ['v10', '10', 'So zählt Steady', V.rules, 'ganze Seite', [
+      'Die Regeln in der App: Legende aller Zeichen, Ruhetage, Woche, Serie, Tageswechsel.',
+    ]],
+    ['v11', '11', 'Erststart', V.onboarding, '', [
+      'Solange es keine Gewohnheit gibt. Wortmarke, angedeutetes Raster, ein Knopf.',
+      'Keine Vorlagen, kein Erklärtext. Darunter still: Wiederherstellen aus einer Exportdatei.',
+    ]],
+  ];
+
+  document.getElementById('toc').innerHTML = SCREENS
+    .map(([id, n, t]) => `<a href="#${id}"><b>${n}</b>${t}</a>`).join('');
+
+  document.getElementById('screens').innerHTML = SCREENS.map(([id, n, t, fn, tag, notes]) =>
+    `<figure class="pg-shot" id="${id}"><div class="pg-fit">${fn()}</div>` +
+    `<figcaption class="pg-cap"><h3><span>${n}</span>${t}${tag ? `<em>${tag}</em>` : ''}</h3>` +
+    `<ul>${notes.map((x) => `<li>${x}</li>`).join('')}</ul></figcaption></figure>`,
+  ).join('');
+
+  document.getElementById('legend').innerHTML = LEGEND.map(([smp, b, s]) =>
+    `<div class="pg-lg" style="--h:${C.coral}"><div class="smp">${smp}</div><div><b>${b}</b><small>${s}</small></div></div>`,
+  ).join('');
+
+  const NAMES = ['Koralle', 'Orange', 'Gelb', 'Limette', 'Grün', 'Türkis', 'Himmel', 'Indigo', 'Violett', 'Rosa'];
+  document.getElementById('palette').innerHTML =
+    PAL.map((c, i) => `<div class="pg-sw"><i style="background:${c}"></i><div><b>${NAMES[i]}</b><small>${c}</small></div></div>`).join('') +
+    '<div class="pg-sw"><i style="background:#F2B84B"></i><div><b>Serie</b><small>#F2B84B</small></div></div>' +
+    '<div class="pg-sw"><i style="background:#0F1113;box-shadow:inset 0 0 0 1px #2A2F34"></i><div><b>Grund</b><small>#0F1113</small></div></div>' +
+    '<div class="pg-sw"><i style="background:#171A1D;box-shadow:inset 0 0 0 1px #2A2F34"></i><div><b>Fläche</b><small>#171A1D</small></div></div>';
+
+  // Geräte auf schmalen Schirmen verkleinern (zoom statt transform: die Höhe schrumpft mit)
+  function fit() {
+    document.querySelectorAll('.pg-fit').forEach((f) => {
+      const d = f.firstElementChild;
+      d.style.zoom = Math.min(1, f.clientWidth / 402);
+    });
+  }
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(document.body);
+  else window.addEventListener('resize', fit);
+})();
+</script>

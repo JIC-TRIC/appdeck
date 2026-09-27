@@ -11,4 +11,5 @@
  */
 self.APPS = [
   { id: 'kontor', name: 'Kontor', icon: 'icons/kontor.svg', color: '#1F1D1A', path: 'apps/kontor/' },
+  { id: 'steady', name: 'Steady', icon: 'icons/steady.svg', color: '#0F1113', path: 'apps/steady/' },
 ];

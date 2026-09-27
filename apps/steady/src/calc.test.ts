@@ -1,0 +1,240 @@
+import { describe, expect, it } from 'vitest'
+import {
+  dayScores,
+  evaluateWeek,
+  inLife,
+  meets,
+  perfectDays,
+  quoteIn,
+  ruleAt,
+  statesBetween,
+  streaks,
+  todayCount,
+  weekdayQuotes,
+  weeksDone,
+} from './calc'
+import { addDays, daysBetween } from './util'
+import type { Habit, HabitLog, Log } from './types'
+
+function habit(patch: Partial<Habit> = {}): Habit {
+  const start = patch.start ?? '2026-06-01'
+  return {
+    id: 'h',
+    name: 'Test',
+    color: 'coral',
+    kind: 'check',
+    unit: '',
+    rhythm: [{ from: start, perWeek: 7 }],
+    goal: [],
+    start,
+    inactive: [],
+    order: 0,
+    createdAt: '',
+    updatedAt: '',
+    ...patch,
+  }
+}
+
+const gym = (patch: Partial<Habit> = {}) =>
+  habit({ rhythm: [{ from: patch.start ?? '2026-06-01', perWeek: 3 }], ...patch })
+
+const logOf = (...days: string[]): HabitLog => Object.fromEntries(days.map((d) => [d, 1]))
+
+// KW 36/2026: Mo 31.8. bis So 6.9.
+const KW36 = '2026-08-31'
+
+describe('Ruhetage-Kontingent', () => {
+  it('verteilt Ruhetage der Reihe nach und verpasst erst nach dem fuenften freien Tag', () => {
+    const w = evaluateWeek(gym(), logOf('2026-09-03', '2026-09-05'), KW36, '2026-09-07')
+    expect(w.states).toEqual(['rest', 'rest', 'rest', 'done', 'rest', 'done', 'miss'])
+    expect(w.restBudget).toBe(4)
+    expect(w.missed).toBe(1)
+  })
+
+  it('rechnet die Woche neu, wenn nachgetragen wird (× wird ◌)', () => {
+    const w = evaluateWeek(gym(), logOf('2026-09-02', '2026-09-03', '2026-09-05'), KW36, '2026-09-07')
+    expect(w.states).toEqual(['rest', 'rest', 'done', 'done', 'rest', 'done', 'rest'])
+    expect(w.missed).toBe(0)
+  })
+
+  it('erlaubt mehr Trainings als das Ziel, uebrige Ruhetage verfallen', () => {
+    const w = evaluateWeek(gym(), logOf('2026-08-31', '2026-09-01', '2026-09-02', '2026-09-03'), KW36, '2026-09-07')
+    expect(w.done).toBe(4)
+    expect(w.states.slice(4)).toEqual(['rest', 'rest', 'rest'])
+  })
+
+  it('laesst heute offen, verbraucht dafuer keinen Ruhetag und meldet, wann heute noetig ist', () => {
+    // Mi 30.9.: Montag frei, Dienstag trainiert
+    const w = evaluateWeek(gym(), logOf('2026-09-29'), '2026-09-28', '2026-09-30')
+    expect(w.states).toEqual(['rest', 'done', 'open', 'future', 'future', 'future', 'future'])
+    expect(w.due).toBe(false)
+    expect(w.restLeft).toBe(3)
+
+    // Fr 2.10. nach vier freien Tagen: heute muss trainiert werden
+    const fr = evaluateWeek(gym(), {}, '2026-09-28', '2026-10-02')
+    expect(fr.states.slice(0, 5)).toEqual(['rest', 'rest', 'rest', 'rest', 'open'])
+    expect(fr.due).toBe(true)
+    expect(fr.restLeft).toBe(0)
+  })
+
+  it('rechnet die erste Woche anteilig', () => {
+    // Beginn Donnerstag: 4 Tage, Ziel round(3 * 4 / 7) = 2, also 2 Ruhetage
+    const doStart = evaluateWeek(gym({ start: '2026-09-03' }), {}, KW36, '2026-09-07')
+    expect(doStart.target).toBe(2)
+    expect(doStart.states).toEqual(['off', 'off', 'off', 'rest', 'rest', 'miss', 'miss'])
+
+    // Beginn Sonntag: Ziel 0, der Tag ist ein Ruhetag
+    const soStart = evaluateWeek(gym({ start: '2026-09-06' }), {}, KW36, '2026-09-07')
+    expect(soStart.target).toBe(0)
+    expect(soStart.states[6]).toBe('rest')
+  })
+
+  it('behandelt taeglich als Woche ohne Ruhetage', () => {
+    const w = evaluateWeek(habit(), logOf('2026-08-31'), KW36, '2026-09-02')
+    expect(w.states).toEqual(['done', 'miss', 'open', 'future', 'future', 'future', 'future'])
+    expect(w.due).toBe(true)
+  })
+})
+
+describe('Serie', () => {
+  const days = (from: string, to: string) => daysBetween(from, to)
+
+  it('bricht nicht an einem offenen Heute und zaehlt ein erledigtes Heute mit', () => {
+    const h = habit()
+    const log = logOf('2026-09-28', '2026-09-29')
+    expect(streaks(h, log, '2026-09-30').current).toBe(2)
+    expect(streaks(h, { ...log, '2026-09-30': 1 }, '2026-09-30').current).toBe(3)
+  })
+
+  it('zaehlt Ruhetage mit', () => {
+    // Gym seit Mo 21.9.: Mo, Mi, Fr trainiert; heute Mi 30.9., Di trainiert
+    const h = gym({ start: '2026-09-21' })
+    const log = logOf('2026-09-21', '2026-09-23', '2026-09-25', '2026-09-29')
+    expect(streaks(h, log, '2026-09-30').current).toBe(9)
+  })
+
+  it('bricht an einem verpassten Tag und merkt sich den Rekord', () => {
+    const h = habit({ start: '2026-09-01' })
+    const log = logOf(...days('2026-09-01', '2026-09-10'), ...days('2026-09-12', '2026-09-15'))
+    const s = streaks(h, log, '2026-09-15')
+    expect(s.current).toBe(4)
+    expect(s.best).toBe(10)
+  })
+
+  it('laeuft ueber Monats- und Jahresgrenzen und die Zeitumstellung', () => {
+    const h = habit({ start: '2026-10-20' })
+    // Ende der Sommerzeit am 25.10.2026
+    expect(streaks(h, logOf(...days('2026-10-20', '2026-11-05')), '2026-11-05').current).toBe(17)
+    const neujahr = habit({ start: '2026-12-25' })
+    expect(streaks(neujahr, logOf(...days('2026-12-25', '2027-01-05')), '2027-01-05').current).toBe(12)
+  })
+
+  it('beginnt nach dem Archiv neu, der Rekord bleibt', () => {
+    const h = habit({ start: '2026-09-01', inactive: [{ from: '2026-09-11', to: '2026-09-19' }] })
+    const log = logOf(...days('2026-09-01', '2026-09-10'), ...days('2026-09-20', '2026-09-22'))
+    const s = streaks(h, log, '2026-09-22')
+    expect(s.current).toBe(3)
+    expect(s.best).toBe(10)
+    expect(inLife(h, '2026-09-15')).toBe(false)
+  })
+})
+
+describe('Mengen', () => {
+  const protein = habit({ kind: 'amount', unit: 'g', goal: [{ from: '2026-06-01', target: 150, dir: 'min' }] })
+  const kcal = habit({ kind: 'amount', unit: 'kcal', goal: [{ from: '2026-06-01', target: 2500, dir: 'max' }] })
+
+  it('prueft mindestens und hoechstens', () => {
+    expect(meets(protein, 150, '2026-09-30')).toBe(true)
+    expect(meets(protein, 149, '2026-09-30')).toBe(false)
+    expect(meets(kcal, 2400, '2026-09-30')).toBe(true)
+    expect(meets(kcal, 2600, '2026-09-30')).toBe(false)
+  })
+
+  it('zaehlt "hoechstens" ohne Wert nicht als erledigt', () => {
+    expect(meets(kcal, undefined, '2026-09-30')).toBe(false)
+  })
+
+  it('laesst heute unter dem Ziel offen, gestern unter dem Ziel ist verpasst', () => {
+    const st = statesBetween(protein, { '2026-09-29': 140, '2026-09-30': 140 }, '2026-09-29', '2026-09-30', '2026-09-30')
+    expect(st).toEqual({ '2026-09-29': 'miss', '2026-09-30': 'open' })
+  })
+})
+
+describe('Regeln aendern', () => {
+  it('wechselt den Rhythmus ab Montag der Woche', () => {
+    const h = habit({
+      rhythm: [
+        { from: '2026-06-01', perWeek: 7 },
+        { from: '2026-09-28', perWeek: 3 },
+      ],
+    })
+    expect(evaluateWeek(h, {}, '2026-09-21', '2026-10-05').states[0]).toBe('miss')
+    expect(evaluateWeek(h, {}, '2026-09-28', '2026-10-05').states[0]).toBe('rest')
+  })
+
+  it('wechselt das Mengenziel ab dem Tag der Aenderung', () => {
+    const h = habit({
+      kind: 'amount',
+      goal: [
+        { from: '2026-06-01', target: 150, dir: 'min' },
+        { from: '2026-09-30', target: 160, dir: 'min' },
+      ],
+    })
+    expect(meets(h, 155, '2026-09-29')).toBe(true)
+    expect(meets(h, 155, '2026-09-30')).toBe(false)
+  })
+
+  it('nimmt vor der ersten Regel die erste', () => {
+    const rules = [{ from: '2026-06-01', perWeek: 3 }]
+    expect(ruleAt(rules, '2026-05-01')).toBe(rules[0])
+  })
+})
+
+describe('Zaehler und Quoten', () => {
+  const today = '2026-09-30'
+  const daily = habit({ id: 'd' })
+  const weekly = gym({ id: 'w' })
+  const log: Log = { d: logOf('2026-09-29'), w: logOf('2026-09-29') }
+
+  it('zaehlt heute nur Faelliges', () => {
+    // taeglich offen: faellig. Gym mit freien Ruhetagen: nicht faellig
+    expect(todayCount([daily, weekly], log, today)).toEqual({ done: 0, due: 1 })
+    const erledigt = { ...log, w: { ...log.w, [today]: 1 } }
+    expect(todayCount([daily, weekly], erledigt, today)).toEqual({ done: 1, due: 2 })
+  })
+
+  it('ignoriert ein offenes Heute in der Quote', () => {
+    const h = habit({ start: '2026-09-28' })
+    expect(quoteIn(h, { h: logOf('2026-09-28') }, '2026-09-01', '2026-09-30', today)).toEqual({ met: 1, due: 2 })
+  })
+
+  it('zaehlt geschaffte Wochen ohne die laufende', () => {
+    const h = gym({ start: '2026-09-14' })
+    const l: Log = { h: logOf('2026-09-14', '2026-09-16', '2026-09-18', '2026-09-22') }
+    // KW 38 geschafft, KW 39 nur ein Training
+    expect(weeksDone(h, l, today)).toEqual({ done: 1, total: 2 })
+  })
+
+  it('findet perfekte Tage und schwache Wochentage', () => {
+    const a = habit({ id: 'a', start: '2026-09-21' })
+    const b = habit({ id: 'b', start: '2026-09-21' })
+    const l: Log = {
+      a: logOf(...daysBetween('2026-09-21', '2026-09-27')),
+      b: logOf('2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', '2026-09-27'),
+    }
+    const scores = dayScores([a, b], l, '2026-09-21', '2026-09-27', '2026-09-28')
+    expect(perfectDays(scores)).toEqual({ perfect: 6, days: 7 })
+    expect(weekdayQuotes(scores)[5]).toBe(0.5) // Samstag
+  })
+})
+
+describe('Beginn', () => {
+  it('ist vor dem Beginn inaktiv', () => {
+    const h = habit({ start: '2026-09-30' })
+    expect(statesBetween(h, {}, addDays('2026-09-30', -2), '2026-09-30', '2026-09-30')).toEqual({
+      '2026-09-28': 'off',
+      '2026-09-29': 'off',
+      '2026-09-30': 'open',
+    })
+  })
+})
