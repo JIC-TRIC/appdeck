@@ -20,8 +20,8 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
-/* Dark Mode folgt der iPhone-Einstellung – wie beim Launcher */
-import '@ionic/react/css/palettes/dark.system.css';
+/* Dark Mode ist Sache der App: wer ihn will, importiert in main.tsx
+   zusätzlich '@lib/dark' (die Vorlage tut das). */
 
 import './theme.css';
 

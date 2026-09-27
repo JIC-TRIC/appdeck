@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { IconCheck, IconChart, IconGrid, IconRight, IconSliders, IconTransfer, IconWallet } from '../icons'
 import { Money, Sheet } from '../ui'
 import { PERIODS, periodRange, todayKey } from '../util'
@@ -66,62 +67,74 @@ export function MenuSheet({ ctx }: ViewProps) {
   const expenseCats = categories.filter((c) => c.kind === 'expense' && !c.archived).length
   const incomeCats = categories.filter((c) => c.kind === 'income' && !c.archived).length
 
-  // Das Blatt wird durch die Seite ersetzt, nicht geschlossen und dann
-  // ueberlagert - sonst rennt history.back() gegen den naechsten push.
-  const go = (view: View) => () => replace(view)
+  // Erst schliesst das Blatt (mit Animation), dann ersetzt die gewaehlte Seite
+  // seinen Platz im Stapel. Ersetzt, nicht zurueck und neu - sonst rennt
+  // history.back() gegen den naechsten push.
+  const ziel = useRef<View | null>(null)
+  const onClose = () => (ziel.current ? replace(ziel.current) : back())
 
   return (
-    <Sheet title="Menü" onClose={back}>
-      <button type="button" className="k-menu-row" onClick={go({ name: 'accounts' })}>
-        <span className="k-menu-ic"><IconWallet /></span>
-        <span className="k-menu-mid">
-          <span className="k-menu-t">Konten</span>
-          <span className="k-menu-s">
-            {open.length} {open.length === 1 ? 'Konto' : 'Konten'} · Gesamtbalance{' '}
-            <Money cent={totalBalance(accounts)} /> €
-          </span>
-        </span>
-        <span className="k-acc-chev"><IconRight /></span>
-      </button>
+    <Sheet title="Menü" onClose={onClose}>
+      {(zu) => {
+        const go = (view: View) => () => {
+          ziel.current = view
+          zu()
+        }
+        return (
+          <>
+            <button type="button" className="k-menu-row" onClick={go({ name: 'accounts' })}>
+              <span className="k-menu-ic"><IconWallet /></span>
+              <span className="k-menu-mid">
+                <span className="k-menu-t">Konten</span>
+                <span className="k-menu-s">
+                  {open.length} {open.length === 1 ? 'Konto' : 'Konten'} · Gesamtbalance{' '}
+                  <Money cent={totalBalance(accounts)} /> €
+                </span>
+              </span>
+              <span className="k-acc-chev"><IconRight /></span>
+            </button>
 
-      <button type="button" className="k-menu-row" onClick={go({ name: 'stats' })}>
-        <span className="k-menu-ic"><IconChart /></span>
-        <span className="k-menu-mid">
-          <span className="k-menu-t">Statistik</span>
-          <span className="k-menu-s">Verlauf, Sparquote, Vergleiche</span>
-        </span>
-        <span className="k-acc-chev"><IconRight /></span>
-      </button>
+            <button type="button" className="k-menu-row" onClick={go({ name: 'stats' })}>
+              <span className="k-menu-ic"><IconChart /></span>
+              <span className="k-menu-mid">
+                <span className="k-menu-t">Statistik</span>
+                <span className="k-menu-s">Verlauf, Sparquote, Vergleiche</span>
+              </span>
+              <span className="k-acc-chev"><IconRight /></span>
+            </button>
 
-      <button type="button" className="k-menu-row" onClick={go({ name: 'categories' })}>
-        <span className="k-menu-ic"><IconGrid /></span>
-        <span className="k-menu-mid">
-          <span className="k-menu-t">Kategorien</span>
-          <span className="k-menu-s">{expenseCats} Ausgaben · {incomeCats} Einnahmen</span>
-        </span>
-        <span className="k-acc-chev"><IconRight /></span>
-      </button>
+            <button type="button" className="k-menu-row" onClick={go({ name: 'categories' })}>
+              <span className="k-menu-ic"><IconGrid /></span>
+              <span className="k-menu-mid">
+                <span className="k-menu-t">Kategorien</span>
+                <span className="k-menu-s">{expenseCats} Ausgaben · {incomeCats} Einnahmen</span>
+              </span>
+              <span className="k-acc-chev"><IconRight /></span>
+            </button>
 
-      <button type="button" className="k-menu-row" onClick={go({ name: 'settings' })}>
-        <span className="k-menu-ic"><IconSliders /></span>
-        <span className="k-menu-mid">
-          <span className="k-menu-t">Einstellungen</span>
-          <span className="k-menu-s">Export, Berechnung, Daten</span>
-        </span>
-        <span className="k-acc-chev"><IconRight /></span>
-      </button>
+            <button type="button" className="k-menu-row" onClick={go({ name: 'settings' })}>
+              <span className="k-menu-ic"><IconSliders /></span>
+              <span className="k-menu-mid">
+                <span className="k-menu-t">Einstellungen</span>
+                <span className="k-menu-s">Export, Berechnung, Daten</span>
+              </span>
+              <span className="k-acc-chev"><IconRight /></span>
+            </button>
 
-      {/* Kontor hat keine Kopfzeile, also auch keinen Platz fuer einen
-          Zurueck-Knopf. Der Weg zum Launcher liegt darum hier, neben der
-          Umbuchung - beides selten, beides nicht die Hauptsache. */}
-      <div className="k-sheet-foot k-sheet-foot-split">
-        <button type="button" className="k-ghost row" onClick={go({ name: 'transfer' })}>
-          <span className="k-ghost-ic"><IconTransfer /></span> Umbuchung
-        </button>
-        <button type="button" className="k-ghost row" onClick={onExit}>
-          <span className="k-ghost-ic"><IconGrid /></span> Alle Apps
-        </button>
-      </div>
+            {/* Kontor hat keine Kopfzeile, also auch keinen Platz fuer einen
+                Zurueck-Knopf. Der Weg zum Launcher liegt darum hier, neben der
+                Umbuchung - beides selten, beides nicht die Hauptsache. */}
+            <div className="k-sheet-foot k-sheet-foot-split">
+              <button type="button" className="k-ghost row" onClick={go({ name: 'transfer' })}>
+                <span className="k-ghost-ic"><IconTransfer /></span> Umbuchung
+              </button>
+              <button type="button" className="k-ghost row" onClick={onExit}>
+                <span className="k-ghost-ic"><IconGrid /></span> Alle Apps
+              </button>
+            </div>
+          </>
+        )
+      }}
     </Sheet>
   )
 }

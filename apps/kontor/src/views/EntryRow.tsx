@@ -1,7 +1,7 @@
 import { Glyph } from '../icons'
 import { Money, type MoneySign } from '../ui'
 import { COLOR_OTHER, COLOR_TRANSFER } from '../data'
-import { formatDayShort } from '../util'
+import { formatCent, formatDayShort } from '../util'
 import type { Account, Category, Entry } from '../types'
 
 // Eine Buchungszeile. Umbuchung und Korrektur behalten ihre neutrale Farbe -
@@ -42,6 +42,20 @@ export function entryLook(
     amountClass: entry.type === 'income' ? 'inc' : 'exp',
     sign: entry.type === 'income' ? 'plus' : 'minus',
   }
+}
+
+// Wonach die Suche in einer Buchung sucht: was in der Zeile steht (Kategorie,
+// Notiz, Konto) plus der Betrag - einmal wie angezeigt ('1.234,56') und
+// einmal ohne Tausenderpunkt, so wie man ihn tippt ('1234,56').
+export function entrySearchText(
+  entry: Entry,
+  catById: Record<string, Category>,
+  accById: Record<string, Account>,
+) {
+  const look = entryLook(entry, catById, accById)
+  const abs = Math.abs(entry.amountCent)
+  const plain = `${Math.floor(abs / 100)},${String(abs % 100).padStart(2, '0')}`
+  return `${look.title} ${look.detail} ${formatCent(abs)} ${plain}`.toLowerCase()
 }
 
 function EntryRow({

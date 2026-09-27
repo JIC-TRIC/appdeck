@@ -49,7 +49,7 @@ npm install
 3. Pushen. Unter **Actions** siehst du den Lauf „Deploy to GitHub Pages“; nach ca. 1–2 Minuten
    ist alles unter `https://jic-tric.github.io/appdeck/` erreichbar.
 
-Ab dann gilt: **jeder Push auf `main` = neue Version online.** Schlägt der Build fehl
+Ab dann gilt: **jeder Push auf `main` = neue Version online.** Schlagen Tests oder Build fehl
 (z. B. TypeScript-Fehler), bleibt die alte Version online und du bekommst eine Mail von GitHub.
 Manuell neu deployen: Actions → Deploy to GitHub Pages → **Run workflow**.
 
@@ -60,6 +60,7 @@ Manuell neu deployen: Actions → Deploy to GitHub Pages → **Run workflow**.
 
 ```bash
 npm run dev        # http://localhost:5173 – Launcher + alle Apps, Änderungen sofort sichtbar
+npm test           # Tests (Vitest) – laufen auch bei jedem Deploy
 npm run build      # TypeScript prüfen + Produktions-Build nach dist/ (macht GitHub genauso)
 npm run preview    # dist/ lokal ansehen
 ```
@@ -98,6 +99,9 @@ import { HomeButton } from '@lib/HomeButton';
 ```
 
 - Komponenten-Übersicht: https://ionicframework.com/docs/components – Ionic läuft fest im iOS-Stil.
+- Dark Mode ist Sache der App: `import '@lib/dark'` in `main.tsx` (die Vorlage hat das). Weglassen,
+  wenn die App nur hell sein soll – so wie Kontor.
+- Tests liegen neben dem Code als `*.test.ts` (Beispiele in `apps/kontor/src/`).
 - `<IonContent className="grouped">` + `<IonList inset>` ergibt den Look der iOS-Einstellungen.
 - Mehrere Seiten in einer App? `IonReactHashRouter` aus `@ionic/react-router` verwenden
   (Hash-Routing, weil GitHub Pages keine Unterseiten-URLs umleiten kann).

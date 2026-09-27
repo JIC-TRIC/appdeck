@@ -344,6 +344,16 @@ export function deleteEntry(id: string) {
   writeList(KEY_ENTRIES, entries.filter((e) => e.id !== id))
 }
 
+// Eine geloeschte Buchung unveraendert zuruecklegen - fuer "Rueckgaengig".
+// Gleiche ID, gleiche Erfassungszeit, und die Salden bekommen ihre Wirkung
+// zurueck. Liegt sie schon wieder da (doppelt getippt), passiert nichts.
+export function restoreEntry(entry: Entry) {
+  const entries = getEntries()
+  if (entries.some((e) => e.id === entry.id)) return
+  writeList(KEY_ENTRIES, [...entries, entry])
+  applyDeltas(balanceDeltas(entry))
+}
+
 // Saldo von Hand setzen. Die Differenz wird als Korrektur protokolliert, damit
 // spaeter nachvollziehbar bleibt, dass und wann eingegriffen wurde.
 export function setAccountBalance(accountId: string, targetCent: number, date = todayKey()) {
@@ -449,20 +459,57 @@ export function exportSnapshot() {
   return snapshot
 }
 
+// Alles oder nichts: in k-deploy lag Kontor in einem einzigen Schluessel, ein
+// Import war also automatisch atomar. Jetzt sind es vier - scheitert einer
+// (Speicher voll), wird der vorherige Stand zurueckgeschrieben und der Fehler
+// geht an den Aufrufer, statt still einen halb ersetzten Bestand zu hinterlassen.
 export function importSnapshot(data: unknown) {
   if (!data || typeof data !== 'object') throw new Error('Ungültige Datei')
   const { accounts, categories, entries, settings } = data as Record<string, unknown>
   if (!Array.isArray(accounts) || !Array.isArray(categories) || !Array.isArray(entries)) {
     throw new Error('Datei enthält keine Kontor-Daten')
   }
-  writeList(KEY_ACCOUNTS, accounts)
-  writeList(KEY_CATEGORIES, categories)
-  writeList(KEY_ENTRIES, entries)
-  write(KEY_SETTINGS, {
-    ...DEFAULT_SETTINGS,
-    ...(settings && typeof settings === 'object' ? settings : {}),
-    onboarded: true,
-  })
+  const next: Record<string, unknown> = {
+    [KEY_ACCOUNTS]: accounts,
+    [KEY_CATEGORIES]: categories,
+    [KEY_ENTRIES]: entries,
+    [KEY_SETTINGS]: {
+      ...DEFAULT_SETTINGS,
+      ...(settings && typeof settings === 'object' ? settings : {}),
+      onboarded: true,
+    },
+  }
+
+  const before = new Map(KEYS.map((k) => [k, localStorage.getItem(PREFIX + k)]))
+  const written: string[] = []
+  try {
+    for (const k of KEYS) {
+      localStorage.setItem(PREFIX + k, JSON.stringify(next[k]))
+      written.push(k)
+    }
+  } catch {
+    // Nur zuruecknehmen, was schon geschrieben war - der gescheiterte und alle
+    // spaeteren Schluessel sind unberuehrt. Erst entfernen, dann den alten
+    // Stand setzen: das ist genau der Zustand von vorher, und der passte.
+    for (const k of written) localStorage.removeItem(PREFIX + k)
+    for (const k of written) {
+      const old = before.get(k)
+      if (old !== null && old !== undefined) localStorage.setItem(PREFIX + k, old)
+    }
+    throw new Error('Nicht genug Speicherplatz – es wurde nichts geändert')
+  }
+}
+
+// Eine gewaehlte Exportdatei einlesen und importieren. Erststart und
+// Einstellungen benutzen dieselbe Stelle, damit beide gleich pruefen.
+export async function importFile(file: File) {
+  let data: unknown
+  try {
+    data = JSON.parse(await file.text())
+  } catch {
+    throw new Error('Die Datei ist keine JSON-Datei')
+  }
+  importSnapshot(data)
 }
 
 export function clearAll() {

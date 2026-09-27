@@ -126,11 +126,13 @@ export function formatDayShort(key: string) {
   return `${d}.${m}.`
 }
 
-// 'Heute · 12. September' / 'Donnerstag · 10. September'
+// 'Heute · 12. September' / 'Donnerstag · 10. September' - aus einem anderen
+// Jahr mit Jahreszahl, sonst sind Suchtreffer und "Gesamt" nicht zuzuordnen.
 export function formatDayHeading(key: string) {
   const today = todayKey()
   const d = parseKey(key)
-  const long = `${d.getDate()}. ${MONTHS[d.getMonth()]}`
+  const year = key.slice(0, 4) === today.slice(0, 4) ? '' : ` ${d.getFullYear()}`
+  const long = `${d.getDate()}. ${MONTHS[d.getMonth()]}${year}`
   if (key === today) return `Heute · ${long}`
   if (key === addDays(today, -1)) return `Gestern · ${long}`
   return `${WEEKDAYS[d.getDay()]} · ${long}`

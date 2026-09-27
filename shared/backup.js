@@ -68,14 +68,36 @@
     await navigator.clipboard.writeText(json());
   }
 
+  function appName(id) {
+    var app = (self.APPS || []).find(function (a) { return a.id === id; });
+    return app ? app.name : id;
+  }
+
   function parse(text) {
     var obj;
     try { obj = JSON.parse(text); } catch (e) { throw new Error('Das ist kein gültiges Backup (kein JSON).'); }
-    var data = obj && obj.format === FORMAT ? obj.data : obj;   // akzeptiert auch ein einfaches {key: value}
-    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
       throw new Error('Das ist kein gültiges Backup.');
     }
-    return data;
+    if (obj.format === FORMAT) {
+      if (!obj.data || typeof obj.data !== 'object' || Array.isArray(obj.data)) {
+        throw new Error('Das Backup ist beschädigt.');
+      }
+      return obj.data;
+    }
+    // Exportdatei einer einzelnen App (z. B. Kontor: { app: 'kontor', accounts: [...] }).
+    // Die gehört in den Import der App – hier eingespielt landeten ihre Listen
+    // ohne App-Präfix im Speicher, und die App sähe davon nichts.
+    if (typeof obj.app === 'string') {
+      throw new Error('Das ist eine Exportdatei von „' + appName(obj.app) + '“, kein appdeck-Backup. ' +
+        'Bitte direkt in der App importieren (dort unter Einstellungen).');
+    }
+    // Sonst nur ein einfaches {schlüssel: text}, also ein Abbild des Speichers.
+    var keys = Object.keys(obj);
+    if (!keys.length || !keys.every(function (k) { return typeof obj[k] === 'string'; })) {
+      throw new Error('Das ist kein gültiges Backup.');
+    }
+    return obj;
   }
 
   // Führt ein Backup mit den vorhandenen Daten zusammen (gleiche Schlüssel werden überschrieben).

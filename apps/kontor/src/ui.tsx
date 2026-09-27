@@ -1,6 +1,7 @@
 // Bausteine, die in mehreren Ansichten gleich aussehen muessen.
 
-import { useCallback, useEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { IonModal } from '@ionic/react'
 import { IconLeft, IconRight } from './icons'
 import { splitCent } from './util'
 import type { Range } from './types'
@@ -113,12 +114,14 @@ export function IconButton({
   )
 }
 
-// Blatt von unten. Schliesst beim Antippen des Grundes, mit Escape - und indem
-// man es nach unten wegwischt. Letzteres erwartet jeder, der ein Handy in der
-// Hand haelt; ohne das wirkt das Blatt festgeklebt.
-const SHEET_ZU = 110 // ab dieser Zugstrecke in px schliesst es
-const SHEET_DAUER = 200
-
+// Blatt von unten - Ionics Sheet-Modal. Wegwischen nach unten, Antippen des
+// Grundes, Escape und die Animationen bringt Ionic mit; Kontor liefert nur
+// den Inhalt und das Aussehen (ion-modal.k-sheet-modal in Kontor.css). Die
+// Hoehe richtet sich nach dem Inhalt.
+//
+// onClose laeuft erst, wenn das Blatt ganz zu ist - egal wie es geschlossen
+// wurde. Als Funktion bekommt der Inhalt "schliessen" mit, um es selbst
+// zuzumachen (mit Animation).
 export function Sheet({
   title,
   subtitle,
@@ -128,63 +131,30 @@ export function Sheet({
   title?: ReactNode
   subtitle?: ReactNode
   onClose: () => void
-  // Als Funktion bekommt der Inhalt "schliessen" mit - dann laeuft die
-  // Ausblende-Animation, bevor onClose das Blatt entfernt.
   children: ReactNode | ((schliessen: () => void) => ReactNode)
 }) {
-  const [zug, setZug] = useState(0)
-  const [schliesst, setSchliesst] = useState(false)
-  const start = useRef<number | null>(null)
-  const blatt = useRef<HTMLDivElement>(null)
-
-  const schliessen = useCallback(() => {
-    setSchliesst(true)
-    window.setTimeout(onClose, SHEET_DAUER)
+  // Offen, solange die Ansicht im Stapel liegt. Schliesst der Inhalt es
+  // selbst, blendet Ionic es aus und meldet sich danach ueber onDidDismiss.
+  const [open, setOpen] = useState(true)
+  // Immer die aktuelle Fassung von onClose aufrufen, auch wenn IonModal noch
+  // den Handler vom ersten Rendern haelt.
+  const onCloseRef = useRef(onClose)
+  useEffect(() => {
+    onCloseRef.current = onClose
   }, [onClose])
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') schliessen()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [schliessen])
-
-  const onTouchStart = (e: TouchEvent) => {
-    // Steht der Inhalt nicht ganz oben, gehoert die Geste dem Scrollen.
-    if (blatt.current && blatt.current.scrollTop > 0) return
-    start.current = e.touches[0].clientY
-  }
-
-  const onTouchMove = (e: TouchEvent) => {
-    if (start.current === null) return
-    const d = e.touches[0].clientY - start.current
-    // Nach oben gibt es nichts zu ziehen, nur ein bisschen Nachgiebigkeit.
-    setZug(d > 0 ? d : d / 4)
-  }
-
-  const onTouchEnd = () => {
-    if (start.current === null) return
-    start.current = null
-    if (zug > SHEET_ZU) schliessen()
-    else setZug(0)
-  }
+  const schliessen = useCallback(() => setOpen(false), [])
 
   return (
-    <div className={`k-sheet-wrap${schliesst ? ' closing' : ''}`}>
-      <div className="k-scrim" onClick={schliessen} />
-      <div
-        className={`k-sheet${zug ? ' dragging' : ''}`}
-        ref={blatt}
-        role="dialog"
-        aria-label={typeof title === 'string' ? title : undefined}
-        style={zug ? { transform: `translateY(${Math.max(0, zug)}px)` } : undefined}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onTouchCancel={onTouchEnd}
-      >
-        <div className="k-sheet-grab" />
+    <IonModal
+      isOpen={open}
+      className="k-sheet-modal"
+      breakpoints={[0, 1]}
+      initialBreakpoint={1}
+      aria-label={typeof title === 'string' ? title : undefined}
+      onDidDismiss={() => onCloseRef.current()}
+    >
+      <div className="k-sheet">
         {title ? (
           <div className="k-sheet-head">
             <div className="k-sheet-title">{title}</div>
@@ -193,7 +163,7 @@ export function Sheet({
         ) : null}
         {typeof children === 'function' ? children(schliessen) : children}
       </div>
-    </div>
+    </IonModal>
   )
 }
 

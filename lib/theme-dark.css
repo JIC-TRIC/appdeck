@@ -1,0 +1,13 @@
+/* Dunkle Gegenstücke zu theme.css – geladen über '@lib/dark', nach Ionics Dark-Palette. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-color-primary: #0a84ff;
+    --ion-color-primary-rgb: 10, 132, 255;
+    --ion-color-primary-shade: #0974e0;
+    --ion-color-primary-tint: #2390ff;
+  }
+
+  /* Grouped-Look: schwarz, dunkelgraue Listen */
+  ion-content.grouped { --background: #000000; }
+  ion-content.grouped ion-list.list-inset { --ion-item-background: #1c1c1e; }
+}

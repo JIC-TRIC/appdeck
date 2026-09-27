@@ -331,7 +331,8 @@ Hauptansicht
       Block, und die Luft steht unter den Bedienelementen, wo sie nach Atem
       aussieht und nicht nach Leerlauf
 - [ ] Kontenfilter (nur eine Auswahl von Konten betrachten)
-- [ ] Suche in der Kopfzeile
+- [x] Suche – in der Buchungsliste statt in der Kopfzeile, ueber alle Zeitraeume
+      (Notiz, Kategorie, Konto, Betrag)
 
 ### 2 – Zeitraum waehlen
 
@@ -392,7 +393,8 @@ fuers Hochformat gerechnet – von oben nach unten:
 - [x] Leerer Zustand mit direktem „Ausgabe erfassen"
 - [x] Keine schwebenden Erfassen-Knoepfe: die stehen auf der Hauptansicht,
       einen Tipp entfernt
-- [ ] Wischen zum Loeschen (Loeschen sitzt heute im Bearbeiten-Bildschirm)
+- [x] Wischen zum Loeschen, ohne Rueckfrage – dafuer mit „Rueckgaengig“ in der
+      Meldung danach (gilt auch fuer Loeschen im Bearbeiten-Bildschirm)
 
 ### 6 – Buchung bearbeiten
 
@@ -583,10 +585,10 @@ TypeScript, Speicher unter `kontor:<liste>` statt eines Blocks unter
 
 Bewusst verschoben, damit das MVP zum Testen fertig ist:
 
-- [ ] **Suche und Kontenfilter** (Ansicht 12 im Entwurf)
+- [x] Suche (in der Buchungsliste) · [ ] Kontenfilter (Ansicht 12 im Entwurf)
 - [ ] Eigener Zeitraum mit zwei Datumsfeldern
 - [ ] Reihenfolge von Konten und Kategorien per Drag
-- [ ] Wischen zum Loeschen in der Buchungsliste
+- [x] Wischen zum Loeschen in der Buchungsliste
 - [ ] CSV-Export, Waehrungs- und Trennzeichen-Einstellung
 - [ ] Wochentags-Auswertung und Vermoegensverlauf in der Statistik
 - [ ] **Wiederkehrende Buchungen** (Miete, Abos) mit Vorschlag am Faelligkeitstag

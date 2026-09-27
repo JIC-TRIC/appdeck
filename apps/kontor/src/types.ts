@@ -126,6 +126,10 @@ export interface KontorCtx {
   back: () => void
   refresh: () => void
   onExit: () => void
+  /** Kurze Meldung unten; mit undo bekommt sie einen Knopf "Rückgängig". */
+  notify: (message: string, undo?: () => void) => void
+  /** Buchung löschen - mit "Rückgängig" in der Meldung danach. */
+  removeEntry: (entry: Entry) => void
 }
 
 export interface ViewProps {

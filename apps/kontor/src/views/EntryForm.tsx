@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { IonSelect, IonSelectOption } from '@ionic/react'
 import NumPad from './NumPad'
 import {
   Glyph,
@@ -10,7 +11,7 @@ import {
   IconTrash,
 } from '../icons'
 import { Label, Money, Segmented } from '../ui'
-import { addEntry, deleteEntry, updateEntry, updateSettings } from '../kontorStore'
+import { addEntry, updateEntry, updateSettings } from '../kontorStore'
 import {
   addDays,
   centToText,
@@ -47,7 +48,7 @@ function dateLabel(key: string) {
 // und Konto oben, Betrag und Notiz immer sichtbar, gescrollt wird nur im
 // Kategorienraster, das Ziffernfeld steht fest unten.
 function EntryForm({ ctx, view }: ViewProps) {
-  const { categories, accounts, settings, refresh, back, push, entries, period, firstKey } = ctx
+  const { categories, accounts, settings, refresh, back, push, entries, period, firstKey, removeEntry } = ctx
   const existing = view.entryId ? entries.find((e) => e.id === view.entryId) ?? null : null
 
   const open = accounts.filter((a) => !a.archived)
@@ -143,22 +144,31 @@ function EntryForm({ ctx, view }: ViewProps) {
     back()
   }
 
+  // Ohne Rueckfrage - die Meldung danach bietet "Rueckgaengig" an.
   const remove = () => {
     if (!existing) return
-    deleteEntry(existing.id)
-    refresh()
+    removeEntry(existing)
     back()
   }
 
+  // Ionics Auswahl als iOS-Aktionsblatt von unten. Das Kaestchen selbst sieht
+  // aus wie vorher; Ionics eigener Pfeil ist per CSS aus, Kontors bleibt.
   const accountSelect = (value: string | null, onChange: (id: string) => void, label: string) => (
     <span className="k-select">
-      <select value={value ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label}>
+      <IonSelect
+        value={value ?? undefined}
+        onIonChange={(e) => onChange(String(e.detail.value))}
+        interface="action-sheet"
+        interfaceOptions={{ header: label, cssClass: 'k-action-sheet' }}
+        cancelText="Abbrechen"
+        aria-label={label}
+      >
         {open.map((a) => (
-          <option key={a.id} value={a.id}>
+          <IonSelectOption key={a.id} value={a.id}>
             {a.name}
-          </option>
+          </IonSelectOption>
         ))}
-      </select>
+      </IonSelect>
       <span className="k-select-ic"><IconDown /></span>
     </span>
   )

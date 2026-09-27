@@ -2,13 +2,14 @@ import { useRef, useState } from 'react'
 import { IconDownload, IconInfo, IconRight, IconTrash, IconUpload } from '../icons'
 import { Label, Screen, Toggle } from '../ui'
 import { dateKey } from '../util'
-import { clearAll, exportSnapshot, importSnapshot, updateSettings } from '../kontorStore'
+import { clearAll, exportSnapshot, importFile, updateSettings } from '../kontorStore'
 import type { Settings as SettingsData, ViewProps } from '../types'
 
 function Settings({ ctx }: ViewProps) {
   const { settings, entries, accounts, back, push, refresh, onExit } = ctx
   const fileRef = useRef<HTMLInputElement>(null)
-  const [status, setStatus] = useState<string | null>(null)
+  // Erfolg gruen, Fehler rot - vorher sahen beide gleich aus.
+  const [status, setStatus] = useState<{ text: string; error?: boolean } | null>(null)
   const [armed, setArmed] = useState(false)
 
   const set = (patch: Partial<SettingsData>) => {
@@ -16,34 +17,44 @@ function Settings({ ctx }: ViewProps) {
     refresh()
   }
 
-  const doExport = () => {
+  // Auf dem iPhone ueber das Teilen-Menue ("In Dateien sichern", AirDrop, …):
+  // ein Download-Link ist in einer Home-Bildschirm-App unzuverlaessig. Wo es
+  // kein Teilen mit Dateien gibt (Desktop), bleibt es der Download.
+  const doExport = async () => {
     try {
-      const blob = new Blob([JSON.stringify(exportSnapshot(), null, 2)], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
+      const file = new File([JSON.stringify(exportSnapshot(), null, 2)], `kontor-${dateKey()}.json`, {
+        type: 'application/json',
+      })
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] })
+          setStatus({ text: 'Export gesichert.' })
+          return
+        } catch (err) {
+          // Abbrechen im Teilen-Menue ist kein Fehler.
+          if (err instanceof DOMException && err.name === 'AbortError') return
+        }
+      }
+      const url = URL.createObjectURL(file)
       const a = document.createElement('a')
       a.href = url
-      a.download = `kontor-${dateKey()}.json`
+      a.download = file.name
       a.click()
-      URL.revokeObjectURL(url)
-      setStatus('Export gestartet.')
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500)
+      setStatus({ text: 'Export gestartet.' })
     } catch {
-      setStatus('Export fehlgeschlagen.')
+      setStatus({ text: 'Export fehlgeschlagen.', error: true })
     }
   }
 
-  const doImport = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      try {
-        importSnapshot(JSON.parse(String(reader.result)))
-        refresh()
-        setStatus('Daten ersetzt.')
-      } catch (err) {
-        setStatus(`Import fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`)
-      }
+  const doImport = async (file: File) => {
+    try {
+      await importFile(file)
+      refresh()
+      setStatus({ text: 'Daten ersetzt.' })
+    } catch (err) {
+      setStatus({ text: `Import fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`, error: true })
     }
-    reader.onerror = () => setStatus('Datei konnte nicht gelesen werden.')
-    reader.readAsText(file)
   }
 
   return (
@@ -142,7 +153,7 @@ function Settings({ ctx }: ViewProps) {
         </button>
       </div>
 
-      {status ? <div className="k-saved static">{status}</div> : null}
+      {status ? <div className={`${status.error ? 'k-error' : 'k-saved'} static`}>{status.text}</div> : null}
 
       <div className="k-stack">
         <button type="button" className="k-ghost" onClick={onExit}>

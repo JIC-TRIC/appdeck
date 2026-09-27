@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
+import { useIonToast } from '@ionic/react'
 import Main from './views/Main'
 import EntryForm from './views/EntryForm'
 import EntryList from './views/EntryList'
@@ -14,17 +15,20 @@ import Settings from './views/Settings'
 import About from './views/About'
 import Onboarding from './views/Onboarding'
 import { MenuSheet, PeriodSheet } from './views/Sheets'
+import { entryLook } from './views/EntryRow'
 import {
+  deleteEntry,
   firstEntryDate,
   getAccounts,
   getCategories,
   getEntries,
   getSettings,
   isOnboarded,
+  restoreEntry,
   updateSettings,
 } from './kontorStore'
-import { todayKey } from './util'
-import type { Account, Category, KontorCtx, Period, View, ViewName, ViewProps } from './types'
+import { formatCent, todayKey } from './util'
+import type { Account, Category, Entry, KontorCtx, Period, View, ViewName, ViewProps } from './types'
 
 const PAGES: Partial<Record<ViewName, ComponentType<ViewProps>>> = {
   entries: EntryList,
@@ -134,7 +138,52 @@ function Kontor() {
     else setStack([])
   }, [])
 
-  const ctx: KontorCtx = { ...data, period, setPeriod, push, replace, back, refresh, onExit: toLauncher }
+  // Meldungen leben hier und nicht in der Ansicht, die sie ausloest: nach dem
+  // Loeschen schliesst das Formular sofort, die Meldung mit "Rueckgaengig"
+  // muss aber stehen bleiben. Es gibt immer nur eine - eine neue ersetzt die alte.
+  const [presentToast, dismissToast] = useIonToast()
+  const notify = useCallback(
+    (message: string, undo?: () => void) => {
+      dismissToast().catch(() => {})
+      presentToast({
+        message,
+        duration: undo ? 5000 : 2000,
+        position: 'bottom',
+        cssClass: 'k-toast',
+        swipeGesture: 'vertical',
+        buttons: undo
+          ? [{ text: 'Rückgängig', handler: () => { undo(); refresh() } }]
+          : [],
+      })
+    },
+    [presentToast, dismissToast, refresh],
+  )
+
+  // Loeschen ist sofort und ohne Rueckfrage - dafuer laesst es sich ein paar
+  // Sekunden lang zuruecknehmen. Eine Rueckfrage bei jedem Wisch waere laestig,
+  // ein Versehen ohne Ausweg aergerlich.
+  const removeEntry = useCallback(
+    (entry: Entry) => {
+      const look = entryLook(entry, data.catById, data.accById)
+      deleteEntry(entry.id)
+      refresh()
+      notify(`Gelöscht: ${look.title}, ${formatCent(entry.amountCent)} €`, () => restoreEntry(entry))
+    },
+    [data, refresh, notify],
+  )
+
+  const ctx: KontorCtx = {
+    ...data,
+    period,
+    setPeriod,
+    push,
+    replace,
+    back,
+    refresh,
+    onExit: toLauncher,
+    notify,
+    removeEntry,
+  }
 
   if (!data.ready) {
     return (
