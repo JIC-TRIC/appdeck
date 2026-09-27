@@ -1,0 +1,10 @@
+/* Eigene Styles dieser App. Eigene Akzentfarbe? Einfach überschreiben: */
+/* :root { --ion-color-primary: #34C759; } */
+
+.big-number {
+  font-size: 64px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  margin: 24px 0;
+}

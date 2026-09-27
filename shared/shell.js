@@ -144,7 +144,13 @@
   /* ---------- Offline-Fähigkeit & dauerhafter Speicher ---------- */
 
   var secure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-  if ('serviceWorker' in navigator && secure) {
+  // Im Vite-Entwicklungsserver (npm run dev) keinen Service Worker – der würde Hot-Reload stören
+  var isViteDev = !!document.querySelector('script[src*="/@vite/client"]');
+  if ('serviceWorker' in navigator && secure && isViteDev) {
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      regs.forEach(function (r) { r.unregister(); });
+    }).catch(function () {});
+  } else if ('serviceWorker' in navigator && secure) {
     navigator.serviceWorker.register(ROOT + 'sw.js', { scope: ROOT }).catch(function () {});
   }
   // Bittet den Browser, die Daten nicht automatisch zu löschen (bei Home-Bildschirm-Apps meist gewährt)

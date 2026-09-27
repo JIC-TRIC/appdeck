@@ -2,7 +2,6 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <!-- Diese Meta-Tags sorgen dafür, dass sich die Seite wie eine App verhält -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -10,61 +9,11 @@
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <meta name="robots" content="noindex, nofollow">
   <title>Meine neue App</title>
-
-  <!-- iOS-Look: Farben, Listen, Buttons, Navbar, Dark Mode -->
-  <link rel="stylesheet" href="../../shared/shell.css">
-  <style>
-    /* Eigene Styles hier. Eigene Akzentfarbe? Einfach überschreiben: */
-    /* :root { --accent: #34C759; } */
-    .big-number { font-size: 64px; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; margin: 24px 0; }
-  </style>
+  <!-- Shell: Speicher, Offline, Shell.home(). Kein schwebender Home-Button – die App hat „‹ Apps“ oben links -->
+  <script src="../../shared/shell.js" data-home="none"></script>
 </head>
 <body>
-  <!-- Navigationsleiste mit "Zurück zu allen Apps" -->
-  <nav class="navbar">
-    <a class="nav-btn nav-back" href="../../" data-shell-home>Apps</a>
-    <span class="navbar-title">Meine neue App</span>
-    <span></span>
-  </nav>
-
-  <main class="page">
-    <h1 class="large-title">Meine neue App</h1>
-
-    <div class="group">
-      <div class="big-number" id="value">0</div>
-    </div>
-    <p class="footnote">Beispiel: Der Wert bleibt gespeichert, auch nach dem Schließen.</p>
-
-    <p class="section-title">Aktionen</p>
-    <div class="group">
-      <button class="row accent" type="button" id="plus">Eins dazu</button>
-      <button class="row danger" type="button" id="reset">Zurücksetzen</button>
-    </div>
-  </main>
-
-  <!-- Shell: Home-Button, Speicher, Offline. data-home="none", weil oben schon ein Zurück-Link ist -->
-  <script src="../../shared/shell.js" data-home="none"></script>
-  <script>
-    // WICHTIG: gleiche ID wie in apps.js – so bleiben die Daten jeder App getrennt
-    const db = Shell.store('meine-neue-app');
-
-    const valueEl = document.getElementById('value');
-    let value = db.get('value', 0);
-    valueEl.textContent = value;
-
-    document.getElementById('plus').addEventListener('click', () => {
-      value += 1;
-      db.set('value', value);
-      valueEl.textContent = value;
-    });
-
-    document.getElementById('reset').addEventListener('click', () => {
-      if (!confirm('Wirklich zurücksetzen?')) return;
-      value = 0;
-      db.set('value', value);
-      valueEl.textContent = value;
-      Shell.toast('Zurückgesetzt');
-    });
-  </script>
+  <div id="root"></div>
+  <script type="module" src="./src/main.tsx"></script>
 </body>
 </html>

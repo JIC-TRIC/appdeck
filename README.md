@@ -12,46 +12,99 @@ und über den Zurück-Link bzw. den runden Home-Button wieder zurück.
 index.html, launcher.*   Launcher (App-Auswahl + Einstellungen)
 apps.js                  Liste deiner Apps  ← hier trägst du neue Apps ein
 apps/<name>/             je eine App pro Ordner
-apps/vorlage/            Startpunkt für neue Apps (taucht nicht im Launcher auf)
-shared/shell.css         iOS-Look: Farben, Navbar, Listen, Buttons, Sheets, Dark Mode
-shared/shell.js          Home-Button, Speicher-Helfer, Toast, Offline
+apps/vorlage/            Ionic-React-Vorlage für neue Apps (taucht nicht im Launcher auf)
+lib/                     Gemeinsamer Code für Ionic-Apps (mountApp, useStored, HomeButton, Theme)
+shared/shell.css         iOS-Look für Vanilla-Apps: Farben, Navbar, Listen, Buttons, Sheets
+shared/shell.js          Home-Button, Speicher-Helfer, Toast, Offline (für alle Apps)
 shared/backup.js         Backup & Wiederherstellen
 sw.js                    Service Worker (Offline + schneller Start)
 manifest.webmanifest     Name, Icon, Vollbild
-.nojekyll                GitHub Pages liefert alle Dateien unverändert aus
+vite.config.ts           Build: Ionic-Apps bauen, Rest nach dist/ kopieren
+scripts/new-app.mjs      `npm run new` – neue App anlegen
+.github/workflows/       Automatisches Deployment auf GitHub Pages
 ```
+
+**Zwei Sorten Apps** leben nebeneinander:
+
+- **Ionic-React-Apps** (TypeScript + Vite) – erkennbar an `apps/<name>/src/main.tsx`.
+  Werden beim Build übersetzt. Standard für alles Neue.
+- **Vanilla-Apps** (reines HTML/JS, z. B. `zaehler`, `notizen`) – ohne `src/main.tsx`.
+  Werden unverändert kopiert und laufen weiter wie bisher.
 
 ---
 
 ## 1. Einrichten (einmalig)
 
-1. Auf GitHub ein neues Repo anlegen, z. B. `meine-apps`.
-2. Alle Dateien aus diesem Ordner hochladen (inkl. der versteckten Datei `.nojekyll`).
-3. Im Repo: **Settings → Pages → Source: „Deploy from a branch“ → `main` / `(root)`** → Save.
-4. Nach ca. einer Minute ist alles unter `https://DEINNAME.github.io/meine-apps/` erreichbar.
-5. Auf dem iPhone diese Adresse in **Safari** öffnen → Teilen-Symbol → **„Zum Home-Bildschirm“**
-   → „Als Web-App öffnen“ eingeschaltet lassen → Hinzufügen.
-
-**Lokal testen** (am Rechner, im Repo-Ordner):
+**Am Rechner** (Node.js 22+ nötig):
 
 ```bash
-python3 -m http.server 8000
-# dann http://localhost:8000 öffnen – im Browser die Handy-Ansicht aktivieren
+npm install
 ```
+
+**Auf GitHub** – Deployment über GitHub Actions einschalten:
+
+1. Repo öffnen → **Settings → Pages**.
+2. Unter **Build and deployment → Source** „**GitHub Actions**“ auswählen
+   (nicht mehr „Deploy from a branch“). Speichern ist nicht nötig, die Auswahl gilt sofort.
+3. Pushen. Unter **Actions** siehst du den Lauf „Deploy to GitHub Pages“; nach ca. 1–2 Minuten
+   ist alles unter `https://DEINNAME.github.io/meine-apps/` erreichbar.
+
+Ab dann gilt: **jeder Push auf `main` = neue Version online.** Schlägt der Build fehl
+(z. B. TypeScript-Fehler), bleibt die alte Version online und du bekommst eine Mail von GitHub.
+Manuell neu deployen: Actions → Deploy to GitHub Pages → **Run workflow**.
+
+**Auf dem iPhone:** Adresse in **Safari** öffnen → Teilen-Symbol → **„Zum Home-Bildschirm“**
+→ „Als Web-App öffnen“ eingeschaltet lassen → Hinzufügen.
+
+**Entwickeln:**
+
+```bash
+npm run dev        # http://localhost:5173 – Launcher + alle Apps, Änderungen sofort sichtbar
+npm run build      # TypeScript prüfen + Produktions-Build nach dist/ (macht GitHub genauso)
+npm run preview    # dist/ lokal ansehen
+```
+
+`npm run dev` zeigt auch eine **Network**-Adresse (z. B. `http://192.168.x.x:5173`) – die im
+iPhone-Safari öffnen (gleiches WLAN), um direkt am Handy zu testen.
 
 ---
 
 ## 2. Neue App hinzufügen
 
-1. Ordner `apps/vorlage` kopieren, z. B. nach `apps/habits`.
-2. In `apps/habits/index.html` die App-ID anpassen: `Shell.store('habits')`.
-3. In `apps.js` eine Zeile ergänzen:
-   ```js
-   { id: 'habits', name: 'Gewohnheiten', icon: '✅', color: '#34C759', path: 'apps/habits/' },
-   ```
-4. Committen & pushen. Beim nächsten Öffnen ist die Kachel da.
+```bash
+npm run new -- habits "Gewohnheiten" ✅ "#34C759"
+```
 
-Statt eines Emojis geht auch ein Bild: `icon: 'apps/habits/icon.png'` (quadratisch, z. B. 180×180).
+Das kopiert `apps/vorlage` nach `apps/habits`, setzt App-ID und Titel und trägt die Kachel in
+`apps.js` ein. Dann `npm run dev` und in `apps/habits/src/App.tsx` loslegen.
+
+Aufbau einer Ionic-App:
+
+```
+apps/habits/index.html     HTML-Hülle (lädt shell.js + src/main.tsx)
+apps/habits/src/main.tsx   Startpunkt: mountApp(<App />)
+apps/habits/src/App.tsx    deine App
+apps/habits/src/app.css    eigene Styles, z. B. :root { --ion-color-primary: #34C759; }
+```
+
+Bausteine aus `lib/`:
+
+```tsx
+import { useStored } from '@lib/useStored';
+const [todos, setTodos] = useStored(APP_ID, 'todos', [] as Todo[]);   // wie useState, aber gespeichert
+
+import { HomeButton } from '@lib/HomeButton';
+<IonButtons slot="start"><HomeButton /></IonButtons>                    // „‹ Apps“ zurück zum Launcher
+```
+
+- Komponenten-Übersicht: https://ionicframework.com/docs/components – Ionic läuft fest im iOS-Stil.
+- `<IonContent className="grouped">` + `<IonList inset>` ergibt den Look der iOS-Einstellungen.
+- Mehrere Seiten in einer App? `IonReactHashRouter` aus `@ionic/react-router` verwenden
+  (Hash-Routing, weil GitHub Pages keine Unterseiten-URLs umleiten kann).
+
+Statt eines Emojis geht auch ein Bild: Datei nach `icons/` legen (quadratisch, z. B. 180×180) und in
+`apps.js` `icon: 'icons/habits.png'` eintragen. (Bei Ionic-Apps landen nur die gebauten Dateien auf der
+Website, ein Bild direkt in `apps/habits/` würde also nicht mitkopiert.)
 
 ---
 
@@ -111,7 +164,7 @@ deshalb **nicht automatisch**. Umzug per Backup:
 
 ## 5. Updates
 
-Einfach pushen. Der Service Worker lädt bei Internet immer die neueste Version –
+Einfach auf `main` pushen – GitHub baut und veröffentlicht automatisch. Der Service Worker lädt bei Internet immer die neueste Version –
 die Änderung ist spätestens beim **nächsten Öffnen** der App da. Falls nicht:
 Zahnrad → **Neu laden & Updates holen**, oder die App im App-Umschalter wegwischen und neu starten.
 
@@ -134,7 +187,8 @@ Ohne Internet startet alles aus dem Offline-Speicher.
 | Daten werden „aufgeräumt“ | `navigator.storage.persist()` |
 
 **Tipps für eigene Apps**
-- Die Bausteine aus `shell.css` nutzen: `.navbar`, `.large-title`, `.group` + `.row`, `.btn`, `dialog.sheet`.
+- Ionic-Apps: Ionic-Komponenten erledigen das meiste davon schon (Listen, Alerts, Toasts, Sheets).
+- Vanilla-Apps: die Bausteine aus `shell.css` nutzen: `.navbar`, `.large-title`, `.group` + `.row`, `.btn`, `dialog.sheet`.
   Die Vorlage und die zwei Beispiel-Apps zeigen, wie.
 - `prompt()`, `confirm()` und `alert()` erscheinen auf dem iPhone als native iOS-Dialoge – für
   kleine Eingaben völlig okay.

@@ -6,10 +6,14 @@
    langsamer Verbindung wird nach 2,5 Sekunden die gespeicherte Kopie genutzt.
    Normalerweise musst du hier nie etwas ändern.
    ========================================================================== */
-const CACHE = 'meine-apps-v1';
 const NETWORK_TIMEOUT_MS = 2500;
 
 importScripts('apps.js');   // liefert self.APPS
+// precache.js entsteht beim Build (vite.config.ts): Build-ID + gebaute JS/CSS-Dateien der Ionic-Apps.
+// Ändert sich nach jedem Deploy → Browser installiert den Service Worker neu und räumt alte Dateien weg.
+try { importScripts('precache.js'); } catch (e) { /* lokal ohne Build */ }
+
+const CACHE = 'meine-apps-' + (self.BUILD_ID || 'dev');
 
 const CORE = [
   './',
@@ -25,12 +29,13 @@ const CORE = [
   'icons/icon-192.png',
 ];
 const APP_PAGES = (self.APPS || []).map((app) => app.path);
+const BUILD_ASSETS = self.PRECACHE || [];
 
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     // Einzeln cachen, damit ein fehlender Eintrag nicht alles abbricht
-    await Promise.allSettled([...CORE, ...APP_PAGES].map(async (url) => {
+    await Promise.allSettled([...CORE, ...APP_PAGES, ...BUILD_ASSETS].map(async (url) => {
       const res = await fetch(new Request(url, { cache: 'reload' }));
       if (res.ok && !res.redirected) await cache.put(url, res);
     }));
