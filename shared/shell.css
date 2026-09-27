@@ -1,0 +1,233 @@
+/* ==========================================================================
+   shell.css – iOS-Look und "App-Gefühl" für alle Apps in diesem Repo
+   Einbinden:  <link rel="stylesheet" href="../../shared/shell.css">
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+  --bg: #F2F2F7;
+  --surface: #FFFFFF;
+  --fill: rgba(120, 120, 128, 0.12);
+  --text: #000000;
+  --text-2: rgba(60, 60, 67, 0.6);
+  --sep: rgba(60, 60, 67, 0.2);
+  --accent: #007AFF;
+  --danger: #FF3B30;
+  --success: #34C759;
+  --radius: 12px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+  --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 21'%3E%3Cpath d='M10 1.5 1.8 10.5 10 19.5' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --surface: #1C1C1E;
+    --fill: rgba(118, 118, 128, 0.24);
+    --text: #FFFFFF;
+    --text-2: rgba(235, 235, 245, 0.6);
+    --sep: rgba(84, 84, 88, 0.6);
+    --accent: #0A84FF;
+    --danger: #FF453A;
+    --success: #30D158;
+  }
+}
+
+/* Sanfte Übergänge zwischen Launcher und Apps (Safari 18.2+, sonst ignoriert) */
+@view-transition { navigation: auto; }
+
+/* ---------- Grundlagen: alles, was nach "Website" aussieht, abschalten ---------- */
+
+*, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; background: var(--bg); }
+
+/* Optional: <html class="no-bounce"> verhindert, dass die ganze Seite "federt" */
+html.no-bounce, html.no-bounce body { overscroll-behavior: none; }
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.35 var(--font);
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;           /* kein Doppeltipp-Zoom, keine Tap-Verzögerung */
+}
+
+/* Kein Markieren / kein Lupen-Menü beim langen Drücken auf Bedienelemente */
+button, a, label, [role="button"], .no-select {
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+img { -webkit-touch-callout: none; -webkit-user-drag: none; }
+
+input, textarea, select, button { font: inherit; color: inherit; }
+/* Mindestens 16px, sonst zoomt iOS beim Antippen eines Eingabefelds hinein */
+input, textarea, select { font-size: max(16px, 1em); }
+
+a { color: var(--accent); }
+[hidden] { display: none !important; }
+
+/* ---------- Layout ---------- */
+
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 40px) calc(var(--safe-left) + 16px);
+}
+.page.no-navbar { padding-top: calc(var(--safe-top) + 12px); }
+
+.large-title { font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: 0.01em; margin: 2px 0 16px; }
+.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; font-weight: 400; color: var(--text-2); margin: 26px 16px 7px; }
+.footnote { font-size: 13px; line-height: 1.35; color: var(--text-2); margin: 7px 16px 0; }
+.muted { color: var(--text-2); }
+
+/* ---------- Navigationsleiste (wie in iOS-Apps) ---------- */
+
+.navbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  min-height: calc(44px + var(--safe-top));
+  padding: var(--safe-top) calc(var(--safe-right) + 8px) 0 calc(var(--safe-left) + 8px);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  transition: box-shadow 0.2s;
+}
+.navbar.scrolled { box-shadow: 0 0.5px 0 var(--sep); }
+.navbar-title {
+  position: absolute; left: 50%; top: var(--safe-top);
+  transform: translateX(-50%);
+  line-height: 44px; font-weight: 600; font-size: 17px;
+  max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; transition: opacity 0.2s; pointer-events: none;
+}
+.navbar.scrolled .navbar-title { opacity: 1; }
+
+.nav-btn {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 3px;
+  min-height: 44px; padding: 0 8px;
+  color: var(--accent); font-size: 17px; text-decoration: none;
+  transition: opacity 0.15s;
+}
+.nav-btn:active { opacity: 0.35; }
+.nav-btn.bold { font-weight: 600; }
+.nav-back::before {
+  content: ""; width: 12px; height: 21px; margin-right: 3px;
+  background: currentColor;
+  -webkit-mask: var(--chevron) center / contain no-repeat;
+  mask: var(--chevron) center / contain no-repeat;
+}
+
+/* ---------- Listen / Gruppen ---------- */
+
+.group { background: var(--surface); border-radius: var(--radius); overflow: hidden; }
+.row {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; min-height: 44px; padding: 11px 16px;
+  background: var(--surface); color: var(--text);
+  border: 0; text-align: left; text-decoration: none; font-size: 17px;
+}
+.row + .row::before {
+  content: ""; position: absolute; top: 0; left: 16px; right: 0;
+  height: 0.5px; background: var(--sep);
+}
+button.row, a.row { cursor: pointer; }
+button.row:active, a.row:active { background: var(--fill); }
+.row .grow { flex: 1; min-width: 0; }
+.row.accent { color: var(--accent); }
+.row.danger { color: var(--danger); }
+.row-sub { display: block; font-size: 14px; color: var(--text-2); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ---------- Buttons & Eingaben ---------- */
+
+.btn {
+  appearance: none; border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 50px; padding: 0 20px; border-radius: 14px;
+  background: var(--accent); color: #fff;
+  font-size: 17px; font-weight: 600; text-decoration: none;
+  transition: transform 0.12s, opacity 0.12s;
+}
+.btn:active { transform: scale(0.97); opacity: 0.75; }
+.btn.block { width: 100%; }
+.btn.tinted { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+.btn.gray   { background: var(--fill); color: var(--text); }
+.btn.danger { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
+.btn.round  { width: 44px; min-height: 44px; height: 44px; padding: 0; border-radius: 50%; font-size: 24px; font-weight: 500; }
+
+.input {
+  width: 100%; border: 0; outline: none; border-radius: 10px;
+  background: var(--fill); padding: 12px 14px;
+}
+
+.empty { text-align: center; color: var(--text-2); padding: 56px 16px; }
+.empty-icon { font-size: 46px; margin-bottom: 10px; }
+
+/* ---------- Bottom-Sheet (<dialog class="sheet">) ---------- */
+
+dialog.sheet {
+  position: fixed; inset: auto 0 0 0;
+  width: 100%; max-width: 600px; max-height: 90dvh; margin: 0 auto;
+  padding: 8px calc(var(--safe-right) + 16px) calc(var(--safe-bottom) + 20px) calc(var(--safe-left) + 16px);
+  border: 0; border-radius: 16px 16px 0 0;
+  background: var(--bg); color: var(--text);
+  overflow: auto; overscroll-behavior: contain;
+}
+dialog.sheet[open] { animation: shell-sheet-in 0.34s cubic-bezier(0.2, 0.9, 0.25, 1); }
+dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.35); animation: shell-fade-in 0.25s; }
+.sheet-grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--sep); margin: 0 auto 6px; }
+.sheet-header { position: relative; display: flex; align-items: center; justify-content: flex-end; min-height: 44px; }
+.sheet-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 17px; font-weight: 600; }
+
+/* Im Dark Mode sind Sheets wie bei iOS etwas heller als der Hintergrund */
+@media (prefers-color-scheme: dark) {
+  dialog.sheet { background: #1C1C1E; }
+  dialog.sheet .group, dialog.sheet .row { background: #2C2C2E; }
+}
+
+@keyframes shell-sheet-in { from { transform: translateY(100%); } }
+@keyframes shell-fade-in { from { opacity: 0; } }
+
+/* ---------- Von shell.js eingefügt: Home-Button & Toast ---------- */
+
+.shell-home {
+  position: fixed; z-index: 999;
+  width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), 0 0 0 0.5px var(--sep);
+  transition: transform 0.15s;
+}
+.shell-home:active { transform: scale(0.88); }
+.shell-home svg { width: 20px; height: 20px; }
+.shell-home--bottom-left  { left: calc(var(--safe-left) + 14px);  bottom: calc(var(--safe-bottom) + 14px); }
+.shell-home--bottom-right { right: calc(var(--safe-right) + 14px); bottom: calc(var(--safe-bottom) + 14px); }
+.shell-home--top-left     { left: calc(var(--safe-left) + 12px);  top: calc(var(--safe-top) + 8px); }
+.shell-home--top-right    { right: calc(var(--safe-right) + 12px); top: calc(var(--safe-top) + 8px); }
+
+.shell-toast {
+  position: fixed; z-index: 1000; left: 50%; top: calc(var(--safe-top) + 10px);
+  max-width: calc(100% - 32px); padding: 11px 18px; border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18), 0 0 0 0.5px var(--sep);
+  font-size: 15px; font-weight: 500; text-align: center;
+  opacity: 0; transform: translate(-50%, -16px); pointer-events: none;
+  transition: opacity 0.25s, transform 0.3s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+.shell-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
