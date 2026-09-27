@@ -36,6 +36,11 @@ function Rules({ ctx }: ViewProps) {
             Bei <b>3× pro Woche</b> hat jede Woche 4 Ruhetage. Jeder Tag ohne Training wird automatisch einer, bis sie
             aufgebraucht sind. Danach ist jeder freie Tag verpasst. Heute zählt erst, wenn der Tag vorbei ist.
           </p>
+          <p className="s-txt">
+            Ruhetage halten eine <b>laufende Serie</b> – sie beginnen keine. Läuft keine (etwa nach einer verfehlten
+            Woche), zählt ein freier Tag als verpasst, bis du es wieder machst. Sonst sähe „Laufen 2× pro Woche“ auch
+            ohne einen einzigen Lauf nach 5 von 7 aus.
+          </p>
         </Card>
         <Card title="Woche">
           <p className="s-txt">

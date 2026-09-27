@@ -43,35 +43,41 @@ const logOf = (...days: string[]): HabitLog => Object.fromEntries(days.map((d) =
 // KW 36/2026: Mo 31.8. bis So 6.9.
 const KW36 = '2026-08-31'
 
+// Gym ab So 30.8. und an dem Tag trainiert: in KW 36 laeuft also eine Serie,
+// die Ruhetage gelten. (Ohne laufende Serie gibt es keine, siehe unten.)
+const imTritt = () => gym({ start: '2026-08-30' })
+const VORHER = '2026-08-30'
+
 describe('Ruhetage-Kontingent', () => {
   it('verteilt Ruhetage der Reihe nach und verpasst erst nach dem fuenften freien Tag', () => {
-    const w = evaluateWeek(gym(), logOf('2026-09-03', '2026-09-05'), KW36, '2026-09-07')
+    const w = evaluateWeek(imTritt(), logOf(VORHER, '2026-09-03', '2026-09-05'), KW36, '2026-09-07')
     expect(w.states).toEqual(['rest', 'rest', 'rest', 'done', 'rest', 'done', 'miss'])
     expect(w.restBudget).toBe(4)
     expect(w.missed).toBe(1)
   })
 
   it('rechnet die Woche neu, wenn nachgetragen wird (× wird ◌)', () => {
-    const w = evaluateWeek(gym(), logOf('2026-09-02', '2026-09-03', '2026-09-05'), KW36, '2026-09-07')
+    const w = evaluateWeek(imTritt(), logOf(VORHER, '2026-09-02', '2026-09-03', '2026-09-05'), KW36, '2026-09-07')
     expect(w.states).toEqual(['rest', 'rest', 'done', 'done', 'rest', 'done', 'rest'])
     expect(w.missed).toBe(0)
   })
 
   it('erlaubt mehr Trainings als das Ziel, uebrige Ruhetage verfallen', () => {
-    const w = evaluateWeek(gym(), logOf('2026-08-31', '2026-09-01', '2026-09-02', '2026-09-03'), KW36, '2026-09-07')
+    const w = evaluateWeek(imTritt(), logOf(VORHER, '2026-08-31', '2026-09-01', '2026-09-02', '2026-09-03'), KW36, '2026-09-07')
     expect(w.done).toBe(4)
     expect(w.states.slice(4)).toEqual(['rest', 'rest', 'rest'])
   })
 
   it('laesst heute offen, verbraucht dafuer keinen Ruhetag und meldet, wann heute noetig ist', () => {
-    // Mi 30.9.: Montag frei, Dienstag trainiert
-    const w = evaluateWeek(gym(), logOf('2026-09-29'), '2026-09-28', '2026-09-30')
+    // Mi 30.9.: Serie aus der Vorwoche, Montag frei, Dienstag trainiert
+    const lebt = gym({ start: '2026-09-27' })
+    const w = evaluateWeek(lebt, logOf('2026-09-27', '2026-09-29'), '2026-09-28', '2026-09-30')
     expect(w.states).toEqual(['rest', 'done', 'open', 'future', 'future', 'future', 'future'])
     expect(w.due).toBe(false)
     expect(w.restLeft).toBe(3)
 
     // Fr 2.10. nach vier freien Tagen: heute muss trainiert werden
-    const fr = evaluateWeek(gym(), {}, '2026-09-28', '2026-10-02')
+    const fr = evaluateWeek(lebt, logOf('2026-09-27'), '2026-09-28', '2026-10-02')
     expect(fr.states.slice(0, 5)).toEqual(['rest', 'rest', 'rest', 'rest', 'open'])
     expect(fr.due).toBe(true)
     expect(fr.restLeft).toBe(0)
@@ -79,20 +85,62 @@ describe('Ruhetage-Kontingent', () => {
 
   it('rechnet die erste Woche anteilig', () => {
     // Beginn Donnerstag: 4 Tage, Ziel round(3 * 4 / 7) = 2, also 2 Ruhetage
-    const doStart = evaluateWeek(gym({ start: '2026-09-03' }), {}, KW36, '2026-09-07')
+    const doStart = evaluateWeek(gym({ start: '2026-09-03' }), logOf('2026-09-03'), KW36, '2026-09-07')
     expect(doStart.target).toBe(2)
-    expect(doStart.states).toEqual(['off', 'off', 'off', 'rest', 'rest', 'miss', 'miss'])
+    expect(doStart.restBudget).toBe(2)
+    expect(doStart.states).toEqual(['off', 'off', 'off', 'done', 'rest', 'rest', 'miss'])
 
-    // Beginn Sonntag: Ziel 0, der Tag ist ein Ruhetag
-    const soStart = evaluateWeek(gym({ start: '2026-09-06' }), {}, KW36, '2026-09-07')
+    // Beginn Sonntag: Ziel 0
+    const soStart = evaluateWeek(gym({ start: '2026-09-06' }), logOf('2026-09-06'), KW36, '2026-09-07')
     expect(soStart.target).toBe(0)
-    expect(soStart.states[6]).toBe('rest')
+    expect(soStart.states[6]).toBe('done')
   })
+
 
   it('behandelt taeglich als Woche ohne Ruhetage', () => {
     const w = evaluateWeek(habit(), logOf('2026-08-31'), KW36, '2026-09-02')
     expect(w.states).toEqual(['done', 'miss', 'open', 'future', 'future', 'future', 'future'])
     expect(w.due).toBe(true)
+  })
+})
+
+describe('Ruhetage nur mit laufender Serie', () => {
+  // Laufen 2x pro Woche ab Mo 7.9. (KW 37), 5 Ruhetage pro Woche
+  const laufen = habit({ start: '2026-09-07', rhythm: [{ from: '2026-09-07', perWeek: 2 }] })
+
+  it('schenkt keine Ruhetage, wenn nie gelaufen wird', () => {
+    const w = evaluateWeek(laufen, {}, '2026-09-07', '2026-09-21')
+    expect(w.states).toEqual(['miss', 'miss', 'miss', 'miss', 'miss', 'miss', 'miss'])
+    expect(quoteIn(laufen, {}, '2026-09-07', '2026-09-20', '2026-09-21')).toEqual({ met: 0, due: 14 })
+  })
+
+  it('beginnt Ruhetage erst mit dem ersten Lauf nach einer verfehlten Woche', () => {
+    // KW 37 nichts, KW 38 Mi + Sa gelaufen
+    const log = logOf('2026-09-16', '2026-09-19')
+    const w = evaluateWeek(laufen, log, '2026-09-14', '2026-09-21')
+    expect(w.states).toEqual(['miss', 'miss', 'done', 'rest', 'rest', 'done', 'rest'])
+    expect(w.reached).toBe(true)
+    expect(streaks(laufen, log, '2026-09-21').current).toBe(5)
+  })
+
+  it('laesst einen einzelnen Lauf die Woche nicht retten', () => {
+    // Mo + Di ohne Serie verbrauchen trotzdem ihren Platz im Kontingent
+    const w = evaluateWeek(laufen, logOf('2026-09-16'), '2026-09-14', '2026-09-21')
+    expect(w.states).toEqual(['miss', 'miss', 'done', 'rest', 'rest', 'rest', 'miss'])
+    expect(w.reached).toBe(false)
+  })
+
+  it('traegt die Serie ueber den Sonntag in die naechste Woche', () => {
+    // KW 38 geschafft (Mi + Sa), KW 39: Montag ist ein Ruhetag
+    const w = evaluateWeek(laufen, logOf('2026-09-16', '2026-09-19'), '2026-09-21', '2026-09-23')
+    expect(w.states.slice(0, 3)).toEqual(['rest', 'rest', 'open'])
+    expect(w.streakAlive).toBe(true)
+  })
+
+  it('gibt nach dem Archiv erst wieder Ruhetage, wenn gelaufen wurde', () => {
+    const h = { ...laufen, inactive: [{ from: '2026-09-17', to: '2026-09-20' }] }
+    const w = evaluateWeek(h, logOf('2026-09-14', '2026-09-15'), '2026-09-21', '2026-09-23')
+    expect(w.states.slice(0, 2)).toEqual(['miss', 'miss'])
   })
 })
 
@@ -168,8 +216,9 @@ describe('Regeln aendern', () => {
         { from: '2026-09-28', perWeek: 3 },
       ],
     })
-    expect(evaluateWeek(h, {}, '2026-09-21', '2026-10-05').states[0]).toBe('miss')
-    expect(evaluateWeek(h, {}, '2026-09-28', '2026-10-05').states[0]).toBe('rest')
+    const log = logOf('2026-09-27')
+    expect(evaluateWeek(h, log, '2026-09-21', '2026-10-05').states[0]).toBe('miss')
+    expect(evaluateWeek(h, log, '2026-09-28', '2026-10-05').states[0]).toBe('rest')
   })
 
   it('wechselt das Mengenziel ab dem Tag der Aenderung', () => {

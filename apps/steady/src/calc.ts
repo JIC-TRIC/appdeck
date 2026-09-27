@@ -62,18 +62,28 @@ export interface WeekInfo {
   perWeek: number
   target: number // Ziel dieser Woche, in der ersten Woche anteilig
   restBudget: number // Ruhetage dieser Woche
-  restUsed: number
+  restUsed: number // verbrauchte Tage aus dem Kontingent (auch die ohne Serie)
   done: number
   missed: number
-  due: boolean // heute noetig, damit die Serie haelt (nur, wenn heute in der Woche liegt)
-  restLeft: number // Ruhetage, die ab heute noch frei sind
+  reached: boolean // Wochenziel erreicht
+  due: boolean // heute noetig, damit das Kontingent reicht (nur, wenn heute in der Woche liegt)
+  restLeft: number // Tage aus dem Kontingent, die ab heute noch frei sind
+  streakAlive: boolean // laeuft vor heute eine Serie? Ohne sie gibt es keine Ruhetage
 }
 
 // Kern der App. Beispiel Gym 3x pro Woche: 4 Ruhetage. Jeder vergangene Tag
-// ohne Eintrag wird der Reihe nach (Mo -> So) zum Ruhetag, solange welche
-// uebrig sind; danach wird jeder weitere leere Tag verpasst. Heute verbraucht
-// nichts, solange heute laeuft. Taeglich ist derselbe Fall mit 0 Ruhetagen.
-export function evaluateWeek(h: Habit, hlog: HabitLog | undefined, monday: string, today: string): WeekInfo {
+// ohne Eintrag verbraucht der Reihe nach (Mo -> So) einen Tag aus dem
+// Kontingent; ist es aufgebraucht, ist jeder weitere leere Tag verpasst.
+//
+// Ein Ruhetag setzt eine laufende Serie fort, er kann keine beginnen: nur wenn
+// der Tag davor zaehlt (erledigt oder Ruhetag), wird ein freier Tag zum
+// Ruhetag, sonst ist er verpasst - verbraucht aber trotzdem seinen Platz im
+// Kontingent, damit ein einzelnes Training nicht die Woche rettet. Sonst saehe
+// "Laufen 2x pro Woche" auch ohne einen einzigen Lauf nach 5 von 7 aus.
+//
+// Heute verbraucht nichts, solange heute laeuft. Taeglich ist derselbe Fall
+// mit 0 Ruhetagen.
+function computeWeek(h: Habit, hlog: HabitLog | undefined, monday: string, today: string, carried: boolean): WeekInfo {
   const perWeek = perWeekFor(h, monday)
   const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i))
   const alive = days.map((d) => inLife(h, d))
@@ -87,11 +97,18 @@ export function evaluateWeek(h: Habit, hlog: HabitLog | undefined, monday: strin
   let done = 0
   let missed = 0
   let due = false
+  let serie = carried
+  let streakAlive = carried
   const states = days.map((d, i): DayState => {
-    if (!alive[i]) return 'off'
+    if (d === today) streakAlive = serie
+    if (!alive[i]) {
+      serie = false
+      return 'off'
+    }
     if (d > today) return 'future'
     if (meets(h, hlog?.[d], d)) {
       done += 1
+      serie = true
       return 'done'
     }
     if (d === today) {
@@ -100,17 +117,61 @@ export function evaluateWeek(h: Habit, hlog: HabitLog | undefined, monday: strin
     }
     if (restUsed < restBudget) {
       restUsed += 1
-      return 'rest'
+      if (serie) return 'rest'
+      missed += 1
+      return 'miss'
     }
     missed += 1
+    serie = false
     return 'miss'
   })
 
-  // Freie Ruhetage ab heute - nie mehr, als die Woche noch Tage hat.
+  // Freie Tage ab heute - nie mehr, als die Woche noch Tage hat.
   const remaining = days.filter((d, i) => alive[i] && d >= today).length
   const restLeft = Math.max(0, Math.min(restBudget - restUsed, remaining))
 
-  return { monday, states, perWeek, target, restBudget, restUsed, done, missed, due, restLeft }
+  return { monday, states, perWeek, target, restBudget, restUsed, done, missed, reached: done >= target, due, restLeft, streakAlive }
+}
+
+// Jede Woche braucht den Stand vom Sonntag davor (laeuft eine Serie?), also
+// wird vom Beginn an vorwaerts gerechnet. Die Wochen werden pro Gewohnheit,
+// Eintraegen und Tag gemerkt - nach jeder Aenderung liest die App alles neu
+// aus dem Speicher, damit sind es neue Objekte und der Merkzettel verfaellt.
+const WOCHEN = new WeakMap<Habit, WeakMap<object, Map<string, Map<string, WeekInfo>>>>()
+const OHNE_EINTRAEGE = {}
+
+function merkzettel(h: Habit, hlog: HabitLog | undefined, today: string) {
+  let proLog = WOCHEN.get(h)
+  if (!proLog) WOCHEN.set(h, (proLog = new WeakMap()))
+  const key = hlog ?? OHNE_EINTRAEGE
+  let proTag = proLog.get(key)
+  if (!proTag) proLog.set(key, (proTag = new Map()))
+  let wochen = proTag.get(today)
+  if (!wochen) proTag.set(today, (wochen = new Map()))
+  return wochen
+}
+
+export function evaluateWeek(h: Habit, hlog: HabitLog | undefined, monday: string, today: string): WeekInfo {
+  const memo = merkzettel(h, hlog, today)
+  const hit = memo.get(monday)
+  if (hit) return hit
+  const first = mondayOf(h.start)
+  if (monday <= first) {
+    const w = computeWeek(h, hlog, monday, today, false)
+    memo.set(monday, w)
+    return w
+  }
+  // Von der letzten schon gerechneten Woche (oder dem Beginn) vorwaerts.
+  let back = addDays(monday, -7)
+  while (back > first && !memo.has(back)) back = addDays(back, -7)
+  let prev = memo.get(back)
+  let m = prev ? addDays(back, 7) : first
+  for (; m <= monday; m = addDays(m, 7)) {
+    const w = computeWeek(h, hlog, m, today, prev ? prev.states[6] === 'done' || prev.states[6] === 'rest' : false)
+    memo.set(m, w)
+    prev = w
+  }
+  return prev!
 }
 
 export function weekOf(h: Habit, log: Log, day: string, today: string) {
@@ -220,7 +281,7 @@ export function quoteIn(h: Habit, log: Log, from: string, to: string, today: str
 }
 
 // Geschaffte Wochen (nur x-mal pro Woche): abgeschlossene Wochen seit Beginn,
-// in denen kein Tag verpasst wurde. Die laufende Woche zaehlt noch nicht.
+// in denen das Wochenziel erreicht wurde. Die laufende Woche zaehlt noch nicht.
 export function weeksDone(h: Habit, log: Log, today: string) {
   let done = 0
   let total = 0
@@ -229,7 +290,7 @@ export function weeksDone(h: Habit, log: Log, today: string) {
     const w = evaluateWeek(h, log[h.id], m, today)
     if (w.states.every((s) => s === 'off')) continue
     total += 1
-    if (w.missed === 0) done += 1
+    if (w.reached) done += 1
   }
   return { done, total }
 }

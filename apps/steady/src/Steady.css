@@ -1999,6 +1999,10 @@ button.s-li:active {
   font-weight: 600;
 }
 
+.s-txt + .s-txt {
+  margin-top: 10px;
+}
+
 /* ---------- Erststart ---------- */
 
 .s-onb {

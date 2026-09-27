@@ -193,7 +193,10 @@ function Detail({ ctx, view }: ViewProps) {
               </b>
               {needed === 0
                 ? ' · Wochenziel erreicht'
-                : ` · noch ${week.restLeft} ${week.restLeft === 1 ? 'Ruhetag' : 'Ruhetage'}${week.due ? ' · heute nötig' : ''}`}
+                : !week.streakAlive && week.states[weekDays.indexOf(today)] !== 'done'
+                  ? // Keine Serie: freie Tage zaehlen als verpasst, bis wieder etwas eingetragen ist.
+                    ' · Ruhetage erst wieder ab dem nächsten Eintrag'
+                  : ` · noch ${week.restLeft} ${week.restLeft === 1 ? 'Ruhetag' : 'Ruhetage'}${week.due ? ' · heute nötig' : ''}`}
             </p>
           </Card>
         ) : null}

@@ -93,7 +93,7 @@ der Gewohnheit – oder eben keiner.
 | Zeichen | Zustand | Aussehen |
 | --- | --- | --- |
 | ● | **erledigt** – abgehakt bzw. Tageswert erfüllt das Ziel | gefüllter Kreis, 16 px, Gewohnheitsfarbe |
-| ◌ | **Ruhetag** – nur bei x-mal pro Woche, automatisch gedeckt | Ring 2 px, Gewohnheitsfarbe, innen leer |
+| ◌ | **Ruhetag** – nur bei x-mal pro Woche und laufender Serie, automatisch gedeckt | Ring 2 px, Gewohnheitsfarbe, innen leer |
 | × | **verpasst** – vergangener Tag, weder erledigt noch gedeckt | kleines graues Kreuz (Text still) |
 | · | **noch nicht begonnen** – vor dem Beginn-Datum | winziger Punkt, 3 px |
 
@@ -165,6 +165,15 @@ Beispiel Gym 3× pro Woche → jede Woche hat **7 − 3 = 4 Ruhetage**.
       (Montag → Sonntag) zum Ruhetag** ◌, solange Ruhetage übrig sind
 - [x] Ist das Kontingent aufgebraucht, wird **jeder weitere leere Tag ×** –
       die Serie bricht dort
+- [x] **Ruhetage nur mit laufender Serie** (ergänzt am 27.09.2026): ein
+      freier Tag wird nur zum Ruhetag, wenn der Tag davor zählt (● oder ◌).
+      Ein Ruhetag setzt eine Serie fort, er kann keine beginnen. Läuft keine –
+      nach einer verfehlten Woche, beim Start, nach dem Archiv –, ist der freie
+      Tag ×. Er **verbraucht trotzdem seinen Platz im Kontingent**, sonst
+      rettete ein einzelnes Training die Woche. **Warum:** ohne die Regel sah
+      „Laufen 2× pro Woche“ auch ohne einen einzigen Lauf nach 5 von 7 aus
+- [x] **Wochenziel erreicht** heißt: mindestens x Einträge. Tage ohne Serie
+      vor dem ersten Training zählen dabei nicht gegen die Woche
 - [x] **Heute verbraucht nichts**, solange heute läuft. Erst nach dem
       Tageswechsel wird entschieden
 - [x] **Heute fällig:** sind keine Ruhetage mehr übrig, muss heute trainiert
@@ -189,6 +198,17 @@ Gym 3× pro Woche – KW 36, schlechte Woche
 
 Nachgetragen: Mittwoch war doch Training
   ◌   ◌   ●   ●   ◌   ●   ◌   ← 3 Trainings, 4 Ruhetage – Serie hält
+
+Laufen 2× pro Woche – ohne laufende Serie
+
+Nie gelaufen:
+  ×   ×   ×   ×   ×   ×   ×   ← keine geschenkten Ruhetage, Quote 0 %
+
+Nach einer verfehlten Woche, Mi + Sa gelaufen:
+  ×   ×   ●   ◌   ◌   ●   ◌   ← Serie beginnt Mittwoch, Ziel erreicht
+
+Nur Mi gelaufen:
+  ×   ×   ●   ◌   ◌   ◌   ×   ← Mo + Di verbrauchen ihren Platz, So verpasst
 ```
 
 ### Serie
@@ -533,6 +553,8 @@ Rückmeldung, kein Schmuck.
 - [x] Datum und Zahlen über **eine** Hilfsschicht formatiert (`util.ts`)
 - [x] **Tests für `calc.ts`**, mindestens:
   - Ruhetage der Reihe nach, × erst nach aufgebrauchtem Kontingent
+  - keine Ruhetage ohne laufende Serie; ein einzelnes Training rettet die
+    Woche nicht; die Serie trägt über den Sonntag
   - Nachtragen verschiebt Ruhetage (× → ◌)
   - heute offen bricht keine Serie, heute erledigt zählt mit
   - erste Woche anteilig (Beginn Do, So)

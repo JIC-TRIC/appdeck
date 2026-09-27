@@ -263,7 +263,8 @@ function HabitForm({ ctx, view }: ViewProps) {
               </button>
             </div>
             <p className="s-hint">
-              {7 - f.n} {7 - f.n === 1 ? 'Ruhetag' : 'Ruhetage'} pro Woche. Sie zählen zur Serie, solange sie reichen.
+              {7 - f.n} {7 - f.n === 1 ? 'Ruhetag' : 'Ruhetage'} pro Woche. Sie halten eine laufende Serie, solange sie
+              reichen. Ohne Serie zählt ein freier Tag als verpasst.
             </p>
           </>
         ) : null}
