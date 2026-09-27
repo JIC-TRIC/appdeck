@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { IonSelect, IonSelectOption } from '@ionic/react'
-import NumPad from './NumPad'
+import NumPad, { useBetrag } from './NumPad'
 import {
   Glyph,
   IconCalendar,
@@ -10,11 +10,13 @@ import {
   IconSwap,
   IconTrash,
 } from '../icons'
-import { Label, Money, Segmented } from '../ui'
-import { addEntry, updateEntry, updateSettings } from '../kontorStore'
+import { Amount, Label, Segmented } from '../ui'
+import { addEntry, deleteEntry, updateEntry, updateSettings } from '../kontorStore'
+import { entryLook } from './EntryRow'
 import {
   addDays,
   centToText,
+  formatCent,
   formatDayShort,
   inRange,
   periodRange,
@@ -48,7 +50,7 @@ function dateLabel(key: string) {
 // und Konto oben, Betrag und Notiz immer sichtbar, gescrollt wird nur im
 // Kategorienraster, das Ziffernfeld steht fest unten.
 function EntryForm({ ctx, view }: ViewProps) {
-  const { categories, accounts, settings, refresh, back, push, entries, period, firstKey, removeEntry } = ctx
+  const { categories, accounts, settings, refresh, back, push, entries, period, firstKey, removeEntry, notify } = ctx
   const existing = view.entryId ? entries.find((e) => e.id === view.entryId) ?? null : null
 
   const open = accounts.filter((a) => !a.archived)
@@ -66,7 +68,8 @@ function EntryForm({ ctx, view }: ViewProps) {
   }, [])
 
   const [type, setType] = useState<EntryType>(startType)
-  const [text, setText] = useState(existing ? centToText(existing.amountCent) : '')
+  const betrag = useBetrag(existing ? centToText(existing.amountCent) : '')
+  const text = betrag.text
   const [categoryId, setCategoryId] = useState<string | null>(
     existing?.categoryId ?? lastUsedCategory(view.type ?? 'expense'),
   )
@@ -132,16 +135,26 @@ function EntryForm({ ctx, view }: ViewProps) {
     }
     if (existing) {
       updateEntry(existing.id, payload)
-    } else {
-      addEntry(payload)
-      updateSettings({
-        lastUsed: isTransfer
-          ? { ...settings.lastUsed, accountId }
-          : { ...settings.lastUsed, [type]: { categoryId }, accountId },
-      })
+      refresh()
+      back()
+      return
     }
+    const neu = addEntry(payload)
+    updateSettings({
+      lastUsed: isTransfer
+        ? { ...settings.lastUsed, accountId }
+        : { ...settings.lastUsed, [type]: { categoryId }, accountId },
+    })
     refresh()
     back()
+    // Das Formular ist sofort zu - die Meldung sagt, was gebucht wurde, und
+    // laesst einen Vertipper ein paar Sekunden lang zuruecknehmen.
+    const vorzeichen = type === 'expense' ? '−' : type === 'income' ? '+' : ''
+    notify(
+      `Gebucht: ${entryLook(neu, ctx.catById, ctx.accById).title}, ${vorzeichen}${formatCent(cent)} €`,
+      () => deleteEntry(neu.id),
+      { hoch: true },
+    )
   }
 
   // Ohne Rueckfrage - die Meldung danach bietet "Rueckgaengig" an.
@@ -211,11 +224,13 @@ function EntryForm({ ctx, view }: ViewProps) {
         {isTransfer ? null : accountSelect(accountId, setAccountId, 'Konto')}
       </div>
 
-      <div className="k-amount" style={{ color: accent }}>
-        <Money cent={cent} sign={type === 'expense' ? 'minus' : type === 'income' ? 'plus' : 'none'} />
-        <span className="k-amount-cur">€</span>
-        <span className="k-caret" style={{ background: accent }} />
-      </div>
+      <Amount
+        text={text}
+        signal={betrag.signal}
+        sign={type === 'expense' ? 'minus' : type === 'income' ? 'plus' : 'none'}
+        color={accent}
+        caret
+      />
 
       {/* Die Notiz steht bewusst weit oben: die Kategorie sagt "Lebensmittel",
           die Notiz sagt, was es war. Ohne sie ist eine Buchung spaeter nicht
@@ -300,7 +315,7 @@ function EntryForm({ ctx, view }: ViewProps) {
       {error ? <div className="k-error">{error}</div> : null}
 
       <div className="k-pad-wrap">
-        <NumPad text={text} onText={setText} onSubmit={save} accent={accent} />
+        <NumPad text={text} onText={betrag.setText} onReject={betrag.ablehnen} onSubmit={save} accent={accent} />
       </div>
     </div>
   )

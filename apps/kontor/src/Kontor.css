@@ -433,12 +433,14 @@ ion-modal.k-sheet-modal {
 }
 
 .k-donut-inc {
+  display: block;
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--inc);
 }
 
 .k-donut-exp {
+  display: block;
   font-size: 1.3125rem;
   font-weight: 700;
   color: var(--exp);
@@ -451,6 +453,25 @@ ion-modal.k-sheet-modal {
   align-items: center;
   gap: 0.125rem;
   width: 44%;
+}
+
+/* Ohne Auswahl fuellt der Knopf das ganze Loch im Ring - ueberall dort
+   antippbar, und die Rueckmeldung beim Druecken ist ein Kreis. */
+.k-donut-center.as-button.all {
+  width: 38%;
+  aspect-ratio: 1;
+  justify-content: center;
+  gap: 0;
+  border-radius: 50%;
+}
+
+.k-donut-center.as-button {
+  transition: background-color 0.15s ease;
+}
+
+.k-donut-center.as-button:active {
+  background-color: var(--line-soft);
+  transition: none;
 }
 
 .k-donut-pick-ic {
@@ -478,6 +499,7 @@ ion-modal.k-sheet-modal {
 }
 
 .k-donut-cur {
+  display: block;
   font-size: 0.625rem;
   color: var(--muted);
   letter-spacing: 0.08em;
@@ -485,6 +507,7 @@ ion-modal.k-sheet-modal {
 }
 
 .k-donut-empty {
+  display: block;
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--muted);
@@ -528,24 +551,37 @@ ion-modal.k-sheet-modal {
      Browsers. Ohne das verliert die Seite bei jedem Zurueckblaettern einen
      History-Eintrag und faellt irgendwann ganz aus der App heraus. */
   touch-action: pan-y;
-  /* Zurueckfedern, wenn die Wischgeste die Schwelle nicht erreicht hat. */
-  transition: transform 0.18s ease-out;
+  /* Die Nachbar-Zeitraeume liegen links und rechts ausserhalb. clip statt
+     hidden: nur quer abschneiden, senkrecht darf nichts gekappt werden. */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
-/* Waehrend der Finger zieht, folgt der Ring sofort - ohne Uebergang, sonst
-   haengt er hinterher. */
-.k-donut-hold.dragging {
-  transition: none;
+/* Karussell: drei Seiten nebeneinander (voriger, aktueller, naechster
+   Zeitraum), verschoben per transform aus Main.tsx. */
+.k-swipe {
+  display: flex;
+  flex-shrink: 0;
+  will-change: transform;
 }
 
-/* Nach einem Wechsel kommt der neue Zeitraum von der Seite, aus der er
-   kommt: nach links gewischt heisst, der naechste kommt von rechts. */
-.k-donut-hold[data-dir='1'],
+/* Einrasten und Zurueckfedern - waehrend des Ziehens ohne Uebergang, sonst
+   haengt der Ring dem Finger hinterher. Dauer passt zu GLEITEN_MS. */
+.k-swipe.gleitet {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.k-swipe-page {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+/* Der Zeitraum in der Kopfzeile kommt von der Seite, aus der er kommt:
+   nach links gewischt heisst, der naechste kommt von rechts. */
 .k-period-btn[data-dir='1'] {
   animation: k-rein-rechts 0.24s ease-out;
 }
 
-.k-donut-hold[data-dir='-1'],
 .k-period-btn[data-dir='-1'] {
   animation: k-rein-links 0.24s ease-out;
 }
@@ -640,7 +676,8 @@ ion-modal.k-sheet-modal {
 .k-actions {
   display: flex;
   gap: 0.75rem;
-  padding: 1rem 1.25rem calc(0.125rem + env(safe-area-inset-bottom));
+  /* max(): ohne Home-Balken (iPhone SE) eigener Abstand, mit ihm reicht seiner. */
+  padding: 1rem 1.25rem max(0.875rem, env(safe-area-inset-bottom));
   flex-shrink: 0;
 }
 
@@ -1159,6 +1196,44 @@ ion-modal.k-sheet-modal {
   margin-left: 0.3rem;
 }
 
+.k-amount-val {
+  display: inline-block;
+  transform-origin: right center;
+}
+
+.k-amount.empty .k-amount-val {
+  opacity: 0.3;
+}
+
+.k-amount-val.tickt {
+  animation: k-tick 0.16s ease-out;
+}
+
+.k-amount-val.wackelt {
+  animation: k-wackeln 0.32s ease-in-out;
+}
+
+@keyframes k-tick {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes k-wackeln {
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
 .k-caret {
   display: inline-block;
   width: 2px;
@@ -1179,6 +1254,13 @@ ion-modal.k-sheet-modal {
   flex-direction: column;
   gap: 0.5rem;
   padding: 0 1rem;
+  flex-shrink: 0;
+}
+
+/* Wie bei .k-body: ohne das quetscht der scrollende Bereich seine Felder
+   zusammen, statt zu scrollen - auf dem iPhone SE war das Namensfeld im
+   Kategorie-Formular nur noch ein Strich. */
+.k-form > * {
   flex-shrink: 0;
 }
 
@@ -1564,7 +1646,7 @@ ion-modal.k-sheet-modal {
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
-  padding: 0.5rem 1rem calc(0.625rem + env(safe-area-inset-bottom));
+  padding: 0.5rem 1rem max(0.75rem, env(safe-area-inset-bottom));
   flex-shrink: 0;
 }
 
@@ -1578,9 +1660,12 @@ ion-modal.k-sheet-modal {
   gap: 0.4375rem;
 }
 
-/* Flacher als vorher: jede gesparte Reihe ist eine Reihe Kategorien mehr. */
+/* Flach auf kleinen Handys (jede gesparte Reihe ist eine Reihe Kategorien
+   mehr), auf grossen so hoch wie Platz da ist - dort blieb sonst eine Luecke
+   ueber dem Ziffernfeld, und die Tasten waren kleiner als noetig. */
 .k-key {
-  height: 2.875rem;
+  height: clamp(2.875rem, 6.6dvh, 3.5rem);
+  transition: transform 0.14s ease, background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
   border-radius: var(--r-sm);
   background: var(--surface);
   border: 1px solid var(--line);
@@ -1609,6 +1694,27 @@ ion-modal.k-sheet-modal {
   grid-row: span 2;
   height: auto;
   color: var(--surface);
+}
+
+/* Gedrueckt (Klasse aus NumPad.tsx, mindestens 140 ms): die Taste leuchtet
+   in der Farbe der Buchungsart auf und gibt leicht nach. Ohne Uebergang beim
+   Druecken, mit Uebergang beim Loslassen. */
+.k-key.pressed {
+  transform: scale(0.94);
+  background: color-mix(in srgb, var(--k-accent, var(--ink)) 14%, var(--surface));
+  border-color: color-mix(in srgb, var(--k-accent, var(--ink)) 45%, var(--line));
+  color: var(--k-accent, var(--ink));
+  transition: none;
+}
+
+.k-key.aux.pressed {
+  background: color-mix(in srgb, var(--k-accent, var(--ink)) 18%, var(--sunk));
+}
+
+.k-key.save.pressed {
+  transform: scale(0.96);
+  color: var(--surface);
+  filter: brightness(0.88);
 }
 
 .k-key.save svg {
@@ -1833,6 +1939,27 @@ ion-modal.k-sheet-modal {
   margin-top: 0.5rem;
   font-size: 0.66rem;
   color: var(--muted);
+}
+
+.k-axis {
+  position: relative;
+}
+
+.k-axis-heute {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.k-axis-heute.links {
+  left: 0;
+  transform: none;
+}
+
+.k-axis-heute.rechts {
+  right: 0;
+  transform: none;
 }
 
 .k-axis .strong {
@@ -2061,7 +2188,7 @@ ion-modal.k-sheet-modal .ion-page {
   overscroll-behavior: contain;
   /* oben Platz fuer den Griff, unten fuer den Home-Balken */
   padding-top: 1.125rem;
-  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
 .k-sheet-head {
@@ -2361,6 +2488,85 @@ ion-item-option.k-slide-del {
   text-align: center;
 }
 
+/* ---------- Rueckmeldung beim Antippen ---------- */
+
+/* Vorher gab ausser der Saldozeile nichts nach, wenn man es antippte - auf
+   dem Handy wirkt ein Knopf ohne Reaktion wie nicht getroffen. Zeilen
+   faerben sich, Knoepfe und Kacheln geben leicht nach. Ohne Uebergang beim
+   Druecken (sofort), mit Uebergang beim Loslassen. iOS zeigt :active nur mit
+   einem touchstart-Handler - den setzt main.tsx. */
+.k-entry,
+.k-menu-row,
+.k-acc,
+.k-cat-row,
+.k-set-row.press,
+.k-sheet-row,
+.k-top-row {
+  transition: background-color 0.15s ease;
+}
+
+.k-entry:active,
+.k-menu-row:active,
+.k-acc:active,
+.k-cat-row:active,
+.k-set-row.press:active,
+.k-sheet-row:active,
+.k-top-row:active {
+  background-color: var(--line-soft);
+  transition: none;
+}
+
+.k-cat,
+.k-icon-pick,
+.k-swatch,
+.k-chip,
+.k-primary,
+.k-ghost,
+.k-dashed,
+.k-action-btn,
+.k-date-btn,
+.k-swap,
+.k-card.as-button,
+.k-seg-item,
+.k-mini-seg button,
+.k-textlink,
+.k-search-clear {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.k-cat:active,
+.k-icon-pick:active,
+.k-swatch:active,
+.k-chip:active,
+.k-primary:active,
+.k-ghost:active,
+.k-dashed:active,
+.k-action-btn:active,
+.k-date-btn:active,
+.k-swap:active,
+.k-card.as-button:active,
+.k-seg-item:active,
+.k-mini-seg button:active,
+.k-textlink:active,
+.k-search-clear:active {
+  transform: scale(0.97);
+  opacity: 0.8;
+  transition: none;
+}
+
+.k-ic {
+  transition: background-color 0.15s ease;
+}
+
+.k-ic:not(:disabled):active {
+  background-color: var(--sunk);
+  transition: none;
+}
+
+.k-period-btn:active {
+  opacity: 0.55;
+}
+
 /* ---------- Meldung unten (Ionic-Toast) ---------- */
 
 /* Haengt unter ion-app, nicht in .kontor - darum Werte statt Tokens. */
@@ -2371,6 +2577,12 @@ ion-toast.k-toast {
   --border-radius: 1rem;
   --box-shadow: 0 8px 24px rgba(31, 29, 26, 0.28);
   --max-width: 440px;
+}
+
+/* Nach dem Speichern: ueber den Knoepfen der Startseite statt auf ihnen -
+   sonst verdeckt die Bestaetigung den Knopf fuer die naechste Buchung. */
+ion-toast.k-toast.hoch {
+  transform: translateY(-4.25rem);
 }
 
 ion-toast.k-toast::part(message) {

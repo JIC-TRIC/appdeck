@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
-import NumPad from './NumPad'
-import { Label, Money, Toggle } from '../ui'
+import NumPad, { useBetrag } from './NumPad'
+import { Amount, Label, Toggle } from '../ui'
 import { ACCOUNT_COLORS } from '../data'
 import { textToCent } from '../util'
 import { addAccount, importFile, isOnboarded, seedCategories, updateSettings } from '../kontorStore'
@@ -18,7 +18,7 @@ function Onboarding({ ctx }: { ctx: KontorCtx }) {
   const { refresh } = ctx
   const [name, setName] = useState('Girokonto')
   const [includeInTotal, setInclude] = useState(true)
-  const [text, setText] = useState('')
+  const betrag = useBetrag()
   const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -41,7 +41,7 @@ function Onboarding({ ctx }: { ctx: KontorCtx }) {
       name: name.trim() || 'Girokonto',
       color: ACCOUNT_COLORS[0],
       includeInTotal,
-      balanceCent: textToCent(text),
+      balanceCent: textToCent(betrag.text),
     })
     updateSettings({ onboarded: true })
     refresh()
@@ -66,10 +66,7 @@ function Onboarding({ ctx }: { ctx: KontorCtx }) {
         />
 
         <Label>Aktueller Saldo</Label>
-        <div className="k-amount small">
-          <Money cent={textToCent(text)} />
-          <span className="k-amount-cur">€</span>
-        </div>
+        <Amount text={betrag.text} signal={betrag.signal} variant="small" />
 
         <div className="k-row-card">
           <div className="grow">
@@ -98,7 +95,14 @@ function Onboarding({ ctx }: { ctx: KontorCtx }) {
       {error ? <div className="k-error">{error}</div> : null}
 
       <div className="k-pad-wrap">
-        <NumPad text={text} onText={setText} onSubmit={start} accent="var(--ink)" submitLabel="Los geht's" />
+        <NumPad
+          text={betrag.text}
+          onText={betrag.setText}
+          onReject={betrag.ablehnen}
+          onSubmit={start}
+          accent="var(--ink)"
+          submitLabel="Los geht's"
+        />
         <button type="button" className="k-primary" onClick={start}>Los geht&apos;s</button>
       </div>
     </div>

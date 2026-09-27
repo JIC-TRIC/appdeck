@@ -147,24 +147,33 @@ interface DonutProps {
   incCent: number
   expCent: number
   onSelect?: (seg: Segment) => void
-  onPick?: (seg: Segment) => void
+  onPick?: (seg: Segment | null) => void
+  /** Tipp in die Mitte, solange keine Kategorie gewaehlt ist. */
+  onCenter?: () => void
   picked: string | null
   kind: CategoryKind
 }
 
-function Donut({ segments, total, incCent, expCent, onSelect, onPick, picked, kind }: DonutProps) {
+function Donut({ segments, total, incCent, expCent, onSelect, onPick, onCenter, picked, kind }: DonutProps) {
+  // Ohne Auswahl ist die Mitte ein Knopf zu allen Buchungen des Zeitraums -
+  // die Summen darin sind genau deren Summe.
+  const Mitte = onCenter ? 'button' : 'div'
+  const mitteProps = onCenter
+    ? { type: 'button' as const, className: 'k-donut-center as-button all', onClick: onCenter, 'aria-label': 'Alle Buchungen im Zeitraum' }
+    : { className: 'k-donut-center' }
+
   if (!total) {
     return (
       <div className="k-donut">
         <svg viewBox={`0 0 ${W} ${H}`} className="k-donut-svg">
           <circle cx={CX} cy={CY} r={R} fill="none" stroke="var(--line)" strokeWidth={STROKE} />
         </svg>
-        <div className="k-donut-center">
-          <div className="k-donut-empty">
+        <Mitte {...mitteProps}>
+          <span className="k-donut-empty">
             {kind === 'expense' ? 'Keine Ausgaben' : 'Keine Einnahmen'}
             <span>in diesem Zeitraum</span>
-          </div>
-        </div>
+          </span>
+        </Mitte>
       </div>
     )
   }
@@ -184,7 +193,14 @@ function Donut({ segments, total, incCent, expCent, onSelect, onPick, picked, ki
 
   return (
     <div className={`k-donut${gewaehlt ? ' picked' : ''}`}>
-      <svg viewBox={`0 0 ${W} ${H}`} className="k-donut-svg">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="k-donut-svg"
+        // Tipp auf freie Flaeche neben dem Ring hebt die Auswahl auf.
+        onClick={(e) => {
+          if (e.target === e.currentTarget && gewaehlt) onPick?.(null)
+        }}
+      >
         <circle cx={CX} cy={CY} r={R} fill="none" stroke="var(--line-soft)" strokeWidth={STROKE} />
         <g transform={`rotate(-90 ${CX} ${CY})`} fill="none" strokeWidth={STROKE} strokeLinecap="butt">
           {arcs.map((a) => {
@@ -274,11 +290,11 @@ function Donut({ segments, total, incCent, expCent, onSelect, onPick, picked, ki
           <span className="k-donut-cur">{Math.round(gewaehlt.share * 100)} % · EURO</span>
         </button>
       ) : (
-        <div className="k-donut-center">
-          <div className="k-donut-inc">{splitCent(incCent).int},{splitCent(incCent).frac}</div>
-          <div className="k-donut-exp">−{splitCent(expCent).int},{splitCent(expCent).frac}</div>
-          <div className="k-donut-cur">EURO</div>
-        </div>
+        <Mitte {...mitteProps}>
+          <span className="k-donut-inc">{splitCent(incCent).int},{splitCent(incCent).frac}</span>
+          <span className="k-donut-exp">−{splitCent(expCent).int},{splitCent(expCent).frac}</span>
+          <span className="k-donut-cur">EURO</span>
+        </Mitte>
       )}
     </div>
   )

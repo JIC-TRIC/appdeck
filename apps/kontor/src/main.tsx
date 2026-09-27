@@ -11,4 +11,8 @@ import '@fontsource/instrument-serif/400-italic.css'
 import Kontor from './Kontor'
 import './Kontor.css'
 
+// iOS zeigt :active (die Rueckmeldung beim Antippen) nur, wenn irgendwo ein
+// touchstart-Handler haengt - dieser leere genuegt.
+document.addEventListener('touchstart', () => {}, { passive: true })
+
 mountApp(<Kontor />)

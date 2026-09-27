@@ -1,7 +1,6 @@
-import { useState } from 'react'
-import NumPad from './NumPad'
+import NumPad, { useBetrag } from './NumPad'
 import { IconRight } from '../icons'
-import { Money, Sheet } from '../ui'
+import { Amount, Money, Sheet } from '../ui'
 import { centToText, formatDate, textToCent, todayKey } from '../util'
 import { setAccountBalance } from '../kontorStore'
 import type { ViewProps } from '../types'
@@ -11,11 +10,11 @@ import type { ViewProps } from '../types'
 function BalanceSheet({ ctx, view }: ViewProps) {
   const { accounts, back, refresh } = ctx
   const account = accounts.find((a) => a.id === view.accountId)
-  const [text, setText] = useState(account ? centToText(account.balanceCent) : '')
+  const betrag = useBetrag(account ? centToText(account.balanceCent) : '')
 
   if (!account) return null
 
-  const target = textToCent(text)
+  const target = textToCent(betrag.text)
   const diff = target - account.balanceCent
 
   const save = (zu: () => void) => () => {
@@ -28,11 +27,7 @@ function BalanceSheet({ ctx, view }: ViewProps) {
     <Sheet title="Saldo korrigieren" subtitle={account.name} onClose={back}>
       {(zu) => (
       <>
-      <div className="k-amount sheet">
-        <Money cent={target} />
-        <span className="k-amount-cur">€</span>
-        <span className="k-caret" style={{ background: 'var(--ink)' }} />
-      </div>
+      <Amount text={betrag.text} signal={betrag.signal} variant="sheet" caret />
 
       <div className="k-diff">
         <div>
@@ -55,7 +50,7 @@ function BalanceSheet({ ctx, view }: ViewProps) {
       </div>
 
       <div className="k-pad-wrap sheet">
-        <NumPad text={text} onText={setText} onSubmit={save(zu)} accent="var(--ink)" />
+        <NumPad text={betrag.text} onText={betrag.setText} onReject={betrag.ablehnen} onSubmit={save(zu)} accent="var(--ink)" />
       </div>
       </>
       )}

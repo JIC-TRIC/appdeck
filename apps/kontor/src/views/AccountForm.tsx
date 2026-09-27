@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import NumPad from './NumPad'
+import NumPad, { useBetrag } from './NumPad'
 import { Glyph, IconClose } from '../icons'
-import { Label, Money, Toggle } from '../ui'
+import { Amount, Label, Toggle } from '../ui'
 import { ACCOUNT_COLORS, ACCOUNT_ICON } from '../data'
 import { textToCent } from '../util'
 import { addAccount, updateAccount } from '../kontorStore'
@@ -14,7 +14,7 @@ function AccountForm({ ctx, view }: ViewProps) {
   const [name, setName] = useState(existing?.name ?? '')
   const [color, setColor] = useState(existing?.color ?? ACCOUNT_COLORS[accounts.length % ACCOUNT_COLORS.length])
   const [includeInTotal, setInclude] = useState(existing?.includeInTotal ?? true)
-  const [text, setText] = useState('')
+  const betrag = useBetrag()
   const [error, setError] = useState<string | null>(null)
 
   const save = () => {
@@ -25,7 +25,7 @@ function AccountForm({ ctx, view }: ViewProps) {
     if (existing) {
       updateAccount(existing.id, { name: name.trim(), color, includeInTotal })
     } else {
-      addAccount({ name, color, includeInTotal, balanceCent: textToCent(text) })
+      addAccount({ name, color, includeInTotal, balanceCent: textToCent(betrag.text) })
     }
     refresh()
     back()
@@ -90,10 +90,7 @@ function AccountForm({ ctx, view }: ViewProps) {
         ) : (
           <>
             <Label>Aktueller Saldo</Label>
-            <div className="k-amount small">
-              <Money cent={textToCent(text)} />
-              <span className="k-amount-cur">€</span>
-            </div>
+            <Amount text={betrag.text} signal={betrag.signal} variant="small" />
             <div className="k-meta tight">
               Wird als Buchung „Anfangssaldo" protokolliert, damit Saldo und Buchungen von Anfang an
               zusammenpassen.
@@ -108,7 +105,7 @@ function AccountForm({ ctx, view }: ViewProps) {
         {existing ? (
           <button type="button" className="k-primary" onClick={save}>Speichern</button>
         ) : (
-          <NumPad text={text} onText={setText} onSubmit={save} accent="var(--ink)" />
+          <NumPad text={betrag.text} onText={betrag.setText} onReject={betrag.ablehnen} onSubmit={save} accent="var(--ink)" />
         )}
       </div>
     </div>

@@ -143,13 +143,15 @@ function Kontor() {
   // muss aber stehen bleiben. Es gibt immer nur eine - eine neue ersetzt die alte.
   const [presentToast, dismissToast] = useIonToast()
   const notify = useCallback(
-    (message: string, undo?: () => void) => {
+    (message: string, undo?: () => void, options?: { hoch?: boolean }) => {
       dismissToast().catch(() => {})
       presentToast({
         message,
-        duration: undo ? 5000 : 2000,
+        // Nach dem Speichern nur eine Bestaetigung (kuerzer, sie liegt ueber
+        // der Gesamtbalance), nach dem Loeschen mehr Zeit fuers Zuruecknehmen.
+        duration: !undo ? 2000 : options?.hoch ? 3500 : 5000,
         position: 'bottom',
-        cssClass: 'k-toast',
+        cssClass: options?.hoch ? 'k-toast hoch' : 'k-toast',
         swipeGesture: 'vertical',
         buttons: undo
           ? [{ text: 'Rückgängig', handler: () => { undo(); refresh() } }]

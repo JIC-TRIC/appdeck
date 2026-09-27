@@ -57,7 +57,12 @@ function Stats({ ctx }: ViewProps) {
 
   const firstDay = series.points[0]
   const lastDay = series.points[series.points.length - 1]
-  const todayLabel = series.perMonth ? null : todayKey()
+  // "heute" steht unter seinem Balken, nicht einfach in der Mitte. Liegt der
+  // Tag am Rand, ersetzt er die Beschriftung dort, statt sie zu ueberdecken.
+  const heuteIndex = series.perMonth ? -1 : series.points.findIndex((p) => p.key === todayKey())
+  const heuteAnteil = heuteIndex < 0 ? null : ((heuteIndex + 0.5) / series.points.length) * 100
+  const heuteLinks = heuteAnteil !== null && heuteAnteil < 16
+  const heuteRechts = heuteAnteil !== null && heuteAnteil > 84
 
   return (
     <Screen title="Statistik" onBack={back}>
@@ -87,11 +92,20 @@ function Stats({ ctx }: ViewProps) {
             </div>
             <Bars points={series.points} />
             <div className="k-axis">
-              <span>{series.perMonth ? firstDay?.label : `${firstDay?.label}.`}</span>
-              {todayLabel && range.from && range.to && todayLabel >= range.from && todayLabel <= range.to ? (
-                <span className="strong">heute, {parseKey(todayLabel).getDate()}.</span>
+              <span style={heuteLinks ? { visibility: 'hidden' } : undefined}>
+                {series.perMonth ? firstDay?.label : `${firstDay?.label}.`}
+              </span>
+              {heuteAnteil !== null ? (
+                <span
+                  className={`strong k-axis-heute${heuteLinks ? ' links' : heuteRechts ? ' rechts' : ''}`}
+                  style={heuteLinks || heuteRechts ? undefined : { left: `${heuteAnteil}%` }}
+                >
+                  heute, {parseKey(todayKey()).getDate()}.
+                </span>
               ) : null}
-              <span>{series.perMonth ? lastDay?.label : `${lastDay?.label}.`}</span>
+              <span style={heuteRechts ? { visibility: 'hidden' } : undefined}>
+                {series.perMonth ? lastDay?.label : `${lastDay?.label}.`}
+              </span>
             </div>
             <div className="k-inc-row">
               <span className="k-dot" style={{ background: 'var(--inc)' }} />

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconLeft, IconRight } from './icons'
-import { splitCent } from './util'
+import { splitCent, textToCent } from './util'
 import type { Range } from './types'
 
 // Kopfzeile plus Inhalt. Der Abstand oben haelt die Statusleiste des Handys
@@ -183,6 +183,42 @@ export function Money({ cent, sign = 'none', className = '' }: { cent: number; s
       {int}
       <span className="k-money-frac">,{frac}</span>
     </span>
+  )
+}
+
+// Der Betrag ueber einem Ziffernfeld (Zustand aus useBetrag). Bei jeder
+// Eingabe tickt er kurz - der Schluessel wechselt, die Animation laeuft neu
+// an; eine Taste, die nichts bewirkt, laesst ihn wackeln. Leer steht er blass
+// da, wie ein Platzhalter, nicht wie ein echter Betrag von null.
+export function Amount({
+  text,
+  signal,
+  sign = 'none',
+  variant,
+  color,
+  caret = false,
+}: {
+  text: string
+  signal: { n: number; wackelt: boolean }
+  sign?: MoneySign
+  variant?: 'small' | 'sheet'
+  color?: string
+  caret?: boolean
+}) {
+  return (
+    <div
+      className={`k-amount${variant ? ` ${variant}` : ''}${text ? '' : ' empty'}`}
+      style={color ? { color } : undefined}
+    >
+      <span
+        className={`k-amount-val${signal.n === 0 ? '' : signal.wackelt ? ' wackelt' : ' tickt'}`}
+        key={signal.n}
+      >
+        <Money cent={textToCent(text)} sign={sign} />
+        <span className="k-amount-cur">€</span>
+      </span>
+      {caret ? <span className="k-caret" style={{ background: color ?? 'var(--ink)' }} /> : null}
+    </div>
   )
 }
 
