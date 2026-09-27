@@ -28,6 +28,7 @@ import {
   updateSettings,
 } from './kontorStore'
 import { formatCent, todayKey } from './util'
+import { stapelLesen, stapelSchreiben } from './entwurf'
 import type { Account, Category, Entry, KontorCtx, Period, View, ViewName, ViewProps } from './types'
 
 const PAGES: Partial<Record<ViewName, ComponentType<ViewProps>>> = {
@@ -52,8 +53,10 @@ const SHEETS: Partial<Record<ViewName, ComponentType<ViewProps>>> = {
 }
 
 // Zurueck zum Launcher. Ohne shell.js (z. B. einzeln geoeffnet) einfach eine
-// Ebene ueber apps/.
+// Ebene ueber apps/. Wer Kontor bewusst verlaesst, soll beim naechsten Oeffnen
+// auf der Startseite landen, nicht in der Ansicht von eben.
 function toLauncher() {
+  stapelSchreiben([])
   if (window.Shell) window.Shell.home()
   else window.location.href = '../../'
 }
@@ -108,8 +111,37 @@ function Kontor() {
   // Ansichtsstapel statt Tab-Leiste. Jeder Aufruf haengt einen Eintrag in die
   // Browser-History, damit die Zurueck-Taste des Handys funktioniert - der
   // Pfad bleibt dabei gleich.
-  const [stack, setStack] = useState<View[]>([])
+  //
+  // Nach einem Neustart kommt der zuletzt offene Stapel zurueck (entwurf.ts) -
+  // ohne Ansichten, deren Buchung oder Konto es inzwischen nicht mehr gibt.
+  const [stack, setStack] = useState<View[]>(() => {
+    const entries = getEntries()
+    const accounts = getAccounts()
+    const categories = getCategories()
+    return stapelLesen().filter((v) => {
+      if (v.entryId) return entries.some((e) => e.id === v.entryId)
+      if (v.accountId) return accounts.some((a) => a.id === v.accountId)
+      if (v.categoryId) return categories.some((c) => c.id === v.categoryId)
+      return true
+    })
+  })
   const depth = useRef(0)
+
+  // Fuer jeden wiederhergestellten Eintrag einen History-Eintrag - sonst
+  // fuehrt "Zurueck" nicht Schritt fuer Schritt, sondern gleich zur Startseite.
+  // Die Ref verhindert, dass React im StrictMode das doppelt macht.
+  const wiederhergestellt = useRef(false)
+  useEffect(() => {
+    if (wiederhergestellt.current) return
+    wiederhergestellt.current = true
+    for (let i = 0; i < stack.length; i += 1) window.history.pushState({ kontor: i + 1 }, '')
+    depth.current = stack.length
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    stapelSchreiben(stack)
+  }, [stack])
 
   useEffect(() => {
     const onPop = () => {

@@ -331,17 +331,22 @@ function Bars({ points, height = 96 }: { points: SeriesPoint[]; height?: number 
   )
 }
 
-// Beschriftete Balken mit Wert darueber - fuer kurze Reihen (Kategorieverlauf).
+// Beschriftete Balken mit Wert darueber - fuer kurze Reihen (Kategorieverlauf,
+// Wochentage). Farbig ist nur ein Balken: standardmaessig der letzte (der
+// aktuelle Zeitraum), sonst der mit "highlight" angegebene; -1 = keiner.
 function LabelledBars({
   points,
   color,
   height = 96,
+  highlight,
 }: {
   points: { label: string; value: number }[]
   color: string
   height?: number
+  highlight?: number
 }) {
   const max = points.reduce((m, p) => Math.max(m, p.value), 0)
+  const farbig = highlight ?? points.length - 1
   return (
     <div className="k-lbars">
       {points.map((p, i) => (
@@ -351,7 +356,7 @@ function LabelledBars({
             className="k-lbar"
             style={{
               height: Math.max(2, max ? Math.round((p.value / max) * height) : 0),
-              background: i === points.length - 1 ? color : 'color-mix(in srgb, var(--line) 70%, #fff)',
+              background: i === farbig ? color : 'color-mix(in srgb, var(--line) 70%, #fff)',
             }}
           />
           <span className="k-lbar-lbl">{p.label}</span>

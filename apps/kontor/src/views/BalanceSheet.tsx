@@ -1,30 +1,46 @@
+import { useEffect, useState } from 'react'
 import NumPad, { useBetrag } from './NumPad'
 import { IconRight } from '../icons'
 import { Amount, Money, Sheet } from '../ui'
 import { centToText, formatDate, textToCent, todayKey } from '../util'
 import { setAccountBalance } from '../kontorStore'
 import type { ViewProps } from '../types'
+import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
 
 // Saldo von Hand setzen. Nicht die Differenz wird eingegeben, sondern der Wert,
 // der auf dem Konto stehen soll - so wie man aufs Bankkonto schaut.
 function BalanceSheet({ ctx, view }: ViewProps) {
   const { accounts, back, refresh } = ctx
   const account = accounts.find((a) => a.id === view.accountId)
-  const betrag = useBetrag(account ? centToText(account.balanceCent) : '')
+  // Typischer Fall fuer einen Entwurf: Kontostand in der Banking-App
+  // nachsehen, zurueckkommen - und iOS hat Kontor inzwischen neu gestartet.
+  const draftKey = entwurfKey(view)
+  const [draft] = useState(() => entwurfLesen<{ text: string }>(draftKey))
+  const betrag = useBetrag(draft?.text ?? (account ? centToText(account.balanceCent) : ''))
+  useEffect(() => {
+    entwurfSchreiben(draftKey, { text: betrag.text })
+  }, [draftKey, betrag.text])
 
   if (!account) return null
 
   const target = textToCent(betrag.text)
   const diff = target - account.balanceCent
 
+  // Weggewischt oder gespeichert: der Entwurf ist erledigt.
+  const schliessen = () => {
+    entwurfLoeschen(draftKey)
+    back()
+  }
+
   const save = (zu: () => void) => () => {
+    entwurfLoeschen(draftKey)
     setAccountBalance(account.id, target)
     refresh()
     zu()
   }
 
   return (
-    <Sheet title="Saldo korrigieren" subtitle={account.name} onClose={back}>
+    <Sheet title="Saldo korrigieren" subtitle={account.name} onClose={schliessen}>
       {(zu) => (
       <>
       <Amount text={betrag.text} signal={betrag.signal} variant="sheet" caret />

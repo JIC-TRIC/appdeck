@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NumPad, { useBetrag } from './NumPad'
 import { Glyph, IconClose } from '../icons'
 import { Amount, Label, Toggle } from '../ui'
@@ -6,22 +6,44 @@ import { ACCOUNT_COLORS, ACCOUNT_ICON } from '../data'
 import { textToCent } from '../util'
 import { addAccount, updateAccount } from '../kontorStore'
 import type { ViewProps } from '../types'
+import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
+
+interface AccountDraft {
+  name: string
+  color: string
+  includeInTotal: boolean
+  text: string
+}
 
 function AccountForm({ ctx, view }: ViewProps) {
   const { accounts, back, refresh } = ctx
   const existing = view.accountId ? accounts.find((a) => a.id === view.accountId) ?? null : null
 
-  const [name, setName] = useState(existing?.name ?? '')
-  const [color, setColor] = useState(existing?.color ?? ACCOUNT_COLORS[accounts.length % ACCOUNT_COLORS.length])
-  const [includeInTotal, setInclude] = useState(existing?.includeInTotal ?? true)
-  const betrag = useBetrag()
+  const draftKey = entwurfKey(view)
+  const [draft] = useState(() => entwurfLesen<AccountDraft>(draftKey))
+  const [name, setName] = useState(draft?.name ?? existing?.name ?? '')
+  const [color, setColor] = useState(
+    draft?.color ?? existing?.color ?? ACCOUNT_COLORS[accounts.length % ACCOUNT_COLORS.length],
+  )
+  const [includeInTotal, setInclude] = useState(draft?.includeInTotal ?? existing?.includeInTotal ?? true)
+  const betrag = useBetrag(draft?.text ?? '')
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    entwurfSchreiben(draftKey, { name, color, includeInTotal, text: betrag.text } satisfies AccountDraft)
+  }, [draftKey, name, color, includeInTotal, betrag.text])
+
+  const abbrechen = () => {
+    entwurfLoeschen(draftKey)
+    back()
+  }
 
   const save = () => {
     if (!name.trim()) {
       setError('Name fehlt')
       return
     }
+    entwurfLoeschen(draftKey)
     if (existing) {
       updateAccount(existing.id, { name: name.trim(), color, includeInTotal })
     } else {
@@ -34,7 +56,7 @@ function AccountForm({ ctx, view }: ViewProps) {
   return (
     <div className="k-screen fixed">
       <header className="k-head">
-        <button type="button" className="k-ic" onClick={back} aria-label="Abbrechen">
+        <button type="button" className="k-ic" onClick={abbrechen} aria-label="Abbrechen">
           <IconClose />
         </button>
         <div className="k-head-mid">

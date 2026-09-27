@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { IonSelect, IonSelectOption } from '@ionic/react'
 import NumPad, { useBetrag } from './NumPad'
 import {
@@ -11,8 +11,10 @@ import {
   IconTrash,
 } from '../icons'
 import { Amount, Label, Segmented } from '../ui'
+import { byUsage, categoryUsage } from '../calc'
 import { addEntry, deleteEntry, updateEntry, updateSettings } from '../kontorStore'
 import { entryLook } from './EntryRow'
+import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
 import {
   addDays,
   centToText,
@@ -45,6 +47,16 @@ function dateLabel(key: string) {
   return formatDayShort(key)
 }
 
+interface EntryDraft {
+  type: EntryType
+  text: string
+  categoryId: string | null
+  accountId: string | null
+  toAccountId: string | null
+  date: string
+  note: string
+}
+
 // Ein Formular fuer Ausgabe, Einnahme und Umbuchung - und fuer das Bearbeiten
 // einer bestehenden Buchung. Der Aufbau ist fuers Hochformat gerechnet: Datum
 // und Konto oben, Betrag und Notiz immer sichtbar, gescrollt wird nur im
@@ -67,26 +79,52 @@ function EntryForm({ ctx, view }: ViewProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const [type, setType] = useState<EntryType>(startType)
-  const betrag = useBetrag(existing ? centToText(existing.amountCent) : '')
+  // Ein angefangener Entwurf (nach Neustart oder Rueckkehr aus dem
+  // Kategorie-Formular) geht vor den Vorbelegungen.
+  const draftKey = entwurfKey(view)
+  const [draft] = useState(() => entwurfLesen<EntryDraft>(draftKey))
+
+  const [type, setType] = useState<EntryType>(draft?.type ?? startType)
+  const betrag = useBetrag(draft?.text ?? (existing ? centToText(existing.amountCent) : ''))
   const text = betrag.text
   const [categoryId, setCategoryId] = useState<string | null>(
-    existing?.categoryId ?? lastUsedCategory(view.type ?? 'expense'),
+    draft ? draft.categoryId : existing?.categoryId ?? lastUsedCategory(view.type ?? 'expense'),
   )
   const [accountId, setAccountId] = useState<string | null>(
-    existing?.accountId ?? settings.lastUsed?.accountId ?? open[0]?.id ?? null,
+    draft ? draft.accountId : existing?.accountId ?? settings.lastUsed?.accountId ?? open[0]?.id ?? null,
   )
   const [toAccountId, setToAccountId] = useState<string | null>(
-    existing?.toAccountId ?? open.find((a) => a.id !== (existing?.accountId ?? open[0]?.id))?.id ?? null,
+    draft
+      ? draft.toAccountId
+      : existing?.toAccountId ?? open.find((a) => a.id !== (existing?.accountId ?? open[0]?.id))?.id ?? null,
   )
-  const [date, setDate] = useState(startDate)
-  const [note, setNote] = useState(existing?.note ?? '')
+  const [date, setDate] = useState(draft?.date ?? startDate)
+  const [note, setNote] = useState(draft?.note ?? existing?.note ?? '')
   const [error, setError] = useState<string | null>(null)
 
+  // Jede Aenderung landet sofort im Entwurf - wer die App verlaesst, verliert
+  // nichts. Speichern, Abbrechen und Loeschen raeumen ihn wieder weg.
+  useEffect(() => {
+    entwurfSchreiben(draftKey, { type, text, categoryId, accountId, toAccountId, date, note } satisfies EntryDraft)
+  }, [draftKey, type, text, categoryId, accountId, toAccountId, date, note])
+
+  const abbrechen = () => {
+    entwurfLoeschen(draftKey)
+    back()
+  }
+
   const isTransfer = type === 'transfer'
+  // Meistgenutzte Kategorien der letzten 90 Tage zuerst - einmal beim Oeffnen
+  // berechnet, damit nichts springt, waehrend man tippt. In der
+  // Kategorienverwaltung bleibt die eigene Reihenfolge.
+  const usage = useMemo(
+    () => categoryUsage(entries, addDays(todayKey(), -90)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
   const cats = useMemo(
-    () => categories.filter((c) => !c.archived && c.kind === type).sort((a, b) => a.order - b.order),
-    [categories, type],
+    () => byUsage(categories.filter((c) => !c.archived && c.kind === type), usage),
+    [categories, type, usage],
   )
   const cent = textToCent(text)
   const accent = ACCENT[type]
@@ -133,6 +171,7 @@ function EntryForm({ ctx, view }: ViewProps) {
       toAccountId: isTransfer ? toAccountId : null,
       note,
     }
+    entwurfLoeschen(draftKey)
     if (existing) {
       updateEntry(existing.id, payload)
       refresh()
@@ -160,6 +199,7 @@ function EntryForm({ ctx, view }: ViewProps) {
   // Ohne Rueckfrage - die Meldung danach bietet "Rueckgaengig" an.
   const remove = () => {
     if (!existing) return
+    entwurfLoeschen(draftKey)
     removeEntry(existing)
     back()
   }
@@ -189,7 +229,7 @@ function EntryForm({ ctx, view }: ViewProps) {
   return (
     <div className="k-screen fixed">
       <header className="k-head">
-        <button type="button" className="k-ic" onClick={back} aria-label="Abbrechen">
+        <button type="button" className="k-ic" onClick={abbrechen} aria-label="Abbrechen">
           <IconClose />
         </button>
         <div className="k-head-mid">
@@ -302,7 +342,9 @@ function EntryForm({ ctx, view }: ViewProps) {
               <button
                 type="button"
                 className="k-cat dashed"
-                onClick={() => push({ name: 'categoryForm', kind: type === 'income' ? 'income' : 'expense' })}
+                onClick={() =>
+                  push({ name: 'categoryForm', kind: type === 'income' ? 'income' : 'expense', entwurf: draftKey })
+                }
               >
                 <span className="k-cat-ic"><Glyph name="dots" /></span>
                 <span className="k-cat-name">Neu</span>

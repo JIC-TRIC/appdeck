@@ -463,8 +463,10 @@ fuers Hochformat gerechnet – von oben nach unten:
 - [x] **Groesste Kategorien** als Balkenliste, antippbar
 - [ ] ~~Vergleich zum Vorzeitraum~~ – entfernt, brachte keinen Erkenntniswert
 - [ ] ~~Groesste Einzelbuchung~~ – entfernt, es ist fast immer die Miete
-- [ ] Wochentags-Auswertung
-- [ ] Vermoegensverlauf ueber die Zeit
+- [x] Wochentags-Auswertung – „typischer Tag“ als Median je Wochentag, damit die
+      Miete nicht den Dienstag zum teuersten Tag macht; ab Zeitraum Monat
+- [x] Vermoegensverlauf ueber alle Konten (auch ausserhalb der Gesamtbalance);
+      Anfangssalden zaehlen nicht als Zuwachs, Korrekturen schon
 
 ### 11 – Kategorien
 
@@ -474,7 +476,8 @@ fuers Hochformat gerechnet – von oben nach unten:
 - [x] Archivierte ueber einen Schalter sichtbar und wiederherstellbar;
       archivierte verschwinden aus dem Erfassen-Formular, ihre Buchungen
       bleiben erhalten
-- [ ] Reihenfolge per Drag aendern
+- [ ] Reihenfolge per Drag aendern (im Erfassen-Formular sortiert inzwischen der
+      Gebrauch der letzten 90 Tage)
 
 ### 12 – Einstellungen
 
@@ -579,6 +582,11 @@ Seit dem Umzug aus k-deploy (Repo Kuerbissuppe) in den Launcher (appdeck):
 TypeScript, Speicher unter `kontor:<liste>` statt eines Blocks unter
 `k-deploy:proj:kontor`, Schriften selbst gehostet, „Alle Apps" im Menue.
 
+Entwuerfe (`entwurf.ts`): offene Ansicht und halb ausgefuellte Formulare
+(Buchung, Kategorie, Konto, Saldo-Korrektur) ueberleben einen Neustart der
+App fuer drei Stunden - etwa wenn iOS Kontor beendet, waehrend man in der
+Banking-App nachsieht.
+
 ---
 
 ## Nicht im MVP
@@ -590,7 +598,7 @@ Bewusst verschoben, damit das MVP zum Testen fertig ist:
 - [ ] Reihenfolge von Konten und Kategorien per Drag
 - [x] Wischen zum Loeschen in der Buchungsliste
 - [ ] CSV-Export, Waehrungs- und Trennzeichen-Einstellung
-- [ ] Wochentags-Auswertung und Vermoegensverlauf in der Statistik
+- [x] Wochentags-Auswertung und Vermoegensverlauf in der Statistik
 - [ ] **Wiederkehrende Buchungen** (Miete, Abos) mit Vorschlag am Faelligkeitstag
 - [ ] Sparziele mit Fortschritt
 - [ ] Mehrere Waehrungen

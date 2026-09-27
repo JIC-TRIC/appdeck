@@ -1,18 +1,20 @@
 import { useMemo } from 'react'
-import { Bars } from '../charts'
+import { Bars, LabelledBars, Line } from '../charts'
 import {
   breakdown,
   projection,
   seriesForPeriod,
   spendFreeDays,
   totalsInRange,
+  wealthSeries,
+  weekdayProfile,
 } from '../calc'
 import { Empty, Money, PeriodBar, Screen } from '../ui'
-import { formatCent, parseKey, periodRange, shiftPeriod, todayKey } from '../util'
+import { WEEKDAYS, formatCent, formatDate, parseKey, periodRange, shiftPeriod, todayKey } from '../util'
 import type { ViewProps } from '../types'
 
 function Stats({ ctx }: ViewProps) {
-  const { entries, accById, catById, settings, period, setPeriod, back, push, firstKey } = ctx
+  const { entries, accounts, accById, catById, settings, period, setPeriod, back, push, firstKey } = ctx
   const countBoundary = settings.countBoundaryTransfers
 
   const range = useMemo(
@@ -54,6 +56,21 @@ function Stats({ ctx }: ViewProps) {
   ).size
 
   const maxTop = now.all[0]?.value ?? 0
+
+  // Wochentage erst ab Monat: in einer Woche ist jeder Tag nur einmal da -
+  // das zeigt schon "Ausgaben pro Tag".
+  const profil = useMemo(
+    () =>
+      period.kind === 'day' || period.kind === 'week'
+        ? null
+        : weekdayProfile(entries, range, accById, countBoundary, firstKey, settings.weekStart),
+    [period.kind, entries, range, accById, countBoundary, firstKey, settings.weekStart],
+  )
+  const profilMax = profil ? profil.reduce((m, t, i) => (t.value > profil[m].value ? i : m), 0) : -1
+  const profilTop = profil && profil[profilMax].value > 0 ? profil[profilMax] : null
+
+  const vermoegen = useMemo(() => wealthSeries(entries, accounts, range, firstKey), [entries, accounts, range, firstKey])
+  const ausserhalb = accounts.filter((a) => !a.includeInTotal && !a.archived).map((a) => a.name)
 
   const firstDay = series.points[0]
   const lastDay = series.points[series.points.length - 1]
@@ -171,6 +188,43 @@ function Stats({ ctx }: ViewProps) {
                     <span className="k-top-val"><Money cent={s.value} /></span>
                   </button>
                 ))}
+              </div>
+            </div>
+          ) : null}
+
+          {profil ? (
+            <div className="k-card k-pad16">
+              <div className="k-row-base">
+                <span className="k-label grow">Typischer Tag (in €)</span>
+                <span className="k-small-num muted">
+                  {profilTop ? `am meisten ${WEEKDAYS[profilTop.weekday].toLowerCase()}s` : 'kein Muster'}
+                </span>
+              </div>
+              <LabelledBars points={profil} color="var(--exp)" highlight={profilTop ? profilMax : -1} />
+              <div className="k-meta tight">
+                Was an einem Wochentag typischerweise weggeht (Median bis heute). Einzelne große
+                Posten wie die Miete verzerren das Bild so nicht.
+              </div>
+            </div>
+          ) : null}
+
+          {vermoegen && vermoegen.points.length > 1 ? (
+            <div className="k-card k-pad16">
+              <div className="k-row-base">
+                <span className="k-label grow">Vermögen · alle Konten</span>
+                <span className={`k-small-num strong ${vermoegen.end - vermoegen.start >= 0 ? 'inc' : 'exp'}`}>
+                  <Money cent={vermoegen.end - vermoegen.start} sign="auto" />
+                </span>
+              </div>
+              <div className="k-big-num">
+                <Money cent={vermoegen.end} /> <span className="k-cur">€</span>
+              </div>
+              <Line points={vermoegen.points} color="var(--neutral)" />
+              <div className="k-meta tight">
+                Stand {formatDate(vermoegen.points[vermoegen.points.length - 1].label)}
+                {ausserhalb.length
+                  ? ` · inklusive ${ausserhalb.join(', ')} (nicht in der Gesamtbalance)`
+                  : ''}
               </div>
             </div>
           ) : null}

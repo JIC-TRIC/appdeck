@@ -108,6 +108,8 @@ export interface View {
   kind?: CategoryKind
   categoryId?: string
   accountId?: string
+  /** Kategorie-Formular aus dem Buchungsformular heraus: dessen Entwurf. */
+  entwurf?: string
 }
 
 export interface KontorCtx {

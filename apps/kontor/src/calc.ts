@@ -1,7 +1,7 @@
 // Auswertung: aus Buchungen werden Summen, Segmente und Reihen. Eine Stelle,
 // damit Uebersicht, Statistik und Kategoriedetail nie unterschiedlich rechnen.
 
-import { COLOR_OTHER, COLOR_TRANSFER, ID_OTHER, ID_TRANSFER } from './data'
+import { COLOR_OTHER, COLOR_TRANSFER, ID_OTHER, ID_TRANSFER, NOTE_ANFANGSSALDO } from './data'
 import {
   MONTHS_SHORT,
   addDays,
@@ -320,4 +320,124 @@ export function monthRangeOf(key: string) {
     from: dateKey(new Date(d.getFullYear(), d.getMonth(), 1)),
     to: dateKey(new Date(d.getFullYear(), d.getMonth() + 1, 0)),
   }
+}
+
+// ---------- Kategorien nach Gebrauch ----------
+
+// Wie oft jede Kategorie seit "since" gebucht wurde. Grundlage fuer die
+// Reihenfolge im Erfassen-Formular: was man staendig braucht, steht oben.
+export function categoryUsage(entries: Entry[], since: string) {
+  const usage = new Map<string, number>()
+  for (const e of entries) {
+    if (!e.categoryId || e.date < since) continue
+    usage.set(e.categoryId, (usage.get(e.categoryId) ?? 0) + 1)
+  }
+  return usage
+}
+
+// Haeufigste zuerst; Gleichstand und nie genutzte behalten ihre eigene
+// Reihenfolge - so springt nichts, solange sich am Gebrauch nichts aendert.
+export function byUsage(categories: Category[], usage: Map<string, number>) {
+  return [...categories].sort((a, b) => (usage.get(b.id) ?? 0) - (usage.get(a.id) ?? 0) || a.order - b.order)
+}
+
+// ---------- Wochentage ----------
+
+const TAGE_KURZ = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
+
+function median(values: number[]) {
+  if (!values.length) return 0
+  const s = [...values].sort((a, b) => a - b)
+  const mid = Math.floor(s.length / 2)
+  return s.length % 2 ? s[mid] : Math.round((s[mid - 1] + s[mid]) / 2)
+}
+
+// Der typische Montag, Dienstag, ... im Zeitraum: Median der Tagesausgaben
+// je Wochentag, nur bis heute. Median statt Summe oder Durchschnitt, weil
+// einzelne grosse Posten sonst das Bild bestimmen - faellt die Miete auf
+// einen Dienstag, waere sonst "der Dienstag" der teuerste Tag. So zeigt es,
+// wann im Alltag Geld weggeht. Tage ohne Ausgabe zaehlen mit null.
+export function weekdayProfile(
+  entries: Entry[],
+  range: RangeLike,
+  accById: AccById,
+  countBoundary: boolean,
+  firstKey: string | null,
+  weekStart = 1,
+) {
+  // Vor der ersten Buchung war nichts erfasst - diese Tage wuerden als
+  // "nichts ausgegeben" zaehlen und jeden Median auf null druecken.
+  const from = range.from && firstKey && firstKey > range.from ? firstKey : range.from ?? firstKey
+  const today = todayKey()
+  const to = range.to && range.to < today ? range.to : today
+  if (!from || to < from) return null
+
+  const proTag = new Map<string, number>()
+  for (const e of entries) {
+    if (e.date < from || e.date > to) continue
+    const exp = entryFlow(e, accById, countBoundary).exp
+    if (exp) proTag.set(e.date, (proTag.get(e.date) ?? 0) + exp)
+  }
+
+  const tage: number[][] = [[], [], [], [], [], [], []]
+  for (let key = from; key <= to; key = addDays(key, 1)) {
+    tage[parseKey(key).getDay()].push(proTag.get(key) ?? 0)
+  }
+
+  const reihe = [0, 1, 2, 3, 4, 5, 6].map((i) => (weekStart + i) % 7)
+  return reihe.map((wd) => ({
+    weekday: wd,
+    label: TAGE_KURZ[wd],
+    value: median(tage[wd]),
+    days: tage[wd].length,
+  }))
+}
+
+// ---------- Vermoegen ----------
+
+// Was eine Buchung am Vermoegen ueber ALLE Konten aendert - auch die
+// ausserhalb der Gesamtbalance. Umbuchungen verschieben nur, Korrekturen
+// (z. B. Kursgewinne im Depot) zaehlen mit. Der Anfangssaldo eines Kontos
+// nicht: das Geld war schon da, es wurde nur erstmals erfasst - sonst saehe
+// jedes neu angelegte Konto aus wie ein Gewinn.
+export function wealthDelta(entry: Entry) {
+  if (entry.type === 'adjustment' && entry.note === NOTE_ANFANGSSALDO) return 0
+  if (entry.type === 'expense') return -entry.amountCent
+  if (entry.type === 'income' || entry.type === 'adjustment') return entry.amountCent
+  return 0
+}
+
+// Vermoegensverlauf im Zeitraum, rueckwaerts vom heutigen Stand gerechnet:
+// die gespeicherten Salden sind "jetzt", alles davor ergibt sich aus den
+// Buchungen danach. Hoechstens ~40 Punkte, damit die Linie ruhig bleibt.
+export function wealthSeries(entries: Entry[], accounts: Account[], range: RangeLike, firstKey: string | null) {
+  // Erst ab der ersten Buchung - davor waere die Linie nur eine flache Gerade.
+  const from = range.from && firstKey && firstKey > range.from ? firstKey : range.from ?? firstKey
+  const today = todayKey()
+  const to = range.to && range.to < today ? range.to : today
+  if (!from || to < from) return null
+
+  const jetzt = accounts.reduce((s, a) => s + a.balanceCent, 0)
+  // Stand am Ende eines Tages = heute minus alles, was danach gebucht wurde.
+  const nachher = [...entries].sort((a, b) => (a.date < b.date ? 1 : -1))
+  const standAm = (key: string) => {
+    let s = jetzt
+    for (const e of nachher) {
+      if (e.date <= key) break
+      s -= wealthDelta(e)
+    }
+    return s
+  }
+
+  const tage = Math.round((parseKey(to).getTime() - parseKey(from).getTime()) / 86400000)
+  const schritt = Math.max(1, Math.ceil(tage / 40))
+  const points: { label: string; value: number }[] = []
+  // Startpunkt ist der Stand VOR dem ersten Tag, damit Buchungen am ersten
+  // Tag des Zeitraums als Veraenderung sichtbar werden.
+  points.push({ label: addDays(from, -1), value: standAm(addDays(from, -1)) })
+  for (let key = from; key < to; key = addDays(key, schritt)) {
+    points.push({ label: key, value: standAm(key) })
+  }
+  points.push({ label: to, value: standAm(to) })
+  return { points, start: points[0].value, end: points[points.length - 1].value }
 }

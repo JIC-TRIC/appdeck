@@ -1,9 +1,11 @@
 import {
   DEFAULT_EXPENSE_CATEGORIES,
   DEFAULT_INCOME_CATEGORIES,
+  NOTE_ANFANGSSALDO,
   type CategoryTemplate,
 } from './data'
 import { todayKey } from './util'
+import { ENTWURF_KEY } from './entwurf'
 import type { Account, Category, CategoryKind, Entry, EntryType, Settings } from './types'
 
 // Gespeichert wird wie in jeder App im Launcher: ein localStorage-Schluessel
@@ -211,7 +213,7 @@ export function addAccount({
       amountCent: balanceCent,
       date: date ?? todayKey(),
       accountId: acc.id,
-      note: 'Anfangssaldo',
+      note: NOTE_ANFANGSSALDO,
     })
   }
   return { ...acc, balanceCent }
@@ -498,6 +500,12 @@ export function importSnapshot(data: unknown) {
     }
     throw new Error('Nicht genug Speicherplatz – es wurde nichts geändert')
   }
+  // Entwuerfe gehoeren zum alten Bestand.
+  try {
+    localStorage.removeItem(ENTWURF_KEY)
+  } catch {
+    // egal
+  }
 }
 
 // Eine gewaehlte Exportdatei einlesen und importieren. Erststart und
@@ -517,6 +525,8 @@ export function clearAll() {
     for (const k of KEYS) localStorage.removeItem(PREFIX + k)
     // Sonst holt die Uebernahme beim naechsten Start die alten Daten zurueck.
     localStorage.removeItem(LEGACY_KEY)
+    // Entwuerfe verweisen auf Konten und Kategorien, die es dann nicht mehr gibt.
+    localStorage.removeItem(ENTWURF_KEY)
   } catch {
     // nichts zu tun
   }

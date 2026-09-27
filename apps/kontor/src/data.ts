@@ -47,6 +47,10 @@ export const DEFAULT_INCOME_CATEGORIES: CategoryTemplate[] = [
   { name: 'Sonstiges', icon: 'dots', color: '#8A8377' },
 ]
 
+// Notiz der Korrektur, mit der ein neues Konto seinen Startsaldo bekommt.
+// Die Auswertungen erkennen daran, dass es kein echter Zuwachs ist.
+export const NOTE_ANFANGSSALDO = 'Anfangssaldo'
+
 // Segmentfarben fuer die Sammelposten im Donut.
 export const COLOR_OTHER = '#A9A29A'
 export const COLOR_TRANSFER = '#4A6FA5'

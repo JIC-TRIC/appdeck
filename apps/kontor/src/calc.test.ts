@@ -1,5 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { breakdown, entryFlow, projection, spendFreeDays, totalsInRange } from './calc'
+import {
+  breakdown,
+  byUsage,
+  categoryUsage,
+  entryFlow,
+  projection,
+  spendFreeDays,
+  totalsInRange,
+  wealthSeries,
+  weekdayProfile,
+} from './calc'
 import { ID_OTHER, ID_TRANSFER } from './data'
 import { periodRange } from './util'
 import type { Account, Category, Entry } from './types'
@@ -126,5 +136,85 @@ describe('Auswertungen, die vom heutigen Tag abhängen', () => {
   it('Hochrechnung: Tempo bis heute auf den ganzen Monat, abgelaufene Zeiträume ohne', () => {
     expect(projection(30000, periodRange('month', '2026-09-10'), null)).toBe(90000)
     expect(projection(30000, periodRange('month', '2026-08-10'), null)).toBeNull()
+  })
+})
+
+describe('Kategorien nach Gebrauch', () => {
+  const cat = (id: string, order: number): Category => ({
+    id, name: id, kind: 'expense', icon: 'dots', color: '#000', budgetCent: null, archived: false, order,
+  })
+  const cats = [cat('wohnen', 0), cat('lebensmittel', 1), cat('essen', 2), cat('reisen', 3)]
+  const entries = [
+    ...[1, 2, 3].map((d) => entry({ type: 'expense', amountCent: 100, date: `2026-09-0${d}`, categoryId: 'lebensmittel' })),
+    entry({ type: 'expense', amountCent: 100, date: '2026-09-04', categoryId: 'essen' }),
+    // alt - zaehlt nicht mehr
+    ...[1, 2, 3, 4, 5].map((d) => entry({ type: 'expense', amountCent: 100, date: `2026-01-0${d}`, categoryId: 'reisen' })),
+  ]
+
+  it('häufigste zuerst, nur im Zeitfenster; der Rest behält seine Reihenfolge', () => {
+    const usage = categoryUsage(entries, '2026-06-01')
+    expect(byUsage(cats, usage).map((c) => c.id)).toEqual(['lebensmittel', 'essen', 'wohnen', 'reisen'])
+  })
+})
+
+describe('Auswertungen über den Monat September 2026', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 8, 30, 12))
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('Wochentage: der typische Tag, einzelne große Posten verzerren nicht', () => {
+    const entries = [
+      // Miete am Dienstag, 1.9. - einmalig pro Monat
+      entry({ type: 'expense', amountCent: 85000, date: '2026-09-01', categoryId: 'wohnen' }),
+      // Wocheneinkauf jeden Samstag
+      ...['05', '12', '19', '26'].map((d) => entry({ type: 'expense', amountCent: 3000, date: `2026-09-${d}`, categoryId: 'l' })),
+    ]
+    const profil = weekdayProfile(entries, periodRange('month', '2026-09-15'), accById, false, null, 1)!
+    expect(profil.map((t) => t.label)).toEqual(['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'])
+    const tag = (l: string) => profil.find((t) => t.label === l)!
+    expect(tag('Di')).toMatchObject({ value: 0, days: 5 })
+    expect(tag('Sa')).toMatchObject({ value: 3000, days: 4 })
+  })
+
+  it('Woche kann am Sonntag beginnen', () => {
+    const profil = weekdayProfile([], periodRange('month', '2026-09-15'), accById, false, null, 0)!
+    expect(profil[0].label).toBe('So')
+  })
+
+  it('Vermögen: über alle Konten, Umbuchungen neutral, Korrekturen zählen', () => {
+    const accounts = [{ ...account('giro'), balanceCent: 10000 }, { ...account('depot', false), balanceCent: 50000 }]
+    const entries = [
+      entry({ type: 'income', amountCent: 2000, date: '2026-09-10', categoryId: 'g' }),
+      entry({ type: 'transfer', amountCent: 1000, date: '2026-09-15', toAccountId: 'depot' }),
+      entry({ type: 'expense', amountCent: 500, date: '2026-09-20', categoryId: 'c' }),
+      entry({ type: 'adjustment', amountCent: 3000, date: '2026-09-25', accountId: 'depot' }),
+    ]
+    const w = wealthSeries(entries, accounts, periodRange('month', '2026-09-15'), null)!
+    // heute 60.000; vor dem Monat fehlten +2000 -500 +3000
+    expect([w.start, w.end]).toEqual([55500, 60000])
+    expect(w.points[0].label).toBe('2026-08-31')
+    expect(w.points[w.points.length - 1].label).toBe('2026-09-30')
+    expect(w.points.find((p) => p.label === '2026-09-15')?.value).toBe(57500)
+  })
+
+  it('Vermögen und Wochentage beginnen erst mit der ersten Buchung, Anfangssalden sind kein Zuwachs', () => {
+    const accounts = [{ ...account('giro'), balanceCent: 9500 }]
+    const entries = [
+      entry({ type: 'adjustment', amountCent: 10000, date: '2026-06-01', note: 'Anfangssaldo' }),
+      entry({ type: 'expense', amountCent: 500, date: '2026-06-06', categoryId: 'c' }), // Samstag
+    ]
+    const jahr = periodRange('year', '2026-09-15')
+    const w = wealthSeries(entries, accounts, jahr, '2026-06-01')!
+    expect(w.points[0].label).toBe('2026-05-31')
+    // Startstand ist der Anfangssaldo, nicht null - veraendert hat sich nur die Ausgabe
+    expect([w.start, w.end]).toEqual([10000, 9500])
+
+    const profil = weekdayProfile(entries, jahr, accById, false, '2026-06-01', 1)!
+    // Januar bis Mai zaehlen nicht als "nichts ausgegeben"
+    expect(profil.find((t) => t.label === 'Sa')!.days).toBe(17)
   })
 })

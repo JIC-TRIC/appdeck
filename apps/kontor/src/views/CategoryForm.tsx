@@ -1,10 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Glyph, IconClose, ICON_KEYS } from '../icons'
 import { Label, Segmented, Toggle } from '../ui'
 import { CATEGORY_COLORS } from '../data'
 import { centToText, textToCent } from '../util'
 import { addCategory, archiveCategory, updateCategory } from '../kontorStore'
 import type { CategoryKind, ViewProps } from '../types'
+import { entwurfAendern, entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
+
+interface CategoryDraft {
+  name: string
+  kind: CategoryKind
+  icon: string
+  color: string
+  budget: string
+}
 
 const KINDS: { id: CategoryKind; label: string }[] = [
   { id: 'expense', label: 'Ausgabe' },
@@ -15,14 +24,25 @@ function CategoryForm({ ctx, view }: ViewProps) {
   const { categories, entries, back, refresh } = ctx
   const existing = view.categoryId ? categories.find((c) => c.id === view.categoryId) ?? null : null
 
-  const [name, setName] = useState(existing?.name ?? '')
-  const [kind, setKind] = useState<CategoryKind>(existing?.kind ?? view.kind ?? 'expense')
-  const [icon, setIcon] = useState(existing?.icon ?? 'basket')
+  const draftKey = entwurfKey(view)
+  const [draft] = useState(() => entwurfLesen<CategoryDraft>(draftKey))
+  const [name, setName] = useState(draft?.name ?? existing?.name ?? '')
+  const [kind, setKind] = useState<CategoryKind>(draft?.kind ?? existing?.kind ?? view.kind ?? 'expense')
+  const [icon, setIcon] = useState(draft?.icon ?? existing?.icon ?? 'basket')
   const [color, setColor] = useState(
-    existing?.color ?? CATEGORY_COLORS[categories.length % CATEGORY_COLORS.length],
+    draft?.color ?? existing?.color ?? CATEGORY_COLORS[categories.length % CATEGORY_COLORS.length],
   )
-  const [budget, setBudget] = useState(existing?.budgetCent ? centToText(existing.budgetCent) : '')
+  const [budget, setBudget] = useState(draft?.budget ?? (existing?.budgetCent ? centToText(existing.budgetCent) : ''))
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    entwurfSchreiben(draftKey, { name, kind, icon, color, budget } satisfies CategoryDraft)
+  }, [draftKey, name, kind, icon, color, budget])
+
+  const abbrechen = () => {
+    entwurfLoeschen(draftKey)
+    back()
+  }
 
   const used = existing ? entries.filter((e) => e.categoryId === existing.id).length : 0
 
@@ -32,10 +52,13 @@ function CategoryForm({ ctx, view }: ViewProps) {
       return
     }
     const budgetCent = kind === 'expense' && budget.trim() ? textToCent(budget) : null
+    entwurfLoeschen(draftKey)
     if (existing) {
       updateCategory(existing.id, { name: name.trim(), icon, color, budgetCent })
     } else {
-      addCategory({ name, kind, icon, color, budgetCent })
+      const neu = addCategory({ name, kind, icon, color, budgetCent })
+      // Aus dem Buchungsformular heraus angelegt: dort ist sie gleich gewaehlt.
+      if (view.entwurf) entwurfAendern(view.entwurf, { categoryId: neu.id })
     }
     refresh()
     back()
@@ -44,7 +67,7 @@ function CategoryForm({ ctx, view }: ViewProps) {
   return (
     <div className="k-screen fixed">
       <header className="k-head">
-        <button type="button" className="k-ic" onClick={back} aria-label="Abbrechen">
+        <button type="button" className="k-ic" onClick={abbrechen} aria-label="Abbrechen">
           <IconClose />
         </button>
         <div className="k-head-mid">
