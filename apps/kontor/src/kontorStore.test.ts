@@ -153,6 +153,27 @@ describe('Export und Import', () => {
   })
 })
 
+describe('Beispieldaten (testdaten/kontor-beispiel.json)', () => {
+  it('lassen sich importieren und sind in sich stimmig', async () => {
+    const beispiel = (await import('../testdaten/kontor-beispiel.json')).default
+    S.importSnapshot(beispiel)
+    expect(S.isOnboarded()).toBe(true)
+
+    const konten = new Set(S.getAccounts().map((a) => a.id))
+    const kategorien = new Map(S.getCategories().map((c) => [c.id, c]))
+    for (const e of S.getEntries()) {
+      expect(konten.has(e.accountId), e.id).toBe(true)
+      if (e.type === 'transfer') expect(konten.has(e.toAccountId!), e.id).toBe(true)
+      if (e.type === 'expense' || e.type === 'income') {
+        // Kategorie existiert und passt zur Buchungsart
+        expect(kategorien.get(e.categoryId!)?.kind, e.id).toBe(e.type)
+      }
+    }
+    // Keine Abweichungswarnung im Kontodetail
+    expectConsistent()
+  })
+})
+
 describe('Übernahme aus k-deploy', () => {
   const legacy = {
     settings: { onboarded: true, weekStart: 1 },

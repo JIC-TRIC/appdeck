@@ -166,6 +166,13 @@ sofern sie im selben Speicher liegen (Schlüssel `k-deploy:proj:kontor`). Also: 
 per Launcher-Backup herüberholen, danach Kontor öffnen – fertig. Alternativ eine alte Kontor-Exportdatei
 in Kontor unter Einstellungen → **Import aus JSON** einlesen.
 
+**Kontor-Testdaten:** `apps/kontor/testdaten/kontor-beispiel.json` – Juni bis September 2026, vier Konten
+(eins außerhalb der Gesamtbalance), Budgets, eine archivierte Kategorie, Umbuchungen und Korrekturen.
+Aufs iPhone: https://raw.githubusercontent.com/JIC-TRIC/appdeck/main/apps/kontor/testdaten/kontor-beispiel.json
+in Safari öffnen → Teilen → „In Dateien sichern". Dann in Kontor beim Erststart „Aus Exportdatei
+wiederherstellen" oder unter Einstellungen → „Import aus JSON". **Der Import ersetzt alle Kontor-Daten** –
+echte Daten vorher exportieren. Ein Test (`npm test`) prüft, dass die Datei zum Datenmodell passt.
+
 > **Ein Icon löschen = seine Daten löschen.** Deshalb ab und zu ein Backup in „Dateien“ (iCloud Drive) sichern.
 > Auch keine Extra-Icons für einzelne Apps aus diesem Repo anlegen – die hätten wieder eigenen, getrennten Speicher.
 
