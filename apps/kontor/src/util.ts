@@ -122,6 +122,17 @@ const WEEKDAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Fr
 
 export { MONTHS, MONTHS_SHORT, WEEKDAYS }
 
+// "im September", "in KW 40", "am 30.09." - worauf sich eine Summe bezieht,
+// in so wenigen Worten wie moeglich ("Uebrig im September", "gespart im Jahr
+// 2026").
+export function imZeitraum(kind: PeriodKind, range: Range) {
+  if (kind === 'month' && range.from) return `im ${MONTHS[parseKey(range.from).getMonth()]}`
+  if (kind === 'year' && range.from) return `im Jahr ${range.from.slice(0, 4)}`
+  if (kind === 'day' && range.from) return `am ${formatDayShort(range.from)}`
+  if (kind === 'week') return `in ${range.sub.replace('Kalenderwoche', 'KW')}`
+  return 'insgesamt'
+}
+
 // '12.09.2026'
 export function formatDate(key: string) {
   const [y, m, d] = key.split('-')
@@ -192,7 +203,9 @@ export function periodRange(
       from,
       to,
       label: `${MONTHS[d.getMonth()]} ${d.getFullYear()}`,
-      sub: `${formatDayShort(from)} – ${formatDayShort(to)}`,
+      // "01.09. – 30.09." sagt nichts, was der Monatsname nicht schon sagt -
+      // und die Zeile fehlt dem Ring.
+      sub: '',
     }
   }
   if (kind === 'year') {

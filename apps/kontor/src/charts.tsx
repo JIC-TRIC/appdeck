@@ -1,7 +1,8 @@
 // Selbst gezeichnete Diagramme. Eine Chart-Library waere fuer drei Formen
 // mehr Gewicht als die halbe App.
 
-import { Glyph, GlyphPath } from './icons'
+import { Glyph, GlyphPath, IconRight } from './icons'
+import { Money } from './ui'
 import { splitCent, todayKey } from './util'
 import type { CategoryKind, Segment } from './types'
 import type { SeriesPoint } from './calc'
@@ -144,23 +145,35 @@ function platzieren(arcs: Arc[]) {
 interface DonutProps {
   segments: Segment[]
   total: number
-  incCent: number
-  expCent: number
+  /** Buchungen im Zeitraum - steht in der Mitte, solange nichts gewaehlt ist. */
+  count: number
   onSelect?: (seg: Segment) => void
   onPick?: (seg: Segment | null) => void
   /** Tipp in die Mitte, solange keine Kategorie gewaehlt ist. */
   onCenter?: () => void
+  /** Monatsbudget der Kategorie, wenn es im Zeitraum etwas bedeutet. */
+  budgetOf?: (id: string) => number | null
   picked: string | null
   kind: CategoryKind
 }
 
-function Donut({ segments, total, incCent, expCent, onSelect, onPick, onCenter, picked, kind }: DonutProps) {
-  // Ohne Auswahl ist die Mitte ein Knopf zu allen Buchungen des Zeitraums -
-  // die Summen darin sind genau deren Summe.
+function Donut({ segments, total, count, onSelect, onPick, onCenter, budgetOf, picked, kind }: DonutProps) {
+  // Ohne Auswahl ist die Mitte der Weg zu allen Buchungen des Zeitraums. Die
+  // Summen stehen darueber in den Kacheln, die Mitte muss keine Zahl mehr
+  // erklaeren - frueher standen hier Einnahmen und Ausgaben ohne Beschriftung.
   const Mitte = onCenter ? 'button' : 'div'
   const mitteProps = onCenter
     ? { type: 'button' as const, className: 'k-donut-center as-button all', onClick: onCenter, 'aria-label': 'Alle Buchungen im Zeitraum' }
     : { className: 'k-donut-center' }
+  const buchungen = (
+    <>
+      <span className="k-donut-count">{count}</span>
+      <span className="k-donut-count-l">
+        {count === 1 ? 'Buchung' : 'Buchungen'}
+        {onCenter ? <span className="k-donut-chev"><IconRight /></span> : null}
+      </span>
+    </>
+  )
 
   if (!total) {
     return (
@@ -169,10 +182,14 @@ function Donut({ segments, total, incCent, expCent, onSelect, onPick, onCenter, 
           <circle cx={CX} cy={CY} r={R} fill="none" stroke="var(--line)" strokeWidth={STROKE} />
         </svg>
         <Mitte {...mitteProps}>
-          <span className="k-donut-empty">
-            {kind === 'expense' ? 'Keine Ausgaben' : 'Keine Einnahmen'}
-            <span>in diesem Zeitraum</span>
-          </span>
+          {count ? (
+            buchungen
+          ) : (
+            <span className="k-donut-empty">
+              {kind === 'expense' ? 'Keine Ausgaben' : 'Keine Einnahmen'}
+              <span>in diesem Zeitraum</span>
+            </span>
+          )}
         </Mitte>
       </div>
     )
@@ -190,6 +207,8 @@ function Donut({ segments, total, incCent, expCent, onSelect, onPick, onCenter, 
   const labelled = platzieren(arcs)
   const gewaehlt = picked ? arcs.find((a) => a.id === picked) : null
   const luecke = arcs.length > 1 ? LUECKE : 0
+  const budget = gewaehlt ? budgetOf?.(gewaehlt.id) ?? null : null
+  const budgetPct = budget ? Math.round((gewaehlt!.value / budget) * 100) : null
 
   return (
     <div className={`k-donut${gewaehlt ? ' picked' : ''}`}>
@@ -276,25 +295,30 @@ function Donut({ segments, total, incCent, expCent, onSelect, onPick, onCenter, 
       </svg>
 
       {gewaehlt ? (
-        // Gewaehlte Kategorie: in der Mitte steht ihr Betrag, nicht die
-        // Gesamtsumme. Ein Tipp darauf oeffnet das Kategoriedetail.
+        // Gewaehlte Kategorie: in der Mitte steht ihr Betrag und, im Monat,
+        // wie weit das Budget reicht. Der Knopf "Details" sagt, dass ein
+        // zweiter Tipp weiterfuehrt - vorher musste man das wissen.
         <button type="button" className="k-donut-center as-button" onClick={() => onSelect?.(gewaehlt)}>
           <span className="k-donut-pick-ic" style={{ color: gewaehlt.color }}>
             <Glyph name={gewaehlt.icon} />
           </span>
           <span className="k-donut-pick-name">{gewaehlt.name}</span>
-          <span className="k-donut-pick-sum" style={{ color: gewaehlt.color }}>
-            {kind === 'expense' ? '−' : ''}
-            {splitCent(gewaehlt.value).int},{splitCent(gewaehlt.value).frac}
+          <span className="k-donut-pick-sum">
+            <Money cent={gewaehlt.value} /> <span className="k-cur">€</span>
           </span>
-          <span className="k-donut-cur">{Math.round(gewaehlt.share * 100)} % · EURO</span>
+          {budgetPct !== null ? (
+            <span className={`k-donut-pick-note${budgetPct > 100 ? ' over' : ''}`}>{budgetPct} % vom Budget</span>
+          ) : (
+            <span className="k-donut-pick-note">
+              {Math.round(gewaehlt.share * 100)} % der {kind === 'expense' ? 'Ausgaben' : 'Einnahmen'}
+            </span>
+          )}
+          <span className="k-donut-pick-more">
+            Details <IconRight />
+          </span>
         </button>
       ) : (
-        <Mitte {...mitteProps}>
-          <span className="k-donut-inc">{splitCent(incCent).int},{splitCent(incCent).frac}</span>
-          <span className="k-donut-exp">−{splitCent(expCent).int},{splitCent(expCent).frac}</span>
-          <span className="k-donut-cur">EURO</span>
-        </Mitte>
+        <Mitte {...mitteProps}>{buchungen}</Mitte>
       )}
     </div>
   )

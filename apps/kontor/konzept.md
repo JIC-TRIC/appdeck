@@ -222,9 +222,10 @@ Hauptansicht
 ├─ Ausgabe erfassen            (grosser Knopf −)
 ├─ Einnahme erfassen           (grosser Knopf +)
 ├─ Umbuchung                   (Menue ⇄)
-├─ Buchungen im Zeitraum       (Tippen auf die Saldoleiste)
+├─ Buchungen im Zeitraum       (Tippen auf die Ringmitte)
 │  └─ Buchung bearbeiten
-├─ Kategorie-Detail            (Tippen auf ein Donut-Segment)
+├─ Kategorie-Detail            (Segment antippen, dann „Details")
+├─ Konten                      (Tippen auf die Gesamtbalance)
 └─ Menue                       (Zeitraum-Zeile ⋮)
    ├─ Konten
    │  └─ Kontodetail ─ Konto bearbeiten / Saldo korrigieren
@@ -241,7 +242,9 @@ Hauptansicht
       weiter im Erststart und in den Einstellungen. Das Menue haengt am rechten
       Rand der Zeitraum-Zeile, aus dem Fluss genommen, damit der Zeitraum in
       der Mitte des Schirms bleibt. Die Umbuchung sitzt im Menue
-- [x] Zeitraum-Zeile mit Pfeilen; Wischen blaettert einen Zeitraum vor/zurueck
+- [x] Zeitraum-Zeile mit Pfeilen; Wischen blaettert einen Zeitraum vor/zurueck.
+      Im Monat ohne Datumszeile darunter – „01.09. – 30.09." sagt nichts, was
+      „September 2026" nicht schon sagt, und die Zeile fehlt dem Ring
   - [x] Der Ring folgt dabei **gedaempft dem Finger** und federt zurueck, wenn
         die Strecke nicht reicht. Ohne das passiert beim Wischen sichtbar
         nichts, bis es ploetzlich umspringt
@@ -256,10 +259,22 @@ Hauptansicht
       deutlich ueber dem unteren Rand liegen – dort gehoert die Geste dem
       System, iOS verlaesst damit die App – und die Strecke lang genug sein,
       damit es nicht versehentlich aufgeht
-- [x] Umschalter Ausgaben ⇄ Einnahmen fuer den Donut
+- [x] **Menue als vier Kacheln** mit der jeweils wichtigsten Zahl: Konten
+      (Gesamtbalance), Statistik (Sparquote im Zeitraum), Kategorien (Anzahl,
+      Budgets und wie viele drueber sind), Einstellungen. Darunter Umbuchung und
+      Alle Apps. Vorher vier Zeilen mit Beschreibung – jetzt ist das Menue
+      selbst schon ein kleiner Ueberblick
+- [x] **Die Summen sind der Umschalter.** Zwei Kacheln statt einer Pille:
+      Ausgaben und Einnahmen des Zeitraums mit Betrag, antippen wechselt den
+      Ring. Die gewaehlte liegt als Flaeche obenauf und traegt ihre Farbe.
+      Darunter in einer Zeile, was uebrig bleibt („Uebrig im September
+      +507,42 €")
 - [x] **Donut** des Zeitraums nach Kategorie
   - [x] Kategorie-Icons aussen am Ring mit Prozentwert
-  - [x] In der Mitte **Einnahmen gruen** und **Ausgaben koralle**
+  - [x] In der Mitte **die Zahl der Buchungen** („33 Buchungen ›"), ein Tipp
+        oeffnet die Liste. Frueher standen dort Einnahmen und Ausgaben ohne
+        Beschriftung – welche Zahl zum Ring gehoerte, musste man raten; die
+        Summen stehen jetzt beschriftet in den Kacheln darueber
   - [x] Segment antippen → Kategorie-Detail. **Der Ring selbst ist antippbar,
         nicht nur die Beschriftung** – kleine Segmente haben keine und waeren
         sonst unerreichbar
@@ -309,27 +324,31 @@ Hauptansicht
         Kategorie-Detail listet dann die gebuendelten Buchungen
   - [x] Selbst gezeichnetes SVG, keine Chart-Library
   - [x] Leerer Zeitraum: grauer Ring mit „Keine Ausgaben"
-- [x] **Saldoleiste**: Gesamtbalance + Anzahl Buchungen, antippen → Liste.
-      Eine Haarlinie statt einer schwebenden Karte – der Ring darueber ist
-      schon eine Flaeche, eine zweite direkt darunter macht die Uebersicht
-      unruhig. Der Betrag steht allein auf seiner Zeile und darf dafuer gross
-      sein; ist er negativ, faerbt ihn Koralle, denn ein Minus faellt in
-      dieser Groesse leicht unter den Tisch
+- [x] **Saldoleiste**: Gesamtbalance + Zahl der Konten, antippen → Konten.
+      Die Gesamtbalance ist die Summe der Konten, also fuehrt sie dorthin; die
+      Buchungen liegen hinter der Ringmitte. Eine Haarlinie statt einer
+      schwebenden Karte – der Ring darueber ist schon eine Flaeche, eine zweite
+      direkt darunter macht die Uebersicht unruhig. Ist der Betrag negativ,
+      faerbt ihn Koralle, denn ein Minus faellt in dieser Groesse leicht unter
+      den Tisch
 - [x] **Kategorie antippen hebt sie hervor** (Icon am Ring oder das Segment
       selbst): nur ihr Segment bleibt farbig, der Rest verblasst, und in der
-      Mitte steht statt der Gesamtsummen ihr Betrag, Name und Anteil. Nochmal
-      antippen hebt es auf, ein Wechsel von Zeitraum oder Typ ebenso
+      Mitte stehen Name und Betrag – im Monat mit Budgetstand („112 % vom
+      Budget", ueber 100 % in Koralle), sonst mit dem Anteil. Nochmal antippen
+      hebt es auf, ein Wechsel von Zeitraum oder Typ ebenso
 - [x] Ein Tipp auf die hervorgehobene Mitte oeffnet das Kategoriedetail –
-      so bleiben Hervorheben und Oeffnen zwei verschiedene Gesten
+      so bleiben Hervorheben und Oeffnen zwei verschiedene Gesten. Ein
+      sichtbarer Knopf **„Details ›"** sagt, dass es weitergeht; vorher musste
+      man das wissen
 - [x] Zwei flache Knoepfe mit abgerundeten Ecken: **−** Ausgabe, **+**
-      Einnahme. Rechtecke statt Kreise, damit unten weniger Hoehe draufgeht
+      Einnahme. Rechtecke statt Kreise, damit unten weniger Hoehe draufgeht.
+      **Ausgabe gefuellt**, Einnahme mit Rand: der Knopf, den man fast jedes
+      Mal drueckt, ist der kraeftigste
 - [x] **Saldoleiste und Knoepfe schliessen unten buendig ab**; darunter steht
       nur noch die Safe Area des Geraets
 - [x] Der Ring ist durch die Schirmbreite begrenzt – auf hohen Geraeten bleibt
-      also Luft uebrig. Sie wird **zwei Drittel nach oben, ein Drittel nach
-      unten** verteilt statt mittig: so gehoert der Ring sichtbar zum unteren
-      Block, und die Luft steht unter den Bedienelementen, wo sie nach Atem
-      aussieht und nicht nach Leerlauf
+      also Luft uebrig. Sie verteilt sich gleich auf ueber und unter dem Ring;
+      seit die Kacheln oben stehen, sitzt er so zwischen Summen und Saldo
 - [ ] Kontenfilter (nur eine Auswahl von Konten betrachten)
 - [x] Suche – in der Buchungsliste statt in der Kopfzeile, ueber alle Zeitraeume
       (Notiz, Kategorie, Konto, Betrag)
@@ -387,9 +406,19 @@ fuers Hochformat gerechnet – von oben nach unten:
 ### 5 – Buchungen im Zeitraum
 
 - [x] Liste, neueste zuerst, nach Tag gruppiert mit Tagessumme im Gruppenkopf
-      (Nettofluss des Tages, damit eine Gutschrift eine Ausgabe ausgleicht)
-- [x] Zeile: Icon, Kategorie, Notiz, Konto, Betrag in der passenden Farbe
-- [x] Kopf: Einnahmen, Ausgaben, Differenz des Zeitraums
+      (Nettofluss des Tages, damit eine Gutschrift eine Ausgabe ausgleicht).
+      **Flach auf dem Grund**, keine Karte je Tag – die Liste ist die ganze
+      Seite, Rahmen um Rahmen machte sie nur unruhig
+- [x] Zeile: **vorne was es war** (die Notiz, „Rewe"), darunter Kategorie und
+      Konto; ohne Notiz rueckt die Kategorie nach vorn. Gilt fuer jede
+      Buchungszeile, auch in Konto- und Kategoriedetail
+- [x] **Ausgaben in Tinte statt Koralle.** Eine Liste voller Rot liest sich wie
+      lauter Fehler. Einnahmen gruen mit +, Umbuchungen blau, Korrekturen grau
+- [x] Kopf: Einnahmen, Ausgaben, Uebrig als drei Zahlen ohne Karte
+- [x] **Filter-Chips** darunter: Alle, Ausgaben, Einnahmen, Umbuchungen.
+      Korrekturen nur unter „Alle" – sie sind kein Geldfluss. Die Summen im
+      Kopf bleiben beim Filtern stehen
+- [x] Suche hinter der Lupe in der Kopfzeile statt als dauerhaftes Feld
 - [x] Zeile antippen → bearbeiten
 - [x] Leerer Zustand mit direktem „Ausgabe erfassen"
 - [x] Keine schwebenden Erfassen-Knoepfe: die stehen auf der Hauptansicht,
@@ -564,6 +593,8 @@ eine Geste angekommen ist und wohin sie fuehrt.
 apps/kontor/
 ├─ index.html              Seite im Launcher (laedt shell.js + src/main.tsx)
 ├─ konzept.md              dieses Dokument
+├─ mockups.html            Vorschlaege fuer den Feinschliff (Okt. 2026),
+│                          umgesetzt: A, Buchungsliste, Menue
 └─ src/
    ├─ main.tsx             Start: Schriften, Ionic-Huelle (mountApp)
    ├─ Kontor.tsx           Ansichtsstapel, Datenzugriff, History

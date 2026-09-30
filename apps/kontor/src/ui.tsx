@@ -81,7 +81,7 @@ export function PeriodBar({
         onClick={onOpen}
       >
         <span className="k-period-label">{range.label}</span>
-        <span className="k-period-sub">{range.sub}</span>
+        {range.sub ? <span className="k-period-sub">{range.sub}</span> : null}
       </button>
       <button type="button" className="k-ic" onClick={onNext} aria-label="Zeitraum vor" disabled={gesamt}>
         <IconRight />

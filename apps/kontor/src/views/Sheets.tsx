@@ -1,7 +1,8 @@
-import { useRef } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { IconCheck, IconChart, IconGrid, IconRight, IconSliders, IconTransfer, IconWallet } from '../icons'
 import { Money, Sheet } from '../ui'
-import { PERIODS, periodRange, todayKey } from '../util'
+import { PERIODS, imZeitraum, periodRange, todayKey } from '../util'
+import { budgetUsage, monthRangeOf, totalsInRange } from '../calc'
 import { totalBalance } from '../kontorStore'
 import type { View, ViewProps } from '../types'
 
@@ -60,12 +61,59 @@ export function PeriodSheet({ ctx }: ViewProps) {
   )
 }
 
+// Eine Kachel im Menue: Symbol, Name, die wichtigste Zahl und eine Zeile
+// dazu. So ist das Menue selbst schon ein kleiner Ueberblick.
+function MenuTile({
+  icon,
+  color,
+  title,
+  value,
+  sub,
+  onClick,
+}: {
+  icon: ReactNode
+  color: string
+  title: string
+  value?: ReactNode
+  sub: ReactNode
+  onClick: () => void
+}) {
+  return (
+    <button type="button" className="k-menu-tile" onClick={onClick}>
+      <span className="k-menu-tile-top">
+        <span className="k-menu-ic" style={{ color, background: `color-mix(in srgb, ${color} 13%, transparent)` }}>
+          {icon}
+        </span>
+        <span className="k-menu-tile-chev"><IconRight /></span>
+      </span>
+      <span className="k-menu-tile-t">{title}</span>
+      {value ? <span className="k-menu-tile-v">{value}</span> : null}
+      <span className="k-menu-tile-s">{sub}</span>
+    </button>
+  )
+}
+
 // Statt einer Tab-Leiste: alles, was nicht die Hauptansicht ist, liegt hier.
 export function MenuSheet({ ctx }: ViewProps) {
-  const { accounts, categories, back, replace, onExit } = ctx
+  const { accounts, categories, entries, accById, settings, period, firstKey, back, replace, onExit } = ctx
   const open = accounts.filter((a) => !a.archived)
-  const expenseCats = categories.filter((c) => c.kind === 'expense' && !c.archived).length
-  const incomeCats = categories.filter((c) => c.kind === 'income' && !c.archived).length
+  const outside = open.filter((a) => !a.includeInTotal).length
+  const cats = categories.filter((c) => !c.archived)
+  const countBoundary = settings.countBoundaryTransfers
+
+  // Sparquote des Zeitraums, den die Startseite gerade zeigt - gerechnet wie
+  // in der Statistik.
+  const range = periodRange(period.kind, period.anchor, settings.weekStart, firstKey)
+  const totals = totalsInRange(entries, range, accById, countBoundary)
+  const savings = totals.inc > 0 ? (totals.inc - totals.exp) / totals.inc : null
+
+  // Budgets sind Monatsbudgets: gezaehlt wird im Monat, in dem die Startseite
+  // gerade steht.
+  const month = monthRangeOf(period.anchor)
+  const budgeted = cats.filter((c) => c.kind === 'expense' && c.budgetCent)
+  const over = budgeted.filter(
+    (c) => budgetUsage(entries, month, c.id, accById, countBoundary) > (c.budgetCent ?? 0),
+  ).length
 
   // Erst schliesst das Blatt (mit Animation), dann ersetzt die gewaehlte Seite
   // seinen Platz im Stapel. Ersetzt, nicht zurueck und neu - sonst rennt
@@ -82,44 +130,43 @@ export function MenuSheet({ ctx }: ViewProps) {
         }
         return (
           <>
-            <button type="button" className="k-menu-row" onClick={go({ name: 'accounts' })}>
-              <span className="k-menu-ic"><IconWallet /></span>
-              <span className="k-menu-mid">
-                <span className="k-menu-t">Konten</span>
-                <span className="k-menu-s">
-                  {open.length} {open.length === 1 ? 'Konto' : 'Konten'} · Gesamtbalance{' '}
-                  <Money cent={totalBalance(accounts)} /> €
-                </span>
-              </span>
-              <span className="k-acc-chev"><IconRight /></span>
-            </button>
-
-            <button type="button" className="k-menu-row" onClick={go({ name: 'stats' })}>
-              <span className="k-menu-ic"><IconChart /></span>
-              <span className="k-menu-mid">
-                <span className="k-menu-t">Statistik</span>
-                <span className="k-menu-s">Verlauf, Sparquote, Vergleiche</span>
-              </span>
-              <span className="k-acc-chev"><IconRight /></span>
-            </button>
-
-            <button type="button" className="k-menu-row" onClick={go({ name: 'categories' })}>
-              <span className="k-menu-ic"><IconGrid /></span>
-              <span className="k-menu-mid">
-                <span className="k-menu-t">Kategorien</span>
-                <span className="k-menu-s">{expenseCats} Ausgaben · {incomeCats} Einnahmen</span>
-              </span>
-              <span className="k-acc-chev"><IconRight /></span>
-            </button>
-
-            <button type="button" className="k-menu-row" onClick={go({ name: 'settings' })}>
-              <span className="k-menu-ic"><IconSliders /></span>
-              <span className="k-menu-mid">
-                <span className="k-menu-t">Einstellungen</span>
-                <span className="k-menu-s">Export, Berechnung, Daten</span>
-              </span>
-              <span className="k-acc-chev"><IconRight /></span>
-            </button>
+            <div className="k-menu-tiles">
+              <MenuTile
+                icon={<IconWallet />}
+                color="var(--neutral)"
+                title="Konten"
+                value={<><Money cent={totalBalance(accounts)} /> <span className="k-cur">€</span></>}
+                sub={`${open.length} ${open.length === 1 ? 'Konto' : 'Konten'}${outside ? ` · ${outside} außerhalb` : ''}`}
+                onClick={go({ name: 'accounts' })}
+              />
+              <MenuTile
+                icon={<IconChart />}
+                color="var(--inc)"
+                title="Statistik"
+                value={savings === null ? '–' : `${(savings * 100).toFixed(1).replace('-', '−').replace('.', ',')} %`}
+                sub={savings === null ? 'Verlauf und Auswertungen' : `gespart ${imZeitraum(period.kind, range)}`}
+                onClick={go({ name: 'stats' })}
+              />
+              <MenuTile
+                icon={<IconGrid />}
+                color="#c4623d"
+                title="Kategorien"
+                value={String(cats.length)}
+                sub={
+                  budgeted.length
+                    ? `${budgeted.length} mit Budget${over ? ` · ${over} drüber` : ''}`
+                    : `${cats.filter((c) => c.kind === 'expense').length} Ausgaben · ${cats.filter((c) => c.kind === 'income').length} Einnahmen`
+                }
+                onClick={go({ name: 'categories' })}
+              />
+              <MenuTile
+                icon={<IconSliders />}
+                color="var(--muted)"
+                title="Einstellungen"
+                sub="Export, Wochenstart, Daten"
+                onClick={go({ name: 'settings' })}
+              />
+            </div>
 
             {/* Kontor hat keine Kopfzeile, also auch keinen Platz fuer einen
                 Zurueck-Knopf. Der Weg zum Launcher liegt darum hier, neben der

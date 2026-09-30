@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { Donut } from '../charts'
 import { breakdown, totalsInRange } from '../calc'
 import { IconMinus, IconMore, IconPlus, IconRight } from '../icons'
-import { Money, PeriodBar, Segmented } from '../ui'
-import { periodRange, shiftPeriod } from '../util'
+import { Money, PeriodBar } from '../ui'
+import { imZeitraum, periodRange, shiftPeriod } from '../util'
 import { totalBalance } from '../kontorStore'
 import type { CategoryKind, KontorCtx } from '../types'
 
@@ -168,9 +168,17 @@ function Main({ ctx }: { ctx: KontorCtx }) {
   }
 
   const balance = totalBalance(accounts)
-  // Die Kopfzeile springt schon beim Loslassen auf den neuen Zeitraum, nicht
-  // erst, wenn der Ring eingerastet ist - sonst hinkt sie hinterher.
-  const kopf = (fahrt && seiten.find((s) => s.versatz === fahrt)?.range) || range
+  const offen = accounts.filter((a) => !a.archived).length
+  // Kopfzeile und Kacheln springen schon beim Loslassen auf den neuen
+  // Zeitraum, nicht erst, wenn der Ring eingerastet ist - sonst hinken sie
+  // hinterher.
+  const ziel = fahrt ? seiten.find((s) => s.versatz === fahrt) : undefined
+  const kopf = ziel?.range ?? range
+  const summen = ziel?.totals ?? totals
+  // Budgets sind Monatsbudgets - in jedem anderen Zeitraum waere der
+  // Vergleich schief, also steht er dann auch nicht in der Ringmitte.
+  const budgetOf = (id: string) =>
+    period.kind === 'month' && kind === 'expense' ? catById[id]?.budgetCent ?? null : null
   const spur = blaetterbar ? `translateX(calc(${-100 - fahrt * 100}% + ${zug}px))` : undefined
 
   return (
@@ -192,8 +200,35 @@ function Main({ ctx }: { ctx: KontorCtx }) {
         }
       />
 
-      <div className="k-center-row">
-        <Segmented options={KINDS} value={kind} onChange={(k) => { clearPick(); setKind(k) }} />
+      {/* Die Summen sind zugleich der Umschalter fuer den Ring: wer wissen
+          will, woraus die Ausgaben bestehen, tippt auf die Ausgaben. */}
+      <div className="k-kinds" role="group" aria-label="Der Ring zeigt">
+        {KINDS.map((k) => (
+          <button
+            key={k.id}
+            type="button"
+            className={`k-kind ${k.id === 'expense' ? 'exp' : 'inc'}${kind === k.id ? ' on' : ''}`}
+            aria-pressed={kind === k.id}
+            onClick={() => {
+              clearPick()
+              setKind(k.id)
+            }}
+          >
+            <span className="k-kind-label">
+              <span className="k-kind-dot" />
+              {k.label}
+            </span>
+            <span className="k-kind-num">
+              <Money cent={k.id === 'expense' ? summen.exp : summen.inc} /> <span className="k-cur">€</span>
+            </span>
+          </button>
+        ))}
+      </div>
+      <div className="k-uebrig">
+        Übrig {imZeitraum(period.kind, kopf)}{' '}
+        <span className={summen.diff < 0 ? 'exp' : summen.diff > 0 ? 'inc' : undefined}>
+          <Money cent={summen.diff} sign={summen.diff === 0 ? 'none' : 'auto'} /> <span className="k-cur">€</span>
+        </span>
       </div>
 
       <div
@@ -211,44 +246,35 @@ function Main({ ctx }: { ctx: KontorCtx }) {
                 <Donut
                   segments={s.bd.segments}
                   total={s.bd.total}
-                  incCent={s.totals.inc}
-                  expCent={s.totals.exp}
+                  count={s.totals.count}
                   kind={kind}
                   picked={picked}
+                  budgetOf={budgetOf}
                   onPick={(seg) => setPicked((cur) => (!seg || cur === seg.id ? null : seg.id))}
                   onSelect={(seg) => push({ name: 'categoryDetail', segment: seg, kind })}
                   onCenter={() => push({ name: 'entries' })}
                 />
               ) : (
-                <Donut
-                  segments={s.bd.segments}
-                  total={s.bd.total}
-                  incCent={s.totals.inc}
-                  expCent={s.totals.exp}
-                  kind={kind}
-                  picked={null}
-                />
+                <Donut segments={s.bd.segments} total={s.bd.total} count={s.totals.count} kind={kind} picked={null} />
               )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Keine schwebende Karte mehr - eine Haarlinie und zwei Zeilen. Der
-          Betrag ist hier die Hauptsache und steht darum allein auf seiner
-          Zeile, die Einordnung darueber klein und leise. */}
-      <button type="button" className="k-balance" onClick={() => push({ name: 'entries' })}>
-        <span className="k-balance-top">
+      {/* Keine schwebende Karte - eine Haarlinie und der Betrag. Die
+          Gesamtbalance ist die Summe der Konten, also fuehrt sie auch dorthin;
+          die Buchungen liegen hinter der Ringmitte. */}
+      <button type="button" className="k-balance" onClick={() => push({ name: 'accounts' })}>
+        <span className="k-balance-main">
           <span className="k-label">Gesamtbalance</span>
-          {/* Der Pfeil steht bei der Buchungszahl, nicht unter ihr: was hinter
-              dem Tipp liegt, sind genau diese Buchungen. */}
-          <span className="k-balance-side">
-            {totals.count} {totals.count === 1 ? 'Buchung' : 'Buchungen'}
+          <span className={`k-balance-num${balance < 0 ? ' neg' : ''}`}>
+            <Money cent={balance} /> <span className="k-cur">€</span>
           </span>
-          <span className="k-balance-chev"><IconRight /></span>
         </span>
-        <span className={`k-balance-num${balance < 0 ? ' neg' : ''}`}>
-          <Money cent={balance} /> <span className="k-cur">€</span>
+        <span className="k-balance-side">
+          {offen} {offen === 1 ? 'Konto' : 'Konten'}
+          <span className="k-balance-chev"><IconRight /></span>
         </span>
       </button>
 

@@ -4,8 +4,11 @@ import { COLOR_OTHER, COLOR_TRANSFER } from '../data'
 import { formatCent, formatDayShort } from '../util'
 import type { Account, Category, Entry } from '../types'
 
-// Eine Buchungszeile. Umbuchung und Korrektur behalten ihre neutrale Farbe -
-// sie sollen nie wie eine echte Ausgabe aussehen.
+// Eine Buchungszeile. Vorne steht, was es war (die Notiz, "Rewe"), darunter
+// Kategorie und Konto - ohne Notiz rueckt die Kategorie nach vorn. Ausgaben
+// stehen in Tinte: eine Liste voller Koralle liest sich wie lauter Fehler.
+// Einnahmen bleiben gruen, Umbuchung und Korrektur neutral - sie sollen nie
+// wie eine echte Ausgabe aussehen.
 export function entryLook(
   entry: Entry,
   catById: Record<string, Category>,
@@ -13,11 +16,13 @@ export function entryLook(
 ): { color: string; icon: string; title: string; detail: string; amountClass: string; sign: MoneySign } {
   if (entry.type === 'transfer') {
     const to = entry.toAccountId ? accById[entry.toAccountId] : undefined
+    const route = `${accById[entry.accountId]?.name ?? '?'} → ${to?.name ?? '?'}`
+    const note = entry.note?.trim()
     return {
       color: COLOR_TRANSFER,
       icon: 'transfer',
-      title: 'Umbuchung',
-      detail: `${accById[entry.accountId]?.name ?? '?'} → ${to?.name ?? '?'}`,
+      title: note || 'Umbuchung',
+      detail: note ? `Umbuchung · ${route}` : route,
       amountClass: 'neutral',
       sign: 'none',
     }
@@ -33,13 +38,15 @@ export function entryLook(
     }
   }
   const cat = entry.categoryId ? catById[entry.categoryId] : undefined
+  const catName = cat?.name ?? 'Gelöschte Kategorie'
   const account = accById[entry.accountId]?.name ?? '?'
+  const note = entry.note?.trim()
   return {
     color: cat?.color ?? COLOR_OTHER,
     icon: cat?.icon ?? 'dots',
-    title: cat?.name ?? 'Gelöschte Kategorie',
-    detail: entry.note ? `${entry.note} · ${account}` : account,
-    amountClass: entry.type === 'income' ? 'inc' : 'exp',
+    title: note || catName,
+    detail: note ? `${catName} · ${account}` : account,
+    amountClass: entry.type === 'income' ? 'inc' : '',
     sign: entry.type === 'income' ? 'plus' : 'minus',
   }
 }

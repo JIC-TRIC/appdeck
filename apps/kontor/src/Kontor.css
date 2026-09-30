@@ -259,6 +259,11 @@ ion-modal.k-sheet-modal {
   color: var(--dim);
 }
 
+/* Eingeschaltet (Suche offen): leise hinterlegt. */
+.k-ic.on {
+  background: var(--sunk);
+}
+
 .k-ic.danger {
   color: var(--exp);
 }
@@ -406,6 +411,105 @@ ion-modal.k-sheet-modal {
   box-shadow: 0 1px 2px rgba(31, 29, 26, 0.08);
 }
 
+/* ---------- Summen als Umschalter ---------- */
+
+/* Ausgaben und Einnahmen des Zeitraums, zugleich der Umschalter fuer den
+   Ring. Die gewaehlte Kachel liegt als Flaeche obenauf und traegt ihre Farbe,
+   die andere tritt zurueck. */
+.k-kinds {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  padding: 0.25rem 1.25rem 0;
+  flex-shrink: 0;
+}
+
+.k-kind {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1875rem;
+  min-width: 0;
+  padding: 0.6875rem 0.875rem 0.75rem;
+  border-radius: var(--r-lg);
+  border: 1.5px solid var(--line);
+  text-align: left;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.k-kind.on {
+  background: var(--surface);
+  border-color: var(--surface);
+  box-shadow: 0 2px 12px rgba(31, 29, 26, 0.08);
+}
+
+.k-kind-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.k-kind.on .k-kind-label {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.k-kind-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.k-kind.exp .k-kind-dot {
+  background: var(--exp);
+}
+
+.k-kind.inc .k-kind-dot {
+  background: var(--inc);
+}
+
+.k-kind-num {
+  max-width: 100%;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  transition: color 0.18s ease;
+}
+
+.k-kind.exp.on .k-kind-num {
+  color: var(--exp);
+}
+
+.k-kind.inc.on .k-kind-num {
+  color: var(--inc);
+}
+
+.k-uebrig {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  padding-top: 0.625rem;
+  flex-shrink: 0;
+}
+
+.k-uebrig > span {
+  font-weight: 600;
+}
+
 /* ---------- Donut ---------- */
 
 .k-donut {
@@ -432,19 +536,30 @@ ion-modal.k-sheet-modal {
   line-height: 1.25;
 }
 
-.k-donut-inc {
+/* Ohne Auswahl: wie viele Buchungen der Ring zusammenfasst - und der Weg
+   dorthin. */
+.k-donut-count {
   display: block;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--inc);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
 }
 
-.k-donut-exp {
-  display: block;
-  font-size: 1.3125rem;
-  font-weight: 700;
-  color: var(--exp);
+.k-donut-count-l {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.0625rem;
+  font-size: 0.78rem;
+  color: var(--muted);
   margin-top: 0.125rem;
+}
+
+.k-donut-chev {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
 }
 
 .k-donut-center.as-button {
@@ -493,17 +608,40 @@ ion-modal.k-sheet-modal {
 }
 
 .k-donut-pick-sum {
-  font-size: 1.25rem;
+  font-size: 1.3125rem;
   font-weight: 700;
-  margin-top: 0.125rem;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
 }
 
-.k-donut-cur {
-  display: block;
-  font-size: 0.625rem;
+.k-donut-pick-note {
+  font-size: 0.72rem;
+  font-weight: 500;
   color: var(--muted);
-  letter-spacing: 0.08em;
-  margin-top: 0.25rem;
+}
+
+.k-donut-pick-note.over {
+  color: var(--exp);
+}
+
+/* Sichtbarer Hinweis, dass ein zweiter Tipp ins Kategoriedetail fuehrt. */
+.k-donut-pick-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.0625rem;
+  margin-top: 0.375rem;
+  padding: 0.3125rem 0.4375rem 0.3125rem 0.75rem;
+  border-radius: var(--r-pill);
+  background: var(--sunk);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.k-donut-pick-more svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  stroke-width: 2.2;
 }
 
 .k-donut-empty {
@@ -617,11 +755,12 @@ ion-modal.k-sheet-modal {
    Der Betrag steht allein auf seiner Zeile und darf dafuer gross sein. */
 .k-balance {
   display: flex;
-  flex-direction: column;
-  gap: 0.0625rem;
+  align-items: flex-end;
+  gap: 0.625rem;
   margin: 0 1.25rem;
-  padding: 0.8125rem 0 0.125rem;
+  padding: 0.75rem 0 0.125rem;
   border-top: 1px solid var(--line);
+  text-align: left;
   flex-shrink: 0;
 }
 
@@ -629,13 +768,10 @@ ion-modal.k-sheet-modal {
   opacity: 0.55;
 }
 
-.k-balance-top {
+.k-balance-main {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.k-balance-top > .k-label {
+  flex-direction: column;
+  gap: 0.0625rem;
   flex-grow: 1;
   min-width: 0;
 }
@@ -659,7 +795,11 @@ ion-modal.k-sheet-modal {
 }
 
 .k-balance-side {
-  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding-bottom: 0.4375rem;
+  font-size: 0.8125rem;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -705,9 +845,13 @@ ion-modal.k-sheet-modal {
   flex-shrink: 0;
 }
 
+/* Ausgabe ist der Knopf, den man fast jedes Mal drueckt - er ist der
+   kraeftigste auf der Seite. */
 .k-action-btn.exp {
+  background: var(--exp);
   border-color: var(--exp);
-  color: var(--exp);
+  color: #ffffff;
+  box-shadow: 0 6px 16px -8px var(--exp);
 }
 
 .k-action-btn.inc {
@@ -875,6 +1019,39 @@ ion-modal.k-sheet-modal {
 
 /* ---------- Listen ---------- */
 
+/* Buchungsliste: drei Summen ohne Karte, darunter die Filter. */
+.k-sum3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.25rem 0.25rem 0;
+}
+
+.k-sum3-num {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 0.125rem;
+  white-space: nowrap;
+}
+
+.k-filter {
+  margin: 0 -1rem;
+  padding: 0 1rem 0.125rem;
+}
+
+.k-filter .k-chip {
+  padding: 0.5rem 0.6875rem;
+  font-size: 0.78rem;
+  background: var(--sunk);
+  border-color: var(--sunk);
+}
+
+.k-filter .k-chip.on {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
 .k-list-card {
   overflow: hidden;
   padding-bottom: 0;
@@ -928,6 +1105,27 @@ ion-modal.k-sheet-modal {
 .k-card .k-list {
   border-radius: 0;
   box-shadow: none;
+}
+
+/* Flache Liste direkt auf dem Grund: in der Buchungsliste ist sie die ganze
+   Seite, eine Karte je Tag waere nur Rahmen um Rahmen. */
+.k-groups.flat {
+  gap: 0.25rem;
+}
+
+.k-groups.flat .k-group-head {
+  padding: 0.75rem 0.25rem 0.125rem;
+}
+
+.k-list.flat {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.k-list.flat .k-entry {
+  padding-inline: 0.25rem;
 }
 
 .k-entry {
@@ -997,7 +1195,6 @@ ion-modal.k-sheet-modal {
 
 .k-acc,
 .k-cat-row,
-.k-menu-row,
 .k-set-row {
   display: flex;
   align-items: center;
@@ -1015,14 +1212,8 @@ ion-modal.k-sheet-modal {
   min-height: 3.5rem;
 }
 
-.k-menu-row {
-  min-height: 4.125rem;
-  gap: 0.875rem;
-}
-
 .k-acc:last-child,
 .k-cat-row:last-child,
-.k-menu-row:last-child,
 .k-set-row:last-child {
   border-bottom: 0;
 }
@@ -1033,21 +1224,18 @@ ion-modal.k-sheet-modal {
   color: #6e675d;
 }
 
-.k-acc-mid,
-.k-menu-mid {
+.k-acc-mid {
   flex-grow: 1;
   min-width: 0;
 }
 
-.k-acc-name,
-.k-menu-t {
+.k-acc-name {
   display: block;
   font-size: 0.9375rem;
   font-weight: 600;
 }
 
-.k-acc-meta,
-.k-menu-s {
+.k-acc-meta {
   display: block;
   font-size: 0.72rem;
   color: var(--muted);
@@ -2260,6 +2448,65 @@ ion-modal.k-sheet-modal .ion-page {
   stroke-width: 2.4;
 }
 
+/* Menue als Kacheln: je Bereich die wichtigste Zahl statt einer
+   Beschreibung. */
+.k-menu-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+  padding: 0 1rem;
+}
+
+.k-menu-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 0.875rem;
+  border-radius: var(--r-lg);
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  text-align: left;
+}
+
+.k-menu-tile-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 0.625rem;
+}
+
+.k-menu-tile-chev {
+  width: 1rem;
+  height: 1rem;
+  color: var(--dim);
+}
+
+.k-menu-tile-t {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.k-menu-tile-v {
+  max-width: 100%;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin-top: 0.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.k-menu-tile-s {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.125rem;
+  line-height: 1.3;
+}
+
 .k-sheet .k-meta {
   padding: 0.875rem 1.25rem 0;
 }
@@ -2475,6 +2722,12 @@ ion-item.k-slide-item {
   border-bottom: 1px solid var(--line-soft);
 }
 
+ion-list.k-list.flat,
+.k-list.flat ion-item.k-slide-item {
+  background: var(--bg);
+  --background: var(--bg);
+}
+
 ion-item-option.k-slide-del {
   --background: var(--exp);
   --color: #ffffff;
@@ -2502,7 +2755,6 @@ ion-item-option.k-slide-del {
    Druecken (sofort), mit Uebergang beim Loslassen. iOS zeigt :active nur mit
    einem touchstart-Handler - den setzt main.tsx. */
 .k-entry,
-.k-menu-row,
 .k-acc,
 .k-cat-row,
 .k-set-row.press,
@@ -2512,7 +2764,6 @@ ion-item-option.k-slide-del {
 }
 
 .k-entry:active,
-.k-menu-row:active,
 .k-acc:active,
 .k-cat-row:active,
 .k-set-row.press:active,
@@ -2530,6 +2781,7 @@ ion-item-option.k-slide-del {
 .k-ghost,
 .k-dashed,
 .k-action-btn,
+.k-menu-tile,
 .k-date-btn,
 .k-swap,
 .k-card.as-button,
@@ -2548,6 +2800,8 @@ ion-item-option.k-slide-del {
 .k-ghost:active,
 .k-dashed:active,
 .k-action-btn:active,
+.k-kind:active,
+.k-menu-tile:active,
 .k-date-btn:active,
 .k-swap:active,
 .k-card.as-button:active,
