@@ -73,6 +73,42 @@ dem Gerät; wer das Icon löscht, löscht sie.
 - **Zähler** (mehrmals am Tag antippen), **feste Wochentage** und **„alle N Tage“** als Rhythmus – bewusst
   draußen, damit das Raster lesbar bleibt. Siehe „Nicht im MVP“ in `apps/steady/konzept.md`.
 
+## Ideen für neue Apps
+
+Nur festgehalten, noch nicht entschieden. Vor dem Bau wie gewohnt: Fragerunde, dann `konzept.md`
+und `mockups.html`.
+
+### Trainingsbuch
+
+Übungen, Sätze, Wiederholungen und Gewicht erfassen – schnell genug, um es zwischen zwei Sätzen im
+Studio zu machen.
+
+- **Letzter Wert steht schon da**: beim nächsten Training zeigt jede Übung, was man zuletzt geschafft
+  hat („3×8 à 100 kg"), ein Tipp übernimmt es als Startwert.
+- **Fortschrittskurve pro Übung**, z. B. schwerster Satz über die Zeit.
+- **Verbindung zu Steady**: ein erfasstes Training zählt dort als erledigte Gewohnheit (z. B. „Gym").
+  Geht, weil alle Apps unter derselben Adresse liegen und gegenseitig ihre Daten lesen können. Würde
+  die Steady-Idee „Notiz pro Eintrag" fürs Training überflüssig machen.
+- Offen: feste Pläne/Vorlagen (Push/Pull/Beine) oder frei? Körpergewicht mit erfassen? Pausentimer
+  läuft nur, solange die App offen ist (iOS hält Web-Apps im Hintergrund an).
+- Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
+  zusammen mit Kontor ein Grund mehr für den IndexedDB-Umzug (siehe oben).
+
+### Ein Satz am Tag
+
+Minimal-Tagebuch: pro Tag genau ein Satz. Die Hürde ist so niedrig, dass man es wirklich jeden Abend
+macht.
+
+- **Ein Feld, ein Tag.** Kein Titel, keine Formatierung, keine Fotos. Eine Längengrenze
+  (z. B. ~200 Zeichen) hält es bei einem Satz.
+- **„Heute vor einem Jahr"** über dem Eingabefeld (bis es ein Jahr gibt: vor einem Monat) – der
+  eigentliche Grund, warum man dranbleibt.
+- **Nachtragen** für gestern und vorgestern, falls ein Abend durchrutscht.
+- Durchblättern nach Monat, Suche über alle Sätze.
+- Offen: Stimmung (1–5) gleich mit erfassen oder bewusst nicht? Sperre per Code wäre nur Sichtschutz,
+  die Daten liegen unverschlüsselt im Speicher.
+- Speicher unkritisch: 365 × 200 Zeichen sind auch mit Emoji unter 150 KB im Jahr.
+
 ## Geht nicht / bewusst nicht
 
 - Erinnerung per Push (bräuchte auf iOS einen eigenen Server), Widgets (für Web-Apps nicht möglich).

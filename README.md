@@ -7,7 +7,7 @@ und über den Zurück-Link bzw. den runden Home-Button wieder zurück.
 - Kein Backend: Daten liegen im `localStorage` auf dem Gerät.
 - Läuft als Web-App ohne Safari-Leisten, im Dark Mode, offline.
 - Backup/Wiederherstellen ist im Launcher eingebaut (Zahnrad oben rechts).
-- Offene Punkte und Ideen: [ROADMAP.md](ROADMAP.md) (u. a. Umzug auf IndexedDB, bevor der Speicher eng wird).
+- Offene Punkte und Ideen: [ROADMAP.md](ROADMAP.md) (u. a. Ideen für neue Apps und der Umzug auf IndexedDB, bevor der Speicher eng wird).
 
 ```
 index.html, launcher.*   Launcher (App-Auswahl + Einstellungen)
