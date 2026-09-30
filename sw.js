@@ -4,6 +4,8 @@
    Strategie "Netz zuerst": Mit Internet bekommst du immer die neueste Version
    (nach einem Push also beim nächsten Öffnen). Ohne Netz oder bei sehr
    langsamer Verbindung wird nach 2,5 Sekunden die gespeicherte Kopie genutzt.
+   Ausnahme: gebaute Dateien unter assets/ kommen sofort aus dem Cache – sie
+   tragen einen Hash im Namen, eine neue Version ist also eine neue Datei.
    Normalerweise musst du hier nie etwas ändern.
    ========================================================================== */
 const NETWORK_TIMEOUT_MS = 2500;
@@ -54,9 +56,21 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-  if (new URL(req.url).origin !== self.location.origin) return;   // fremde Seiten nicht anfassen
-  event.respondWith(networkFirst(event, req));
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;   // fremde Seiten nicht anfassen
+  event.respondWith(url.pathname.includes('/assets/') ? cacheFirst(req) : networkFirst(event, req));
 });
+
+// Spart beim Öffnen einer App die Anfragen für JavaScript, CSS und Schriften –
+// sonst wartet jede davon erst auf das Netz, bevor die App etwas zeigen kann.
+async function cacheFirst(req) {
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(req);
+  if (cached) return cached;
+  const res = await fetch(req);
+  if (res.ok && !res.redirected && res.type === 'basic') cache.put(req, res.clone());
+  return res;
+}
 
 async function networkFirst(event, req) {
   const cache = await caches.open(CACHE);

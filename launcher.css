@@ -62,6 +62,31 @@
 
 @keyframes tile-in { from { opacity: 0; transform: translateY(10px) scale(0.96); } }
 
+/* ---------- Übergang in eine App und zurück (launcher.js) ---------- */
+
+/* Zurück aus einer App: der Launcher bleibt unsichtbar, bis launcher.js die
+   Fläche der App über ihn legt (Klasse aus dem Skript in index.html). */
+html.from-app body { visibility: hidden; }
+html.no-intro .tile { animation: none; }
+
+/* Eine bildschirmgroße Fläche im Hintergrund der App, darin die Kachelfarbe,
+   darüber das Icon. launcher.js staucht die Fläche auf die Kachel und zurück.
+   Solange die Ebene liegt, fängt sie nebenbei alle Tipps ab. */
+.launch { position: fixed; inset: 0; z-index: 100; }
+.launch-card {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.launch-color { position: absolute; inset: 0; }
+.launch-icon {
+  position: absolute; margin: 0;
+  box-shadow: none;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
 /* ---------- Installations-Hinweis (nur in Safari, nicht in der installierten App) ---------- */
 
 .install-hint {

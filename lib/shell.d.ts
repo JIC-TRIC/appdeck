@@ -11,6 +11,7 @@ interface ShellApi {
   root: string;
   isStandalone: boolean;
   home(): void;
+  ready(): void;
   store(appId: string): ShellStore;
   toast(message: string, ms?: number): void;
 }

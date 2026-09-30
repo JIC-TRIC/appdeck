@@ -206,7 +206,7 @@ Ohne Internet startet alles aus dem Offline-Speicher.
 | Langes Drücken markiert Text / Lupe | `user-select: none` auf Bedienelementen |
 | iOS zoomt beim Tippen in Eingabefelder | Schrift in Feldern mindestens 16 px |
 | Inhalt unter Notch / Home-Balken | `viewport-fit=cover` + Safe-Area-Abstände |
-| Harte Seitenwechsel | View Transitions (Safari 18.2+) |
+| Harte Seitenwechsel, Warten ohne Rückmeldung | Kachel zoomt zur App und zurück (`launcher.js` + `shell.js`) |
 | Kein Offline | Service Worker |
 | Daten werden „aufgeräumt“ | `navigator.storage.persist()` |
 

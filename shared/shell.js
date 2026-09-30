@@ -9,7 +9,8 @@
 
    Stellt window.Shell bereit:
      Shell.store('meine-app')  Speicher mit automatischem Präfix  → get/set/remove/keys/clear
-     Shell.home()              zurück zum Launcher
+     Shell.home()              zurück zum Launcher (mit Übergang)
+     Shell.ready()             App ist gezeichnet → einblenden (ruft lib/mount.tsx auf)
      Shell.toast('Gespeichert')
      Shell.isStandalone        true, wenn als App vom Home-Bildschirm gestartet
    Jedes Element mit data-shell-home führt beim Antippen zum Launcher.
@@ -20,14 +21,105 @@
   var script = document.currentScript;
   var ROOT = new URL('../', script.src).href;           // .../shared/shell.js  →  Repo-Wurzel
   var homePosition = script.getAttribute('data-home') || 'bottom-left';
+  var html = document.documentElement;
 
   var isStandalone = window.navigator.standalone === true ||
     window.matchMedia('(display-mode: standalone)').matches;
-  document.documentElement.classList.toggle('is-standalone', isStandalone);
+  html.classList.toggle('is-standalone', isStandalone);
+
+  /* ---------- Übergang vom und zum Launcher (Gegenstück in launcher.js) ----------
+     Der Launcher zoomt die Kachel auf den ganzen Bildschirm, bis nur noch der
+     Hintergrund der App zu sehen ist. Die App blendet sich auf genau diesem
+     Hintergrund ein, sobald sie gezeichnet ist – und beim Verlassen wieder aus,
+     bevor der Launcher die Fläche zurück in die Kachel schrumpft. Die Farbe
+     kommt aus <meta name="theme-color"> der App. */
+
+  var appPath = (location.href.slice(ROOT.length).match(/^apps\/[^/?#]+\//) || [''])[0];
+  var motion = !!appPath && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Einblenden nur, wenn shell.js im <head> steht (Ionic-Apps): steht es am Ende
+  // von <body>, ist die Seite vielleicht schon gezeichnet und würde aufblitzen.
+  var enter = motion && !document.body;
+  var ENTER_MS = 380, LEAVE_MS = 240;
+
+  function themeColor() {
+    var metas = document.querySelectorAll('meta[name="theme-color"]');
+    for (var i = 0; i < metas.length; i++) {
+      var media = metas[i].getAttribute('media');
+      if (!media || window.matchMedia(media).matches) return metas[i].content;
+    }
+    return '';
+  }
+
+  if (motion) {
+    var style = document.createElement('style');
+    style.textContent =
+      'html.shell-enter body { opacity: 0; }' +
+      'html.shell-enter.shell-shown body { animation: shell-in ' + ENTER_MS + 'ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }' +
+      'html.shell-leave body { animation: shell-out ' + LEAVE_MS + 'ms cubic-bezier(0.3, 0.7, 0.3, 1) both; pointer-events: none; }' +
+      '@keyframes shell-in { from { opacity: 0; scale: 0.97; } to { opacity: 1; scale: 1; } }' +
+      '@keyframes shell-out { from { opacity: 1; scale: 1; } to { opacity: 0; scale: 0.94; } }';
+    document.head.appendChild(style);
+  }
+
+  // Bis die App steht, zeigt die Seite nur ihren Hintergrund – dieselbe Fläche,
+  // mit der der Launcher aufgehört hat. Im Entwicklungsserver kommt das CSS der
+  // App erst mit dem JavaScript, darum die Farbe hier schon einmal direkt.
+  if (enter) {
+    html.classList.add('shell-enter');
+    html.style.backgroundColor = themeColor();
+  }
+
+  var shown = false;
+  function ready() {
+    if (shown || !html.classList.contains('shell-enter')) return;
+    shown = true;
+    requestAnimationFrame(function () {
+      html.classList.add('shell-shown');
+      setTimeout(function () {
+        html.classList.remove('shell-enter', 'shell-shown');
+        html.style.backgroundColor = '';
+      }, ENTER_MS + 50);
+    });
+  }
+
+  if (enter) {
+    // Ionic-Apps melden sich selbst (lib/mount.tsx). Alles andere steht beim
+    // load-Event; und falls eine App sich nie meldet, erscheint sie trotzdem.
+    window.addEventListener('load', function () {
+      if (!document.querySelector('script[type="module"]')) ready();
+      else setTimeout(ready, 3000);
+    });
+  }
 
   /* ---------- Navigation ---------- */
 
-  function home() { window.location.href = ROOT; }
+  var leaving = false;
+
+  function home() {
+    if (leaving) return;
+    leaving = true;
+    // Sagt dem Launcher, in welche Kachel er die Fläche zurückschrumpfen soll.
+    if (appPath) {
+      try {
+        sessionStorage.setItem('appdeck:return', JSON.stringify({ path: appPath, bg: themeColor() }));
+      } catch (e) { /* ohne Übergang weiter */ }
+    }
+    if (!motion) { window.location.href = ROOT; return; }
+    html.style.backgroundColor = themeColor();
+    html.classList.remove('shell-enter', 'shell-shown');
+    html.classList.add('shell-leave');
+    // Schon vor dem Ende losladen: bis der Launcher da ist, ist die App fast
+    // ganz ausgeblendet, und der Rest der Animation kostet keine Wartezeit.
+    setTimeout(function () { window.location.href = ROOT; }, LEAVE_MS * 0.6);
+  }
+
+  // Aus dem Zurück-Cache wiederhergestellt: die App steht wieder normal da.
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    leaving = false;
+    html.classList.remove('shell-leave', 'shell-enter', 'shell-shown');
+    html.style.backgroundColor = '';
+  });
 
   /* ---------- Speicher mit Präfix (verhindert Kollisionen zwischen Apps) ---------- */
 
@@ -164,6 +256,7 @@
     root: ROOT,
     isStandalone: isStandalone,
     home: home,
+    ready: ready,
     store: store,
     toast: toast
   };

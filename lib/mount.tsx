@@ -2,7 +2,7 @@
  * Startet eine Ionic-React-App. In apps/<name>/src/main.tsx:
  *   mountApp(<App />);
  */
-import { StrictMode, type ReactNode } from 'react';
+import { StrictMode, useEffect, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { IonApp, setupIonicReact } from '@ionic/react';
 
@@ -28,10 +28,21 @@ import './theme.css';
 // Immer iOS-Look, auch beim Testen im Desktop-Browser
 setupIonicReact({ mode: 'ios' });
 
+// Sagt der Shell, dass die App gezeichnet ist – erst dann blendet sie sich
+// ein (Übergang vom Launcher, siehe shared/shell.js). Vorher sähe man eine
+// halb aufgebaute Seite.
+function Ready() {
+  useEffect(() => window.Shell?.ready(), []);
+  return null;
+}
+
 export function mountApp(app: ReactNode) {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <IonApp>{app}</IonApp>
+      <IonApp>
+        {app}
+        <Ready />
+      </IonApp>
     </StrictMode>,
   );
 }

@@ -16,6 +16,19 @@
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="stylesheet" href="shared/shell.css">
   <link rel="stylesheet" href="launcher.css">
+  <script>
+    // Zurück aus einer App (shared/shell.js): bis launcher.js die Fläche in die
+    // Kachel schrumpft, steht der Hintergrund der App da – wie ihr letztes Bild.
+    // Sonst blitzt der Launcher vorher einmal fertig auf.
+    (function () {
+      try {
+        var from = JSON.parse(sessionStorage.getItem('appdeck:return') || 'null');
+        if (!from || !from.bg || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        document.documentElement.classList.add('from-app', 'no-intro');
+        document.documentElement.style.background = from.bg;
+      } catch (e) { /* dann ohne Übergang */ }
+    })();
+  </script>
 </head>
 <body>
   <div class="launcher">

@@ -37,9 +37,6 @@
   }
 }
 
-/* Sanfte Übergänge zwischen Launcher und Apps (Safari 18.2+, sonst ignoriert) */
-@view-transition { navigation: auto; }
-
 /* ---------- Grundlagen: alles, was nach "Website" aussieht, abschalten ---------- */
 
 *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
