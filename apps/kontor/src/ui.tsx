@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconLeft, IconRight } from './icons'
-import { splitCent, textToCent } from './util'
+import { padToCent, splitCent } from './util'
 import type { Range } from './types'
 
 // Kopfzeile plus Inhalt. Der Abstand oben haelt die Statusleiste des Handys
@@ -214,7 +214,7 @@ export function Amount({
         className={`k-amount-val${signal.n === 0 ? '' : signal.wackelt ? ' wackelt' : ' tickt'}`}
         key={signal.n}
       >
-        <Money cent={textToCent(text)} sign={sign} />
+        <Money cent={padToCent(text)} sign={sign} />
         <span className="k-amount-cur">€</span>
       </span>
       {caret ? <span className="k-caret" style={{ background: color ?? 'var(--ink)' }} /> : null}

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import NumPad, { useBetrag } from './NumPad'
 import { Amount, Label, Toggle } from '../ui'
 import { ACCOUNT_COLORS } from '../data'
-import { textToCent } from '../util'
+import { padToCent } from '../util'
 import { addAccount, importFile, isOnboarded, seedCategories, updateSettings } from '../kontorStore'
 import type { KontorCtx } from '../types'
 
@@ -41,7 +41,7 @@ function Onboarding({ ctx }: { ctx: KontorCtx }) {
       name: name.trim() || 'Girokonto',
       color: ACCOUNT_COLORS[0],
       includeInTotal,
-      balanceCent: textToCent(betrag.text),
+      balanceCent: padToCent(betrag.text),
     })
     updateSettings({ onboarded: true })
     refresh()

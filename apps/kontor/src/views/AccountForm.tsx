@@ -3,7 +3,7 @@ import NumPad, { useBetrag } from './NumPad'
 import { Glyph, IconClose } from '../icons'
 import { Amount, Label, Toggle } from '../ui'
 import { ACCOUNT_COLORS, ACCOUNT_ICON } from '../data'
-import { textToCent } from '../util'
+import { padToCent } from '../util'
 import { addAccount, updateAccount } from '../kontorStore'
 import type { ViewProps } from '../types'
 import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
@@ -47,7 +47,7 @@ function AccountForm({ ctx, view }: ViewProps) {
     if (existing) {
       updateAccount(existing.id, { name: name.trim(), color, includeInTotal })
     } else {
-      addAccount({ name, color, includeInTotal, balanceCent: textToCent(betrag.text) })
+      addAccount({ name, color, includeInTotal, balanceCent: padToCent(betrag.text) })
     }
     refresh()
     back()

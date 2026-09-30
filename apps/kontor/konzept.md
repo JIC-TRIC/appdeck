@@ -361,7 +361,8 @@ fuers Hochformat gerechnet – von oben nach unten:
       sonst der Anfang des Zeitraums. Wer in der Uebersicht im Juli blaettert
       und dort etwas nachtraegt, meint den Juli
 - [x] Betrag gross, eigenes Nummernfeld (kein System-Keyboard):
-      Ziffern, Komma, 00, Backspace, Loeschen, Speichern
+      Ziffern, 00, Backspace, Loeschen, Speichern. **Kein Komma**: getippt
+      wird in Cent wie an der Kasse – 169 sind 1,69 €, 2000 sind 20 €
 - [x] **Notiz direkt darunter, immer sichtbar**, Platzhalter nur „Wofür?" –
       ein Beispiel darin liest man beim zweiten Mal nicht mehr und es macht
       das Feld unruhig. Die Kategorie sagt

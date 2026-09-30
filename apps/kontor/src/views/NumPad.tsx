@@ -1,14 +1,14 @@
 import { useState, type CSSProperties, type PointerEvent } from 'react'
 import { IconBackspace, IconCheck } from '../icons'
-import { applyKey, type PadKey } from '../util'
+import { applyKey, centToPad, textToCent, type PadKey } from '../util'
 
 // Eigenes Ziffernfeld statt der Systemtastatur: die deckt auf dem Handy den
-// halben Bildschirm ab, zoomt beim Fokus und bietet kein Komma, auf das man
-// sich verlassen kann. Die Tasten sind Buttons, keine Inputs.
+// halben Bildschirm ab und zoomt beim Fokus. Die Tasten sind Buttons, keine
+// Inputs. Ein Komma gibt es nicht: der Betrag wird in Cent getippt (util.ts).
 
 // Text und Rueckmeldung eines Betrags, den ein Ziffernfeld fuellt. Jeder
 // Tastendruck zaehlt "signal.n" hoch; "wackelt" sagt, ob der letzte nichts
-// bewirkt hat (dritte Nachkommastelle, zweites Komma) - der Betrag wackelt
+// bewirkt hat (Null am Anfang, zu viele Stellen) - der Betrag wackelt
 // dann kurz, statt stumm zu bleiben. Nur der letzte Druck zaehlt.
 export interface BetragSignal {
   n: number
@@ -16,7 +16,12 @@ export interface BetragSignal {
 }
 
 export function useBetrag(start = '') {
-  const [zustand, setZustand] = useState({ text: start, n: 0, wackelt: false })
+  // Entwuerfe von vor der Cent-Eingabe stehen noch mit Komma im Speicher.
+  const [zustand, setZustand] = useState(() => ({
+    text: start.includes(',') ? centToPad(textToCent(start)) : start,
+    n: 0,
+    wackelt: false,
+  }))
   return {
     text: zustand.text,
     signal: { n: zustand.n, wackelt: zustand.wackelt } as BetragSignal,
@@ -98,8 +103,7 @@ function NumPad({
         <IconCheck />
       </button>
 
-      <button type="button" className="k-key" onClick={press(',')} {...tastenProps}>,</button>
-      {digit('0')}
+      <button type="button" className="k-key wide" onClick={press('0')} {...tastenProps}>0</button>
       <button type="button" className="k-key small" onClick={press('00')} {...tastenProps}>00</button>
     </div>
   )

@@ -41,7 +41,8 @@ export function formatEuro(cent: number) {
   return `${formatSigned(cent)} €`
 }
 
-// Eingabetext des Ziffernfelds ('24', '24,9', '24,90') in Cent.
+// Freier Eingabetext ('24', '24,9', '24,90') in Cent - fuer das Budgetfeld,
+// das die Systemtastatur nutzt, und fuer Entwuerfe aus der Zeit mit Komma.
 export function textToCent(text: string) {
   if (!text) return 0
   const [euro, cents = ''] = String(text).split(',')
@@ -50,7 +51,7 @@ export function textToCent(text: string) {
   return e * 100 + c
 }
 
-// Cent zurueck in Eingabetext - fuer "Buchung bearbeiten".
+// Cent zurueck in freien Eingabetext - fuer "Budget bearbeiten".
 export function centToText(cent: number) {
   const abs = Math.abs(Math.round(cent))
   const frac = abs % 100
@@ -58,25 +59,32 @@ export function centToText(cent: number) {
   return frac === 0 ? String(int) : `${int},${String(frac).padStart(2, '0')}`
 }
 
-export type PadKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | ',' | '00' | 'back' | 'clear'
+// Das Ziffernfeld kennt kein Komma: sein Text ist der Betrag in Cent, jede
+// Ziffer rueckt von rechts nach wie an der Kasse - '169' sind 1,69 €, '2000'
+// sind 20 €.
+export function padToCent(text: string) {
+  return Number(text) || 0
+}
+
+// Cent zurueck in Ziffernfeld-Text - fuer "Buchung bearbeiten".
+export function centToPad(cent: number) {
+  return String(Math.abs(Math.round(cent)))
+}
+
+export type PadKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '00' | 'back' | 'clear'
+
+// Hoechstens 9.999.999,99 € - mit "00" waechst der Betrag sonst schneller
+// ueber den Bildschirmrand, als man schauen kann.
+const PAD_MAX_STELLEN = 9
 
 // Ziffernfeld-Logik: was ein Tastendruck aus dem aktuellen Text macht.
 export function applyKey(text: string, key: PadKey) {
   if (key === 'back') return text.slice(0, -1)
   if (key === 'clear') return ''
-  if (key === ',') {
-    if (text.includes(',')) return text
-    return text === '' ? '0,' : text + ','
-  }
-  if (key === '00') {
-    if (!text.includes(',')) return text === '' ? '0,00' : text + ',00'
-    return text
-  }
-  // Nach dem Komma sind nur zwei Stellen erlaubt.
-  const [, cents] = text.split(',')
-  if (cents !== undefined && cents.length >= 2) return text
-  if (text === '0') return key
-  return text + key
+  // Fuehrende Nullen aendern am Betrag nichts - eine Null am Anfang bleibt aus.
+  const next = (text + key).replace(/^0+/, '')
+  if (next.length > PAD_MAX_STELLEN) return text
+  return next
 }
 
 // ---------- Datum ----------

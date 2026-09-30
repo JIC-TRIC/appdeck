@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import NumPad, { useBetrag } from './NumPad'
 import { IconRight } from '../icons'
 import { Amount, Money, Sheet } from '../ui'
-import { centToText, formatDate, textToCent, todayKey } from '../util'
+import { centToPad, formatDate, padToCent, todayKey } from '../util'
 import { setAccountBalance } from '../kontorStore'
 import type { ViewProps } from '../types'
 import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
@@ -16,14 +16,14 @@ function BalanceSheet({ ctx, view }: ViewProps) {
   // nachsehen, zurueckkommen - und iOS hat Kontor inzwischen neu gestartet.
   const draftKey = entwurfKey(view)
   const [draft] = useState(() => entwurfLesen<{ text: string }>(draftKey))
-  const betrag = useBetrag(draft?.text ?? (account ? centToText(account.balanceCent) : ''))
+  const betrag = useBetrag(draft?.text ?? (account ? centToPad(account.balanceCent) : ''))
   useEffect(() => {
     entwurfSchreiben(draftKey, { text: betrag.text })
   }, [draftKey, betrag.text])
 
   if (!account) return null
 
-  const target = textToCent(betrag.text)
+  const target = padToCent(betrag.text)
   const diff = target - account.balanceCent
 
   // Weggewischt oder gespeichert: der Entwurf ist erledigt.

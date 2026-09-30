@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest'
 import {
   addDays,
   applyKey,
+  centToPad,
   centToText,
   dateKey,
   formatCent,
+  padToCent,
   periodRange,
   shiftPeriod,
   splitCent,
@@ -36,18 +38,25 @@ describe('Geld', () => {
     expect(splitCent(-123456)).toEqual({ neg: true, int: '1.234', frac: '56' })
   })
 
-  it('Ziffernfeld: ein Komma, höchstens zwei Nachkommastellen', () => {
+  it('Ziffernfeld: getippt wird in Cent, ohne Komma', () => {
     let text = ''
-    for (const key of ['1', '2', ',', '5', '0', '9'] as PadKey[]) text = applyKey(text, key)
-    expect(text).toBe('12,50')
+    for (const key of ['1', '6', '9'] as PadKey[]) text = applyKey(text, key)
+    expect(padToCent(text)).toBe(169)
+    expect(padToCent(applyKey('2', '00') + '0')).toBe(2000)
+    expect(padToCent('')).toBe(0)
+    expect(centToPad(2490)).toBe('2490')
+    expect(centToPad(-5)).toBe('5')
+  })
 
-    expect(applyKey('12,', ',')).toBe('12,')
-    expect(applyKey('', ',')).toBe('0,')
-    expect(applyKey('', '00')).toBe('0,00')
-    expect(applyKey('7', '00')).toBe('7,00')
+  it('Ziffernfeld: keine Null am Anfang, höchstens neun Stellen', () => {
+    expect(applyKey('', '0')).toBe('')
+    expect(applyKey('', '00')).toBe('')
     expect(applyKey('0', '5')).toBe('5')
-    expect(applyKey('12,5', 'back')).toBe('12,')
-    expect(applyKey('12,5', 'clear')).toBe('')
+    expect(applyKey('7', '00')).toBe('700')
+    expect(applyKey('12345678', '00')).toBe('12345678')
+    expect(applyKey('12345678', '9')).toBe('123456789')
+    expect(applyKey('125', 'back')).toBe('12')
+    expect(applyKey('125', 'clear')).toBe('')
   })
 })
 

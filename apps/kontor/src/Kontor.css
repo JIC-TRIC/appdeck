@@ -1680,6 +1680,12 @@ ion-modal.k-sheet-modal {
   font-size: 1.0625rem;
 }
 
+/* Die Null steht breit unter 1 und 2, wie auf dem Taschenrechner - dort, wo
+   frueher das Komma war. */
+.k-key.wide {
+  grid-column: span 2;
+}
+
 .k-key.aux {
   background: var(--sunk);
   border-color: #e6dfd5;

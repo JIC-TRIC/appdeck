@@ -17,12 +17,12 @@ import { entryLook } from './EntryRow'
 import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
 import {
   addDays,
-  centToText,
+  centToPad,
   formatCent,
   formatDayShort,
   inRange,
+  padToCent,
   periodRange,
-  textToCent,
   todayKey,
 } from '../util'
 import type { CategoryKind, EntryType, ViewProps } from '../types'
@@ -85,7 +85,7 @@ function EntryForm({ ctx, view }: ViewProps) {
   const [draft] = useState(() => entwurfLesen<EntryDraft>(draftKey))
 
   const [type, setType] = useState<EntryType>(draft?.type ?? startType)
-  const betrag = useBetrag(draft?.text ?? (existing ? centToText(existing.amountCent) : ''))
+  const betrag = useBetrag(draft?.text ?? (existing ? centToPad(existing.amountCent) : ''))
   const text = betrag.text
   const [categoryId, setCategoryId] = useState<string | null>(
     draft ? draft.categoryId : existing?.categoryId ?? lastUsedCategory(view.type ?? 'expense'),
@@ -126,7 +126,7 @@ function EntryForm({ ctx, view }: ViewProps) {
     () => byUsage(categories.filter((c) => !c.archived && c.kind === type), usage),
     [categories, type, usage],
   )
-  const cent = textToCent(text)
+  const cent = padToCent(text)
   const accent = ACCENT[type]
 
   // Beim Typwechsel passt die alte Kategorie nicht mehr - Ausgaben- und
