@@ -224,12 +224,6 @@ function Main({ ctx }: { ctx: KontorCtx }) {
           </button>
         ))}
       </div>
-      <div className="k-uebrig">
-        Übrig {imZeitraum(period.kind, kopf)}{' '}
-        <span className={summen.diff < 0 ? 'exp' : summen.diff > 0 ? 'inc' : undefined}>
-          <Money cent={summen.diff} sign={summen.diff === 0 ? 'none' : 'auto'} /> <span className="k-cur">€</span>
-        </span>
-      </div>
 
       <div
         className="k-donut-hold"
@@ -247,6 +241,8 @@ function Main({ ctx }: { ctx: KontorCtx }) {
                   segments={s.bd.segments}
                   total={s.bd.total}
                   count={s.totals.count}
+                  diff={s.totals.diff}
+                  zeitraum={imZeitraum(period.kind, s.range)}
                   kind={kind}
                   picked={picked}
                   budgetOf={budgetOf}
@@ -255,7 +251,15 @@ function Main({ ctx }: { ctx: KontorCtx }) {
                   onCenter={() => push({ name: 'entries' })}
                 />
               ) : (
-                <Donut segments={s.bd.segments} total={s.bd.total} count={s.totals.count} kind={kind} picked={null} />
+                <Donut
+                  segments={s.bd.segments}
+                  total={s.bd.total}
+                  count={s.totals.count}
+                  diff={s.totals.diff}
+                  zeitraum={imZeitraum(period.kind, s.range)}
+                  kind={kind}
+                  picked={null}
+                />
               )}
             </div>
           ))}

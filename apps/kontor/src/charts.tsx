@@ -3,7 +3,7 @@
 
 import { Glyph, GlyphPath, IconRight } from './icons'
 import { Money } from './ui'
-import { splitCent, todayKey } from './util'
+import { formatCent, splitCent, todayKey } from './util'
 import type { CategoryKind, Segment } from './types'
 import type { SeriesPoint } from './calc'
 
@@ -145,8 +145,12 @@ function platzieren(arcs: Arc[]) {
 interface DonutProps {
   segments: Segment[]
   total: number
-  /** Buchungen im Zeitraum - steht in der Mitte, solange nichts gewaehlt ist. */
+  /** Buchungen im Zeitraum - der Knopf in der Mitte fuehrt zu ihnen. */
   count: number
+  /** Einnahmen minus Ausgaben im Zeitraum. */
+  diff: number
+  /** Worauf sich die Differenz bezieht: "im September", "in KW 40". */
+  zeitraum: string
   onSelect?: (seg: Segment) => void
   onPick?: (seg: Segment | null) => void
   /** Tipp in die Mitte, solange keine Kategorie gewaehlt ist. */
@@ -157,21 +161,29 @@ interface DonutProps {
   kind: CategoryKind
 }
 
-function Donut({ segments, total, count, onSelect, onPick, onCenter, budgetOf, picked, kind }: DonutProps) {
-  // Ohne Auswahl ist die Mitte der Weg zu allen Buchungen des Zeitraums. Die
-  // Summen stehen darueber in den Kacheln, die Mitte muss keine Zahl mehr
-  // erklaeren - frueher standen hier Einnahmen und Ausgaben ohne Beschriftung.
+function Donut({ segments, total, count, diff, zeitraum, onSelect, onPick, onCenter, budgetOf, picked, kind }: DonutProps) {
+  // Ohne Auswahl steht in der Mitte das Ergebnis der beiden Kacheln darueber:
+  // was uebrig bleibt. Ein Tipp fuehrt zu den Buchungen des Zeitraums - der
+  // Knopf darunter sagt das. Frueher standen hier Einnahmen und Ausgaben ohne
+  // Beschriftung, danach nur die Zahl der Buchungen, die nicht zum Ring passte.
   const Mitte = onCenter ? 'button' : 'div'
   const mitteProps = onCenter
     ? { type: 'button' as const, className: 'k-donut-center as-button all', onClick: onCenter, 'aria-label': 'Alle Buchungen im Zeitraum' }
     : { className: 'k-donut-center' }
-  const buchungen = (
+  // Im Minus steht der Betrag ohne Vorzeichen, die Zeile darunter sagt es.
+  const uebrig = (
     <>
-      <span className="k-donut-count">{count}</span>
-      <span className="k-donut-count-l">
-        {count === 1 ? 'Buchung' : 'Buchungen'}
-        {onCenter ? <span className="k-donut-chev"><IconRight /></span> : null}
+      <span className={`k-donut-diff${diff > 0 ? ' inc' : diff < 0 ? ' exp' : ''}`}>
+        <Money cent={Math.abs(diff)} sign={diff > 0 ? 'plus' : 'none'} /> <span className="k-cur">€</span>
       </span>
+      <span className="k-donut-diff-l">
+        {diff < 0 ? 'Minus' : 'übrig'} {zeitraum}
+      </span>
+      {onCenter ? (
+        <span className="k-donut-pick-more">
+          {count} {count === 1 ? 'Buchung' : 'Buchungen'} <IconRight />
+        </span>
+      ) : null}
     </>
   )
 
@@ -183,7 +195,7 @@ function Donut({ segments, total, count, onSelect, onPick, onCenter, budgetOf, p
         </svg>
         <Mitte {...mitteProps}>
           {count ? (
-            buchungen
+            uebrig
           ) : (
             <span className="k-donut-empty">
               {kind === 'expense' ? 'Keine Ausgaben' : 'Keine Einnahmen'}
@@ -318,7 +330,7 @@ function Donut({ segments, total, count, onSelect, onPick, onCenter, budgetOf, p
           </span>
         </button>
       ) : (
-        <Mitte {...mitteProps}>{buchungen}</Mitte>
+        <Mitte {...mitteProps}>{uebrig}</Mitte>
       )}
     </div>
   )
@@ -329,28 +341,58 @@ function Donut({ segments, total, count, onSelect, onPick, onCenter, budgetOf, p
 // Ausgaben pro Tag oder Monat. Einnahmen kommen bewusst nicht als Balken
 // daneben: ein Gehalt ist ein Vielfaches eines Wocheneinkaufs, auf einer
 // gemeinsamen Achse waeren alle Ausgabenbalken unsichtbar.
-function Bars({ points, height = 96 }: { points: SeriesPoint[]; height?: number }) {
-  const max = points.reduce((m, p) => Math.max(m, p.exp), 0)
+//
+// Aus demselben Grund wird ein Ausreisser gekappt: steht der hoechste Balken
+// mehr als doppelt so hoch wie der zweithoechste (typisch: der Tag mit der
+// Miete), endet die Skala knapp ueber dem zweithoechsten. Der Ausreisser
+// ragt mit einer Bruchkante darueber hinaus und traegt seinen Wert - sonst
+// waeren alle anderen Tage nur Striche.
+//
+// "avg" zeichnet den Durchschnitt als gestrichelte Linie ein.
+const KAPPEN_AB = 2
+const KOPF_PX = 18
+
+function Bars({ points, height = 112, avg }: { points: SeriesPoint[]; height?: number; avg?: number | null }) {
   const today = todayKey()
+  const werte = points.map((p) => p.exp).filter((v) => v > 0).sort((a, b) => b - a)
+  const kappen = werte.length > 1 && werte[0] > werte[1] * KAPPEN_AB
+  const skala = kappen ? werte[1] * 1.1 : werte[0] ?? 0
+  const avgY = avg && skala && avg <= skala ? Math.round((avg / skala) * height) : null
 
   return (
-    <div className="k-bars" style={{ height }}>
-      {points.map((p) => {
+    <div className="k-bars" style={{ height: height + (kappen ? KOPF_PX : 0) }}>
+      {points.map((p, i) => {
         const isFuture = p.key.length === 10 ? p.key > today : p.key > today.slice(0, 7)
-        const h = max ? Math.round((p.exp / max) * height) : 0
         const isToday = p.key === today || (p.key.length === 7 && p.key === today.slice(0, 7))
         if (!p.exp) {
           return <span key={p.key} className={`k-bar-stub${isFuture ? ' future' : ''}`} />
+        }
+        const title = `${p.full}: ${splitCent(p.exp).int},${splitCent(p.exp).frac} €`
+        if (p.exp > skala) {
+          return (
+            <span key={p.key} className="k-bar-col" title={title}>
+              <span className={`k-bar-cap${i > points.length / 2 ? ' rechts' : ''}`}>
+                {Math.round(p.exp / 100).toLocaleString('de-DE')} €
+              </span>
+              <span className={`k-bar gekappt${isToday ? ' now' : ''}`} style={{ height: height + 4 }} />
+            </span>
+          )
         }
         return (
           <span
             key={p.key}
             className={`k-bar${isToday ? ' now' : ''}`}
-            style={{ height: Math.max(2, h) }}
-            title={`${p.full}: ${splitCent(p.exp).int},${splitCent(p.exp).frac} €`}
+            style={{ height: Math.max(2, Math.round((p.exp / skala) * height)) }}
+            title={title}
           />
         )
       })}
+      {avgY !== null ? (
+        <>
+          <i className="k-bars-avg" style={{ bottom: avgY }} />
+          <span className="k-bars-avg-l" style={{ bottom: avgY + 3 }}>Ø {formatCent(avg!)}</span>
+        </>
+      ) : null}
     </div>
   )
 }

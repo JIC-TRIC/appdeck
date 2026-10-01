@@ -125,6 +125,12 @@ export interface KontorCtx {
   setPeriod: (next: Period | ((cur: Period) => Period)) => void
   push: (view: View) => void
   replace: (view: View) => void
+  /**
+   * Seite unter das offene Blatt legen: sie faehrt schon herein, waehrend
+   * das Blatt noch schliesst. Danach blattWeg() aus dessen onClose.
+   */
+  unterlegen: (view: View) => void
+  blattWeg: () => void
   back: () => void
   refresh: () => void
   onExit: () => void

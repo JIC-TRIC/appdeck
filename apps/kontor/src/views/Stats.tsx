@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Bars, LabelledBars, Line } from '../charts'
 import {
   breakdown,
@@ -10,6 +10,7 @@ import {
   weekdayProfile,
 } from '../calc'
 import { Empty, Money, PeriodBar, Screen } from '../ui'
+import { Glyph, IconRight } from '../icons'
 import { WEEKDAYS, formatCent, formatDate, parseKey, periodRange, shiftPeriod, todayKey } from '../util'
 import type { ViewProps } from '../types'
 
@@ -56,6 +57,24 @@ function Stats({ ctx }: ViewProps) {
   ).size
 
   const maxTop = now.all[0]?.value ?? 0
+  // Die groessten fuenf, auf Wunsch alle. Budgets nur im Monat - in jedem
+  // anderen Zeitraum waere der Vergleich schief.
+  const [alleKategorien, setAlleKategorien] = useState(false)
+  const kategorien = alleKategorien ? now.all : now.all.slice(0, 5)
+  const mitBudget = period.kind === 'month'
+
+  // Laeuft der Zeitraum noch? Dann sind Durchschnitt und ausgabenfreie Tage
+  // "bis heute" gezaehlt.
+  const laufend = !range.to || range.to >= todayKey()
+  const ganz = period.kind === 'week' ? 'die ganze Woche' : period.kind === 'year' ? 'das ganze Jahr' : 'den ganzen Monat'
+  // Durchschnitt fuer die gestrichelte Linie: pro Tag, in Jahr und Gesamt pro
+  // Monat (ohne die kommenden).
+  const vergangen = series.points.filter((p) =>
+    series.perMonth ? p.key <= todayKey().slice(0, 7) : p.key <= todayKey(),
+  )
+  const avgBalken = series.perMonth
+    ? vergangen.length ? Math.round(vergangen.reduce((sum, p) => sum + p.exp, 0) / vergangen.length) : null
+    : avgPerDay
 
   // Wochentage erst ab Monat: in einer Woche ist jeder Tag nur einmal da -
   // das zeigt schon "Ausgaben pro Tag".
@@ -81,16 +100,24 @@ function Stats({ ctx }: ViewProps) {
   const heuteLinks = heuteAnteil !== null && heuteAnteil < 16
   const heuteRechts = heuteAnteil !== null && heuteAnteil > 84
 
-  return (
-    <Screen title="Statistik" onBack={back}>
-      <PeriodBar
-        range={range}
-        gesamt={period.kind === 'all'}
-        onPrev={() => move(-1)}
-        onNext={() => move(1)}
-        onOpen={() => push({ name: 'period', sheet: true })}
-      />
+  const tage = (n: number) => `${n} ${n === 1 ? 'Tag' : 'Tage'}`
 
+  return (
+    <Screen
+      title="Statistik"
+      onBack={back}
+      // Der Zeitraum steht fest unter dem Titel - wer unten bei den
+      // Kategorien ist, soll nicht erst hochscrollen muessen, um zu blaettern.
+      kopf={
+        <PeriodBar
+          range={range}
+          gesamt={period.kind === 'all'}
+          onPrev={() => move(-1)}
+          onNext={() => move(1)}
+          onOpen={() => push({ name: 'period', sheet: true })}
+        />
+      }
+    >
       {totals.count === 0 ? (
         <Empty
           title="Nichts zu rechnen"
@@ -98,6 +125,40 @@ function Stats({ ctx }: ViewProps) {
         />
       ) : (
         <>
+          {/* Auf einen Blick: die vier Zahlen, die man meistens sucht. */}
+          <div className="k-kpi4">
+            <div className="k-card k-kpi4-tile">
+              <div className="k-kpi4-l">Sparquote</div>
+              <div className={`k-kpi4-v${savings === null ? '' : savings >= 0 ? ' inc' : ' exp'}`}>
+                {savings === null ? '–' : `${(savings * 100).toFixed(1).replace('-', '−').replace('.', ',')} %`}
+              </div>
+              <span className="k-track mini">
+                <span
+                  className="k-track-fill"
+                  style={{ width: `${Math.max(0, Math.min(100, (savings ?? 0) * 100))}%`, background: 'var(--inc)' }}
+                />
+              </span>
+              <div className="k-kpi4-s">
+                <Money cent={Math.abs(totals.diff)} /> € {totals.diff < 0 ? 'mehr ausgegeben' : 'übrig'}
+              </div>
+            </div>
+            <div className="k-card k-kpi4-tile">
+              <div className="k-kpi4-l">Ø pro Tag</div>
+              <div className="k-kpi4-v"><Money cent={avgPerDay} /> <span className="k-cur">€</span></div>
+              <div className="k-kpi4-s">{tage(free.total)}{laufend ? ' bis heute' : ''}</div>
+            </div>
+            <div className="k-card k-kpi4-tile">
+              <div className="k-kpi4-l">Hochrechnung</div>
+              <div className="k-kpi4-v">{proj === null ? '–' : `~${Math.round(proj / 100).toLocaleString('de-DE')} €`}</div>
+              <div className="k-kpi4-s">{proj === null ? 'nur im laufenden Zeitraum' : `für ${ganz}`}</div>
+            </div>
+            <div className="k-card k-kpi4-tile">
+              <div className="k-kpi4-l">Ohne Ausgaben</div>
+              <div className="k-kpi4-v">{tage(free.free)}</div>
+              <div className="k-kpi4-s">von {free.total}{laufend ? ' bisher' : ''}</div>
+            </div>
+          </div>
+
           <div className="k-card k-pad16">
             <div className="k-row-base">
               <span className="k-label grow">
@@ -107,7 +168,7 @@ function Stats({ ctx }: ViewProps) {
                 Spitze {formatCent(series.points.reduce((m, p) => Math.max(m, p.exp), 0))} €
               </span>
             </div>
-            <Bars points={series.points} />
+            <Bars points={series.points} avg={avgBalken} />
             <div className="k-axis">
               <span style={heuteLinks ? { visibility: 'hidden' } : undefined}>
                 {series.perMonth ? firstDay?.label : `${firstDay?.label}.`}
@@ -133,62 +194,53 @@ function Stats({ ctx }: ViewProps) {
             </div>
           </div>
 
-          <div className="k-card k-pad16">
-            <div className="k-row-base">
-              <span className="k-label grow">Sparquote</span>
-              <span className={`k-quote ${savings !== null && savings >= 0 ? 'inc' : 'exp'}`}>
-                {savings === null ? '–' : `${(savings * 100).toFixed(1).replace('-', '−').replace('.', ',')} %`}
-              </span>
-            </div>
-            <div className="k-track">
-              <span
-                className="k-track-fill"
-                style={{
-                  width: `${Math.max(0, Math.min(100, (savings ?? 0) * 100))}%`,
-                  background: 'var(--inc)',
-                }}
-              />
-            </div>
-            <div className="k-kpi-grid">
-              <div>
-                <div className="k-kpi-num"><Money cent={avgPerDay} /></div>
-                <div className="k-kpi-lbl">Ø pro Tag</div>
-              </div>
-              <div>
-                <div className="k-kpi-num">{proj === null ? '–' : <>~<Money cent={proj} /></>}</div>
-                <div className="k-kpi-lbl">Hochrechnung</div>
-              </div>
-              <div>
-                <div className="k-kpi-num">{free.free} / {free.total}</div>
-                <div className="k-kpi-lbl">ausgabenfreie Tage</div>
-              </div>
-            </div>
-          </div>
-
           {now.all.length ? (
             <div className="k-card k-pad16">
-              <div className="k-label">Größte Kategorien</div>
-              <div className="k-top">
-                {now.all.slice(0, 5).map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    className="k-top-row"
-                    onClick={() =>
-                      push({ name: 'categoryDetail', segment: { ...s, share: now.total ? s.value / now.total : 0 }, kind: 'expense' })
-                    }
-                  >
-                    <span className="k-top-name">{s.name}</span>
-                    <span className="k-track thin">
-                      <span
-                        className="k-track-fill"
-                        style={{ width: `${maxTop ? (s.value / maxTop) * 100 : 0}%`, background: s.color }}
-                      />
-                    </span>
-                    <span className="k-top-val"><Money cent={s.value} /></span>
-                  </button>
-                ))}
+              <div className="k-row-base">
+                <span className="k-label grow">Kategorien</span>
+                {now.all.length > 5 ? (
+                  <span className="k-small-num muted">{kategorien.length} von {now.all.length}</span>
+                ) : null}
               </div>
+              <div className="k-catstat-list">
+                {kategorien.map((s) => {
+                  const budget = mitBudget ? catById[s.id]?.budgetCent ?? null : null
+                  const anteil = now.total ? s.value / now.total : 0
+                  const quote = budget ? Math.round((s.value / budget) * 100) : null
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      className="k-catstat"
+                      onClick={() => push({ name: 'categoryDetail', segment: { ...s, share: anteil }, kind: 'expense' })}
+                    >
+                      <span className="k-cat-row-av" style={{ color: s.color, background: `${s.color}1F` }}>
+                        <Glyph name={s.icon} />
+                      </span>
+                      <span className="k-catstat-mid">
+                        <span className="k-catstat-top">
+                          <span className="k-catstat-name">{s.name}</span>
+                          <span className="k-catstat-val"><Money cent={s.value} /></span>
+                        </span>
+                        <span className="k-catstat-bar">
+                          <span style={{ width: `${maxTop ? (s.value / maxTop) * 100 : 0}%`, background: s.color }} />
+                          {/* Strich = Budget, damit man sieht, wie weit drueber oder drunter */}
+                          {budget ? <i style={{ left: `${Math.min(100, (budget / maxTop) * 100)}%` }} /> : null}
+                        </span>
+                        <span className={`k-catstat-note${quote !== null && quote > 100 ? ' exp' : ''}`}>
+                          {quote !== null ? `${quote} % vom Budget` : `${Math.max(1, Math.round(anteil * 100))} %`}
+                        </span>
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+              {now.all.length > 5 ? (
+                <button type="button" className="k-textlink left" onClick={() => setAlleKategorien((a) => !a)}>
+                  {alleKategorien ? 'Weniger zeigen' : `Alle ${now.all.length} Kategorien`}
+                  {alleKategorien ? null : <span className="k-textlink-ic"><IconRight /></span>}
+                </button>
+              ) : null}
             </div>
           ) : null}
 
@@ -228,7 +280,6 @@ function Stats({ ctx }: ViewProps) {
               </div>
             </div>
           ) : null}
-
         </>
       )}
     </Screen>

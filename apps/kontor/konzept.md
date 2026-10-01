@@ -266,15 +266,16 @@ Hauptansicht
       selbst schon ein kleiner Ueberblick
 - [x] **Die Summen sind der Umschalter.** Zwei Kacheln statt einer Pille:
       Ausgaben und Einnahmen des Zeitraums mit Betrag, antippen wechselt den
-      Ring. Die gewaehlte liegt als Flaeche obenauf und traegt ihre Farbe.
-      Darunter in einer Zeile, was uebrig bleibt („Uebrig im September
-      +507,42 €")
+      Ring. Die gewaehlte liegt als Flaeche obenauf und traegt ihre Farbe
 - [x] **Donut** des Zeitraums nach Kategorie
   - [x] Kategorie-Icons aussen am Ring mit Prozentwert
-  - [x] In der Mitte **die Zahl der Buchungen** („33 Buchungen ›"), ein Tipp
-        oeffnet die Liste. Frueher standen dort Einnahmen und Ausgaben ohne
-        Beschriftung – welche Zahl zum Ring gehoerte, musste man raten; die
-        Summen stehen jetzt beschriftet in den Kacheln darueber
+  - [x] In der Mitte **was uebrig bleibt** („+507,42 € übrig im September"),
+        das Ergebnis der beiden Kacheln darueber: gruen, im Minus Koralle
+        („120,00 € Minus im September"). Darunter ein Knopf „33 Buchungen ›" –
+        ein Tipp in die Mitte oeffnet die Liste. Frueher standen dort
+        Einnahmen und Ausgaben ohne Beschriftung, danach nur die Zahl der
+        Buchungen; die passte nicht zum Ring. Die Groesse des Betrags folgt
+        der Schirmbreite, damit er auch auf schmalen Handys ins Loch passt
   - [x] Segment antippen → Kategorie-Detail. **Der Ring selbst ist antippbar,
         nicht nur die Beschriftung** – kleine Segmente haben keine und waeren
         sonst unerreichbar
@@ -342,8 +343,7 @@ Hauptansicht
       man das wissen
 - [x] Zwei flache Knoepfe mit abgerundeten Ecken: **−** Ausgabe, **+**
       Einnahme. Rechtecke statt Kreise, damit unten weniger Hoehe draufgeht.
-      **Ausgabe gefuellt**, Einnahme mit Rand: der Knopf, den man fast jedes
-      Mal drueckt, ist der kraeftigste
+      Beide mit farbigem Rand – gefuellt war Ausgabe zu laut
 - [x] **Saldoleiste und Knoepfe schliessen unten buendig ab**; darunter steht
       nur noch die Safe Area des Geraets
 - [x] Der Ring ist durch die Schirmbreite begrenzt – auf hohen Geraeten bleibt
@@ -482,15 +482,26 @@ fuers Hochformat gerechnet – von oben nach unten:
 - [x] **Dieselbe Zeitraum-Zeile wie die Uebersicht** (gemeinsame Komponente):
       Pfeile zum Blaettern, Antippen oeffnet die Auswahl. Der Zeitraum ist
       derselbe wie dort – wer hier blaettert, blaettert auch die Uebersicht
+- [x] **Titel und Zeitraum stehen fest**, nur der Inhalt darunter scrollt.
+      Laeuft er unter dem Kopf durch, trennt ihn eine feine Kante (gilt fuer
+      alle Unterseiten)
+- [x] **Oben vier Kennzahlen** als Kacheln: Sparquote mit Balken und dem
+      Betrag, der uebrig bleibt; Ø pro Tag; Hochrechnung auf den ganzen
+      Zeitraum (nur solange er laeuft); Tage ohne Ausgaben (bis heute)
 - [x] **Verlauf**: Balken pro Tag (Tag/Woche/Monat) bzw. pro Monat
       (Jahr/Gesamt), heutiger Balken hervorgehoben, kommende Tage als Stummel
   - [x] **Nur Ausgaben als Balken.** Einnahmen stehen als Zeile darunter: ein
         Gehalt ist ein Vielfaches eines Wocheneinkaufs, auf einer gemeinsamen
         Achse waeren alle Ausgabenbalken unsichtbar
+  - [x] **Ausreisser werden gekappt.** Steht der hoechste Balken mehr als
+        doppelt so hoch wie der zweithoechste (die Miete), endet die Skala
+        knapp ueber dem zweithoechsten; der Ausreisser ragt mit Bruchkante
+        hinaus und traegt seinen Wert. Sonst waeren alle anderen Tage Striche
+  - [x] **Durchschnitt** als gestrichelte Linie mit Wert
 - [x] **Sparquote** `(Einnahmen − Ausgaben) / Einnahmen`
-- [x] **Ø pro Tag**, **Hochrechnung** auf den ganzen Zeitraum (nur solange er
-      laeuft), **ausgabenfreie Tage** (nur bis heute gezaehlt)
-- [x] **Groesste Kategorien** als Balkenliste, antippbar
+- [x] **Kategorien** mit Betrag, Anteil als Balken und – im Monat – Budget als
+      Strich darauf und „112 % vom Budget" darunter (ueber 100 % in Koralle).
+      Die groessten fuenf, „Alle 11 Kategorien" klappt den Rest auf; antippbar
 - [ ] ~~Vergleich zum Vorzeitraum~~ – entfernt, brachte keinen Erkenntniswert
 - [ ] ~~Groesste Einzelbuchung~~ – entfernt, es ist fast immer die Miete
 - [x] Wochentags-Auswertung – „typischer Tag“ als Median je Wochentag, damit die
@@ -572,6 +583,20 @@ eine Geste angekommen ist und wohin sie fuehrt.
       oben steht, gehoert die Geste dem Scrollen
 - [x] Auch ein Tipp auf eine Zeile im Blatt schliesst mit derselben Animation,
       nicht abrupt
+- [x] **Seitenwechsel wie auf dem iPhone:** eine Unterseite faehrt von rechts
+      herein, die Seite darunter rueckt ein Stueck nach links und dunkelt ab;
+      zurueck umgekehrt. Vorher sprang die Seite einfach um
+  - [x] **Vom linken Rand zurueckwischen**: die Seite folgt dem Finger, die
+        darunter kommt mit; weit genug oder schnell genug geht es zurueck,
+        sonst federt sie zurueck. Waagerechte Gesten gehoeren dabei der App
+        (`touch-action: pan-y`), sonst blaettert der Browser die ganze Seite
+  - [x] **Aus dem Menue faehrt die Seite sofort los**, waehrend das Blatt noch
+        nach unten gleitet – sie liegt so lange darunter. Frueher schloss erst
+        das Blatt, dann sprang die Seite um
+  - [x] Die gehende Seite bleibt beim Hinausgleiten, wie sie zuletzt aussah:
+        nach Speichern oder Loeschen aendern sich die Daten im selben Moment,
+        ohne das saehe man kurz ein umspringendes Formular. Darum nimmt
+        „Zurueck" die Seite sofort vom Stapel, statt auf `popstate` zu warten
 - [x] `prefers-reduced-motion` schaltet alles davon ab
 
 ## Querschnitt

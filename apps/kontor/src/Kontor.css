@@ -158,6 +158,110 @@ ion-modal.k-sheet-modal {
   text-align: right;
 }
 
+/* ---------- Seitenwechsel (Kontor.tsx) ---------- */
+
+/* Jede Seite liegt auf einer eigenen Ebene. Beim Wechsel stehen zwei
+   uebereinander: die neue faehrt von rechts herein, die alte rueckt ein
+   Stueck nach links und dunkelt ab - zurueck umgekehrt, wie auf dem iPhone. */
+.k-buehne {
+  position: relative;
+  height: calc(100dvh - env(safe-area-inset-top));
+  overflow: hidden;
+}
+
+.k-ebene {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  /* Waagerechte Gesten gehoeren der App (Zurueckwischen vom Rand), nicht
+     dem Browser - sonst blaettert Chrome bei einem Wisch vom Rand die ganze
+     Seite zurueck. Waagerechte Leisten darin scrollen trotzdem: fuer sie
+     zaehlt ihr eigener Wert. */
+  touch-action: pan-y;
+}
+
+/* Dasselbe fuer die Scrollbereiche darin: fuer eine Beruehrung zaehlt der
+   Wert bis zum naechsten Scrollbereich - der Ebene selbst kaeme sie sonst
+   nie an. */
+.k-ebene .k-body,
+.k-ebene .k-form,
+.k-ebene .k-main {
+  touch-action: pan-y;
+}
+
+/* Abdunklung der Seite, die nach hinten rueckt. --dunkel setzt der Finger
+   beim Zurueckwischen direkt. */
+.k-ebene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 29, 26, 0.14);
+  opacity: var(--dunkel, 0);
+  pointer-events: none;
+}
+
+.k-ebene.rein-rechts,
+.k-ebene.raus-rechts,
+.k-ebene.zieht {
+  z-index: 2;
+  box-shadow: -12px 0 32px rgba(31, 29, 26, 0.12);
+}
+
+.k-ebene.rein-rechts {
+  animation: k-seite-rein 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.k-ebene.weg-links {
+  animation: k-seite-weg 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.k-ebene.weg-links::after {
+  animation: k-dunkel-an 0.36s ease both;
+}
+
+/* Zurueck: startet dort, wo der Finger die Seiten losgelassen hat. */
+.k-ebene.rein-links {
+  animation: k-seite-zurueck 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.k-ebene.rein-links::after {
+  animation: k-dunkel-aus 0.36s ease both;
+}
+
+.k-ebene.raus-rechts {
+  animation: k-seite-raus 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes k-seite-rein {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes k-seite-weg {
+  from { transform: translateX(0); }
+  to { transform: translateX(-28%); }
+}
+
+@keyframes k-seite-zurueck {
+  from { transform: translateX(var(--von, -28%)); }
+  to { transform: translateX(0); }
+}
+
+@keyframes k-seite-raus {
+  from { transform: translateX(var(--ab, 0px)); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes k-dunkel-an {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes k-dunkel-aus {
+  from { opacity: var(--dunkel-von, 1); }
+  to { opacity: 0; }
+}
+
 /* ---------- Geruest ---------- */
 
 /* 100dvh statt 100vh: 100vh ist auf dem Handy die Hoehe OHNE eingeklappte
@@ -237,6 +341,22 @@ ion-modal.k-sheet-modal {
   min-height: 3.25rem;
   padding: 0 0.375rem;
   flex-shrink: 0;
+}
+
+/* Laeuft Inhalt unter dem festen Kopf durch, trennt ihn eine feine Kante.
+   Sie haengt am oberen Rand des Scrollbereichs, der selbst nicht mitscrollt. */
+.k-screen > .k-body {
+  border-top: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.k-screen.gescrollt > .k-body {
+  border-top-color: var(--line);
+}
+
+/* Fester Zeitraum unter dem Titel der Statistik. */
+.k-screen > .k-period {
+  padding-bottom: 0.25rem;
 }
 
 .k-ic {
@@ -498,18 +618,6 @@ ion-modal.k-sheet-modal {
   color: var(--inc);
 }
 
-.k-uebrig {
-  text-align: center;
-  font-size: 0.8125rem;
-  color: var(--muted);
-  padding-top: 0.625rem;
-  flex-shrink: 0;
-}
-
-.k-uebrig > span {
-  font-weight: 600;
-}
-
 /* ---------- Donut ---------- */
 
 .k-donut {
@@ -536,30 +644,23 @@ ion-modal.k-sheet-modal {
   line-height: 1.25;
 }
 
-/* Ohne Auswahl: wie viele Buchungen der Ring zusammenfasst - und der Weg
-   dorthin. */
-.k-donut-count {
+/* Ohne Auswahl: was uebrig bleibt - das Ergebnis der beiden Kacheln. Die
+   Groesse folgt der Breite, sonst passt ein vierstelliger Betrag auf einem
+   schmalen Handy nicht ins Loch. */
+.k-donut-diff {
   display: block;
-  font-size: 2rem;
+  font-size: clamp(1.125rem, 6.2vw, 1.5rem);
   font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
-.k-donut-count-l {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.0625rem;
-  font-size: 0.78rem;
+.k-donut-diff-l {
+  display: block;
+  font-size: 0.75rem;
   color: var(--muted);
   margin-top: 0.125rem;
-}
-
-.k-donut-chev {
-  width: 0.875rem;
-  height: 0.875rem;
-  flex-shrink: 0;
 }
 
 .k-donut-center.as-button {
@@ -845,13 +946,9 @@ ion-modal.k-sheet-modal {
   flex-shrink: 0;
 }
 
-/* Ausgabe ist der Knopf, den man fast jedes Mal drueckt - er ist der
-   kraeftigste auf der Seite. */
 .k-action-btn.exp {
-  background: var(--exp);
   border-color: var(--exp);
-  color: #ffffff;
-  box-shadow: 0 6px 16px -8px var(--exp);
+  color: var(--exp);
 }
 
 .k-action-btn.inc {
@@ -2093,6 +2190,146 @@ ion-modal.k-sheet-modal {
   margin-top: 0.4375rem;
 }
 
+/* ---------- Statistik: Kennzahlen und Kategorien ---------- */
+
+/* Vier Zahlen auf einen Blick, je eine Kachel. */
+.k-kpi4 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.k-kpi4-tile {
+  padding: 0.75rem 0.875rem 0.8125rem;
+  min-width: 0;
+}
+
+.k-kpi4-l {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.k-kpi4-v {
+  font-size: 1.3125rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin-top: 0.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.k-kpi4-s {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.1875rem;
+}
+
+.k-track.mini {
+  height: 0.3125rem;
+  margin-top: 0.375rem;
+}
+
+/* Kategorien: Anteil als Balken, Budget als Strich darauf. */
+.k-catstat-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.25rem;
+}
+
+.k-catstat {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5625rem 0;
+  text-align: left;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.k-catstat:last-child {
+  border-bottom: 0;
+}
+
+.k-catstat-mid {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.k-catstat-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.k-catstat-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.k-catstat-val {
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.k-catstat-bar {
+  display: block;
+  position: relative;
+  height: 0.375rem;
+  border-radius: 0.1875rem;
+  background: var(--sunk);
+  margin: 0.375rem 0 0.25rem;
+}
+
+.k-catstat-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 0.1875rem;
+}
+
+.k-catstat-bar > i {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--ink);
+  opacity: 0.55;
+}
+
+.k-catstat-note {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.k-catstat-note.exp {
+  color: var(--exp);
+  font-weight: 500;
+}
+
+.k-textlink.left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin: 0.375rem 0 0;
+  padding: 0.375rem 0;
+  text-align: left;
+}
+
+.k-textlink-ic {
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
 /* ---------- Diagramme ---------- */
 
 .k-bars {
@@ -2111,6 +2348,68 @@ ion-modal.k-sheet-modal {
 
 .k-bar.now {
   background: #c4462e;
+}
+
+.k-bars {
+  position: relative;
+}
+
+/* Gekappter Ausreisser: Wert darueber, Bruchkante im Balken. */
+.k-bar-col {
+  flex-grow: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  position: relative;
+}
+
+.k-bar-col > .k-bar {
+  flex-grow: 0;
+  position: relative;
+}
+
+.k-bar.gekappt::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 0.75rem;
+  height: 5px;
+  background: var(--surface);
+  transform: skewY(-20deg);
+}
+
+.k-bar-cap {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--exp);
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+
+.k-bar-cap.rechts {
+  align-self: flex-end;
+}
+
+.k-bars-avg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1.5px dashed var(--ink);
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.k-bars-avg-l {
+  position: absolute;
+  right: 0;
+  padding-left: 0.25rem;
+  background: var(--surface);
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--muted);
+  pointer-events: none;
 }
 
 .k-bar-stub {

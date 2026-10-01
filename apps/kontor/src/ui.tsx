@@ -8,11 +8,16 @@ import type { Range } from './types'
 
 // Kopfzeile plus Inhalt. Der Abstand oben haelt die Statusleiste des Handys
 // frei - dort zeichnet das System selbst.
+//
+// "kopf" haengt etwas fest unter die Kopfzeile, das beim Scrollen stehen
+// bleibt (die Zeitraum-Zeile der Statistik). Sobald der Inhalt darunter
+// durchlaeuft, trennt ihn eine feine Kante vom Kopf.
 export function Screen({
   title,
   sub,
   onBack,
   right,
+  kopf,
   children,
   wide,
 }: {
@@ -20,11 +25,13 @@ export function Screen({
   sub?: ReactNode
   onBack?: () => void
   right?: ReactNode
+  kopf?: ReactNode
   children?: ReactNode
   wide?: boolean
 }) {
+  const [gescrollt, setGescrollt] = useState(false)
   return (
-    <div className="k-screen">
+    <div className={`k-screen${gescrollt ? ' gescrollt' : ''}`}>
       <header className="k-head">
         {onBack ? (
           <button type="button" className="k-ic" onClick={onBack} aria-label="Zurück">
@@ -39,7 +46,16 @@ export function Screen({
         </div>
         {right ?? <span className="k-ic-space" />}
       </header>
-      <div className={`k-body${wide ? ' wide' : ''}`}>{children}</div>
+      {kopf}
+      <div
+        className={`k-body${wide ? ' wide' : ''}`}
+        onScroll={(e) => {
+          const unten = e.currentTarget.scrollTop > 2
+          if (unten !== gescrollt) setGescrollt(unten)
+        }}
+      >
+        {children}
+      </div>
     </div>
   )
 }

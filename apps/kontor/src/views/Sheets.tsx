@@ -95,7 +95,7 @@ function MenuTile({
 
 // Statt einer Tab-Leiste: alles, was nicht die Hauptansicht ist, liegt hier.
 export function MenuSheet({ ctx }: ViewProps) {
-  const { accounts, categories, entries, accById, settings, period, firstKey, back, replace, onExit } = ctx
+  const { accounts, categories, entries, accById, settings, period, firstKey, back, unterlegen, blattWeg, onExit } = ctx
   const open = accounts.filter((a) => !a.archived)
   const outside = open.filter((a) => !a.includeInTotal).length
   const cats = categories.filter((c) => !c.archived)
@@ -115,17 +115,19 @@ export function MenuSheet({ ctx }: ViewProps) {
     (c) => budgetUsage(entries, month, c.id, accById, countBoundary) > (c.budgetCent ?? 0),
   ).length
 
-  // Erst schliesst das Blatt (mit Animation), dann ersetzt die gewaehlte Seite
-  // seinen Platz im Stapel. Ersetzt, nicht zurueck und neu - sonst rennt
-  // history.back() gegen den naechsten push.
+  // Die gewaehlte Seite faehrt sofort herein und liegt dabei unter dem Blatt,
+  // das gleichzeitig nach unten gleitet - frueher schloss erst das Blatt, und
+  // dann sprang die Seite um. Ist das Blatt zu, nimmt es nur sich selbst vom
+  // Stapel; sein History-Eintrag gehoert ab dann der Seite.
   const ziel = useRef<View | null>(null)
-  const onClose = () => (ziel.current ? replace(ziel.current) : back())
+  const onClose = () => (ziel.current ? blattWeg() : back())
 
   return (
     <Sheet title="Menü" onClose={onClose}>
       {(zu) => {
         const go = (view: View) => () => {
           ziel.current = view
+          unterlegen(view)
           zu()
         }
         return (
