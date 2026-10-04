@@ -1,0 +1,393 @@
+.practice-view {
+  padding: 12px;
+  padding-bottom: 105px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Add Piece Button */
+.add-piece-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-on-primary);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+  margin-bottom: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.add-piece-btn:active {
+  opacity: 0.7;
+}
+
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* YouTube Bottom Button */
+.youtube-bottom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid var(--accent-youtube);
+  border-radius: var(--radius-sm);
+  color: var(--accent-youtube);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+  margin-top: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.youtube-bottom-btn:active {
+  opacity: 0.7;
+}
+
+/* Setlists Button */
+.setlists-open-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.setlists-open-btn:active {
+  opacity: 0.7;
+}
+
+/* Goal Section */
+.goal-section {
+  margin-bottom: 16px;
+}
+
+.goal-card {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  align-items: center;
+}
+
+.goal-progress-ring {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.progress-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+}
+
+.progress-bg {
+  stroke: var(--surface-light);
+}
+
+.progress-fill {
+  stroke: var(--primary);
+  stroke-linecap: butt;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.progress-value {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.progress-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.goal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.goal-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.streak-value {
+  color: var(--accent-streak);
+}
+
+/* Practice Milestones Section */
+.milestone-section {
+  margin-bottom: 16px;
+}
+
+.milestone-card {
+  padding: 12px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.milestone-completed {
+  text-align: center;
+  padding: 12px 0;
+}
+
+.milestone-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.milestone-text {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.milestone-total {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}
+
+.milestone-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.milestone-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.milestone-target {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.milestone-progress-bar {
+  height: 3px;
+  background: var(--surface-light);
+  border-radius: 0;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.milestone-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 0;
+  transition: width 0.3s ease;
+}
+
+.milestone-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.milestone-stat {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+/* Favorite Pieces Section */
+.favorites-section {
+  margin-bottom: 16px;
+}
+
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.favorite-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+  text-align: left;
+}
+
+.favorite-item:active {
+  opacity: 0.7;
+}
+
+.favorite-rank {
+  font-family: var(--font-mono);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.favorite-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.favorite-title {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.favorite-artist {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.favorite-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.favorite-time {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.favorite-count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-tertiary);
+}
+
+/* Empty State */
+.empty-practice {
+  text-align: center;
+  padding: 24px 12px;
+  color: var(--text-secondary);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 480px) {
+  .practice-view {
+    padding: 10px;
+  }
+
+  .goal-card {
+    flex-direction: column;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .goal-progress-ring {
+    width: 120px;
+    height: 120px;
+  }
+
+  .goal-info {
+    width: 100%;
+  }
+
+  .progress-value {
+    font-size: 1.6rem;
+  }
+}

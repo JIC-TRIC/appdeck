@@ -32,6 +32,10 @@ scripts/new-app.mjs      `npm run new` – neue App anlegen
 - **Vanilla-Apps** (reines HTML/JS) – ohne `src/main.tsx`. Werden unverändert kopiert.
   Praktisch, um eine bestehende alte App ohne Umbau zu übernehmen (siehe Abschnitt 3).
 
+Sonderfall **Piano** (`apps/piano/`): 1:1 aus dem Repo piano-practice-tracker übernommen, React ohne Ionic
+und noch in JSX statt TypeScript. Wird wie die Ionic-Apps gebaut (`src/main.tsx`), startet aber ohne
+`mountApp`. Deshalb steht `allowJs` in `tsconfig.json`: Die `.jsx`-Dateien werden mitgebaut, aber nicht typgeprüft.
+
 ---
 
 ## 1. Einrichten (einmalig)
@@ -166,6 +170,15 @@ deshalb **nicht automatisch**. Umzug per Backup:
 sofern sie im selben Speicher liegen (Schlüssel `k-deploy:proj:kontor`). Also: den alten Stand wie oben
 per Launcher-Backup herüberholen, danach Kontor öffnen – fertig. Alternativ eine alte Kontor-Exportdatei
 in Kontor unter Einstellungen → **Import aus JSON** einlesen.
+
+**Piano (früher piano-practice-tracker):** Zwei Wege, beide ersetzen nur die Piano-Daten.
+- **Per Datei:** In der alten App More → **Export Backup**, dann in Piano More → **Import Backup**. Der Import
+  versteht auch ein appdeck-Backup (Datei aus `backup.js`, siehe Fall B). Exporte der alten App vor dem Umzug
+  enthalten keine Setlists. Vorhandene Setlists in Piano bleiben dann stehen.
+- **Automatisch:** Liegen die alten Schlüssel (`pianoPieces`, `practiceSessions`, `pianoSettings`, `pianoSetlists`,
+  `sessionPlaylist`) im selben Speicher (alte App lief in Safari, oder ihr Stand kam per Launcher-Backup wie in Fall B),
+  übernimmt Piano sie beim ersten Start nach `piano:*`. Das passiert nur, solange Piano selbst noch nichts gespeichert
+  hat. Die alten Schlüssel bleiben liegen.
 
 **Kontor-Testdaten:** `apps/kontor/testdaten/kontor-beispiel.json` – Juni bis September 2026, vier Konten
 (eins außerhalb der Gesamtbalance), Budgets, eine archivierte Kategorie, Umbuchungen und Korrekturen.

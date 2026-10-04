@@ -1,0 +1,254 @@
+.home-view {
+  padding: 0 1rem;
+  padding-bottom: 105px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Hero */
+.home-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.5rem 0 1.5rem;
+}
+
+.home-hero-icon {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.home-title {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.home-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 300px;
+}
+
+/* Quick Stats Grid */
+.home-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 1.2rem;
+}
+
+.home-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 4px;
+  cursor: pointer;
+}
+
+.home-stat-card:active {
+  opacity: 0.7;
+}
+
+.home-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--primary);
+  letter-spacing: 0.02em;
+}
+
+.home-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Feature Cards */
+.home-features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 1.2rem;
+}
+
+.home-feature-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  color: inherit;
+  font: inherit;
+}
+
+.home-feature-card:active {
+  opacity: 0.7;
+}
+
+.home-feature-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--primary);
+}
+
+.home-feature-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-feature-text h3 {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 3px;
+}
+
+.home-feature-text p {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.home-feature-arrow {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--text-tertiary);
+}
+
+/* Highlights */
+.home-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.home-highlight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.home-highlight:last-child {
+  border-bottom: none;
+}
+
+.home-highlight-icon {
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--primary);
+  opacity: 0.7;
+}
+
+/* CTA */
+.home-cta {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.home-cta-btn {
+  display: inline-block;
+  padding: 12px 32px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-on-primary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+}
+
+.home-cta-btn:active {
+  opacity: 0.7;
+}
+
+/* Footer */
+.home-footer {
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.home-footer span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Tablet+ */
+@media (min-width: 768px) {
+  .home-view {
+    max-width: 560px;
+    padding-bottom: 105px;
+  }
+
+  .home-hero {
+    padding: 3rem 0 2rem;
+  }
+
+  .home-title {
+    font-size: 1.8rem;
+  }
+
+  .home-subtitle {
+    font-size: 0.88rem;
+    max-width: 360px;
+  }
+
+  .home-stat-value {
+    font-size: 1.25rem;
+  }
+
+  .home-feature-card {
+    padding: 16px 14px;
+  }
+}

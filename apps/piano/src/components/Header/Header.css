@@ -1,0 +1,130 @@
+.app-header {
+  background: var(--background);
+  padding: 0.6rem 1rem;
+  position: relative;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-title {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.icon-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:active {
+  opacity: 0.7;
+}
+
+.youtube-btn:hover {
+  color: var(--accent-youtube);
+}
+
+.settings-btn:hover {
+  color: var(--primary);
+}
+
+.streak-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: default;
+  pointer-events: none;
+}
+
+.streak-btn:hover {
+  background: transparent;
+  transform: none;
+}
+
+.streak-number {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--accent-streak);
+}
+
+.add-btn {
+  background: var(--primary);
+  color: var(--text-on-primary);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-btn:active {
+  opacity: 0.7;
+}
+
+/* Mobile Optimization */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .logo svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .app-title {
+    font-size: 0.78rem;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .icon-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .add-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .add-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}

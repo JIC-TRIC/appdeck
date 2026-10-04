@@ -1,0 +1,89 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--background);
+  border-top: 1px solid var(--border);
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+  z-index: 1000;
+  height: 85px;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.1s ease;
+  flex: 1;
+  max-width: 90px;
+}
+
+.nav-tab:active {
+  opacity: 0.7;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+.nav-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nav-tab.active {
+  color: var(--primary);
+}
+
+.nav-tab.active .nav-label {
+  font-weight: 500;
+}
+
+/* Disabled state when modal is open */
+.bottom-nav.disabled {
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.bottom-nav.disabled .nav-tab {
+  cursor: not-allowed;
+}
+
+/* Tablet & Desktop */
+@media (min-width: 768px) {
+  .bottom-nav {
+    padding: 8px 0;
+    height: 64px;
+  }
+
+  .nav-tab {
+    padding: 6px 16px;
+  }
+
+  .nav-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .nav-label {
+    font-size: 0.65rem;
+  }
+}

@@ -1,0 +1,192 @@
+/* History Section - Inline Collapsible */
+.history-section {
+  margin-bottom: 16px;
+}
+
+.history-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+}
+
+.history-toggle .section-title {
+  margin: 0;
+  flex: 1;
+}
+
+.history-toggle .toggle-icon {
+  font-size: 0.6rem;
+  color: var(--text-tertiary);
+  width: 10px;
+}
+
+.history-count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-tertiary);
+}
+
+/* Day list */
+.history-days {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.history-day {
+  border-radius: var(--radius-sm);
+}
+
+.day-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--text);
+  text-align: left;
+}
+
+.day-toggle .toggle-icon {
+  font-size: 0.55rem;
+  color: var(--text-tertiary);
+  width: 10px;
+}
+
+.day-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  flex: 1;
+  letter-spacing: 0.04em;
+}
+
+.day-meta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+}
+
+/* Sessions inside a day */
+.day-sessions {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 4px 18px;
+}
+
+.session-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.session-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.session-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.session-piece {
+  display: flex;
+  flex-direction: column;
+}
+
+.piece-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.piece-artist {
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+}
+
+.session-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.session-time {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-tertiary);
+}
+
+.session-duration {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+.delete-session-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0.3;
+  transition: opacity 0.1s ease;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
+.delete-session-btn:active {
+  opacity: 1;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 16px 12px;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.load-more-btn {
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.load-more-btn:active {
+  opacity: 0.7;
+}
