@@ -73,6 +73,15 @@ dem Gerät; wer das Icon löscht, löscht sie.
 - **Zähler** (mehrmals am Tag antippen), **feste Wochentage** und **„alle N Tage“** als Rhythmus – bewusst
   draußen, damit das Raster lesbar bleibt. Siehe „Nicht im MVP“ in `apps/steady/konzept.md`.
 
+## Loci
+
+- **Bausteine einzeln üben**: schnelle Abfragen nur der Monatszahl („September?“ → 5), der Jahreszahl
+  („89?“ → 6) oder der Jahrhundertzahl.
+- **Verlauf als Kurve** beim Kartendeck: Merkzeit und „bis zum ersten Fehler“ über die Zeit, je Deckgröße.
+- **Fehlerkarten**: welche Karten am häufigsten falsch liegen (Hinweis, wo das Personensystem wackelt).
+- Bewusst nicht: Personen und Route in der App, auch nicht lokal (Code ist öffentlich, siehe
+  `apps/loci/konzept.md`).
+
 ## Ideen für neue Apps
 
 Nur festgehalten, noch nicht entschieden. Vor dem Bau wie gewohnt: Fragerunde, dann `konzept.md`

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Loci: Schlüsselloch in einem Bogen auf Rechenheft-Karo, Tintenblau (Richtung „Tafel“, siehe apps/loci/konzept.md) -->
+  <rect width="180" height="180" fill="#F7F8F3"/>
+  <path d="M0 18H180M18 0V180M0 36H180M36 0V180M0 54H180M54 0V180M0 72H180M72 0V180M0 90H180M90 0V180M0 108H180M108 0V180M0 126H180M126 0V180M0 144H180M144 0V180M0 162H180M162 0V180" stroke="#E1E7F0" stroke-width="1.5"/>
+  <path d="M48 147V87a42 42 0 0 1 84 0v60z" fill="#FFFFFF" stroke="#1E4DB7" stroke-width="7" stroke-linejoin="round"/>
+  <circle cx="90" cy="92" r="12" fill="#1E4DB7"/>
+  <path d="M84 100l-6 28h24l-6-28z" fill="#1E4DB7"/>
+</svg>

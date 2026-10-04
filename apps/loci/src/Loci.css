@@ -1,0 +1,2017 @@
+/* =========================
+   Loci - Richtung "Tafel", nur hell.
+
+   Rechenheft: Karopapier als Grund, Tintenblau als einzige Akzentfarbe,
+   IBM Plex Mono fuer Daten und Zahlen, IBM Plex Sans fuer alles andere.
+   Gruen = richtig, Rot = falsch, Ocker = Tipp - immer mit Text oder Zeichen.
+   Werte und Gruende: konzept.md.
+
+   Die Tokens haengen an :root und nicht an .loci: Ionic haengt Blaetter,
+   Vollbild und Rueckfragen direkt unter ion-app ein, ausserhalb der Huelle.
+   ========================= */
+
+:root {
+  --bg: #f7f8f3;
+  --grid: #e1e7f0;
+  --surface: #ffffff;
+  --surface-2: #eef2f7;
+  --line: #cbd4e1;
+  --text: #172033;
+  --text-2: #46536b;
+  --text-3: #5e6a80;
+  --accent: #1e4db7;
+  --accent-ink: #ffffff;
+  --accent-soft: #e3eaf8;
+  --good: #1d7a4c;
+  --good-soft: #dff1e6;
+  --bad: #c2372b;
+  --bad-soft: #f9e0dc;
+  --tip: #8a5300;
+  --tip-soft: #fbebcf;
+
+  /* Spielkarten sehen ueberall gleich aus: Elfenbein, Rot und Schwarz. */
+  --card: #fbf8f1;
+  --card-line: #d9cfbf;
+  --card-red: #c4352a;
+  --card-black: #1d1d1f;
+
+  --paper:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 18px 18px,
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 18px 18px,
+    var(--bg);
+
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --r: 6px;
+  --r-s: 4px;
+  --tabs-h: 58px;
+  --gutter: 16px;
+
+  /* Was Ionic selbst zeichnet (Blaetter, Rueckfragen), soll nach Loci aussehen. */
+  --ion-font-family: var(--f-ui);
+  --ion-background-color: var(--surface);
+  --ion-text-color: var(--text);
+  --ion-color-primary: #1e4db7;
+  --ion-color-primary-rgb: 30, 77, 183;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1a44a1;
+  --ion-color-primary-tint: #355fbe;
+  --ion-color-danger: #c2372b;
+}
+
+/* ---------- Seite ---------- */
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  color-scheme: light;
+}
+
+body {
+  overscroll-behavior: contain;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Die Huelle fuellt ion-app: oben die Buehne mit den beiden Reitern, unten
+   die Tab-Leiste - beide im Fluss (wie Piano), so endet der Scrollbereich
+   genau an der Leiste. */
+.loci {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  background: var(--paper);
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.loci *,
+.loci *::before,
+.loci *::after,
+.l-sheet-modal *,
+.l-sheet-modal *::before,
+.l-sheet-modal *::after,
+.l-full-modal *,
+.l-full-modal *::before,
+.l-full-modal *::after {
+  box-sizing: border-box;
+}
+
+/* Reset ueber :where(), damit jede l-Klasse gewinnt (wie Piano und Kontor). */
+:where(.loci, .l-sheet-modal, .l-full-modal) :where(button) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ionic setzt fuer jeden button line-height: 1 - diese Zeile kommt spaeter. */
+:where(.loci, .l-sheet-modal, .l-full-modal) button {
+  line-height: inherit;
+}
+
+:where(.loci, .l-sheet-modal, .l-full-modal) :where(button:disabled) {
+  cursor: default;
+}
+
+:where(.loci, .l-sheet-modal, .l-full-modal) :where(input) {
+  font: inherit;
+  color: inherit;
+}
+
+:where(.loci, .l-sheet-modal, .l-full-modal) :where(p, h1, h2, h3, ol) {
+  margin: 0;
+  padding: 0;
+}
+
+:where(.loci, .l-sheet-modal, .l-full-modal) :where(button:focus-visible, input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Kleinkram ---------- */
+
+.l-i {
+  display: block;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.l-num {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.l-s2 {
+  color: var(--text-2);
+}
+
+.l-s3 {
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.l-ink {
+  color: var(--text);
+}
+
+.l-akzent {
+  color: var(--accent);
+}
+
+.l-center {
+  text-align: center;
+}
+
+.l-note {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ---------- Geruest ---------- */
+
+.l-buehne {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.l-screen {
+  position: absolute;
+  inset: 0;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.l-screen[hidden] {
+  display: none;
+}
+
+.l-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 2px 8px 0;
+}
+
+.l-head-r {
+  display: flex;
+  align-items: center;
+}
+
+.l-apps {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  padding-right: 8px;
+  color: var(--accent);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.l-pill-knopf {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+}
+
+.l-pill {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 10px 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-family: var(--f-mono);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.l-pill .l-i {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.l-hilfe {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+}
+
+.l-hilfe span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.l-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 8px var(--gutter) 32px;
+}
+
+/* Ohne das quetschen sich Karten zusammen, statt ueberzulaufen (Kontors Lehre). */
+.l-body > * {
+  flex-shrink: 0;
+}
+
+.l-foot {
+  flex: none;
+  padding: 10px var(--gutter) 12px;
+  border-top: 1px solid var(--line);
+  background: rgba(247, 248, 243, 0.94);
+}
+
+.l-card {
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.l-h1 {
+  font-family: var(--f-mono);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.l-h1.gut {
+  color: var(--good);
+}
+
+.l-sub {
+  margin-top: 6px !important;
+  color: var(--text-2);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.l-h2 {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.l-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.l-sec-kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.l-sec-kopf .l-h2 {
+  font-size: 15px;
+}
+
+/* ---------- Knoepfe ---------- */
+
+.l-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: var(--r);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.l-btn:active {
+  background: #1a44a1;
+}
+
+.l-btn.sek {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.l-btn.sek:active {
+  background: var(--surface-2);
+}
+
+.l-btn.gross {
+  min-height: 54px;
+}
+
+.l-btn.rund {
+  width: auto;
+  min-height: 48px;
+  border-radius: 999px;
+  font-size: 15px;
+}
+
+.l-btn:disabled {
+  opacity: 0.4;
+}
+
+.l-reset {
+  align-self: flex-start;
+  min-height: 44px;
+  color: var(--text-3);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.l-reset.scharf {
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.l-switch {
+  flex: none;
+  display: flex;
+  width: 51px;
+  height: 31px;
+  padding: 2px !important;
+  border-radius: 999px;
+  background: #d3dae5 !important;
+  transition: background 0.2s;
+}
+
+.l-switch span {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(23, 32, 51, 0.3);
+  transition: transform 0.2s;
+}
+
+.l-switch.an {
+  background: var(--accent) !important;
+}
+
+.l-switch.an span {
+  transform: translateX(20px);
+}
+
+/* ---------- Wochentag: Aufgabe ---------- */
+
+.l-aufgabe {
+  padding: 16px 18px 18px;
+}
+
+.l-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 22px;
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.l-uhr {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.l-uhr .l-i {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
+.l-badge {
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--tip-soft);
+  color: var(--tip);
+  font-family: var(--f-ui);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.l-frage {
+  padding: 30px 0 20px;
+  text-align: center;
+}
+
+.l-frage-text {
+  color: var(--text-2);
+  font-size: 16px;
+}
+
+.l-datum {
+  margin: 12px 0 10px !important;
+  font-family: var(--f-mono);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.l-datum-num {
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.l-aufgabe.kompakt {
+  padding: 12px 18px 14px;
+}
+
+.l-aufgabe.kompakt .l-frage {
+  padding: 8px 0 0;
+}
+
+.l-aufgabe.kompakt .l-datum {
+  margin: 0 0 6px !important;
+  font-size: 22px;
+}
+
+.l-aufgabe.kompakt .l-datum-num {
+  font-size: 14px;
+}
+
+.l-mitte {
+  display: flex;
+  justify-content: center;
+}
+
+.l-tipp-knopf {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 18px 0 14px;
+  border: 1px dashed var(--line) !important;
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.l-tipp-knopf .l-i,
+.l-tipp-weiter .l-i {
+  width: 16px;
+  height: 16px;
+}
+
+.l-tipps {
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+
+.l-baustein {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  color: var(--text-3);
+}
+
+.l-baustein .nr {
+  font-family: var(--f-mono);
+  font-size: 12px;
+}
+
+.l-baustein .was {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.l-baustein.offen .was {
+  color: var(--text);
+}
+
+.l-baustein small {
+  margin-left: 8px;
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+  font-weight: 400;
+}
+
+.l-baustein b {
+  min-width: 32px;
+  color: var(--tip);
+  font-family: var(--f-mono);
+  font-size: 17px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.l-baustein i {
+  width: 32px;
+  height: 26px;
+  border: 1.5px dashed var(--line);
+  border-radius: 6px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 23px;
+  text-align: center;
+}
+
+.l-tipp-weiter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 10px !important;
+  border: 1.5px solid var(--tip) !important;
+  border-radius: var(--r-s);
+  color: var(--tip);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.l-tage {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: -8px;
+}
+
+.l-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 66px;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-s);
+  background: var(--surface) !important;
+}
+
+.l-tag:active:not(:disabled) {
+  background: var(--accent-soft) !important;
+}
+
+.l-tag b {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.l-tag small {
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.l-aufgabe.kompakt + .l-tage .l-tag {
+  height: 52px;
+}
+
+.l-tag.richtig {
+  border: 1.5px solid var(--good) !important;
+  background: var(--good-soft) !important;
+  color: var(--good);
+}
+
+.l-tag.falsch {
+  border: 1.5px solid var(--bad) !important;
+  background: var(--bad-soft) !important;
+  color: var(--bad);
+}
+
+.l-tag.richtig small,
+.l-tag.falsch small {
+  color: inherit;
+}
+
+.l-tag.blass {
+  opacity: 0.5;
+}
+
+/* ---------- Wochentag: Loesung ---------- */
+
+.l-loesung {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: -6px;
+}
+
+.l-urteil {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.l-urteil h2 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.l-urteil h2.gut {
+  color: var(--good);
+}
+
+.l-urteil h2.schlecht {
+  color: var(--bad);
+}
+
+.l-urteil h2.tip {
+  color: var(--tip);
+}
+
+.l-urteil .l-num {
+  color: var(--text-2);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.l-deine {
+  color: var(--text-2);
+  font-size: 15px;
+}
+
+.l-hinweis {
+  margin-top: 6px !important;
+  padding: 9px 12px !important;
+  border-radius: var(--r-s);
+  background: var(--tip-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.l-hinweis strong {
+  color: var(--tip);
+  font-weight: 600;
+}
+
+.l-rechenweg {
+  margin-top: 4px;
+}
+
+.l-zeile {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.l-zeile > div {
+  min-width: 0;
+}
+
+.l-zeile small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  font-size: 12.5px;
+}
+
+.l-zeile b {
+  font-family: var(--f-mono);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.l-zeile.summe {
+  padding-top: 10px;
+  border-bottom: 0;
+}
+
+.l-zeile.summe span {
+  font-family: var(--f-mono);
+  font-weight: 600;
+}
+
+.l-zeile.summe b {
+  font-family: var(--f-ui);
+  font-size: 16px;
+}
+
+/* ---------- Wochentag: Statistik ---------- */
+
+.l-punkte {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.l-punkt {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 24px;
+  text-align: center;
+}
+
+.l-punkt.gut {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.l-punkt.schlecht {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.l-punkt.tip {
+  background: var(--tip-soft);
+  color: var(--tip);
+}
+
+.l-trow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 100px 80px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+  font-family: var(--f-mono);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.l-trow span:first-child {
+  color: var(--text-2);
+  font-family: var(--f-ui);
+  font-weight: 400;
+  text-align: left;
+}
+
+.l-trow.kopf {
+  padding: 2px 0 6px;
+  border-top: 0;
+  color: var(--text-3);
+  font-family: var(--f-ui);
+  font-size: 12px;
+}
+
+.l-schwaeche {
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+
+.l-schwaeche-kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.l-schwaeche-kopf .l-num {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.l-balken {
+  position: relative;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 3px;
+  background: var(--surface-2);
+}
+
+.l-balken i {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bad);
+}
+
+.l-balken b {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--text-2);
+}
+
+/* ---------- Tab-Leiste ---------- */
+
+.l-tabs {
+  position: relative;
+  z-index: 10;
+  flex: none;
+  height: calc(var(--tabs-h) + env(safe-area-inset-bottom));
+  padding: 4px max(40px, calc(50% - 220px)) env(safe-area-inset-bottom);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.l-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.l-tab .l-i {
+  width: 26px;
+  height: 26px;
+  stroke-width: 1.7;
+}
+
+.l-tab.an {
+  color: var(--accent);
+}
+
+/* ---------- Blaetter ---------- */
+
+ion-modal.l-sheet-modal {
+  --height: auto;
+  --width: 100%;
+  --max-width: 560px;
+  --background: var(--surface);
+  --border-radius: 14px;
+  --box-shadow: 0 -10px 40px rgba(23, 32, 51, 0.18);
+  --backdrop-opacity: 0.4;
+  --ion-backdrop-color: #172033;
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+ion-modal.l-sheet-modal.gross {
+  --height: 100%;
+}
+
+ion-modal.l-sheet-modal::part(handle) {
+  width: 38px;
+  height: 5px;
+  background: var(--line);
+}
+
+/* Ohne das nimmt Ionics Seitenhuelle die volle Hoehe ein, und --height: auto
+   haette nichts zu messen (wie Piano). */
+ion-modal.l-sheet-modal:not(.gross) .ion-page {
+  position: relative;
+  display: block;
+  contain: none;
+}
+
+.l-sheet {
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-top: 14px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+ion-content.l-sheet-content {
+  --background: var(--surface);
+}
+
+.l-sheet-pad {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 16px 18px;
+}
+
+.l-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.l-sheet-h2 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.l-sheet-h1 {
+  font-family: var(--f-mono);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.l-x {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -8px !important;
+}
+
+.l-x span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.l-x .l-i {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.4;
+}
+
+/* Zeitraum */
+
+.l-radio {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 62px;
+  padding: 10px 2px !important;
+  border-bottom: 1px solid var(--line) !important;
+  text-align: left;
+}
+
+.l-radio-block:has(.l-eigen) .l-radio {
+  border-bottom: 0 !important;
+  padding-bottom: 4px !important;
+}
+
+.l-radio-punkt {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--text-3);
+  border-radius: 50%;
+}
+
+.l-radio.an .l-radio-punkt {
+  border: 7px solid var(--accent);
+}
+
+.l-radio-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.l-radio.an .l-radio-text {
+  font-weight: 600;
+}
+
+.l-radio-text small {
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.l-eigen {
+  padding: 6px 0 16px 38px;
+  border-bottom: 1px solid var(--line);
+}
+
+.l-eigen-felder {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.l-eigen label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.l-eigen input {
+  width: 104px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--f-mono);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.l-bis {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  color: var(--text-3);
+}
+
+.l-fehler {
+  margin-top: 8px !important;
+  color: var(--bad);
+  font-size: 13px;
+}
+
+.l-zeile-schalter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 2px 0;
+}
+
+.l-zs-titel {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.l-zeile-schalter small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+/* Anleitung */
+
+.l-anleitung {
+  padding: 18px 20px calc(40px + env(safe-area-inset-bottom));
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.l-anleitung h2 {
+  margin: 26px 0 10px;
+  font-family: var(--f-mono);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.l-anleitung p + p {
+  margin-top: 6px;
+}
+
+.l-formel {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--r-s);
+  background: var(--accent-soft);
+  text-align: center;
+}
+
+.l-formel p {
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.l-formel small {
+  display: block;
+  margin-top: 8px;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.l-raster {
+  display: grid;
+  gap: 5px;
+}
+
+.l-raster.sieben {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.l-raster.drei {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.l-raster.vier {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.l-zelle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px 7px;
+  border-radius: var(--r-s);
+  background: var(--surface-2);
+  line-height: 1;
+}
+
+.l-zelle b {
+  font-family: var(--f-mono);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.l-zelle span {
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.l-raster.sieben .l-zelle span {
+  order: 2;
+}
+
+.l-zelle.quer {
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 9px 12px;
+}
+
+.l-zelle.quer span {
+  font-size: 14px;
+}
+
+.l-zelle.betont {
+  background: var(--accent-soft);
+}
+
+.l-raster.vier .l-zelle span {
+  font-family: var(--f-mono);
+}
+
+.l-text2 {
+  margin-top: 8px !important;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.l-schritte {
+  padding-left: 22px !important;
+}
+
+.l-schritte li + li {
+  margin-top: 2px;
+}
+
+.l-kasten {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.l-kasten.flach {
+  margin-top: 22px;
+  border: 0;
+  background: var(--surface-2);
+}
+
+.l-kasten.flach .l-text2 {
+  margin-top: 4px !important;
+}
+
+.l-feld {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.l-feld input {
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-s);
+  background: var(--surface-2);
+  color: var(--text);
+  font-family: var(--f-mono);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.l-probe {
+  margin-top: 12px;
+  padding: 14px 16px 6px;
+}
+
+.l-probe h3 {
+  margin-bottom: 4px !important;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* ---------- Spielkarten (klein) ---------- */
+
+.l-mini {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--card-line);
+  border-radius: 5px;
+  background: var(--card);
+  color: var(--card-black);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.l-mini.rot {
+  color: var(--card-red);
+}
+
+.l-mini i {
+  font-style: normal;
+  font-weight: 400;
+}
+
+.l-mini.klein {
+  width: 26px;
+  height: 36px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.l-mini.gross {
+  width: 84px;
+  height: 118px;
+  border-radius: 10px;
+  font-size: 32px;
+  gap: 8px;
+  box-shadow: 0 6px 16px rgba(23, 32, 51, 0.12);
+}
+
+/* ---------- Kartendeck: Start ---------- */
+
+.l-einst {
+  padding: 0 16px;
+}
+
+.l-einst-zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  border-bottom: 1px solid var(--line);
+}
+
+.l-einst-zeile:last-child,
+.l-einst-zeile.ohne-linie {
+  border-bottom: 0;
+}
+
+.l-einst-zeile.unter {
+  min-height: 52px;
+  padding-left: 14px;
+}
+
+.l-einst-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.l-einst-zeile small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.l-chips {
+  display: flex;
+  gap: 6px;
+}
+
+.l-chip {
+  min-width: 46px;
+  height: 36px;
+  padding: 0 10px !important;
+  border-radius: 999px;
+  background: var(--surface-2) !important;
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center !important;
+}
+
+.l-chip.an {
+  background: var(--accent) !important;
+  color: var(--accent-ink);
+}
+
+.l-stepper {
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.l-stepper button {
+  width: 44px;
+  height: 36px;
+  font-size: 20px;
+  font-weight: 500;
+  text-align: center !important;
+}
+
+.l-stepper button:disabled {
+  opacity: 0.35;
+}
+
+.l-stepper span {
+  min-width: 56px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.l-liste {
+  display: flex;
+  flex-direction: column;
+}
+
+.l-listen-zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+
+.l-listen-zeile b {
+  font-weight: 600;
+}
+
+.l-listen-zeile small {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-3);
+  font-size: 13px;
+}
+
+.l-versuch {
+  font-weight: 500;
+}
+
+.l-zeiten {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* ---------- Kartendeck: Auswertung ---------- */
+
+.l-rekord {
+  padding: 9px 12px !important;
+  border-radius: var(--r-s);
+  background: var(--good-soft);
+  color: var(--good);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.l-kacheln {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: -6px;
+}
+
+.l-kacheln > div {
+  padding: 12px 14px;
+  border-radius: var(--r-s);
+  background: var(--surface-2);
+}
+
+.l-kacheln b {
+  display: block;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.l-kacheln span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.l-reihe {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.l-reihe-k {
+  display: block;
+  height: 44px;
+}
+
+.l-reihe-k .l-mini {
+  font-size: 13px;
+}
+
+.l-reihe-k.fehler .l-mini {
+  box-shadow: 0 0 0 2px var(--bad);
+}
+
+.l-reihe-k.erster .l-mini {
+  box-shadow: 0 0 0 3px var(--bad);
+}
+
+.l-fehler-zeile {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  min-height: 52px;
+  border-top: 1px solid var(--line);
+}
+
+.l-fehler-karten {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.l-knoepfe {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.l-knoepfe .l-btn {
+  padding: 0 10px;
+}
+
+.l-knoepfe .l-btn.sek {
+  font-size: 16px;
+}
+
+/* ---------- Vollbild: Merken und Wiedergeben ---------- */
+
+ion-modal.l-full-modal {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0;
+  --background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* width: Ionics Huelle ist eine Flex-Spalte - mit margin auto allein
+   schrumpfte der Bereich auf die Breite seines Inhalts (wie Piano). */
+.l-voll {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--paper);
+}
+
+.l-voll > * {
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.l-voll-kopf {
+  flex: none;
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr) 90px;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 8px;
+}
+
+.l-x-gross {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text-2);
+}
+
+.l-voll-titel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.l-voll-titel b {
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.l-voll-titel .l-num {
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.l-link {
+  justify-self: end;
+  min-height: 44px;
+  padding: 0 8px !important;
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.l-fortschritt {
+  flex: none;
+  height: 3px;
+  margin-top: 8px;
+  padding: 0 16px;
+}
+
+.l-fortschritt::before {
+  content: "";
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--line);
+}
+
+.l-fortschritt i {
+  display: block;
+  height: 3px;
+  margin-top: -3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.l-tisch {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 24px !important;
+  touch-action: none;
+}
+
+.l-tisch img {
+  display: block;
+  height: 100%;
+  max-height: 470px;
+  max-width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 22px rgba(23, 32, 51, 0.22));
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.l-takt {
+  flex: none;
+  padding: 0 24px 16px;
+}
+
+.l-takt-zeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.l-takt-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent);
+  font-family: var(--f-mono);
+  font-weight: 500;
+}
+
+.l-takt-name .l-i {
+  width: 16px;
+  height: 16px;
+}
+
+.l-takt-bahn {
+  height: 5px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--line);
+}
+
+.l-takt-bahn i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+}
+
+.l-takt-bahn i.laeuft {
+  animation: l-takt linear forwards;
+}
+
+@keyframes l-takt {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.l-voll-fuss {
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.l-voll-fuss .l-btn:first-child {
+  justify-self: start;
+  padding: 0 18px 0 10px;
+}
+
+.l-voll-fuss .l-btn:last-child {
+  justify-self: end;
+  padding: 0 10px 0 20px;
+}
+
+.l-voll-fuss .l-i {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+/* Wiedergeben */
+
+.l-leiste {
+  flex: none;
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.l-leiste::-webkit-scrollbar {
+  display: none;
+}
+
+.l-stelle {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 46px;
+}
+
+.l-stelle .nr {
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.l-stelle.aktiv .nr {
+  color: var(--accent);
+}
+
+.l-slot {
+  display: grid !important;
+  place-items: center;
+  width: 46px;
+  height: 64px;
+  border: 1.5px dashed var(--line) !important;
+  border-radius: 7px;
+}
+
+.l-slot.belegt {
+  border: 0 !important;
+}
+
+.l-slot .l-mini {
+  font-size: 17px;
+  border-radius: 7px;
+}
+
+.l-stelle.aktiv .l-slot {
+  box-shadow: 0 0 0 2.5px var(--accent);
+}
+
+.l-stelle.aktiv .l-slot:not(.belegt) {
+  border: 2px solid var(--accent) !important;
+  background: var(--accent-soft) !important;
+  box-shadow: none;
+}
+
+.l-slot.halb {
+  border: 2px solid var(--accent) !important;
+  background: var(--accent-soft) !important;
+  box-shadow: none !important;
+}
+
+.l-halb {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.l-halb i {
+  font-style: normal;
+  font-weight: 400;
+}
+
+.l-halb.rot i {
+  color: var(--card-red);
+}
+
+.l-wieder-info {
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px 0;
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.l-vorschau {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.l-vorschau-karte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 84px;
+  height: 118px;
+  border: 2px dashed var(--accent);
+  border-radius: 10px;
+  background: var(--accent-soft);
+  line-height: 1;
+}
+
+.l-vorschau-karte b {
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.l-vorschau-karte i {
+  color: var(--text-3);
+  font-size: 24px;
+  font-style: normal;
+}
+
+.l-vorschau-karte.rot i {
+  color: var(--card-red);
+}
+
+.l-tastatur {
+  flex: none;
+  padding: 0 16px 12px;
+}
+
+.l-werte {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.l-farben {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.l-taste {
+  display: grid !important;
+  place-items: center;
+  height: 54px;
+  border: 1px solid var(--line) !important;
+  border-radius: var(--r-s);
+  background: var(--surface) !important;
+  box-shadow: 0 1px 0 var(--line);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.l-taste:active:not(:disabled) {
+  background: var(--surface-2) !important;
+}
+
+.l-taste[aria-pressed="true"] {
+  border-color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink) !important;
+}
+
+.l-taste:disabled {
+  opacity: 0.4;
+}
+
+.l-taste.loeschen {
+  grid-column: span 2;
+  background: var(--surface-2) !important;
+  color: var(--text-2);
+}
+
+.l-taste.loeschen .l-i {
+  width: 26px;
+  height: 26px;
+}
+
+.l-taste.farbe {
+  height: 64px;
+  font-size: 32px;
+  font-weight: 400;
+}
+
+.l-taste.farbe.rot {
+  color: var(--bad);
+}
+
+/* ---------- Rueckfragen ---------- */
+
+ion-alert.l-alert {
+  --background: var(--surface);
+  color: var(--text);
+}
+
+ion-alert.l-alert .alert-button {
+  color: var(--accent);
+}
+
+ion-alert.l-alert .alert-button-role-destructive {
+  color: var(--bad);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loci *,
+  .loci *::before,
+  .loci *::after,
+  .l-sheet-modal *,
+  .l-full-modal * {
+    transition-duration: 0.01ms !important;
+  }
+}
