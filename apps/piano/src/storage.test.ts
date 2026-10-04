@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { exportSnapshot, migrateLegacy, readBackup, restoreBackup } from './storage'
+import { VERSION } from './version'
 
 // localStorage im Speicher. failOn laesst das Schreiben eines Schluessels
 // scheitern wie bei vollem Speicher.
@@ -174,7 +175,7 @@ describe('Export', () => {
       pianoSettings: settings,
       pianoSetlists: setlists,
       sessionPlaylist: playlist,
-      version: '1.4.7',
+      version: VERSION,
     })
 
     const before = storage.dump()

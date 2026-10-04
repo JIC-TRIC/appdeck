@@ -15,5 +15,5 @@
 self.APPS = [
   { id: 'kontor', name: 'Kontor', icon: 'icons/kontor.svg', color: '#1F1D1A', bg: '#FAF8F4', path: 'apps/kontor/' },
   { id: 'steady', name: 'Steady', icon: 'icons/steady.svg', color: '#0F1113', bg: '#0F1113', path: 'apps/steady/' },
-  { id: 'piano', name: 'Piano', icon: 'icons/piano.png', color: '#13183A', bg: '#040a14', path: 'apps/piano/' },
+  { id: 'piano', name: 'Piano', icon: 'icons/piano.svg', color: '#0E0D0B', bg: '#0E0D0B', path: 'apps/piano/' },
 ];

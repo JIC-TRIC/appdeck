@@ -1,34 +1,25 @@
-import { StrictMode, useEffect } from 'react'
-import { createRoot } from 'react-dom/client'
+import { mountApp } from '@lib/mount'
 
 // Schriften liegen mit im Build statt bei Google Fonts: funktioniert offline
-// und schickt keine Anfrage an Dritte. Gleiche Schnitte wie vorher.
-import '@fontsource/inter/400.css'
-import '@fontsource/inter/500.css'
-import '@fontsource/jetbrains-mono/400.css'
-import '@fontsource/jetbrains-mono/500.css'
+// und schickt keine Anfrage an Dritte. Gloock fuer Titel und grosse Zahlen,
+// Instrument Sans fuer alles andere.
+import '@fontsource/gloock/400.css'
+import '@fontsource/instrument-sans/400.css'
+import '@fontsource/instrument-sans/500.css'
+import '@fontsource/instrument-sans/600.css'
+import '@fontsource/instrument-sans/700.css'
 
-import './index.css'
-import App from './App.jsx'
+// Kein '@lib/dark': das folgt der Systemeinstellung. Piano ist immer dunkel
+// und setzt seine Farben selbst (Piano.css).
 import { migrateLegacy } from './storage'
+import Piano from './Piano'
+import './Piano.css'
 
-// Die App ist 1:1 aus piano-practice-tracker uebernommen (React ohne Ionic).
-// Darum nicht mountApp aus lib/: das bringt Ionics CSS und die IonApp-Huelle
-// mit, die Aussehen und Seiten-Scrollen der App veraendern wuerden.
+// iOS zeigt :active (die Rueckmeldung beim Antippen) nur, wenn irgendwo ein
+// touchstart-Handler haengt - dieser leere genuegt.
+document.addEventListener('touchstart', () => {}, { passive: true })
 
-// Vor dem ersten Lesen: alten Stand uebernehmen, falls hier noch nichts liegt.
+// Vor dem ersten Lesen: den Stand der alten App uebernehmen, falls hier noch nichts liegt.
 migrateLegacy()
 
-// Sagt der Shell, dass die App gezeichnet ist - erst dann blendet sie sich ein
-// (Uebergang vom Launcher, siehe shared/shell.js).
-function Ready() {
-  useEffect(() => window.Shell?.ready(), [])
-  return null
-}
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-    <Ready />
-  </StrictMode>,
-)
+mountApp(<Piano />)

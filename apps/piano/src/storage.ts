@@ -1,8 +1,8 @@
 /*
  * Speicher der Piano-App. Wie jede App im Launcher ein localStorage-Schluessel
  * pro Liste mit dem Praefix der App-ID - so erfasst das Launcher-Backup alles,
- * und nichts kollidiert mit anderen Apps. Gelesen und geschrieben wird in
- * App.jsx ueber useStored(APP_ID, ...).
+ * und nichts kollidiert mit anderen Apps. Die Daten selbst liest und aendert
+ * store.ts ueber readKey/writeKey.
  *
  * Vorher lebte die App im eigenen Repo piano-practice-tracker und speicherte
  * ohne Praefix (pianoPieces, practiceSessions, ...). Diese Namen bleiben das
@@ -84,6 +84,51 @@ function read(key: Key, fallback: unknown): unknown {
   }
 }
 
+/** Einen Datenschluessel lesen - leer oder kaputt ergibt den Ersatzwert. */
+export function readKey<T>(key: Key, fallback: T): T {
+  return read(key, fallback) as T
+}
+
+export function writeKey(key: Key, value: unknown) {
+  try {
+    localStorage.setItem(PREFIX + key, JSON.stringify(value))
+  } catch {
+    window.Shell?.toast('Speichern fehlgeschlagen – Speicher voll?')
+  }
+}
+
+// Die laufende Sitzung hat einen eigenen Schluessel ausserhalb von KEYS: sie
+// gehoert nicht in die Exportdatei und wird beim Import verworfen.
+const UEBUNG_KEY = `${PREFIX}uebung`
+
+export function readUebung(): unknown {
+  try {
+    const raw = localStorage.getItem(UEBUNG_KEY)
+    return raw === null ? null : JSON.parse(raw)
+  } catch {
+    return null
+  }
+}
+
+export function writeUebung(value: unknown) {
+  try {
+    if (value === null) localStorage.removeItem(UEBUNG_KEY)
+    else localStorage.setItem(UEBUNG_KEY, JSON.stringify(value))
+  } catch {
+    // Ohne gesicherte Sitzung laeuft die Uhr trotzdem - nur ein Neustart verliert sie.
+  }
+}
+
+/** Belegter Speicher aller piano:-Schluessel in Bytes (2 pro Zeichen, wie der Launcher). */
+export function storageBytes() {
+  let bytes = 0
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const k = localStorage.key(i)
+    if (k?.startsWith(PREFIX)) bytes += (k.length + (localStorage.getItem(k)?.length ?? 0)) * 2
+  }
+  return bytes
+}
+
 // Gleiches Format wie der Export der alten App, dazu Setlists und die
 // laufende Playlist, die dort fehlten.
 export function exportSnapshot() {
@@ -136,7 +181,20 @@ export function readBackup(text: string): Values {
   return values
 }
 
-/** Schreibt, was readBackup() geliefert hat. Danach die Seite neu laden. */
+/** Schreibt, was readBackup() geliefert hat. Eine laufende Sitzung gehoert zum alten Stand. */
 export function restoreBackup(values: Values) {
   writeAll(values)
+  writeUebung(null)
+}
+
+/** Wie viele Stuecke und Sitzungen ein Backup enthaelt - fuer die Rueckfrage. */
+export function backupSummary(values: Values) {
+  try {
+    const pieces = values.pieces ? (JSON.parse(values.pieces) as unknown[]) : []
+    const sessions = values.sessions ? (JSON.parse(values.sessions) as Record<string, unknown[]>) : {}
+    const sessionCount = Object.values(sessions).reduce((n, l) => n + (Array.isArray(l) ? l.length : 0), 0)
+    return { pieces: Array.isArray(pieces) ? pieces.length : 0, sessions: sessionCount }
+  } catch {
+    return { pieces: 0, sessions: 0 }
+  }
 }

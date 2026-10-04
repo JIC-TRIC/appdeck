@@ -1,2 +1,3 @@
-// Stand beim Umzug aus piano-practice-tracker (dort in package.json).
-export const VERSION = '1.4.7'
+// 1.x lief als eigenes Repo piano-practice-tracker (zuletzt 1.4.7),
+// 2.0 ist der Neubau in appdeck.
+export const VERSION = '2.0.0'
