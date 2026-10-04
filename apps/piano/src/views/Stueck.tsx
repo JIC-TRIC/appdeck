@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { IconCheck, IconList, IconLock, IconMore, IconPencil, IconPlay } from '../icons'
+import { IconArchive, IconCheck, IconImport, IconList, IconLock, IconMore, IconPencil, IconPlay } from '../icons'
 import { DifficultyBars, IconButton, ListSheet, Page, PhaseControls, Thumb } from '../ui'
 import { lastSessionsOf, pieceTotal, sessionsOf } from '../calc'
 import {
@@ -7,13 +7,14 @@ import {
   PHASE_LABEL,
   currentPhase,
   difficultyInfo,
+  isArchived,
   isDone,
   lockOf,
   phaseSummary,
   statusText,
   type Phase,
 } from '../model'
-import { deletePiece, updatePiece, updateSetlist } from '../store'
+import { deletePiece, setArchived, updatePiece, updateSetlist } from '../store'
 import { dayOf, formatDayHeading, formatMinutes, formatRelativeDay, formatTimeOfDay, formatTotal } from '../util'
 import type { Progress, ViewProps } from '../types'
 
@@ -46,6 +47,22 @@ function Stueck({ ctx, view }: ViewProps) {
     notify(`„${title}“ gelöscht`, undo)
   }
 
+  // Archivieren fuehrt zurueck (das Stueck verschwindet aus der Uebersicht),
+  // Zurueckholen bleibt auf der Seite.
+  const archived = isArchived(piece)
+  const archive = () => {
+    const title = piece.title
+    back()
+    const undo = setArchived(piece.id, true)
+    refresh()
+    notify(`„${title}“ archiviert`, undo)
+  }
+  const unarchive = () => {
+    setArchived(piece.id, false)
+    refresh()
+    notify('Wieder aktiv – kommt in die Tagesliste')
+  }
+
   return (
     <Page
       backLabel={backLabel}
@@ -75,6 +92,7 @@ function Stueck({ ctx, view }: ViewProps) {
           {piece.artist ? <p className="p-sub">{piece.artist}</p> : null}
         </div>
         <div className="p-hstack" style={{ gap: 8, flexWrap: 'wrap' }}>
+          {archived ? <span className="p-pill">Archiviert</span> : null}
           <span className="p-pill acc">{statusText(p)}</span>
           <span className="p-pill">
             <DifficultyBars difficulty={piece.difficulty} />
@@ -182,9 +200,12 @@ function Stueck({ ctx, view }: ViewProps) {
               icon: <IconList />,
               onPick: () => setSheet('setlists'),
             },
+            archived
+              ? { key: 'unarchive', label: 'Aus dem Archiv holen', icon: <IconImport />, onPick: unarchive }
+              : { key: 'archive', label: 'Archivieren', icon: <IconArchive />, onPick: archive },
             { key: 'delete', label: 'Stück löschen', danger: true, onPick: remove },
           ]}
-          note="Löschen nimmt auch die Sitzungen mit. Ein paar Sekunden lang lässt es sich zurücknehmen."
+          note="Archivieren nimmt das Stück aus Tagesliste und Übersicht – Sitzungen und Statistik bleiben. Löschen nimmt auch die Sitzungen mit. Beides lässt sich ein paar Sekunden lang zurücknehmen."
         />
       ) : null}
 

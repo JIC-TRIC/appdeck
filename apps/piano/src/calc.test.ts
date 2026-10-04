@@ -7,7 +7,9 @@ import {
   heatLevel,
   historyDays,
   longestStreak,
+  remixPlaylist,
   seededRandom,
+  skipToday,
   sortPieces,
   todaysPlaylist,
   weekDays,
@@ -125,6 +127,42 @@ describe('Tagesliste', () => {
     const fresh = todaysPlaylist({ ...stored, date: '2026-10-03' }, pieces, {}, '2026-10-04', 1800, now)
     expect(fresh.fresh).toBe(true)
     expect(fresh.playlist.seed).toBe(20261004)
+  })
+
+  it('"Heute nicht": das Stueck faellt raus, das naechstbeste rueckt nach', () => {
+    const pl = { date: '2026-10-04', seed: 20261004, pieceIds: generatePlaylist(pieces, {}, 20261004, 10 * 60, now) }
+    expect(pl.pieceIds).toHaveLength(2)
+    const [first, second] = pl.pieceIds
+    const after = skipToday(pl, first, pieces, {}, now)
+    expect(after.pieceIds).toHaveLength(2)
+    expect(after.pieceIds[0]).toBe(second)
+    expect(after.pieceIds).not.toContain(first)
+    expect(after.skipped).toEqual([first])
+    // die Rangfolge ist fest - der Nachruecker kommt aus den uebrigen
+    const again = skipToday(after, after.pieceIds[1], pieces, {}, now)
+    expect(again.skipped).toHaveLength(2)
+    expect(new Set([...again.pieceIds, ...(again.skipped ?? [])]).size).toBe(4)
+  })
+
+  it('wird kuerzer, wenn nichts mehr nachruecken kann', () => {
+    const two = pieces.slice(0, 2)
+    const pl = { date: '2026-10-04', seed: 1, pieceIds: ['a', 'b'] }
+    expect(skipToday(pl, 'a', two, {}, now).pieceIds).toEqual(['b'])
+  })
+
+  it('laesst Weggewischtes auch beim Neu-Mischen und in einer neuen Liste von heute draussen', () => {
+    const pl = { date: '2026-10-04', seed: 1, pieceIds: ['b'], skipped: ['a', 'c'] }
+    const mixed = remixPlaylist(pl, pieces, {}, 60 * 60, now)
+    expect(mixed.pieceIds).not.toContain('a')
+    expect(mixed.pieceIds).not.toContain('c')
+    expect(mixed.skipped).toEqual(['a', 'c'])
+    // gespeicherte Liste von heute ohne aktive Stuecke mehr → neu, aber ohne die weggewischten
+    const fresh = todaysPlaylist({ ...pl, pieceIds: ['zz'] }, pieces, {}, '2026-10-04', 60 * 60, now)
+    expect(fresh.playlist.pieceIds).not.toContain('a')
+    expect(fresh.playlist.skipped).toEqual(['a', 'c'])
+    // am naechsten Tag ist alles wieder dabei
+    const morgen = todaysPlaylist(pl, pieces, {}, '2026-10-05', 60 * 60, now)
+    expect(morgen.playlist.skipped).toEqual([])
   })
 
   it('kommt mit riesigen Startwerten (Date.now) zurecht', () => {

@@ -150,6 +150,12 @@ export const IconClipboard = ({ className }: P) => (
     <path d="M9 5V3.5h6V5" />
   </I>
 )
+export const IconArchive = ({ className }: P) => (
+  <I className={className}>
+    <rect x="3" y="4" width="18" height="5" rx="1.5" />
+    <path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4" />
+  </I>
+)
 export const IconClock = ({ className }: P) => (
   <I className={className}>
     <circle cx="12" cy="12" r="8" />

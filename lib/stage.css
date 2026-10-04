@@ -1,0 +1,99 @@
+/* =========================
+   Seitenwechsel (lib/PageStage.tsx) - wie auf dem iPhone.
+
+   Jede Seite liegt auf einer eigenen Ebene. Beim Wechsel stehen zwei
+   uebereinander: die neue faehrt von rechts herein, die alte rueckt ein
+   Stueck nach links und dunkelt ab - zurueck umgekehrt.
+
+   Hoehe der Buehne setzt die App. Farben ueber Variablen:
+     --stage-bg      Grund einer Ebene (sonst --bg der App)
+     --stage-dim     Abdunklung der Seite, die nach hinten rueckt
+     --stage-shadow  Schatten der Seite, die darueber faehrt
+   ========================= */
+
+.stage {
+  position: relative;
+  overflow: hidden;
+}
+
+.stage-layer {
+  position: absolute;
+  inset: 0;
+  background: var(--stage-bg, var(--bg));
+  /* Waagerechte Gesten gehoeren der App (Zurueckwischen vom Rand), nicht dem
+     Browser - sonst blaettert Chrome bei einem Wisch vom Rand die ganze Seite
+     zurueck. Scrollbereiche darin brauchen den Wert selbst auch (die App). */
+  touch-action: pan-y;
+}
+
+/* --dunkel setzt der Finger beim Zurueckwischen direkt. */
+.stage-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--stage-dim, rgba(0, 0, 0, 0.14));
+  opacity: var(--dunkel, 0);
+  pointer-events: none;
+}
+
+.stage-layer.rein-rechts,
+.stage-layer.raus-rechts,
+.stage-layer.zieht {
+  z-index: 2;
+  box-shadow: var(--stage-shadow, -12px 0 32px rgba(0, 0, 0, 0.12));
+}
+
+.stage-layer.rein-rechts {
+  animation: stage-seite-rein 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.stage-layer.weg-links {
+  animation: stage-seite-weg 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.stage-layer.weg-links::after {
+  animation: stage-dunkel-an 0.36s ease both;
+}
+
+/* Zurueck: startet dort, wo der Finger die Seiten losgelassen hat. */
+.stage-layer.rein-links {
+  animation: stage-seite-zurueck 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.stage-layer.rein-links::after {
+  animation: stage-dunkel-aus 0.36s ease both;
+}
+
+.stage-layer.raus-rechts {
+  animation: stage-seite-raus 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes stage-seite-rein {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes stage-seite-weg {
+  from { transform: translateX(0); }
+  to { transform: translateX(-28%); }
+}
+
+@keyframes stage-seite-zurueck {
+  from { transform: translateX(var(--von, -28%)); }
+  to { transform: translateX(0); }
+}
+
+@keyframes stage-seite-raus {
+  from { transform: translateX(var(--ab, 0px)); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes stage-dunkel-an {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes stage-dunkel-aus {
+  from { opacity: var(--dunkel-von, 1); }
+  to { opacity: 0; }
+}

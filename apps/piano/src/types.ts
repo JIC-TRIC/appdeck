@@ -24,6 +24,8 @@ export interface Piece {
   difficulty: Difficulty
   progress: Progress
   notes?: string
+  /** Archiviert seit (ISO) - faellt aus Tagesliste und Uebersicht, Sitzungen bleiben */
+  archivedAt?: string | null
   lastPracticed: string | null
   createdAt?: string
   /** Altlast der alten App, immer 0 - die Zeit steckt in den Sitzungen */
@@ -70,6 +72,8 @@ export interface Playlist {
   date: string
   pieceIds: string[]
   seed: number
+  /** Heute weggewischt ("heute nicht") - kommt heute nicht wieder */
+  skipped?: string[]
 }
 
 /** Laufende Sitzung - ueberlebt, wenn iOS die App im Hintergrund beendet. */
@@ -97,7 +101,10 @@ export interface View {
 }
 
 export interface PianoCtx {
+  /** alle Stuecke, auch archivierte */
   pieces: Piece[]
+  /** nur die nicht archivierten */
+  active: Piece[]
   byId: Record<string, Piece>
   sessions: Sessions
   settings: Settings

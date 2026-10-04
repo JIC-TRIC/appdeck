@@ -65,6 +65,8 @@ export function migratePiece(raw: unknown): Piece {
   }
 }
 
+export const isArchived = (p: Piece) => !!p.archivedAt
+
 // ---------- Status ----------
 
 export function statusOf(p: Progress): Status {

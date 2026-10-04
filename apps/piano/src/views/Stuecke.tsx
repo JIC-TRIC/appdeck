@@ -2,16 +2,20 @@ import { useMemo, useState } from 'react'
 import { IconList, IconPlus, IconSearch, IconSort } from '../icons'
 import { Heading, IconButton, Keys, ListSheet, TabPage, Thumb } from '../ui'
 import { pieceTotal, sortPieces } from '../calc'
-import { filterOf, type Filter } from '../model'
+import { filterOf, isArchived, type Filter } from '../model'
 import { updateSettings } from '../store'
 import { formatTotal } from '../util'
 import type { PianoCtx, SortBy } from '../types'
 
-const FILTERS: { id: Filter; label: string }[] = [
+// Archiv ist kein Lernstand, sondern ein eigener Stapel: nur sichtbar, wenn es etwas gibt.
+type Chip = Filter | 'archiv'
+
+const FILTERS: { id: Chip; label: string }[] = [
   { id: 'alle', label: 'Alle' },
   { id: 'arbeit', label: 'In Arbeit' },
   { id: 'gelernt', label: 'Gelernt' },
   { id: 'auswendig', label: 'Auswendig' },
+  { id: 'archiv', label: 'Archiv' },
 ]
 
 export const SORTS: { id: SortBy; label: string }[] = [
@@ -28,24 +32,33 @@ export const SORTS: { id: SortBy; label: string }[] = [
 function Stuecke({ ctx }: { ctx: PianoCtx }) {
   const { pieces, sessions, settings, now, push, openForm, refresh } = ctx
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<Filter>('alle')
+  const [filter, setFilter] = useState<Chip>('alle')
   const [sortOpen, setSortOpen] = useState(false)
   // "Zufall" mischt beim Waehlen neu, nicht bei jedem Zeichnen.
   const [seed, setSeed] = useState(() => Date.now())
 
   const counts = useMemo(() => {
-    const c: Record<Filter, number> = { alle: pieces.length, arbeit: 0, gelernt: 0, auswendig: 0 }
-    for (const p of pieces) c[filterOf(p.progress)] += 1
+    const c: Record<Chip, number> = { alle: 0, arbeit: 0, gelernt: 0, auswendig: 0, archiv: 0 }
+    for (const p of pieces) {
+      if (isArchived(p)) c.archiv += 1
+      else {
+        c.alle += 1
+        c[filterOf(p.progress)] += 1
+      }
+    }
     return c
   }, [pieces])
 
+  // Archivierte nur unter "Archiv" - oder wenn unter "Alle" gesucht wird:
+  // die Suche soll alles finden.
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return sortPieces(pieces, sessions, settings.sort, now, seed).filter(
-      (p) =>
-        (filter === 'alle' || filterOf(p.progress) === filter) &&
-        (!q || p.title.toLowerCase().includes(q) || p.artist.toLowerCase().includes(q)),
-    )
+    const matches = (p: (typeof pieces)[number]) =>
+      !q || p.title.toLowerCase().includes(q) || p.artist.toLowerCase().includes(q)
+    const sorted = sortPieces(pieces, sessions, settings.sort, now, seed).filter(matches)
+    if (filter === 'archiv') return sorted.filter(isArchived)
+    const aktiv = sorted.filter((p) => !isArchived(p) && (filter === 'alle' || filterOf(p.progress) === filter))
+    return filter === 'alle' && q ? [...aktiv, ...sorted.filter(isArchived)] : aktiv
   }, [pieces, sessions, settings.sort, now, seed, query, filter])
 
   const sortLabel = SORTS.find((s) => s.id === settings.sort.by)?.label ?? 'Im Trend'
@@ -91,7 +104,7 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
           </div>
 
           <div className="p-chips scroll" role="group" aria-label="Filter">
-            {FILTERS.map((f) => (
+            {FILTERS.filter((f) => f.id !== 'archiv' || counts.archiv > 0 || filter === 'archiv').map((f) => (
               <button
                 key={f.id}
                 type="button"
@@ -107,7 +120,12 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
           {shown.length ? (
             <div className="p-grid">
               {shown.map((p) => (
-                <button key={p.id} type="button" className="p-card p-tile" onClick={() => push({ name: 'stueck', pieceId: p.id })}>
+                <button
+                  key={p.id}
+                  type="button"
+                  className={`p-card p-tile${isArchived(p) ? ' archived' : ''}`}
+                  onClick={() => push({ name: 'stueck', pieceId: p.id })}
+                >
                   <Thumb piece={p} className="tile" tag={formatTotal(pieceTotal(sessions, p.id))} />
                   <span className="p-tile-body">
                     <span className="p-tile-t">{p.title}</span>
@@ -118,7 +136,7 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
               ))}
             </div>
           ) : (
-            <p className="p-note p-center">Nichts gefunden.</p>
+            <p className="p-note p-center">{filter === 'archiv' && !query ? 'Das Archiv ist leer.' : 'Nichts gefunden.'}</p>
           )}
         </>
       ) : (

@@ -14,7 +14,8 @@ index.html, launcher.*   Launcher (App-Auswahl + Einstellungen)
 apps.js                  Liste deiner Apps  ← hier trägst du neue Apps ein
 apps/<name>/             je eine App pro Ordner
 apps/vorlage/            Ionic-React-Vorlage für neue Apps (taucht nicht im Launcher auf)
-lib/                     Gemeinsamer Code für Ionic-Apps (mountApp, useStored, HomeButton, Theme)
+lib/                     Gemeinsamer Code für Ionic-Apps (mountApp, useStored, HomeButton, Theme,
+                         PageStage + useHistoryStack: Seitenwechsel wie iOS mit Zurückwischen)
 shared/shell.css         iOS-Look für Vanilla-Apps: Farben, Navbar, Listen, Buttons, Sheets
 shared/shell.js          Home-Button, Speicher-Helfer, Toast, Offline (für alle Apps)
 shared/backup.js         Backup & Wiederherstellen

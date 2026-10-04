@@ -158,108 +158,24 @@ ion-modal.k-sheet-modal {
   text-align: right;
 }
 
-/* ---------- Seitenwechsel (Kontor.tsx) ---------- */
+/* ---------- Seitenwechsel (lib/PageStage.tsx, Regeln in lib/stage.css) ---------- */
 
-/* Jede Seite liegt auf einer eigenen Ebene. Beim Wechsel stehen zwei
-   uebereinander: die neue faehrt von rechts herein, die alte rueckt ein
-   Stueck nach links und dunkelt ab - zurueck umgekehrt, wie auf dem iPhone. */
+/* Die Buehne fuer die Ebenen. Hoehe wie die Ansichten darin (siehe "Geruest"),
+   Farben der Fahrt passend zum hellen Grund. */
 .k-buehne {
-  position: relative;
   height: calc(100dvh - env(safe-area-inset-top));
-  overflow: hidden;
+  --stage-dim: rgba(31, 29, 26, 0.14);
+  --stage-shadow: -12px 0 32px rgba(31, 29, 26, 0.12);
 }
 
-.k-ebene {
-  position: absolute;
-  inset: 0;
-  background: var(--bg);
-  /* Waagerechte Gesten gehoeren der App (Zurueckwischen vom Rand), nicht
-     dem Browser - sonst blaettert Chrome bei einem Wisch vom Rand die ganze
-     Seite zurueck. Waagerechte Leisten darin scrollen trotzdem: fuer sie
-     zaehlt ihr eigener Wert. */
+/* Waagerechte Gesten gehoeren der App (Zurueckwischen vom Rand). Fuer eine
+   Beruehrung zaehlt der Wert bis zum naechsten Scrollbereich - der Ebene
+   selbst kaeme sie sonst nie an. Waagerechte Leisten darin scrollen
+   trotzdem: fuer sie zaehlt ihr eigener Wert. */
+.stage-layer .k-body,
+.stage-layer .k-form,
+.stage-layer .k-main {
   touch-action: pan-y;
-}
-
-/* Dasselbe fuer die Scrollbereiche darin: fuer eine Beruehrung zaehlt der
-   Wert bis zum naechsten Scrollbereich - der Ebene selbst kaeme sie sonst
-   nie an. */
-.k-ebene .k-body,
-.k-ebene .k-form,
-.k-ebene .k-main {
-  touch-action: pan-y;
-}
-
-/* Abdunklung der Seite, die nach hinten rueckt. --dunkel setzt der Finger
-   beim Zurueckwischen direkt. */
-.k-ebene::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(31, 29, 26, 0.14);
-  opacity: var(--dunkel, 0);
-  pointer-events: none;
-}
-
-.k-ebene.rein-rechts,
-.k-ebene.raus-rechts,
-.k-ebene.zieht {
-  z-index: 2;
-  box-shadow: -12px 0 32px rgba(31, 29, 26, 0.12);
-}
-
-.k-ebene.rein-rechts {
-  animation: k-seite-rein 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-.k-ebene.weg-links {
-  animation: k-seite-weg 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-.k-ebene.weg-links::after {
-  animation: k-dunkel-an 0.36s ease both;
-}
-
-/* Zurueck: startet dort, wo der Finger die Seiten losgelassen hat. */
-.k-ebene.rein-links {
-  animation: k-seite-zurueck 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-.k-ebene.rein-links::after {
-  animation: k-dunkel-aus 0.36s ease both;
-}
-
-.k-ebene.raus-rechts {
-  animation: k-seite-raus 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-@keyframes k-seite-rein {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes k-seite-weg {
-  from { transform: translateX(0); }
-  to { transform: translateX(-28%); }
-}
-
-@keyframes k-seite-zurueck {
-  from { transform: translateX(var(--von, -28%)); }
-  to { transform: translateX(0); }
-}
-
-@keyframes k-seite-raus {
-  from { transform: translateX(var(--ab, 0px)); }
-  to { transform: translateX(100%); }
-}
-
-@keyframes k-dunkel-an {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes k-dunkel-aus {
-  from { opacity: var(--dunkel-von, 1); }
-  to { opacity: 0; }
 }
 
 /* ---------- Geruest ---------- */

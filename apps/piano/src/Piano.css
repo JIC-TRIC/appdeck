@@ -68,10 +68,17 @@ textarea {
   user-select: text;
 }
 
+/* Die Huelle fuellt Ionics ion-app und teilt sich auf: oben die Buehne mit den
+   Seiten, unten die Tab-Leiste - beide im Fluss, ohne vh-Rechnung. So endet
+   der Scrollbereich genau an der Tab-Leiste und nichts rutscht darunter
+   (mit 100dvh und fester Leiste blieb auf dem iPhone das Ende verdeckt und
+   "Heute" liess sich nicht scrollen). Den Abstand zur Statusleiste traegt die
+   Huelle, den zum Home-Balken die Tab-Leiste. */
 .piano {
-  /* Den Abstand zur Statusleiste traegt die Huelle, unten legen ihn die
-     Bereiche selbst in ihr padding (Lehre aus Kontor und Steady). */
-  min-height: 100%;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
   padding-top: env(safe-area-inset-top);
   background: var(--bg);
   color: var(--text);
@@ -165,106 +172,32 @@ textarea {
   stroke-width: 2.2;
 }
 
-/* ---------- Seitenwechsel (Piano.tsx, von Kontor) ---------- */
+/* ---------- Seitenwechsel (lib/PageStage.tsx, Regeln in lib/stage.css) ---------- */
 
+/* Die Buehne fuellt den Platz ueber der Tab-Leiste. Dunkle Fahrt: kraeftigere
+   Abdunklung und Schatten als bei Kontors hellem Grund. */
 .p-buehne {
-  position: relative;
-  height: calc(100vh - env(safe-area-inset-top));
-  height: calc(100dvh - env(safe-area-inset-top));
-  overflow: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
+  --stage-dim: rgba(0, 0, 0, 0.45);
+  --stage-shadow: -14px 0 36px rgba(0, 0, 0, 0.5);
 }
 
-.p-ebene {
-  position: absolute;
-  inset: 0;
-  background: var(--bg);
-  /* Waagerechte Gesten gehoeren der App (Zurueckwischen vom Rand). */
+/* Fuer eine Beruehrung zaehlt touch-action bis zum naechsten Scrollbereich -
+   ohne diese Zeilen kaeme das Zurueckwischen nie bei der Ebene an. */
+.stage-layer .p-body {
   touch-action: pan-y;
 }
 
-.p-ebene .p-body {
-  touch-action: pan-y;
-}
-
-.p-ebene .p-chips.scroll {
+.stage-layer .p-chips.scroll {
   touch-action: pan-x pan-y;
-}
-
-/* Abdunklung der Seite, die nach hinten rueckt. --dunkel setzt der Finger direkt. */
-.p-ebene::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  opacity: var(--dunkel, 0);
-  pointer-events: none;
-}
-
-.p-ebene.rein-rechts,
-.p-ebene.raus-rechts,
-.p-ebene.zieht {
-  z-index: 2;
-  box-shadow: -14px 0 36px rgba(0, 0, 0, 0.5);
-}
-
-.p-ebene.rein-rechts {
-  animation: p-seite-rein 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-.p-ebene.weg-links {
-  animation: p-seite-weg 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-.p-ebene.weg-links::after {
-  animation: p-dunkel-an 0.36s ease both;
-}
-
-.p-ebene.rein-links {
-  animation: p-seite-zurueck 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-.p-ebene.rein-links::after {
-  animation: p-dunkel-aus 0.36s ease both;
-}
-
-.p-ebene.raus-rechts {
-  animation: p-seite-raus 0.36s cubic-bezier(0.32, 0.72, 0, 1) both;
-}
-
-@keyframes p-seite-rein {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes p-seite-weg {
-  from { transform: translateX(0); }
-  to { transform: translateX(-28%); }
-}
-
-@keyframes p-seite-zurueck {
-  from { transform: translateX(var(--von, -28%)); }
-  to { transform: translateX(0); }
-}
-
-@keyframes p-seite-raus {
-  from { transform: translateX(var(--ab, 0px)); }
-  to { transform: translateX(100%); }
-}
-
-@keyframes p-dunkel-an {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes p-dunkel-aus {
-  from { opacity: var(--dunkel-von, 1); }
-  to { opacity: 0; }
 }
 
 /* ---------- Geruest ---------- */
 
 .p-screen {
-  height: 100%;
+  position: absolute;
+  inset: 0;
   max-width: 560px;
   margin: 0 auto;
   display: flex;
@@ -281,7 +214,8 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 22px;
-  padding: 4px var(--gutter) calc(var(--tabs-h) + env(safe-area-inset-bottom) + 28px);
+  /* Die Tab-Leiste liegt darunter, nicht darueber - nur Luft bis zu ihr. */
+  padding: 4px var(--gutter) 32px;
 }
 
 /* Ohne das quetschen sich Karten zusammen, statt ueberzulaufen (Kontors Lehre). */
@@ -851,6 +785,11 @@ button.p-card:active {
   align-self: center;
 }
 
+.p-link.small {
+  min-height: 28px;
+  font-size: 13px;
+}
+
 .p-link.end {
   justify-self: end;
 }
@@ -1020,6 +959,15 @@ button.p-card:active {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+/* Im Archiv: gedaempft, das Bild ohne Farbe */
+.p-tile.archived {
+  opacity: 0.72;
+}
+
+.p-tile.archived .p-thumb img {
+  filter: grayscale(1);
 }
 
 .p-tile-body {
@@ -1403,6 +1351,27 @@ ion-item.p-slide-item {
   --color: var(--text);
 }
 
+ion-item-option.p-slide-skip {
+  --background: var(--accent);
+  --color: var(--accent-ink);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Wischbare Zeilen in Blaettern (Tagesliste) - eine Stufe heller */
+.p-sheet ion-list.p-slides {
+  background: var(--surface-2);
+}
+
+.p-sheet ion-item.p-slide-item {
+  --background: var(--surface-2);
+  --background-activated: var(--surface-3);
+}
+
+.p-sheet .p-slide + .p-slide .p-row {
+  border-top-color: var(--line);
+}
+
 ion-item-option.p-slide-del {
   --background: var(--danger);
   --color: #ffffff;
@@ -1554,10 +1523,6 @@ button.p-set-row:active {
 
 /* ---------- Erststart ---------- */
 
-.p-empty-page .p-body {
-  min-height: 100%;
-}
-
 .p-empty {
   flex: 1;
   display: flex;
@@ -1603,11 +1568,9 @@ button.p-set-row:active {
 /* ---------- Tab-Leiste ---------- */
 
 .p-tabs {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
   z-index: 10;
+  flex: none;
   height: calc(var(--tabs-h) + env(safe-area-inset-bottom));
   padding: 6px max(18px, calc(50% - 260px)) env(safe-area-inset-bottom);
   display: grid;

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonList } from '@ionic/react'
 import { IconCheck, IconImport, IconPlay, IconPlus, IconRefresh, IconRight, IconSliders } from '../icons'
 import { Heading, IconButton, Keys, Sheet, TabPage, Thumb } from '../ui'
-import { avgSessionOf, currentStreak, dayTotals, generatePlaylist, practicedOn, todaysPlaylist, weekDays } from '../calc'
+import { avgSessionOf, currentStreak, dayTotals, practicedOn, remixPlaylist, skipToday, todaysPlaylist, weekDays } from '../calc'
 import { nextStepShort } from '../model'
 import { getPlaylist, savePlaylist } from '../store'
 import { dayOf, formatDateLong, formatMinutes, formatTotal } from '../util'
@@ -9,15 +10,15 @@ import type { PianoCtx } from '../types'
 
 // Heute: das naechste Stueck der Tagesliste, die Woche, die Serie.
 function Heute({ ctx }: { ctx: PianoCtx }) {
-  const { pieces, byId, sessions, settings, today, now, push, startUebung, refresh } = ctx
+  const { pieces, active, byId, sessions, settings, today, now, push, startUebung, refresh, notify } = ctx
   const [listOpen, setListOpen] = useState(false)
   // Was nach dem Schliessen des Blatts passieren soll (Ueben starten)
   const afterList = useRef<(() => void) | null>(null)
   const target = settings.dailyGoalMinutes * 60
 
   const { playlist, fresh } = useMemo(
-    () => todaysPlaylist(getPlaylist(), pieces, sessions, today, target, now),
-    [pieces, sessions, today, target, now],
+    () => todaysPlaylist(getPlaylist(), active, sessions, today, target, now),
+    [active, sessions, today, target, now],
   )
   // Gespeichert wird nach dem Zeichnen, nicht waehrend - in der alten App
   // fuehrte genau das bei leerer Bibliothek zur Endlosschleife.
@@ -28,6 +29,7 @@ function Heute({ ctx }: { ctx: PianoCtx }) {
   const totals = useMemo(() => dayTotals(sessions, settings.dayStart), [sessions, settings.dayStart])
 
   if (!pieces.length) return <Erststart ctx={ctx} />
+  if (!active.length) return <AllesArchiviert ctx={ctx} />
 
   const done = new Set(playlist.pieceIds.filter((id) => practicedOn(sessions, id, today, settings.dayStart)))
   const open = playlist.pieceIds.filter((id) => !done.has(id))
@@ -42,9 +44,16 @@ function Heute({ ctx }: { ctx: PianoCtx }) {
   const streak = currentStreak(totals, today)
 
   const remix = () => {
-    const seed = Date.now() % 2147483647
-    savePlaylist({ date: today, seed, pieceIds: generatePlaylist(pieces, sessions, seed, target, Date.now()) })
+    savePlaylist(remixPlaylist(playlist, active, sessions, target, Date.now()))
     refresh()
+  }
+
+  // "Heute nicht": raus fuer heute, das naechstbeste rueckt nach - mit Rueckgaengig.
+  const skip = (id: string) => {
+    const before = playlist
+    savePlaylist(skipToday(playlist, id, active, sessions, Date.now()))
+    refresh()
+    notify(`„${byId[id]?.title ?? 'Stück'}“ heute nicht`, () => savePlaylist(before))
   }
 
   return (
@@ -70,9 +79,14 @@ function Heute({ ctx }: { ctx: PianoCtx }) {
           </button>
           <div className="p-pad p-stack" style={{ gap: 12 }}>
             <div className="p-stack" style={{ gap: 4 }}>
-              <span className="p-lbl">
-                Als Nächstes · {nextIndex} von {playlist.pieceIds.length}
-              </span>
+              <div className="p-between">
+                <span className="p-lbl">
+                  Als Nächstes · {nextIndex} von {playlist.pieceIds.length}
+                </span>
+                <button type="button" className="p-link small" onClick={() => skip(next.id)}>
+                  Heute nicht
+                </button>
+              </div>
               <h2 className="p-h2">{next.title}</h2>
               <span className="p-s2">
                 {next.artist ? `${next.artist} · ` : ''}ca. {formatMinutes(avgSessionOf(sessions, next.id))}
@@ -159,7 +173,7 @@ function Heute({ ctx }: { ctx: PianoCtx }) {
                   Neu mischen
                 </button>
               </div>
-              <div className="p-list">
+              <IonList className="p-list p-slides" lines="none">
                 {playlist.pieceIds.map((id) => {
                   const p = byId[id]
                   if (!p) return null
@@ -167,45 +181,84 @@ function Heute({ ctx }: { ctx: PianoCtx }) {
                   const spent = (sessions[id] ?? [])
                     .filter((s) => dayOf(s.timestamp, settings.dayStart) === today)
                     .reduce((sum, s) => sum + s.duration, 0)
+                  // Schon geuebt laesst sich nicht wegwischen - es ist ja erledigt.
                   return (
-                    <button
-                      key={id}
-                      type="button"
-                      className={`p-row${isDone ? ' done' : ''}`}
-                      onClick={() => {
-                        const rest = open.filter((x) => x !== id)
-                        afterList.current = () => startUebung([id, ...rest])
-                        zu()
-                      }}
-                    >
-                      <span className={`p-check${isDone ? ' on' : ''}`} aria-label={isDone ? 'heute geübt' : 'offen'}>
-                        {isDone ? <IconCheck /> : null}
-                      </span>
-                      <Thumb piece={p} />
-                      <span className="p-row-main">
-                        <span className="p-row-t">{p.title}</span>
-                        <span className="p-s2 p-ell">
-                          {p.artist ? `${p.artist} · ` : ''}
-                          {isDone ? `${formatMinutes(spent)} geübt` : `ca. ${formatMinutes(avgSessionOf(sessions, id))}`}
-                        </span>
-                      </span>
-                      {!isDone ? (
-                        <span className="p-playbtn" aria-hidden="true">
-                          <IconPlay />
-                        </span>
-                      ) : null}
-                    </button>
+                    <IonItemSliding key={id} className="p-slide" disabled={isDone}>
+                      <IonItem className="p-slide-item" lines="none">
+                        <button
+                          type="button"
+                          className={`p-row${isDone ? ' done' : ''}`}
+                          onClick={() => {
+                            const rest = open.filter((x) => x !== id)
+                            afterList.current = () => startUebung([id, ...rest])
+                            zu()
+                          }}
+                        >
+                          <span className={`p-check${isDone ? ' on' : ''}`} aria-label={isDone ? 'heute geübt' : 'offen'}>
+                            {isDone ? <IconCheck /> : null}
+                          </span>
+                          <Thumb piece={p} />
+                          <span className="p-row-main">
+                            <span className="p-row-t">{p.title}</span>
+                            <span className="p-s2 p-ell">
+                              {p.artist ? `${p.artist} · ` : ''}
+                              {isDone ? `${formatMinutes(spent)} geübt` : `ca. ${formatMinutes(avgSessionOf(sessions, id))}`}
+                            </span>
+                          </span>
+                          {!isDone ? (
+                            <span className="p-playbtn" aria-hidden="true">
+                              <IconPlay />
+                            </span>
+                          ) : null}
+                        </button>
+                      </IonItem>
+                      <IonItemOptions side="end" onIonSwipe={() => skip(id)}>
+                        <IonItemOption className="p-slide-skip" expandable onClick={() => skip(id)}>
+                          Heute nicht
+                        </IonItemOption>
+                      </IonItemOptions>
+                    </IonItemSliding>
                   )
                 })}
-              </div>
+              </IonList>
               <p className="p-note">
                 Gewählt nach „lange nicht geübt“, Lernstand und etwas Zufall – so viele Stücke, wie ins Tagesziel von{' '}
-                {settings.dailyGoalMinutes} min passen.
+                {settings.dailyGoalMinutes} min passen. Nach links wischen: heute nicht, ein anderes rückt nach.
               </p>
             </div>
           )}
         </Sheet>
       ) : null}
+    </TabPage>
+  )
+}
+
+// Alle Stuecke liegen im Archiv: nichts fuer die Tagesliste.
+function AllesArchiviert({ ctx }: { ctx: PianoCtx }) {
+  const { today, push, openForm, pieces } = ctx
+  return (
+    <TabPage>
+      <Heading
+        kicker={formatDateLong(today)}
+        title="Heute"
+        right={
+          <IconButton label="Einstellungen" onClick={() => push({ name: 'einstellungen' })}>
+            <IconSliders />
+          </IconButton>
+        }
+      />
+      <section className="p-card p-pad p-stack p-done">
+        <span className="p-lbl">Tagesliste</span>
+        <h2 className="p-h2">Alles im Archiv</h2>
+        <p className="p-s2">
+          Alle {pieces.length} {pieces.length === 1 ? 'Stück liegt' : 'Stücke liegen'} im Archiv. Hol eins zurück
+          (Stücke → Archiv) oder leg ein neues an.
+        </p>
+        <button type="button" className="p-btn" onClick={() => openForm()}>
+          <IconPlus />
+          Stück hinzufügen
+        </button>
+      </section>
     </TabPage>
   )
 }

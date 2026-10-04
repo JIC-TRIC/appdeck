@@ -111,6 +111,17 @@ Stück gerade sitzt:
   würfelt neu. Gespeichert in `piano:playlist` – nicht mehr während des
   Zeichnens (das war die Endlosschleife bei leerer Bibliothek).
 - [x] Erledigt = heute mindestens eine Sitzung.
+- [x] **Heute nicht**: in der Liste nach links wischen (oder „Heute nicht“ in der
+  Karte Als Nächstes) – das Stück fällt für heute raus, das nächstbeste nach
+  denselben Regeln rückt ans Ende nach. Mit Rückgängig. Weggewischtes bleibt auch
+  beim Neu-Mischen draußen, am nächsten Tag ist es wieder dabei.
+
+### Archiv
+
+- [x] Ein archiviertes Stück fällt aus Tagesliste, Kacheln und Filtern; Sitzungen,
+  Setlists und Statistik bleiben. Eigener Filter „Archiv“ (nur wenn es etwas gibt),
+  die Suche unter „Alle“ findet auch Archiviertes. Archivieren mit Rückgängig,
+  Zurückholen über „…“ auf der Stück-Seite.
 
 ### Serie, Trend, Meilensteine
 
@@ -128,11 +139,11 @@ Stück gerade sitzt:
 | `piano:sessions` | `{ [pieceId]: Session[] }` |
 | `piano:settings` | Einstellungen (unten) |
 | `piano:setlists` | `{ id, title, pieceIds[] }[]` |
-| `piano:playlist` | `{ date: 'YYYY-MM-DD', pieceIds[], seed }` |
+| `piano:playlist` | `{ date: 'YYYY-MM-DD', pieceIds[], seed, skipped[] }` (skipped = heute weggewischt) |
 | `piano:uebung` | laufende Sitzung `{ pieceId, queue[], startedAt, pausedMs, pausedAt }` – nicht im Export |
 
 `Piece`: `id, title, artist, youtubeUrl, thumbnail, difficulty, progress,
-notes (neu), lastPracticed, createdAt, practiceTime (Altlast, 0)`. Sehr alte
+notes (neu), archivedAt (neu), lastPracticed, createdAt, practiceTime (Altlast, 0)`. Sehr alte
 Stücke mit `milestones[]` werden beim Lesen in `progress` übersetzt.
 
 Einstellungen: `dailyGoalMinutes` (30), `videoMode` (`app` | `youtube`),
@@ -150,9 +161,12 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
 - [x] Tab-Leiste: **Heute · Stücke · Statistik**. Ein Tipp auf den aktiven Tab
   führt zu seiner Startseite zurück.
 - [x] Unterseiten (Stück, Setlists, Setlist, Verlauf, Einstellungen) fahren von
-  rechts herein, vom linken Rand lässt sich zurückwischen (wie Kontor). Die
-  Tab-Leiste bleibt stehen. Die Zurück-Geste des Browsers geht Schritt für
-  Schritt zurück.
+  rechts herein, vom linken Rand lässt sich zurückwischen. Gemeinsam mit Kontor:
+  `lib/PageStage.tsx` (Übergänge) und `lib/useHistoryStack.ts` (Stapel an der
+  Browser-History – die Zurück-Geste geht Schritt für Schritt zurück).
+- [x] Die Tab-Leiste steht im Seitenfluss unter der Bühne, nicht darüber: der
+  Scrollbereich endet genau an ihr (mit `100dvh` und fester Leiste blieb auf dem
+  iPhone das Ende von „Heute“ verdeckt und ließ sich nicht scrollen).
 - [x] Üben ist ein Vollbild von unten, alles andere sind Blätter von unten.
 - [x] „Alle Apps“ steht in den Einstellungen (kein schwebender Home-Knopf).
 
@@ -160,7 +174,8 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
 
 ### 1 – Heute
 - [x] Datum (logischer Tag), Titel, Einstellungen oben rechts.
-- [x] Karte **Als Nächstes**: erstes noch nicht geübtes Stück der Tagesliste –
+- [x] Karte **Als Nächstes**: erstes noch nicht geübtes Stück der Tagesliste (mit
+  „Heute nicht“) –
   Vorschaubild (öffnet das Stück), „Als Nächstes · 2 von 4“, Titel, Interpret,
   geschätzte Zeit, Lernstand und nächster Schritt, **Üben starten** (übt die
   restliche Tagesliste der Reihe nach).
@@ -183,8 +198,8 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
 - [x] Kacheln zu zweit: Vorschaubild mit Gesamtzeit, Titel, Interpret, Lernstand.
 
 ### 4 – Stück
-- [x] Zurück, Bearbeiten (Blatt 6), „…“ (Zu Setlist hinzufügen, Löschen mit
-  Rückgängig – fehlte bisher ganz).
+- [x] Zurück, Bearbeiten (Blatt 7), „…“ (Zu Setlist hinzufügen, Archivieren bzw.
+  Aus dem Archiv holen, Löschen mit Rückgängig – fehlte bisher ganz).
 - [x] Großes Vorschaubild (startet Üben), Titel, Interpret, Status und
   Schwierigkeit, **Üben starten**, gesamt · Sitzungen · zuletzt.
 - [x] **Lernweg** als Stufenleiter, direkt änderbar, mit Sperr-Hinweisen.
@@ -265,4 +280,5 @@ src/Piano.css       alles Aussehen
 
 - Mehrere Farbschemen (früher 6) – eine Richtung, eine Akzentfarbe.
 - Metronom, Aufnahme, Erinnerungen (Push bräuchte einen Server).
-- Titel automatisch aus YouTube holen (bräuchte einen Dienst, der CORS erlaubt).
+- Titel automatisch aus YouTube holen – ginge (YouTube-oEmbed erlaubt den Abruf
+  von jic-tric.github.io, geprüft), ist aber bewusst noch nicht drin.

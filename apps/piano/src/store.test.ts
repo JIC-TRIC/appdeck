@@ -12,6 +12,7 @@ import {
   getUebung,
   recordSession,
   saveUebung,
+  setArchived,
   updateSetlist,
 } from './store'
 import { DEFAULT_PROGRESS } from './model'
@@ -87,6 +88,21 @@ describe('Stücke', () => {
     expect(getPieces().map((p) => p.id)).toEqual([a.id, b.id])
     expect(getSessions()[a.id]).toHaveLength(1)
     expect(getSetlists()[0].pieceIds).toEqual([b.id, a.id])
+  })
+})
+
+describe('Archiv', () => {
+  it('archiviert, holt zurueck und nimmt es mit Rueckgaengig wieder zurueck', () => {
+    const a = neu('A')
+    recordSession(a.id, 120)
+    const undo = setArchived(a.id, true)
+    expect(getPieces()[0].archivedAt).toEqual(expect.any(String))
+    expect(getSessions()[a.id]).toHaveLength(1)
+    undo()
+    expect(getPieces()[0].archivedAt).toBeNull()
+    setArchived(a.id, true)
+    setArchived(a.id, false)
+    expect(getPieces()[0].archivedAt).toBeNull()
   })
 })
 

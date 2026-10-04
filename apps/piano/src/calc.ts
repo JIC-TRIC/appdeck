@@ -214,11 +214,9 @@ export function seedOf(day: string) {
   return Number(day.replace(/-/g, ''))
 }
 
-// Unveraendert aus der alten App, nur fuellt die Liste jetzt das Tagesziel
-// statt fest 30 Minuten: Punkte fuer lange nicht geuebt, Trend, Lernstand und
-// etwas Zufall; dann der Reihe nach, bis die geschaetzte Zeit reicht.
-export function generatePlaylist(pieces: Piece[], sessions: Sessions, seed: number, targetSeconds: number, now: number) {
-  if (!pieces.length) return []
+// Rangfolge fuer die Tagesliste, unveraendert aus der alten App: Punkte fuer
+// lange nicht geuebt, Trend, Lernstand und etwas Zufall.
+function rankPieces(pieces: Piece[], sessions: Sessions, seed: number, now: number) {
   const rnd = seededRandom(seed)
   const scored = pieces.map((piece) => {
     const status = statusOf(piece.progress)
@@ -234,8 +232,14 @@ export function generatePlaylist(pieces: Piece[], sessions: Sessions, seed: numb
       status,
     }
   })
-  scored.sort((a, b) => b.score - a.score)
+  return scored.sort((a, b) => b.score - a.score)
+}
 
+// Der Reihe nach, bis die geschaetzte Zeit das Tagesziel fuellt (frueher fest
+// 30 Minuten).
+export function generatePlaylist(pieces: Piece[], sessions: Sessions, seed: number, targetSeconds: number, now: number) {
+  if (!pieces.length) return []
+  const scored = rankPieces(pieces, sessions, seed, now)
   const picked: typeof scored = []
   let total = 0
   const usedDifficulties = new Set<number>()
@@ -255,7 +259,8 @@ export function generatePlaylist(pieces: Piece[], sessions: Sessions, seed: numb
 
 /**
  * Die Tagesliste fuer heute: die gespeicherte, wenn sie von heute ist und noch
- * Stuecke hat, sonst eine neue. `fresh` heisst: noch nicht gespeichert.
+ * Stuecke hat, sonst eine neue. `pieces` sind nur die aktiven (nicht
+ * archivierten) Stuecke. `fresh` heisst: noch nicht gespeichert.
  */
 export function todaysPlaylist(
   stored: Playlist | null,
@@ -266,12 +271,37 @@ export function todaysPlaylist(
   now: number,
 ): { playlist: Playlist; fresh: boolean } {
   const exists = new Set(pieces.map((p) => p.id))
-  if (stored && stored.date === today && Array.isArray(stored.pieceIds)) {
-    const ids = stored.pieceIds.filter((id) => exists.has(id))
-    if (ids.length) return { playlist: { ...stored, pieceIds: ids }, fresh: ids.length !== stored.pieceIds.length }
+  const fromToday = stored && stored.date === today && Array.isArray(stored.pieceIds) ? stored : null
+  if (fromToday) {
+    const ids = fromToday.pieceIds.filter((id) => exists.has(id))
+    if (ids.length) return { playlist: { ...fromToday, pieceIds: ids }, fresh: ids.length !== fromToday.pieceIds.length }
   }
+  // Was heute schon weggewischt wurde, kommt auch in eine neue Liste nicht zurueck.
+  const skipped = fromToday?.skipped ?? []
   const seed = seedOf(today)
-  return { playlist: { date: today, seed, pieceIds: generatePlaylist(pieces, sessions, seed, targetSeconds, now) }, fresh: true }
+  const candidates = pieces.filter((p) => !skipped.includes(p.id))
+  return {
+    playlist: { date: today, seed, pieceIds: generatePlaylist(candidates, sessions, seed, targetSeconds, now), skipped },
+    fresh: true,
+  }
+}
+
+/** Neu gemischte Liste fuer heute - ohne die weggewischten Stuecke. */
+export function remixPlaylist(playlist: Playlist, pieces: Piece[], sessions: Sessions, targetSeconds: number, now: number): Playlist {
+  const skipped = playlist.skipped ?? []
+  const seed = now % 2147483647
+  const candidates = pieces.filter((p) => !skipped.includes(p.id))
+  return { ...playlist, seed, pieceIds: generatePlaylist(candidates, sessions, seed, targetSeconds, now) }
+}
+
+// "Heute nicht": das Stueck faellt fuer heute raus, das naechstbeste nach
+// denselben Regeln rueckt ans Ende nach. Gibt es keins mehr, wird die Liste kuerzer.
+export function skipToday(playlist: Playlist, pieceId: string, pieces: Piece[], sessions: Sessions, now: number): Playlist {
+  const skipped = [...new Set([...(playlist.skipped ?? []), pieceId])]
+  const ids = playlist.pieceIds.filter((id) => id !== pieceId)
+  const taken = new Set([...ids, ...skipped])
+  const next = rankPieces(pieces.filter((p) => !taken.has(p.id)), sessions, playlist.seed, now)[0]
+  return { ...playlist, pieceIds: next ? [...ids, next.piece.id] : ids, skipped }
 }
 
 // ---------- Verlauf ----------

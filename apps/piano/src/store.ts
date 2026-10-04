@@ -121,6 +121,16 @@ export function updatePiece(id: string, patch: Partial<Piece>) {
 }
 
 /**
+ * Archiviert ein Stueck oder holt es zurueck. Es faellt aus Tagesliste und
+ * Uebersicht; Sitzungen, Setlists und Statistik bleiben. Gibt das Zuruecknehmen zurueck.
+ */
+export function setArchived(id: string, archived: boolean) {
+  const before = getPieces().find((p) => p.id === id)?.archivedAt ?? null
+  updatePiece(id, { archivedAt: archived ? new Date().toISOString() : null })
+  return () => updatePiece(id, { archivedAt: before })
+}
+
+/**
  * Loescht ein Stueck mit seinen Sitzungen und nimmt es aus allen Setlists.
  * Gibt zurueck, was zum Zuruecknehmen noetig ist.
  */
