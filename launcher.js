@@ -251,6 +251,9 @@
   document.getElementById('open-settings').addEventListener('click', function () {
     refreshStats();
     sheet.showModal();
+    // showModal() setzt den Fokus auf den ersten Knopf ("Fertig") - Safari
+    // zeichnet darum einen Rahmen. Das Blatt selbst nimmt den Fokus (tabindex=-1).
+    sheet.focus({ preventScroll: true });
   });
 
   document.getElementById('bk-save').addEventListener('click', function () {

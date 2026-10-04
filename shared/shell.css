@@ -179,6 +179,8 @@ dialog.sheet {
 }
 dialog.sheet[open] { animation: shell-sheet-in 0.34s cubic-bezier(0.2, 0.9, 0.25, 1); }
 dialog.sheet::backdrop { background: rgba(0, 0, 0, 0.35); animation: shell-fade-in 0.25s; }
+/* Das Blatt nimmt beim Oeffnen selbst den Fokus (statt des ersten Knopfs) - ohne Rahmen */
+dialog.sheet:focus { outline: none; }
 .sheet-grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--sep); margin: 0 auto 6px; }
 .sheet-header { position: relative; display: flex; align-items: center; justify-content: flex-end; min-height: 44px; }
 .sheet-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 17px; font-weight: 600; }
