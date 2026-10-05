@@ -75,6 +75,10 @@ dem Gerät; wer das Icon löscht, löscht sie.
 
 ## Loci
 
+- **Wurzeln mit Nachkommastellen** (√ und ∛): von der nächsten glatten Wurzel aus annähern und
+  verfeinern, z. B. √40 = 6 + 4 ÷ 12,33 ≈ 6,3243. Besprochen, vorerst zurückgestellt. Offen wäre: abschneiden
+  oder runden gelten lassen.
+- **Konstanten ab einer Stelle üben** (z. B. π ab Stelle 101), statt immer von vorn.
 - **Bausteine einzeln üben**: schnelle Abfragen nur der Monatszahl („September?“ → 5), der Jahreszahl
   („89?“ → 6) oder der Jahrhundertzahl.
 - **Verlauf als Kurve** beim Kartendeck: Merkzeit und „bis zum ersten Fehler“ über die Zeit, je Deckgröße.

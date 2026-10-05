@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { IconBulb, IconClock, IconDown } from '../icons'
-import { AppsKnopf, Bestaetigen, Laufuhr, Rechenweg, useStoppuhr } from '../ui'
-import { quote, schnitt, schwaechen, zaehle } from '../statistik'
+import { AppsKnopf, Laufuhr, Rechenweg, useStoppuhr } from '../ui'
+import { schwaechen } from '../statistik'
 import { getWochentag, speichereAufgabe, wochentagZuruecksetzen } from '../store'
-import { sekunden, sekundenZahl } from '../util'
+import { sekunden } from '../util'
 import {
   WOCHENTAGE,
   bausteine,
@@ -16,18 +16,13 @@ import {
   zeitraumName,
   zufallsdatum,
 } from '../wochentag'
-import type { Aufgabe, Datum, Einstellungen, WtGesamt } from '../types'
+import type { Aufgabe, Datum, Einstellungen } from '../types'
 import Anleitung from './Anleitung'
+import UebungsStatistik from './UebungsStatistik'
 import ZeitraumBlatt from './Zeitraum'
 
 // Montag bis Sonntag; die kleine Zahl ist das Ergebnis der Formel.
 const KNOEPFE = [1, 2, 3, 4, 5, 6, 0]
-
-const prozent = (g: WtGesamt) => {
-  const q = quote(g)
-  return q === null ? '–' : `${q} %`
-}
-const zeitOderStrich = (ms: number | null) => (ms === null ? '–' : sekunden(ms))
 
 export default function Wochentag({
   aktiv,
@@ -110,8 +105,6 @@ export default function Wochentag({
 
   const richtig = antwort ? antwort.gewaehlt === l.ergebnis : false
   const tipp = antwort && !richtig ? hinweis(aufgabe, antwort.gewaehlt, l.ergebnis) : null
-  const rundeG = zaehle(runde)
-  const sw = schwaechen(daten.letzte)
 
   return (
     <div className="l-screen" hidden={!aktiv}>
@@ -224,102 +217,16 @@ export default function Wochentag({
           </section>
         ) : null}
 
-        <section className="l-sec">
-          <div className="l-sec-kopf">
-            <h2 className="l-h2">Diese Runde</h2>
-            <span className="l-num l-s2">
-              {rundeG.anzahl
-                ? `${rundeG.richtig} von ${rundeG.anzahl} richtig${schnitt(rundeG) !== null ? ` · Ø ${sekunden(schnitt(rundeG)!)}` : ''}`
-                : 'noch keine Aufgabe'}
-            </span>
-          </div>
-          {runde.length ? (
-            <div className="l-punkte" aria-label="Letzte Ergebnisse">
-              {runde.slice(-12).map((a, i) => (
-                <span
-                  key={`${runde.length}:${i}`}
-                  className={`l-punkt ${a.t ? 'tip' : a.r ? 'gut' : 'schlecht'}`}
-                  title={a.d}
-                >
-                  {a.t ? 'T' : a.r ? sekundenZahl(a.z) : '✗'}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </section>
-
-        <section className="l-sec">
-          <h2 className="l-h2">Statistik</h2>
-          <div className="l-tabelle">
-            <div className="l-trow kopf">
-              <span />
-              <span>Diese Runde</span>
-              <span>Gesamt</span>
-            </div>
-            {(
-              [
-                ['Aufgaben', String(rundeG.anzahl), String(daten.gesamt.anzahl)],
-                ['Richtig', prozent(rundeG), prozent(daten.gesamt)],
-                ['Ø Zeit (richtige)', zeitOderStrich(schnitt(rundeG)), zeitOderStrich(schnitt(daten.gesamt))],
-                ['Bestzeit', zeitOderStrich(rundeG.best), zeitOderStrich(daten.gesamt.best)],
-                ['Mit Tipp', String(rundeG.mitTipp), String(daten.gesamt.mitTipp)],
-              ] as const
-            ).map(([name, a, b]) => (
-              <div className="l-trow" key={name}>
-                <span>{name}</span>
-                <span>{a}</span>
-                <span>{b}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="l-sec">
-          <h2 className="l-h2">Schwächen</h2>
-          {sw === null ? (
-            <p className="l-note">
-              Ab 20 Aufgaben siehst du hier, wo du oft danebenliegst. Noch {20 - daten.letzte.length}.
-            </p>
-          ) : (
-            <>
-              <p className="l-note">
-                Aus den letzten {Math.min(daten.letzte.length, 200)} Aufgaben, mit Tipp zählt wie falsch. Der Strich ist dein
-                Schnitt: {Math.round(sw.schnitt * 100)} % falsch.
-              </p>
-              {sw.gruppen.length ? (
-                <div className="l-schwaechen">
-                  {sw.gruppen.map((g) => (
-                    <div className="l-schwaeche" key={g.name}>
-                      <div className="l-schwaeche-kopf">
-                        <span>{g.name}</span>
-                        <span className="l-num l-s2">
-                          {g.falsch} von {g.anzahl} falsch
-                        </span>
-                      </div>
-                      <div className="l-balken">
-                        <i style={{ width: `${(100 * g.falsch) / g.anzahl}%` }} />
-                        <b style={{ left: `${sw.schnitt * 100}%` }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="l-note">Nichts Auffälliges: keine Gruppe liegt über deinem Schnitt.</p>
-              )}
-            </>
-          )}
-        </section>
-
-        {daten.gesamt.anzahl || runde.length ? (
-          <Bestaetigen
-            label="Statistik zurücksetzen"
-            frage="Wirklich zurücksetzen? Nochmal tippen"
-            onConfirm={() => {
-              setDaten(wochentagZuruecksetzen())
-              setRunde([])
-            }}
-          />
-        ) : null}
+        <UebungsStatistik
+          runde={runde}
+          gesamt={daten.gesamt}
+          letzteAnzahl={daten.letzte.length}
+          sw={schwaechen(daten.letzte)}
+          onReset={() => {
+            setDaten(wochentagZuruecksetzen())
+            setRunde([])
+          }}
+        />
       </div>
 
       {antwort ? (

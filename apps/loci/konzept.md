@@ -1,15 +1,19 @@
 # Loci – Konzept
 
-Gedächtnistraining für unterwegs. Zwei Übungen: für ein beliebiges Datum im
-Kopf den **Wochentag** ausrechnen, und ein gemischtes **Kartendeck** merken und
-in der richtigen Reihenfolge wiedergeben.
+Kopfrechnen und Gedächtnistraining für unterwegs. Vier Übungen:
+- **Wochentag:** für ein beliebiges Datum den Wochentag im Kopf ausrechnen
+- **Rechnen:** zwei- und dreistellige Zahlen im Kopf malnehmen
+- **Karten:** ein gemischtes Kartendeck merken und in der richtigen Reihenfolge
+  wiedergeben
+- **Konstanten:** π, e und Co. Ziffer für Ziffer aufsagen
 
 Projekt-ID `loci`, Ordner `apps/loci/`, Speicher unter `loci:*`. Vorbild ist die
 Übungsseite `skills/ueben.html` aus dem privaten Repo Gedächtnispalast, hier
 ohne alles Persönliche (siehe unten), gebaut in TypeScript + Ionic wie Kontor,
 Steady und Piano.
 
-`[ ]` = offen, `[x]` = gebaut. **Stand: gebaut (04.10.2026).** Die Mockups liegen
+`[ ]` = offen, `[x]` = gebaut. **Stand: gebaut (04.10.2026), Rechnen und
+Konstanten am selben Tag ergänzt (ohne eigene Mockups, im selben Stil).** Die Mockups liegen
 als Design-Leinwand „Loci Mockups“ vor (claude.ai, privat:
 https://claude.ai/artifact/NLfya9ikDBT11rjAxhUfBJ). Gewählt wurde: Richtung
 **Tafel**, Aufgabe **A** (eine Reihe), Wiedergeben **A** (Leiste), Symbol
@@ -28,8 +32,11 @@ appdeck liegt auf GitHub Pages, jeder kann den Code lesen. Deshalb gilt:
   (033 · 614 · 625 · 035), ohne die Major-Wörter und die Geschichte dazu.
 - **Keine Verweise** auf `daten/karten.md`, `daten/route.md`, `abgleichen.js`
   oder Ähnliches.
-- Was drin steht, ist allgemein: die Rechenmethode, die Monats- und
-  Jahrhundertzahlen, die Kartenbilder (gemeinfrei, CC0).
+- **Konstanten ohne Merkhilfen.** Nur die Ziffern selbst, keine Bilder oder
+  Geschichten aus `daten/konstanten/`.
+- Was drin steht, ist allgemein: die Rechenmethoden, die Monats- und
+  Jahrhundertzahlen, die Ziffern der Konstanten, die Kartenbilder (gemeinfrei,
+  CC0).
 - Die Statistik liegt wie bei allen Apps nur auf dem iPhone.
 
 ## Prinzipien
@@ -41,8 +48,8 @@ appdeck liegt auf GitHub Pages, jeder kann den Code lesen. Deshalb gilt:
   nicht nur richtig oder falsch.
 - **Gemessen wird immer.** Die Uhr lässt sich ausblenden, die Statistik bleibt
   trotzdem vollständig.
-- **Nur zwei Übungen.** Weitere Skills lassen sich später als dritter Reiter
-  anhängen, sind aber nicht geplant.
+- **Ein Reiter pro Übung**, erst Kopfrechnen, dann Gedächtnis. Die Tab-Leiste
+  verträgt noch einen fünften; danach bräuchte Loci eine Skill-Auswahl.
 
 ## Design (Richtung „Tafel“)
 
@@ -138,6 +145,59 @@ Karten, 4 px Tasten).
 - [x] „Statistik zurücksetzen“: zweimal tippen (wie Kontor und Steady), löscht
   nur den Wochentag.
 
+### Rechnen: Aufgaben
+
+- [x] **Stufen** (Stellen der Faktoren, der längere zuerst): 2 × 1, 3 × 1,
+  2 × 2 (Standard), 3 × 2, 3 × 3. Bleibt gespeichert, eine neue Stufe bringt
+  sofort eine neue Aufgabe.
+- [x] Zufallszahlen gleich verteilt, **ohne Null am Ende** (47 × 80 wäre nur
+  47 × 8), einstellige von 2 bis 9. Nie zweimal dieselbe Aufgabe hintereinander.
+- [x] **Antwort über den Ziffernblock** (1–9, ⌫, 0, OK), höchstens so viele
+  Ziffern, wie das Ergebnis haben kann. Uhr wie beim Wochentag.
+- [x] **Rechenweg** (einstellbar, gilt für Tipp und Lösung):
+  - **Zerlegen:** einen Faktor in seine Stellen, Teilprodukte von links,
+    zusammenzählen. Ist der zweite Faktor einstellig, wird der große zerlegt
+    (347 × 6 = 1800 + 240 + 42). „Mal einen Zehner“ steht klein dabei
+    (47 × 8 = 376, eine Null dran).
+  - **Überkreuz:** Spalte für Spalte von rechts, je Spalte alle Ziffernpaare mit
+    passender Stelle plus Übertrag („schreibe 4, merke 8“). Das Ergebnis entsteht
+    von hinten, darum **tippt man bei Überkreuz von rechts ein** (die Zahl wächst
+    nach links).
+- [x] **Tipp** deckt die Zeilen des Rechenwegs nacheinander auf (2–3
+  Teilprodukte bzw. 2–5 Spalten). Mit Tipp zählt die Aufgabe nicht als richtig,
+  wie beim Wochentag.
+- [x] **Danach** (immer): Richtig/Leider falsch mit Ergebnis, Zeit, deine
+  Antwort, Hinweis, Rechenweg, Knopf **Nächste Aufgabe**.
+- [x] **Hinweise:** nur eine Stelle um 1 daneben → „Übertrag vergessen? Nur die
+  Zehnerstelle ist um 1 daneben.“ Ergebnis rückwärts eingetippt → „Ziffern
+  verdreht? … Beim Überkreuz-Rechnen von rechts eintippen.“
+- [x] **Statistik** wie beim Wochentag (Runde, Gesamt, Schwächen, zurücksetzen).
+  Schwächen-Gruppen: jede Stufe und jede Ziffer von 2 bis 9, die in einem Faktor
+  vorkommt („mit einer 7“).
+
+### Konstanten
+
+- [x] **Mathematik**, je **1000 Nachkommastellen** (abgeschnitten, nicht
+  gerundet): π, e, φ (Goldener Schnitt), √2, √3, ln 2. Vorgegeben ist der Teil
+  vor dem Komma („π = 3,“), aufgesagt werden die Nachkommastellen.
+- [x] **Physik** mit ihren festgelegten bzw. gemessenen Stellen:
+  Lichtgeschwindigkeit c = 299 792 458 m/s, Planck-Konstante
+  h = 6,626 070 15 · 10⁻³⁴ J·s, Elementarladung e = 1,602 176 634 · 10⁻¹⁹ C
+  (alle drei exakt seit 2019), Gravitationskonstante G = 6,674 30 · 10⁻¹¹
+  m³/(kg·s²) (CODATA), Absoluter Nullpunkt 0 K = −273,15 °C. Exponent und
+  Einheit stehen da, gefragt sind alle Ziffern; das Komma setzt die App.
+- [x] **Aufsagen:** Ziffer für Ziffer über den Ziffernblock (ohne ⌫). Die erste
+  falsche Ziffer beendet den Durchgang, sie steht rot da. „Fertig“ beendet ohne
+  Fehler (z. B. wenn man nicht weiterweiß). ✕ bricht ab, nach der ersten Ziffer
+  mit Rückfrage, und speichert nichts.
+- [x] Lange Konstanten erscheinen in Zeilen zu 10 (als 5 + 5) mit
+  Stellennummer, kurze in einer Zeile mit Platzhaltern.
+- [x] **Ende:** Stellen bis zum Fehler, „Neuer Rekord – vorher 87“, was richtig
+  gewesen wäre, die **nächsten 10 Stellen** („So geht es weiter“), Nochmal oder
+  Fertig.
+- [x] **Liste** mit Rekord je Konstante („Rekord 87 von 1000 · heute, 21:14“).
+  Statistik zurücksetzen löscht alle Durchgänge.
+
 ### Kartendeck: Merken
 
 - [x] Deck: Pik, Herz, Kreuz, Karo × A, 2–10, J, Q, K. Auf Tasten und Mini-Karten
@@ -195,43 +255,55 @@ Karten, 4 px Tasten).
 
 | Schlüssel | Inhalt |
 |---|---|
-| `loci:einstellungen` | `{ reiter, uhr, zeitraum: { id, von, bis }, deck: { anzahl, taktAn, takt }, anleitungGesehen }` |
+| `loci:einstellungen` | `{ reiter, uhr, zeitraum: { id, von, bis }, deck: { anzahl, taktAn, takt }, rechnen: { stufe, methode }, anleitungGesehen, anleitungRechnen }` |
 | `loci:wochentag` | `{ gesamt: { anzahl, richtig, mitTipp, zeitRichtig, best }, letzte: Aufgabe[] }` |
+| `loci:rechnen` | `{ gesamt: { … wie oben }, letzte: RechenAufgabe[] }` |
 | `loci:karten` | `Versuch[]` (die letzten 100) |
+| `loci:konstanten` | `KVersuch[]` (die letzten 200) |
 
+- `reiter`: `wochentag` · `rechnen` · `karten` · `konstanten`.
 - `zeitraum.id`: `jahr` · `1900` · `1600` · `eigen`. Bei `jahr` gilt immer das
   aktuelle Jahr.
 - `deck.takt`: Sekunden (bleibt stehen, wenn der Taktgeber aus ist).
-- `Aufgabe`: `{ d: 'YYYY-MM-DD', a: 0–6 (gewählt), r: Antwort stimmt, z: ms,
-  t: Tipps }`, die letzten 200 (für Schwächen, ca. 10 KB). `gesamt` zählt über
-  alles, auch über die 200 hinaus. `richtig` heißt: stimmt und ohne Tipp.
-- `Versuch`: `{ zeit (Ende, ms), n, bisFehler, richtig, merk (ms), wieder (ms),
-  takt }`.
+- `rechnen.stufe`: `2x1` · `3x1` · `2x2` · `3x2` · `3x3`; `rechnen.methode`:
+  `zerlegen` · `ueberkreuz`.
+- `Aufgabe` (Wochentag): `{ d: 'YYYY-MM-DD', a: 0–6 (gewählt), r: Antwort
+  stimmt, z: ms, t: Tipps }`. `RechenAufgabe`: `{ x, y, a: Antwort, r, z, t }`.
+  Je die letzten 200 (für Schwächen). `gesamt` zählt über alles, auch über die
+  200 hinaus. `richtig` heißt: stimmt und ohne Tipp.
+- `Versuch` (Karten): `{ zeit (Ende, ms), n, bisFehler, richtig, merk (ms),
+  wieder (ms), takt }`.
+- `KVersuch` (Konstanten): `{ k: id, stellen, ende (ms), dauer (ms), fehler }`.
+  Rekord = meiste Stellen je Konstante.
 - Gelesenes wird geprüft (`normalisiere*` in `store.ts`), Kaputtes fällt auf den
-  Standard zurück.
+  Standard zurück. Ältere Einstellungen ohne Rechnen bekommen den Standard dazu.
 - Keine eigene Exportdatei: das Launcher-Backup erfasst `loci:*` automatisch.
   Die Statistik der alten ueben.html lässt sich nicht übernehmen (sie lag im
   Browser-Speicher der lokalen Datei).
 
 ## Navigation
 
-- [x] Tab-Leiste **Wochentag · Karten** im Seitenfluss unter der Bühne (wie
-  Piano). Start im zuletzt benutzten Reiter. Beide Reiter bleiben eingehängt:
-  die offene Aufgabe und die Runde überstehen den Wechsel.
-- [x] **Erster Start:** Wochentag mit offenem Anleitungs-Blatt (einmalig,
-  `anleitungGesehen`).
-- [x] „‹ Apps“ oben links in beiden Reitern. Keine Einstellungsseite: Uhr und
-  Zeitraum im Zeitraum-Blatt, Deck-Einstellungen auf dem Kartendeck-Start.
-- [x] Blätter von unten: Anleitung (groß, scrollt) und Zeitraum.
-- [x] **Merken und Wiedergeben** sind ein Vollbild ohne Tab-Leiste, ohne
-  Zurückwischen vom Rand (Wischen blättert Karten). Raus geht es über ✕ (mit
-  Rückfrage), Fertig oder Abgeben.
+- [x] Tab-Leiste **Wochentag · Rechnen · Karten · Konstanten** im Seitenfluss
+  unter der Bühne (wie Piano). Start im zuletzt benutzten Reiter. Alle Reiter
+  bleiben eingehängt: offene Aufgaben und Runden überstehen den Wechsel; die Uhr
+  eines Reiters steht, solange ein anderer gezeigt wird.
+- [x] **Erster Start:** Wochentag mit offenem Anleitungs-Blatt; beim ersten
+  Besuch von Rechnen dessen Anleitung (je einmal, `anleitungGesehen`,
+  `anleitungRechnen`).
+- [x] „‹ Apps“ oben links in jedem Reiter. Keine Einstellungsseite: Uhr und
+  Zeitraum im Zeitraum-Blatt, Stufe/Rechenweg/Uhr im Stufe-Blatt,
+  Deck-Einstellungen auf dem Kartendeck-Start. „Uhr anzeigen“ gilt überall.
+- [x] Blätter von unten: Anleitungen (groß, scrollen), Zeitraum, Stufe.
+- [x] **Merken, Wiedergeben und Aufsagen** sind ein Vollbild ohne Tab-Leiste.
+  Beim Merken gibt es kein Zurückwischen vom Rand (Wischen blättert Karten).
+  Raus geht es über ✕ (mit Rückfrage), Fertig oder Abgeben.
 - [x] Die Auswertung ersetzt im Reiter Karten den Start, bis „Neu mischen“ oder
   „Einstellungen“.
-- [x] Laufende Aufgabe und laufender Versuch überstehen **keinen** Neustart
-  durch iOS (bei einem Merkversuch wäre die Zeit danach ohnehin wertlos).
-- [x] Tasten am Rechner wie im Original: Wochentag 1–6, 0/7, Enter/Leertaste;
-  Merken → ← Leertaste Enter Esc; Wiedergeben ⌫, Enter, Esc.
+- [x] Laufende Aufgaben, Versuche und Durchgänge überstehen **keinen** Neustart
+  durch iOS.
+- [x] Tasten am Rechner: Wochentag 1–6, 0/7, Enter/Leertaste; Rechnen Ziffern,
+  ⌫, Enter; Merken → ← Leertaste Enter Esc; Wiedergeben ⌫, Enter, Esc;
+  Aufsagen Ziffern, Enter, Esc.
 
 ## Ansichten
 
@@ -255,10 +327,10 @@ Karten, 4 px Tasten).
 
 ### 4 – Zeitraum (Blatt)
 - [x] Vier Optionen mit Unterzeile, bei Eigener zwei Jahresfelder mit Fehlertext.
-- [x] Schalter **Uhr anzeigen** („Gemessen wird trotzdem. Gilt auch fürs
-  Kartendeck.“).
+- [x] Schalter **Uhr anzeigen** („Gemessen wird trotzdem. Gilt für alle
+  Übungen.“).
 
-### 5 – Anleitung (Blatt)
+### 5 – Anleitung Wochentag (Blatt)
 - [x] Formel, Ergebnis → Wochentag, Monatszahlen (3 × 4) mit Reihe
   033 · 614 · 625 · 035, Jahr in drei Schritten plus Abkürzung, Jahrhunderte
   (1900er und 2000er hervorgehoben), Schaltjahr, „Dieses Jahr“ (Jahr +
@@ -267,35 +339,70 @@ Karten, 4 px Tasten).
 - [x] **Ausprobieren:** Datumsfeld (ab 1583, heute vorbelegt), darunter
   Wochentag und der ganze Rechenweg.
 
-### 6 – Wochentag: Statistik (unter der Aufgabe)
+### 6 – Statistik (unter der Aufgabe, Wochentag und Rechnen)
 - [x] Diese Runde, Tabelle, Schwächen, Statistik zurücksetzen.
 
-### 7 – Kartendeck: Start
+### 7 – Rechnen: Aufgabe
+- [x] Kopf: ‹ Apps, Stufe als Pille („2 × 2“, öffnet Blatt 9), „?“ (öffnet
+  Blatt 10).
+- [x] Karte: „Aufgabe 3“, Uhr, Aufgabe groß („47 × 86“), darunter die Eingabe
+  („= 40|“, rechtsbündig), Knopf Tipp bzw. die aufgedeckten Rechenweg-Zeilen.
+- [x] Ziffernblock unter der Karte (1–9, ⌫, 0, OK), darunter ein Satz zur
+  Eingaberichtung. Darunter Statistik (Ansicht 6).
+
+### 8 – Rechnen: Lösung
+- [x] Statt Ziffernblock: Urteil mit Ergebnis, Zeit, deine Antwort, Hinweis,
+  Rechenweg (Zerlegen oder Überkreuz), Knopf Nächste Aufgabe unten.
+
+### 9 – Stufe (Blatt)
+- [x] Fünf Stufen mit Beispiel, Rechenweg als Umschalter Zerlegen | Überkreuz
+  mit Satz zur Eingaberichtung, Schalter Uhr anzeigen.
+
+### 10 – Anleitung Rechnen (Blatt)
+- [x] Zerlegen an 47 × 86 (Formel, Rechenweg, „mal einen Zehner“), Überkreuz an
+  47 × 86 (Schema, Rechenweg, Eingabe von rechts), welche Paare bei 3 × 3 in
+  welche Spalte gehören, drei Tipps zum Im-Kopf-Behalten.
+- [x] **Ausprobieren:** zwei Zahlen (2–999), Umschalter Zerlegen | Überkreuz,
+  darunter Ergebnis und Rechenweg.
+
+### 11 – Kartendeck: Start
 - [x] Titel, ein Satz, Karte mit Deckgröße, Taktgeber (Schalter + Schritte),
   Uhr anzeigen. **Mischen und loslegen.**
 - [x] Bestzeiten (10/20/26/52, nur fehlerfrei), letzte 5 Versuche (Größe, bis
   Fehler, wann, Takt, Merk- und Wiedergabezeit), Statistik zurücksetzen.
 
-### 8 – Merken
+### 12 – Merken
 - [x] ✕, „Karte 7 von 52“ mit Uhr, Fertig; Fortschrittsbalken; Karte groß;
   Zurück · „Tippen oder wischen“ · Weiter.
 
-### 9 – Merken mit Taktgeber
-- [x] Wie 8, dazu Taktbalken mit „Takt 3,0 s“ und „Zurück hält den Takt an“
+### 13 – Merken mit Taktgeber
+- [x] Wie 12, dazu Taktbalken mit „Takt 3,0 s“ und „Zurück hält den Takt an“
   bzw. „Takt angehalten“.
 
-### 10 – Wiedergeben
+### 14 – Wiedergeben
 - [x] ✕, „Stelle 7 von 52“ mit Uhr, Abgeben.
 - [x] Leiste der Stellen, „6 von 52 gelegt“, die halbe Wahl groß,
   Kartentastatur unten.
 
-### 11 – Auswertung
+### 15 – Auswertung
 - [x] Titel („Fehlerfrei, alle 52 Karten!“ oder „31 von 52 bis zum ersten
   Fehler“), Deckgröße · Takt · Zeit, Kacheln (bis Fehler, an richtiger Stelle,
   Merkzeit, Wiedergabe).
 - [x] Richtige Reihenfolge (10 pro Reihe, Fehler rot umrandet, der erste
   stärker), Fehlerliste (Stelle, richtig, deine oder „leer“), Neu mischen,
   Einstellungen.
+
+### 16 – Konstanten
+- [x] Titel, ein Satz, Karten **Mathematik** und **Physik** mit Symbol, Name und
+  Rekord bzw. Stellenzahl und Erklärung. Hinweis „Exponent und Einheit stehen
+  da“. Statistik zurücksetzen.
+
+### 17 – Aufsagen (Vollbild)
+- [x] ✕, „π · 23 Stellen“ mit Uhr, Fertig. Name, „π = 3,“, die getippten
+  Ziffern in Zehnerzeilen mit Cursor; Physik in einer Zeile mit Platzhaltern,
+  Exponent und Einheit.
+- [x] Ziffernblock ohne ⌫. Nach dem Ende statt Ziffernblock: Stellen groß,
+  Rekord, die falsche Ziffer, „So geht es weiter“, Nochmal · Fertig.
 
 ## Querschnitt
 
@@ -309,42 +416,52 @@ Karten, 4 px Tasten).
   iPhone-Display unscharf), in `src/karten/`, eingebunden per
   `import.meta.glob` in `bilder.ts`. So landen sie im Build und im
   Offline-Speicher. Quelle und Lizenz: `src/karten/LIZENZ.md`.
+- [x] **Ziffern der Konstanten:** einmalig per Skript mit mpmath (1060 Stellen
+  Rechengenauigkeit) erzeugt, in `konstanten-ziffern.ts`. Der Test rechnet alle
+  1000 Stellen unabhängig mit BigInt nach (π nach Machin, e als Reihe,
+  ln 2 = 2 atanh(1/3), √2, √3 und φ über eine exakte Quadrat-Probe).
 - [x] **Tests** (`npm test`):
-  - Methode gegen Kalender (alle Tage 1583–2400, Stichproben bis 9999),
-    Rechenweg-Texte inkl. Abkürzung, Schaltjahr-Fälle 1600/1700/1900/2000
-  - Hinweise bei typischen Fehlern, Zufallsdatum bleibt im Zeitraum, Tipp-
-    Bausteine ergeben zusammen den Wochentag
-  - Tipp zählt nicht als richtig, Zeit nicht in Ø/Bestzeit
-  - Schwächen: ab 20, Mindestanzahl, nur über Schnitt, höchstens 3, nur die
-    letzten 200
-  - Mischen ergibt eine Umordnung; Wertung (bis Fehler, Treffer, Duplikate,
-    leere Stellen); nächste freie Stelle ringsum; ⌫ in allen drei Fällen
+  - Wochentag: Methode gegen Kalender (alle Tage 1583–2400, Stichproben bis
+    9999), Rechenweg-Texte inkl. Abkürzung, Schaltjahr-Fälle, Hinweise,
+    Zufallsdatum, Tipp-Bausteine ergeben zusammen den Wochentag
+  - Rechnen: Aufgaben je Stufe (Stellen, keine Null am Ende), Zerlegen und
+    Überkreuz ergeben für viele Zufallsaufgaben das Ergebnis, Texte wie in der
+    Anleitung, Hinweise
+  - Statistik: Tipp zählt nicht als richtig, Schwächen (ab 20, Mindestanzahl,
+    nur über Schnitt, höchstens 3, nur die letzten 200) für beide Übungen
+  - Karten: Mischen, Wertung, nächste freie Stelle, ⌫ in allen drei Fällen
+  - Konstanten: alle Stellen, physikalische Werte, Komma, Rekorde
   - Gespeichertes lesen: gültige Werte bleiben, kaputte fallen auf den Standard
 
 ## Dateien
 
 ```
 apps/loci/
-├─ index.html          Hülle (shell.js, theme-color #F7F8F3)
-├─ konzept.md          dieses Dokument
+├─ index.html              Hülle (shell.js, theme-color #F7F8F3)
+├─ konzept.md              dieses Dokument
 └─ src/
-   ├─ main.tsx         Schriften, mountApp
-   ├─ Loci.tsx         Einstellungen, zwei Reiter, Tab-Leiste
-   ├─ Loci.css         alles Aussehen
-   ├─ types.ts         Datenmodell
-   ├─ wochentag.ts     Methode, Rechenweg, Hinweise, Tipp, Zeitraum, Zufallsdatum
-   ├─ statistik.ts     Zählen, Runde und Gesamt, Schwächen
-   ├─ karten.ts        Deck, Mischen, Stellen belegen, ⌫, Wertung, Bestzeiten
-   ├─ bilder.ts        Kartenbilder (import.meta.glob), Vorladen
-   ├─ store.ts         Schlüssel, Lesen mit Prüfung, Schreiben, Zurücksetzen
-   ├─ util.ts          Zeiten formatieren („4,2 s“, „1:24“, „heute, 21:14“)
-   ├─ ui.tsx           Apps-Knopf, Stoppuhr, Laufuhr, Blatt, Schalter,
-   │                   Bestätigen, Rechenweg, Mini-Karte
-   ├─ icons.tsx        Strich-Symbole
-   ├─ karten/          52 Kartenbilder (WebP) + LIZENZ.md
-   ├─ *.test.ts        wochentag, statistik, karten, store
-   └─ views/           Wochentag, Anleitung, Zeitraum, Karten (Reiter und
-                       Vollbild), KartenStart, Merken, Wiedergeben, Auswertung
+   ├─ main.tsx             Schriften, mountApp
+   ├─ Loci.tsx             Einstellungen, vier Reiter, Tab-Leiste
+   ├─ Loci.css             alles Aussehen
+   ├─ types.ts             Datenmodell
+   ├─ wochentag.ts         Methode, Rechenweg, Hinweise, Tipp, Zeitraum, Zufallsdatum
+   ├─ rechnen.ts           Stufen, Aufgaben, Zerlegen, Überkreuz, Hinweise
+   ├─ statistik.ts         Zählen, Runde und Gesamt, Schwächen (beide Übungen)
+   ├─ karten.ts            Deck, Mischen, Stellen belegen, ⌫, Wertung, Bestzeiten
+   ├─ bilder.ts            Kartenbilder (import.meta.glob), Vorladen
+   ├─ konstanten.ts        Liste der Konstanten, Komma, Rekorde
+   ├─ konstanten-ziffern.ts  1000 Nachkommastellen je mathematischer Konstante
+   ├─ store.ts             Schlüssel, Lesen mit Prüfung, Schreiben, Zurücksetzen
+   ├─ util.ts              Zeiten formatieren („4,2 s“, „1:24“, „heute, 21:14“)
+   ├─ ui.tsx               Apps-Knopf, Stoppuhr, Laufuhr, Blatt, Schalter,
+   │                       Bestätigen, Rechenweg, Ziffernblock, Mini-Karte
+   ├─ icons.tsx            Strich-Symbole
+   ├─ karten/              52 Kartenbilder (WebP) + LIZENZ.md
+   ├─ *.test.ts            wochentag, rechnen, statistik, karten, konstanten, store
+   └─ views/               Wochentag, Anleitung, Zeitraum, Rechnen,
+                           RechnenAnleitung, Stufe, UebungsStatistik, Karten
+                           (Reiter und Vollbild), KartenStart, Merken,
+                           Wiedergeben, Auswertung, Konstanten, Aufsagen
 icons/loci.svg
 ```
 
@@ -354,7 +471,7 @@ icons/loci.svg
 
 Aus der Fragerunde am 04.10.2026:
 
-1. **Eine App, zwei Reiter**, nicht zwei Kacheln
+1. **Eine App, mehrere Reiter**, nicht mehrere Kacheln
 2. **Ionic + TypeScript**, nicht die alte HTML-Datei übernehmen
 3. **Name Loci**
 4. **Monatszahlen ohne Major-Wörter**, Personen und Route ganz weg (auch nicht
@@ -374,8 +491,23 @@ Aus der Fragerunde am 04.10.2026:
 Aus den Mockups gewählt (04.10.2026): Richtung **Tafel**, Aufgabe **A** (eine
 Reihe), Wiedergeben **A** (Leiste), Symbol **Schlüsselloch im Bogen**.
 
+Erweiterung (04.10.2026):
+
+13. **Multiplizieren statt Quadrieren bis 100** – beim Quadrieren gibt es nur
+    rund 90 Aufgaben. Beide Rechenwege (Zerlegen, Überkreuz) wählbar, Stufen von
+    2 × 1 bis 3 × 3.
+14. **Konstanten aufsagen**, nur Ziffern, keine Merkhilfen; mathematische mit
+    1000 Stellen, auch wenn noch nicht so viele gelernt sind.
+15. **Vier Reiter in der Tab-Leiste**, keine Skill-Auswahl (die bräuchte es erst
+    ab sechs).
+16. **Wurzeln vorerst nicht** (siehe unten).
+
 ## Nicht drin
 
+- **Wurzeln mit Nachkommastellen** (√40 ≈ 6,3245 über nächste Quadratzahl und
+  Verfeinern, ebenso ∛) – besprochen, vorerst zurückgestellt
+- Quadrieren als eigener Skill, Kubikwurzel aus Kubikzahlen
+- Konstanten ab einer bestimmten Stelle üben (heute immer von vorn)
 - Bausteine einzeln üben (nur Monats-, Jahres- oder Jahrhundertzahl abfragen)
 - Verlauf als Kurve, Fehlerkarten (welche Karten oft falsch liegen)
 - Mehrere Karten pro Ansicht

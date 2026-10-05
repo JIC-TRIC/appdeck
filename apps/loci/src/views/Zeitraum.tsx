@@ -108,7 +108,7 @@ export default function ZeitraumBlatt({
           <div className="l-zeile-schalter">
             <span>
               <span className="l-zs-titel">Uhr anzeigen</span>
-              <small>Gemessen wird trotzdem. Gilt auch fürs Kartendeck.</small>
+              <small>Gemessen wird trotzdem. Gilt für alle Übungen.</small>
             </span>
             <Schalter an={einst.uhr} label="Uhr anzeigen" onChange={(uhr) => aendere({ uhr })} />
           </div>

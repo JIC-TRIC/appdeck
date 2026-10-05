@@ -911,9 +911,9 @@ input {
   z-index: 10;
   flex: none;
   height: calc(var(--tabs-h) + env(safe-area-inset-bottom));
-  padding: 4px max(40px, calc(50% - 220px)) env(safe-area-inset-bottom);
+  padding: 4px max(4px, calc(50% - 260px)) env(safe-area-inset-bottom);
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.94);
 }
@@ -2014,4 +2014,365 @@ ion-alert.l-alert .alert-button-role-destructive {
   .l-full-modal * {
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ---------- Rechnen ---------- */
+
+.l-eingabe {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px !important;
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.l-eingabe span {
+  color: var(--text-3);
+  font-size: 22px;
+}
+
+.l-eingabe b {
+  min-width: 4ch;
+  padding: 2px 8px 4px;
+  border-bottom: 2px solid var(--accent);
+  font-size: 30px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.l-eingabe.rechts b {
+  text-align: right;
+}
+
+.l-eingabe.leer b {
+  color: var(--text-3);
+  font-weight: 400;
+}
+
+.l-rechnen-tasten {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: -8px;
+}
+
+.l-ziffernblock {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.l-ziffernblock .l-taste {
+  height: 56px;
+  font-family: var(--f-mono);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.l-ziffernblock .l-taste.neben {
+  background: var(--surface-2) !important;
+  color: var(--text-2);
+}
+
+.l-ziffernblock .l-taste.neben .l-i {
+  width: 26px;
+  height: 26px;
+}
+
+.l-ziffernblock .l-taste.ok {
+  border-color: var(--accent) !important;
+  background: var(--accent) !important;
+  color: var(--accent-ink);
+  font-family: var(--f-ui);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.l-ziffernblock .l-taste.ok:disabled {
+  opacity: 0.35;
+}
+
+/* Stufe-Blatt */
+
+.l-radio.kurz {
+  min-height: 54px;
+  padding: 8px 2px !important;
+}
+
+.l-blatt-h3 {
+  margin: 18px 0 8px !important;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.l-seg {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  padding: 3px;
+  border-radius: var(--r);
+  background: var(--surface-2);
+}
+
+.l-seg.klein {
+  margin-top: 12px;
+}
+
+.l-seg button {
+  min-height: 40px;
+  border-radius: var(--r-s);
+  color: var(--text-2);
+  font-size: 15px;
+  font-weight: 500;
+  text-align: center !important;
+}
+
+.l-seg button.an {
+  background: var(--surface) !important;
+  box-shadow: 0 1px 2px rgba(23, 32, 51, 0.15);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.l-sheet-pad .l-seg + .l-note {
+  margin-top: 6px;
+}
+
+/* Anleitung Rechnen */
+
+.l-schema {
+  display: inline-flex;
+  flex-direction: column;
+  margin: 10px 0 4px;
+  padding: 8px 16px;
+  border-radius: var(--r-s);
+  background: var(--surface-2);
+  font-family: var(--f-mono);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: pre;
+}
+
+.l-schema span + span {
+  border-bottom: 1.5px solid var(--text);
+}
+
+.l-schritte.punkte {
+  list-style: disc;
+}
+
+.l-anleitung > p:not([class]) {
+  margin-top: 4px;
+}
+
+.l-probier-felder {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.l-probier-felder .l-feld {
+  flex: 1;
+}
+
+.l-probier-felder input {
+  width: 100%;
+}
+
+.l-mal {
+  height: 46px;
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+  font-family: var(--f-mono);
+  font-size: 22px;
+}
+
+/* ---------- Konstanten ---------- */
+
+.l-konst-liste {
+  padding: 0 4px 0 16px;
+}
+
+.l-konst {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 8px 8px 0 !important;
+  border-bottom: 1px solid var(--line) !important;
+  text-align: left;
+}
+
+.l-konst:last-child {
+  border-bottom: 0 !important;
+}
+
+.l-konst-symbol {
+  flex: none;
+  min-width: 48px;
+  color: var(--accent);
+  font-family: var(--f-mono);
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.l-konst-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.l-konst-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.l-konst-text small {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.l-konst > .l-i {
+  width: 18px;
+  height: 18px;
+  color: var(--text-3);
+}
+
+/* Aufsagen */
+
+.l-aufsagen {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 20px 18px;
+}
+
+.l-konst-vor {
+  color: var(--text-2);
+  font-size: 13px;
+}
+
+.l-konst-kopf {
+  margin: 4px 0 10px !important;
+  font-family: var(--f-mono);
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.l-ziffern-zeile {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.l-ziffern-zeile .ab {
+  color: var(--text-3);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  text-align: right;
+}
+
+.l-ziffern-zeile .z {
+  font-family: var(--f-mono);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  white-space: pre;
+}
+
+.l-aufsagen em {
+  padding: 0 2px;
+  border-radius: 3px;
+  background: var(--bad-soft);
+  color: var(--bad);
+  font-style: normal;
+}
+
+.l-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 0.95em;
+  margin-left: 2px;
+  vertical-align: -0.12em;
+  background: var(--accent);
+  animation: l-blinken 1s steps(1) infinite;
+}
+
+@keyframes l-blinken {
+  50% {
+    opacity: 0;
+  }
+}
+
+.l-konst-kurz {
+  margin-top: 10px !important;
+  font-family: var(--f-mono);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.l-konst-kurz .rest {
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+}
+
+.l-konst-kurz .nach {
+  color: var(--text-2);
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.l-konst-kurz sup {
+  font-size: 0.65em;
+  line-height: 0;
+}
+
+.l-konst-ende {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.l-konst-zahl {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.l-konst-zahl b {
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.l-weiter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.l-weiter .l-num {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  white-space: pre;
+}
+
+.l-konst-ende .l-knoepfe {
+  margin-top: 4px;
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { LEER, addiere, quote, schnitt, schwaechen, zaehle } from './statistik'
-import type { Aufgabe } from './types'
+import { LEER, addiere, quote, schnitt, schwaechen, schwaechenRechnen, zaehle } from './statistik'
+import type { Aufgabe, RechenAufgabe } from './types'
 
 const a = (d: string, r: boolean, z = 5000, t = 0): Aufgabe => ({ d, a: 1, r, z, t })
 
@@ -69,5 +69,29 @@ describe('Schwaechen', () => {
     const alt = Array.from({ length: 50 }, () => a('1700-01-01', false))
     const neu = Array.from({ length: 200 }, () => a('2000-06-01', true))
     expect(schwaechen([...alt, ...neu])!.schnitt).toBe(0)
+  })
+})
+
+describe('Schwaechen beim Rechnen', () => {
+  const r = (x: number, y: number, richtig: boolean): RechenAufgabe => ({ x, y, a: richtig ? x * y : 0, r: richtig, z: 5000, t: 0 })
+
+  it('nach Stufe und nach Ziffern', () => {
+    // 2 × 2 mit einer 7 geht oft schief, 2 × 1 ohne 7 klappt.
+    const liste = [
+      ...Array.from({ length: 6 }, (_, i) => r(47, 23, i === 0)),
+      ...Array.from({ length: 14 }, () => r(32, 4, true)),
+    ]
+    const s = schwaechenRechnen(liste)!
+    expect(s.schnitt).toBeCloseTo(5 / 20)
+    expect(s.gruppen[0]).toEqual({ name: 'Stufe 2 × 2', falsch: 5, anzahl: 6 })
+    expect(s.gruppen.some((g) => g.name === 'mit einer 7')).toBe(true)
+    expect(s.gruppen.some((g) => g.name === 'Stufe 2 × 1')).toBe(false)
+  })
+
+  it('eine Ziffer zaehlt pro Aufgabe nur einmal', () => {
+    const liste = Array.from({ length: 20 }, (_, i) => r(77, 7, i < 10))
+    const s = schwaechenRechnen(liste, { max: 10 })!
+    expect(s.gruppen).toEqual([])
+    expect(s.schnitt).toBe(0.5)
   })
 })

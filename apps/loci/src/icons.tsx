@@ -55,6 +55,19 @@ export const IconKarten = ({ className }: P) => (
     <rect x="10.5" y="3.5" width="10" height="14" rx="2" />
   </I>
 )
+export const IconMal = ({ className }: P) => (
+  <I className={className}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="3" />
+    <path d="M9 9l6 6M15 9l-6 6" />
+  </I>
+)
+export const IconPi = ({ className }: P) => (
+  <I className={className}>
+    <path d="M4 8.5C4.8 6.6 6 6 7.8 6H20" />
+    <path d="M9.5 6c0 5-.6 9.5-2.5 12.5" />
+    <path d="M15.5 6v9.5c0 1.6.7 2.5 2.1 2.5.9 0 1.6-.3 2.4-1" />
+  </I>
+)
 export const IconLoeschen = ({ className }: P) => (
   <I className={className}>
     <path d="M9 5h11a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H9l-6-7z" />

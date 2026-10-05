@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { IonContent, IonModal } from '@ionic/react'
-import { IconClose, IconLeft } from './icons'
+import { IconClose, IconLeft, IconLoeschen } from './icons'
 import { KARTE } from './karten'
 import type { Loesung } from './wochentag'
 
@@ -159,8 +159,8 @@ export function Bestaetigen({ label, frage, onConfirm }: { label: string; frage:
 
 // ---------- Inhalte ----------
 
-/** Der Rechenweg einer Wochentag-Aufgabe, Zeile fuer Zeile mit Summe. */
-export function Rechenweg({ l }: { l: Loesung }) {
+/** Ein Rechenweg (Wochentag oder Rechnen), Zeile fuer Zeile mit Summe. */
+export function Rechenweg({ l }: { l: Pick<Loesung, 'schritte' | 'summe'> }) {
   return (
     <div className="l-rechenweg">
       {l.schritte.map((s) => (
@@ -179,6 +179,51 @@ export function Rechenweg({ l }: { l: Loesung }) {
         </div>
         <b>{l.summe.wert}</b>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Ziffernblock wie beim Telefon: 1-9, darunter ⌫ · 0 · OK. Ohne onLoeschen
+ * bzw. onOk bleibt der Platz leer (Konstanten: falsch getippt ist falsch).
+ */
+export function Ziffernblock({
+  onZiffer,
+  onLoeschen,
+  onOk,
+  okBereit = true,
+  gesperrt = false,
+}: {
+  onZiffer: (z: string) => void
+  onLoeschen?: () => void
+  onOk?: () => void
+  okBereit?: boolean
+  gesperrt?: boolean
+}) {
+  return (
+    <div className="l-ziffernblock" role="group" aria-label="Ziffern">
+      {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((z) => (
+        <button key={z} type="button" className="l-taste" disabled={gesperrt} onClick={() => onZiffer(z)}>
+          {z}
+        </button>
+      ))}
+      {onLoeschen ? (
+        <button type="button" className="l-taste neben" aria-label="Löschen" disabled={gesperrt} onClick={onLoeschen}>
+          <IconLoeschen />
+        </button>
+      ) : (
+        <span />
+      )}
+      <button type="button" className="l-taste" disabled={gesperrt} onClick={() => onZiffer('0')}>
+        0
+      </button>
+      {onOk ? (
+        <button type="button" className="l-taste ok" disabled={gesperrt || !okBereit} onClick={onOk}>
+          OK
+        </button>
+      ) : (
+        <span />
+      )}
     </div>
   )
 }
