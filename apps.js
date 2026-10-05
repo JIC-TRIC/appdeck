@@ -17,4 +17,5 @@ self.APPS = [
   { id: 'steady', name: 'Steady', icon: 'icons/steady.svg', color: '#0F1113', bg: '#0F1113', path: 'apps/steady/' },
   { id: 'piano', name: 'Piano', icon: 'icons/piano.svg', color: '#0E0D0B', bg: '#0E0D0B', path: 'apps/piano/' },
   { id: 'loci', name: 'Loci', icon: 'icons/loci.svg', color: '#F7F8F3', bg: '#F7F8F3', path: 'apps/loci/' },
+  { id: 'stash', name: 'Stash', icon: 'icons/stash.svg', color: '#F3EEE3', bg: '#F3EEE3', path: 'apps/stash/' },
 ];

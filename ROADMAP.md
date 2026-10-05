@@ -86,6 +86,16 @@ dem Gerät; wer das Icon löscht, löscht sie.
 - Bewusst nicht: Personen und Route in der App, auch nicht lokal (Code ist öffentlich, siehe
   `apps/loci/konzept.md`).
 
+## Stash
+
+Erster Stand ist gebaut (05.10.2026). Offene Fragen stehen in `apps/stash/konzept.md` unter
+„Später klären“, kurz:
+
+- **Tastatur am iPhone testen** (Knopf soll direkt über der Tastatur sitzen).
+- Kopierformat für **Notizen ohne Titel**, wie lange **„Zuletzt geleert“** gespeichert bleibt.
+- **Titel-Vorschläge entfernen**, **Teilen-Knopf** direkt zu WhatsApp, **nach Titel gruppieren**,
+  einzelne Notizen bearbeiten oder löschen, Wortmarke kleiner.
+
 ## Ideen für neue Apps
 
 Nur festgehalten, noch nicht entschieden. Vor dem Bau wie gewohnt: Fragerunde, dann `konzept.md`

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Stash: ein kleiner Stapel Zettel auf Papiergrund, Tinte schwarz (Richtung „Papier“, siehe apps/stash/konzept.md) -->
+  <rect width="180" height="180" fill="#F3EEE3"/>
+  <g transform="translate(90 94) scale(1.18) translate(-90 -94)">
+    <rect x="42" y="50" width="96" height="84" rx="5" fill="#FFFDF8" stroke="#1F1D1A" stroke-width="4.5" transform="rotate(-10 90 92)"/>
+    <rect x="42" y="50" width="96" height="84" rx="5" fill="#FFFDF8" stroke="#1F1D1A" stroke-width="4.5" transform="rotate(6 90 92)"/>
+    <rect x="42" y="54" width="96" height="84" rx="5" fill="#FFFDF8" stroke="#1F1D1A" stroke-width="4.5"/>
+    <path d="M58 79h42" stroke="#1F1D1A" stroke-width="6.5" stroke-linecap="round"/>
+    <path d="M58 100h64M58 118h46" stroke="#8C8474" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+</svg>
