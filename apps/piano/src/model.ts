@@ -234,11 +234,13 @@ export const PRESETS = [
 
 // ---------- Schwierigkeit ----------
 
+// Wie schwer das Stueck an sich ist - eingeschaetzt beim Anlegen, unabhaengig
+// davon, wie weit man ist (das sagt der Lernweg). Die Werte sind die der alten
+// App, nur die Bedeutung ist neu: "Free" heisst jetzt "Sehr leicht".
+
 export interface DifficultyInfo {
   id: Difficulty
   label: string
-  /** fuer enge Knoepfe */
-  short: string
   text: string
   /** Balken 0-5 */
   bars: number
@@ -247,12 +249,12 @@ export interface DifficultyInfo {
 }
 
 export const DIFFICULTIES: DifficultyInfo[] = [
-  { id: 'Unknown', label: 'Offen', short: 'Offen', text: 'Noch nicht eingeschätzt.', bars: 0, rank: -1 },
-  { id: 'Free', label: 'Frei', short: 'Frei', text: 'Flüssig mit beiden Händen, ohne nennenswerte Fehler.', bars: 1, rank: 0 },
-  { id: 'Easy', label: 'Leicht', short: 'Leicht', text: 'Mit beiden Händen sicher, aber noch nicht ganz sauber.', bars: 2, rank: 1 },
-  { id: 'Medium', label: 'Mittel', short: 'Mittel', text: 'Hände einzeln gut, zusammen noch schwer.', bars: 3, rank: 2 },
-  { id: 'Hard', label: 'Schwer', short: 'Schwer', text: 'Hände einzeln mit Fehlern, zusammen kaum möglich.', bars: 4, rank: 3 },
-  { id: 'Ultrahard', label: 'Sehr schwer', short: 'Sehr', text: 'Noch keine Hand allein spielbar.', bars: 5, rank: 4 },
+  { id: 'Unknown', label: 'Offen', text: 'Noch nicht eingeschätzt.', bars: 0, rank: -1 },
+  { id: 'Free', label: 'Sehr leicht', text: 'Wenige Töne, ruhiges Tempo – fast vom Blatt.', bars: 1, rank: 0 },
+  { id: 'Easy', label: 'Leicht', text: 'Überschaubar, nur einzelne Stellen brauchen Übung.', bars: 2, rank: 1 },
+  { id: 'Medium', label: 'Mittel', text: 'Einige knifflige Stellen, ein paar Wochen Arbeit.', bars: 3, rank: 2 },
+  { id: 'Hard', label: 'Schwer', text: 'Viele schwierige Stellen: Tempo, Sprünge, volle Griffe.', bars: 4, rank: 3 },
+  { id: 'Ultrahard', label: 'Sehr schwer', text: 'Eine echte Herausforderung, an der Grenze des Machbaren.', bars: 5, rank: 4 },
 ]
 
 export function difficultyInfo(id: Difficulty) {

@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { IconList, IconPlus, IconSearch, IconSort } from '../icons'
-import { Heading, IconButton, Keys, ListSheet, TabPage, Thumb } from '../ui'
+import { DifficultyBars, Heading, IconButton, Keys, ListSheet, TabPage, Thumb } from '../ui'
 import { pieceTotal, sortPieces } from '../calc'
-import { filterOf, isArchived, type Filter } from '../model'
+import { difficultyInfo, filterOf, isArchived, type Filter } from '../model'
 import { updateSettings } from '../store'
 import { formatTotal } from '../util'
 import type { PianoCtx, SortBy } from '../types'
@@ -126,7 +126,15 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
                   className={`p-card p-tile${isArchived(p) ? ' archived' : ''}`}
                   onClick={() => push({ name: 'stueck', pieceId: p.id })}
                 >
-                  <Thumb piece={p} className="tile" tag={formatTotal(pieceTotal(sessions, p.id))} />
+                  <Thumb piece={p} className="tile" tag={formatTotal(pieceTotal(sessions, p.id))}>
+                    {/* Schwierigkeit oben auf dem Bild, der Lernstand unten - zwei verschiedene Dinge */}
+                    {p.difficulty !== 'Unknown' ? (
+                      <span className="p-thumb-tag diff">
+                        <DifficultyBars difficulty={p.difficulty} />
+                        {difficultyInfo(p.difficulty).label}
+                      </span>
+                    ) : null}
+                  </Thumb>
                   <span className="p-tile-body">
                     <span className="p-tile-t">{p.title}</span>
                     <span className="p-s3 p-ell">{p.artist || ' '}</span>

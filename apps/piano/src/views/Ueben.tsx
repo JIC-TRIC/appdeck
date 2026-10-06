@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconClose, IconExternal, IconPause, IconPlay } from '../icons'
-import { Segmented, Sheet, Thumb, PhaseControls } from '../ui'
-import { DIFFICULTIES, PHASE_LABEL, currentPhase, difficultyInfo, nextStepLong } from '../model'
+import { Sheet, Thumb, PhaseControls } from '../ui'
+import { PHASE_LABEL, currentPhase, nextStepLong } from '../model'
 import { MIN_SESSION_SECONDS, recordSession, updatePiece } from '../store'
 import { dayOf, embedUrl, formatClock, formatDurationLong, formatMinutes } from '../util'
-import type { Difficulty, PianoCtx, Piece, Progress, Uebung } from '../types'
+import type { PianoCtx, Piece, Progress, Uebung } from '../types'
 
 // Ueben: Vollbild von unten. Die Uhr rechnet mit Zeitstempeln (laeuft im
 // Hintergrund weiter), jede Aenderung landet sofort in piano:uebung.
@@ -54,12 +54,9 @@ function UebenInhalt({ ctx, u, piece, onChange }: { ctx: PianoCtx; u: Uebung; pi
   const queue = u.queue.filter((id) => byId[id])
   const embed = settings.videoMode === 'app' ? embedUrl(piece.youtubeUrl) : null
 
-  const save = (progress: Progress, difficulty: Difficulty) => {
+  const save = (progress: Progress) => {
     const stored = recordSession(piece.id, seconds)
-    const patch: Partial<Piece> = {}
-    if (JSON.stringify(progress) !== JSON.stringify(piece.progress)) patch.progress = progress
-    if (difficulty !== piece.difficulty) patch.difficulty = difficulty
-    if (Object.keys(patch).length) updatePiece(piece.id, patch)
+    if (JSON.stringify(progress) !== JSON.stringify(piece.progress)) updatePiece(piece.id, { progress })
     ctx.refresh()
     ctx.notify(stored ? `Gespeichert · ${formatMinutes(seconds)}` : 'Unter 30 Sekunden – die Zeit zählt nicht')
     const [nextId, ...rest] = queue
@@ -155,8 +152,10 @@ function UebenInhalt({ ctx, u, piece, onChange }: { ctx: PianoCtx; u: Uebung; pi
   )
 }
 
-// "Wie lief's?" - erst ueben, dann einordnen. Wegwischen fuehrt zurueck zur
-// pausierten Uhr; Speichern oder Verwerfen laufen erst, wenn das Blatt zu ist.
+// "Wie lief's?" - erst ueben, dann den Lernweg weiterschalten. Die
+// Schwierigkeit fragt es nicht ab: die ist eine Einschaetzung des Stuecks,
+// nicht wie es heute lief. Wegwischen fuehrt zurueck zur pausierten Uhr;
+// Speichern oder Verwerfen laufen erst, wenn das Blatt zu ist.
 function Abschluss({
   piece,
   seconds,
@@ -169,11 +168,10 @@ function Abschluss({
   seconds: number
   hasNext: boolean
   onClose: () => void
-  onSave: (progress: Progress, difficulty: Difficulty) => void
+  onSave: (progress: Progress) => void
   onDiscard: () => void
 }) {
   const [progress, setProgress] = useState(piece.progress)
-  const [difficulty, setDifficulty] = useState<Difficulty>(piece.difficulty)
   const after = useRef<(() => void) | null>(null)
   const phase = currentPhase(piece.progress)
   const short = seconds < MIN_SESSION_SECONDS
@@ -204,23 +202,12 @@ function Abschluss({
             <span className="p-s3">{nextStepLong(progress)}</span>
           </div>
 
-          <div className="p-stack" style={{ gap: 8 }}>
-            <span className="p-lbl">Wie sitzt es?</span>
-            <Segmented
-              label="Schwierigkeit"
-              options={DIFFICULTIES.filter((d) => d.id !== 'Unknown').map((d) => ({ id: d.id, label: d.short }))}
-              value={difficulty === 'Unknown' ? null : difficulty}
-              onChange={setDifficulty}
-            />
-            <span className="p-s3">{difficultyInfo(difficulty).text}</span>
-          </div>
-
           <div className="p-stack" style={{ gap: 6 }}>
             <button
               type="button"
               className="p-btn"
               onClick={() => {
-                after.current = () => onSave(progress, difficulty)
+                after.current = () => onSave(progress)
                 zu()
               }}
             >

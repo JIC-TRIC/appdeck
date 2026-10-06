@@ -588,6 +588,36 @@ button.p-card:active {
   font-variant-numeric: tabular-nums;
 }
 
+/* Schwierigkeit auf der Kachel: oben links, Balken hell auf dunkel */
+.p-thumb-tag.diff {
+  top: 8px;
+  left: 8px;
+  right: auto;
+  bottom: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: normal;
+}
+
+.p-thumb-tag.diff .p-lvl {
+  height: 10px;
+}
+
+.p-thumb-tag.diff .p-lvl i {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.p-thumb-tag.diff .p-lvl i:nth-child(1) { height: 3px; }
+.p-thumb-tag.diff .p-lvl i:nth-child(2) { height: 5px; }
+.p-thumb-tag.diff .p-lvl i:nth-child(3) { height: 7px; }
+.p-thumb-tag.diff .p-lvl i:nth-child(4) { height: 9px; }
+.p-thumb-tag.diff .p-lvl i:nth-child(5) { height: 10px; }
+
+.p-thumb-tag.diff .p-lvl i.on {
+  background: #fff;
+}
+
 .p-play {
   position: relative;
   width: 56px;

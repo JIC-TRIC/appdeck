@@ -1,20 +1,22 @@
 import { useRef, useState } from 'react'
 import { IconClipboard, IconExternal } from '../icons'
 import { Sheet, SheetHead, Thumb } from '../ui'
-import { PRESETS } from '../model'
+import { DIFFICULTIES, PRESETS, difficultyInfo } from '../model'
 import { addPiece, findDuplicate, updatePiece } from '../store'
 import { extractVideoId, thumbnailUrl, youtubeSearchUrl } from '../util'
-import type { PianoCtx } from '../types'
+import type { Difficulty, PianoCtx } from '../types'
 
 type PresetId = (typeof PRESETS)[number]['id']
 
-// Neues Stueck oder Bearbeiten. Beim Anlegen grob den Lernstand waehlen statt
-// neun Schalter; genauer geht es auf der Seite des Stuecks.
+// Neues Stueck oder Bearbeiten. Zwei verschiedene Fragen: wie schwer das Stueck
+// ist (Einschaetzung, auch spaeter aenderbar) und - nur beim Anlegen - wo man
+// steht (grob statt neun Schalter; genauer auf der Seite des Stuecks).
 function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string; onClose: () => void }) {
   const editing = pieceId ? ctx.byId[pieceId] : undefined
   const [url, setUrl] = useState(editing?.youtubeUrl ?? '')
   const [title, setTitle] = useState(editing?.title ?? '')
   const [artist, setArtist] = useState(editing?.artist ?? '')
+  const [difficulty, setDifficulty] = useState<Difficulty>(editing?.difficulty ?? 'Unknown')
   const [preset, setPreset] = useState<PresetId>('neu')
   const [error, setError] = useState<string | null>(null)
   const after = useRef<(() => void) | null>(null)
@@ -41,14 +43,14 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
       return
     }
     if (editing) {
-      updatePiece(editing.id, { youtubeUrl: url.trim(), title: title.trim(), artist: artist.trim() })
+      updatePiece(editing.id, { youtubeUrl: url.trim(), title: title.trim(), artist: artist.trim(), difficulty })
       after.current = () => {
         ctx.refresh()
         ctx.notify('Gespeichert')
       }
     } else {
       const progress = PRESETS.find((p) => p.id === preset)?.progress ?? PRESETS[0].progress
-      const piece = addPiece({ title, artist, youtubeUrl: url, progress })
+      const piece = addPiece({ title, artist, youtubeUrl: url, progress, difficulty })
       after.current = () => {
         ctx.refresh()
         ctx.push({ name: 'stueck', pieceId: piece.id })
@@ -143,6 +145,32 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
               placeholder="z. B. Claude Debussy"
               enterKeyHint="done"
             />
+          </div>
+
+          <div className="p-field">
+            <span className="p-lbl" id="f-schwer">
+              Wie schwer ist das Stück?
+            </span>
+            <div className="p-chips" role="radiogroup" aria-labelledby="f-schwer">
+              {DIFFICULTIES.filter((d) => d.id !== 'Unknown').map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={difficulty === d.id}
+                  className={`p-chip${difficulty === d.id ? ' on' : ''}`}
+                  // Nochmal tippen nimmt die Einschaetzung zurueck (Offen).
+                  onClick={() => setDifficulty(difficulty === d.id ? 'Unknown' : d.id)}
+                >
+                  {d.label}
+                </button>
+              ))}
+            </div>
+            <span className="p-s3">
+              {difficulty === 'Unknown'
+                ? 'Deine Einschätzung – egal, wie weit du schon bist.'
+                : difficultyInfo(difficulty).text}
+            </span>
           </div>
 
           {!editing ? (

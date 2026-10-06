@@ -20,8 +20,11 @@ Statistik 1, Verlauf, Setlists, Setlist-Programm, Einstellungen.
   nächste Stück, die Woche, die Serie.
 - **Jedes Stück hat eine eigene Seite.** Ein Tipp aufs Stück öffnet seine Seite,
   nicht sofort Video und Uhr. Üben startet bewusst.
-- **Erst üben, dann einordnen.** Lernstand und Schwierigkeit fragt das Blatt
-  nach „Fertig“ ab – nicht neun Schalter neben dem laufenden Video.
+- **Erst üben, dann einordnen.** Den Lernstand fragt das Blatt nach „Fertig“
+  ab – nicht neun Schalter neben dem laufenden Video.
+- **Schwierigkeit ist nicht Lernstand.** Die Schwierigkeit ist die Einschätzung
+  des Stücks (beim Anlegen, änderbar), wie gut es sitzt, sagt der Lernweg.
+  Beides steht nebeneinander, auch auf den Kacheln.
 - **Gespeichert wird, was passiert ist.** Sitzungen (Ende + Dauer), Lernstand,
   Schwierigkeit, Notizen. Serie, Woche, Tagesliste, Trend werden berechnet.
 - **Kompatibel bleiben.** Datenformat und Exportdatei wie in der alten App:
@@ -89,17 +92,25 @@ ohne Link steht dort eine getönte Fläche mit Tastenstreifen.
 
 ### Schwierigkeit
 
-Die Werte bleiben (`Unknown` … `Ultrahard`), sie beschreiben, wie gut das
-Stück gerade sitzt:
+Wie schwer das Stück an sich ist – die eigene Einschätzung, meist beim
+Anlegen, unabhängig davon, wie weit man ist. Wie gut es sitzt, zeigt allein der
+Lernweg. Die Werte bleiben (`Unknown` … `Ultrahard`, kompatibel mit der alten
+App), nur die Bedeutung ist neu:
 
 | Wert | Anzeige | Beschreibung |
 |---|---|---|
 | Unknown | Offen | Noch nicht eingeschätzt. |
-| Free | Frei | Flüssig mit beiden Händen, ohne nennenswerte Fehler. |
-| Easy | Leicht | Mit beiden Händen sicher, aber noch nicht ganz sauber. |
-| Medium | Mittel | Hände einzeln gut, zusammen noch schwer. |
-| Hard | Schwer | Hände einzeln mit Fehlern, zusammen kaum möglich. |
-| Ultrahard | Sehr schwer | Noch keine Hand allein spielbar. |
+| Free | Sehr leicht | Wenige Töne, ruhiges Tempo – fast vom Blatt. |
+| Easy | Leicht | Überschaubar, nur einzelne Stellen brauchen Übung. |
+| Medium | Mittel | Einige knifflige Stellen, ein paar Wochen Arbeit. |
+| Hard | Schwer | Viele schwierige Stellen: Tempo, Sprünge, volle Griffe. |
+| Ultrahard | Sehr schwer | Eine echte Herausforderung, an der Grenze des Machbaren. |
+
+- [x] Gesetzt im Blatt Neues Stück / Bearbeiten und auf der Stück-Seite
+  („Ändern“). Nicht mehr nach jeder Sitzung abgefragt.
+- [x] Bis 06.10.2026 hieß die Skala „Wie sitzt es?“ (Frei … Noch keine Hand
+  allein spielbar) und wurde nach jeder Sitzung abgefragt – das doppelte den
+  Lernweg. Gespeicherte Werte bleiben stehen und gelten jetzt als Einschätzung.
 
 ### Tagesliste
 
@@ -197,7 +208,9 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
   Übezeit, Lernstand, Schwierigkeit, Titel, Hinzugefügt, Zufall; umkehrbar;
   bleibt gespeichert).
 - [x] Filter: Alle · In Arbeit · Gelernt · Auswendig, jeweils mit Anzahl.
-- [x] Kacheln zu zweit: Vorschaubild mit Gesamtzeit, Titel, Interpret, Lernstand.
+- [x] Kacheln zu zweit: Vorschaubild mit Schwierigkeit oben links (Balken und
+  Wort, bei „Offen“ nichts) und Gesamtzeit unten rechts, Titel, Interpret,
+  Lernstand als Klaviatur.
 
 ### 4 – Stück
 - [x] Zurück, Bearbeiten (Blatt 7), „…“ (Zu Setlist hinzufügen, Archivieren bzw.
@@ -205,7 +218,8 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
 - [x] Großes Vorschaubild (startet Üben), Titel, Interpret, Status und
   Schwierigkeit, **Üben starten**, gesamt · Sitzungen · zuletzt.
 - [x] **Lernweg** als Stufenleiter, direkt änderbar, mit Sperr-Hinweisen.
-- [x] **Schwierigkeit** mit Beschreibung, „Ändern“ öffnet ein Blatt.
+- [x] **Schwierigkeit** mit Beschreibung, „Ändern“ öffnet ein Blatt („Wie
+  schwer ist das Stück?“).
 - [x] **Notizen** (neu): Freitext, speichert beim Tippen.
 - [x] **Letzte Sitzungen** (3), „Alle n“ → Verlauf dieses Stücks.
 
@@ -220,13 +234,16 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
 
 ### 6 – Wie lief’s? (Blatt nach „Fertig“)
 - [x] Dauer (unter 30 s mit Hinweis), die aktuelle Gruppe des Lernwegs zum
-  Weiterschalten, „Wie sitzt es?“ (Frei … Sehr schwer) mit Beschreibung.
+  Weiterschalten. Keine Schwierigkeit – die ist eine Einschätzung des Stücks,
+  nicht wie die Sitzung lief.
 - [x] **Speichern** (danach das nächste Stück, wenn eine Liste läuft) oder
   **Sitzung verwerfen**. Wegwischen = zurück zur pausierten Uhr.
 
 ### 7 – Neues Stück / Bearbeiten (Blatt)
 - [x] YouTube-Link mit **Einfügen**, Vorschaubild, sobald der Link passt.
 - [x] Titel (Pflicht), Interpret.
+- [x] „Wie schwer ist das Stück?“ – Sehr leicht · Leicht · Mittel · Schwer ·
+  Sehr schwer, nochmal tippen = Offen. Auch beim Bearbeiten.
 - [x] Nur beim Anlegen: „Wo stehst du?“ – Neu · Hände einzeln · Zusammen ·
   Gelernt · Auswendig (setzt den Lernweg grob).
 - [x] „Auf YouTube suchen ↗“. Dasselbe Video zweimal → Hinweis, nicht gespeichert.

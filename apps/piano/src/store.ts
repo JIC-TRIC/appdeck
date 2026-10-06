@@ -4,7 +4,7 @@
 
 import { migratePiece, normalizeProgress } from './model'
 import { readKey, readUebung, writeKey, writeUebung } from './storage'
-import type { Piece, Playlist, Progress, Session, Sessions, Settings, Setlist, Uebung } from './types'
+import type { Difficulty, Piece, Playlist, Progress, Session, Sessions, Settings, Setlist, Uebung } from './types'
 import { extractVideoId, thumbnailUrl } from './util'
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -96,14 +96,20 @@ export function findDuplicate(url: string, excludeId?: string) {
   return getPieces().find((p) => p.id !== excludeId && extractVideoId(p.youtubeUrl) === id)
 }
 
-export function addPiece(data: { title: string; artist: string; youtubeUrl: string; progress: Progress }) {
+export function addPiece(data: {
+  title: string
+  artist: string
+  youtubeUrl: string
+  progress: Progress
+  difficulty?: Difficulty
+}) {
   const piece: Piece = {
     id: Date.now().toString(),
     title: data.title.trim(),
     artist: data.artist.trim(),
     youtubeUrl: data.youtubeUrl.trim(),
     thumbnail: thumbnailUrl(data.youtubeUrl),
-    difficulty: 'Unknown',
+    difficulty: data.difficulty ?? 'Unknown',
     progress: normalizeProgress(data.progress),
     lastPracticed: null,
     createdAt: new Date().toISOString(),

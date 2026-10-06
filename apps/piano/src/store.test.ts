@@ -72,6 +72,12 @@ describe('Stücke', () => {
     expect(findDuplicate('')).toBeUndefined()
   })
 
+  it('nimmt die Schwierigkeit beim Anlegen mit, unabhaengig vom Lernstand', () => {
+    expect(neu('Ohne').difficulty).toBe('Unknown')
+    const a = addPiece({ title: 'Fantaisie-Impromptu', artist: '', youtubeUrl: '', progress: DEFAULT_PROGRESS, difficulty: 'Ultrahard' })
+    expect(getPieces().find((p) => p.id === a.id)).toMatchObject({ difficulty: 'Ultrahard', progress: DEFAULT_PROGRESS })
+  })
+
   it('loescht mit Sitzungen und Setlist-Platz - und nimmt es wieder zurueck', () => {
     const a = neu('A')
     const b = neu('B')

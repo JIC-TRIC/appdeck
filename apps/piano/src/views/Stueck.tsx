@@ -212,7 +212,8 @@ function Stueck({ ctx, view }: ViewProps) {
       {sheet === 'difficulty' ? (
         <ListSheet
           label="Schwierigkeit"
-          title="Wie sitzt es?"
+          title="Wie schwer ist das Stück?"
+          note="Deine Einschätzung des Stücks – wie weit du schon bist, zeigt der Lernweg."
           onClose={() => setSheet(null)}
           items={DIFFICULTIES.map((d) => ({
             key: d.id,

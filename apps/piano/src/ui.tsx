@@ -289,7 +289,7 @@ export function Keys({ progress, wide }: { progress: Progress; wide?: boolean })
   )
 }
 
-/** Schwierigkeit als Balken (1 = frei … 5 = sehr schwer) */
+/** Schwierigkeit als Balken (1 = sehr leicht … 5 = sehr schwer) */
 export function DifficultyBars({ difficulty }: { difficulty: Difficulty }) {
   const bars = difficultyInfo(difficulty).bars
   return (
