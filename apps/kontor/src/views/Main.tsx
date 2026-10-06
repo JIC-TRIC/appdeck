@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { Donut } from '../charts'
 import { breakdown, totalsInRange } from '../calc'
-import { IconMinus, IconMore, IconPlus, IconRight } from '../icons'
+import { IconGrid, IconMinus, IconMore, IconPlus, IconRight } from '../icons'
 import { Money, PeriodBar } from '../ui'
 import { imZeitraum, periodRange, shiftPeriod } from '../util'
 import { totalBalance } from '../kontorStore'
@@ -26,7 +26,7 @@ function Main({ ctx }: { ctx: KontorCtx }) {
   // Angetippte Kategorie: nur ihr Segment bleibt farbig, und in der Mitte
   // steht ihr Betrag statt der Gesamtsumme. Nochmal tippen hebt es auf.
   const [picked, setPicked] = useState<string | null>(null)
-  const { entries, accounts, accById, catById, settings, period, setPeriod, push, firstKey } = ctx
+  const { entries, accounts, accById, catById, settings, period, setPeriod, push, firstKey, onExit } = ctx
   const countBoundary = settings.countBoundaryTransfers
   const blaetterbar = period.kind !== 'all'
 
@@ -185,7 +185,8 @@ function Main({ ctx }: { ctx: KontorCtx }) {
     <div className="k-main" onTouchStart={onMainTouchStart} onTouchEnd={onMainTouchEnd}>
       {/* Keine Kopfzeile mehr: die Wortmarke stand auf jedem Start dieselbe
           halbe Zeile lang da und kostete die Hoehe, die der Ring braucht. Der
-          Menueknopf haengt jetzt am rechten Rand der Zeitraumzeile. */}
+          Menueknopf haengt jetzt am rechten Rand der Zeitraumzeile, der Weg
+          zu allen Apps gegenueber am linken - ein Tipp, wie in Stash. */}
       <PeriodBar
         range={kopf}
         gesamt={!blaetterbar}
@@ -193,6 +194,11 @@ function Main({ ctx }: { ctx: KontorCtx }) {
         onPrev={() => blaettern(-1)}
         onNext={() => blaettern(1)}
         onOpen={() => push({ name: 'period', sheet: true })}
+        left={
+          <button type="button" className="k-ic" onClick={onExit} aria-label="Alle Apps">
+            <IconGrid />
+          </button>
+        }
         right={
           <button type="button" className="k-ic" onClick={() => push({ name: 'menu', sheet: true })} aria-label="Menü">
             <IconMore />

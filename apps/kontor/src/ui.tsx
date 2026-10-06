@@ -64,9 +64,9 @@ export function Screen({
 // der die Auswahl oeffnet. Uebersicht und Statistik teilen sie sich - der
 // Zeitraum ist derselbe, also soll er auch gleich aussehen und gleich gehen.
 //
-// "right" haengt einen Knopf an den rechten Rand, ohne den Zeitraum aus der
-// Mitte zu schieben - die Uebersicht braucht keine eigene Kopfzeile mehr,
-// seit dort nur noch das Menue stand.
+// "left" und "right" haengen je einen Knopf an den Rand, ohne den Zeitraum aus
+// der Mitte zu schieben - die Uebersicht braucht keine eigene Kopfzeile mehr,
+// seit dort nur noch das Menue stand (rechts) und der Weg zu allen Apps (links).
 export function PeriodBar({
   range,
   gesamt,
@@ -74,6 +74,7 @@ export function PeriodBar({
   onNext,
   onOpen,
   dir = 0,
+  left,
   right,
 }: {
   range: Range
@@ -82,10 +83,12 @@ export function PeriodBar({
   onNext: () => void
   onOpen: () => void
   dir?: number
+  left?: ReactNode
   right?: ReactNode
 }) {
   return (
     <div className="k-period">
+      {left ? <div className="k-period-left">{left}</div> : null}
       <button type="button" className="k-ic" onClick={onPrev} aria-label="Zeitraum zurück" disabled={gesamt}>
         <IconLeft />
       </button>

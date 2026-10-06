@@ -26,6 +26,14 @@ export const IconRight = () => <Stroke width={2.2}><path d="M9 5l7 7-7 7" /></St
 export const IconCheck = () => <Stroke width={3}><path d="M5 12.5l4.5 4.5L19 7.5" /></Stroke>
 export const IconGrip = () => <Stroke><path d="M5 9h14M5 15h14" /></Stroke>
 export const IconClose = () => <Stroke><path d="M7 7l10 10M17 7L7 17" /></Stroke>
+export const IconGrid = () => (
+  <Stroke width={1.8}>
+    <rect x="4" y="4" width="6.5" height="6.5" rx="1.8" />
+    <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.8" />
+    <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.8" />
+    <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.8" />
+  </Stroke>
+)
 export const IconBackspace = () => (
   <Stroke width={1.8}>
     <path d="M9 5h11v14H9l-6-7z" />

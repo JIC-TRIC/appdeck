@@ -9,11 +9,28 @@ import { hueOf, thumbnailUrl } from './util'
 
 // ---------- Seiten ----------
 
-/** Startseite eines Tabs: alles scrollt, auch der grosse Titel. */
+// Zurueck zum Launcher. Ohne shell.js (z. B. einzeln geoeffnet) einfach eine
+// Ebene ueber apps/.
+export function toLauncher() {
+  if (window.Shell) window.Shell.home()
+  else window.location.href = '../../'
+}
+
+/**
+ * Startseite eines Tabs: oben "‹ Apps" (ein Tipp zum Launcher, wie in Stash und
+ * Loci) in derselben Leiste wie auf Unterseiten, darunter scrollt alles, auch
+ * der grosse Titel.
+ */
 export function TabPage({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
     <div className={`p-screen ${className}`}>
-      <div className="p-body root">{children}</div>
+      <header className="p-bar">
+        <button type="button" className="p-back" onClick={toLauncher}>
+          <IconLeft />
+          <span>Apps</span>
+        </button>
+      </header>
+      <div className="p-body">{children}</div>
     </div>
   )
 }

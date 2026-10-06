@@ -242,6 +242,9 @@ Hauptansicht
       weiter im Erststart und in den Einstellungen. Das Menue haengt am rechten
       Rand der Zeitraum-Zeile, aus dem Fluss genommen, damit der Zeitraum in
       der Mitte des Schirms bleibt. Die Umbuchung sitzt im Menue
+- [x] **Alle Apps mit einem Tipp** (06.10.2026): Raster-Knopf am linken Rand
+      der Zeitraum-Zeile, gegenueber vom Menue und genauso aus dem Fluss
+      genommen. Vorher nur ueber Menue → Alle Apps; dort steht er weiterhin
 - [x] Zeitraum-Zeile mit Pfeilen; Wischen blaettert einen Zeitraum vor/zurueck.
       Im Monat ohne Datumszeile darunter – „01.09. – 30.09." sagt nichts, was
       „September 2026" nicht schon sagt, und die Zeile fehlt dem Ring

@@ -381,12 +381,20 @@ ion-modal.k-sheet-modal {
 }
 
 /* Aus dem Fluss genommen, damit der Zeitraum in der Mitte des Schirms bleibt
-   und nicht um die halbe Knopfbreite nach links rutscht. */
+   und nicht um die halbe Knopfbreite zur Seite rutscht. */
+.k-period-left,
 .k-period-right {
   position: absolute;
-  right: 0.375rem;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.k-period-left {
+  left: 0.375rem;
+}
+
+.k-period-right {
+  right: 0.375rem;
 }
 
 .k-period-btn {

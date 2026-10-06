@@ -170,9 +170,9 @@ export function MenuSheet({ ctx }: ViewProps) {
               />
             </div>
 
-            {/* Kontor hat keine Kopfzeile, also auch keinen Platz fuer einen
-                Zurueck-Knopf. Der Weg zum Launcher liegt darum hier, neben der
-                Umbuchung - beides selten, beides nicht die Hauptsache. */}
+            {/* Der schnelle Weg zum Launcher ist der Knopf links in der
+                Zeitraumzeile. Hier steht er noch einmal, neben der Umbuchung -
+                beides selten, beides nicht die Hauptsache. */}
             <div className="k-sheet-foot k-sheet-foot-split">
               <button type="button" className="k-ghost row" onClick={go({ name: 'transfer' })}>
                 <span className="k-ghost-ic"><IconTransfer /></span> Umbuchung

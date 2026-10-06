@@ -168,7 +168,9 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
   Scrollbereich endet genau an ihr (mit `100dvh` und fester Leiste blieb auf dem
   iPhone das Ende von „Heute“ verdeckt und ließ sich nicht scrollen).
 - [x] Üben ist ein Vollbild von unten, alles andere sind Blätter von unten.
-- [x] „Alle Apps“ steht in den Einstellungen (kein schwebender Home-Knopf).
+- [x] „‹ Apps“ oben links auf jeder Tab-Startseite (ein Tipp zum Launcher, wie
+  in Stash und Loci; seit 06.10.2026). „Alle Apps“ steht außerdem weiter in den
+  Einstellungen. Kein schwebender Home-Knopf.
 
 ## Ansichten
 

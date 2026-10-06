@@ -316,7 +316,8 @@ Hauptansicht – Wochenraster, letzte 7 Tage
 ├─ Gewohnheit – Detail          (Tipp auf den Namen)
 │  └─ Gewohnheit bearbeiten     (Bearbeiten)
 ├─ Neue Gewohnheit              (+ oben rechts)
-├─ Statistik                    (Symbol oben links)
+├─ Alle Apps                    (Raster oben links, zurück zum Launcher)
+├─ Statistik                    (Balken oben links)
 │  └─ Gewohnheit – Detail       (Tipp auf eine Zeile)
 └─ Menü                         (⋯ oben rechts, Blatt)
    ├─ Archiv
@@ -333,8 +334,10 @@ Erststart                       (solange es keine Gewohnheit gibt)
 
 **Kopfzeile**
 
-- [x] Links: Statistik (Balken-Symbol). Rechts: **+** (neue Gewohnheit) und
-      **⋯** (Menü). Runde Knöpfe, 36 px, auf „Fläche“
+- [x] Links: Alle Apps (Raster-Symbol) und Statistik (Balken-Symbol). Rechts:
+      **+** (neue Gewohnheit) und **⋯** (Menü). Runde Knöpfe, 36 px, auf
+      „Fläche“. Alle Apps steht seit 06.10.2026 direkt hier (ein Tipp, wie in
+      Stash), vorher nur im Menü
 - [x] Mitte: das Datum des jüngsten Tages im Fenster („Mittwoch,
       30. September“), darunter der Tageszähler „3 von 6 erledigt“
 - [x] Beim Zurückblättern steht dort der Bereich („17.–23. September“) und

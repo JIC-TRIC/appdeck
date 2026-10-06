@@ -223,10 +223,6 @@ textarea {
   flex-shrink: 0;
 }
 
-.p-body.root {
-  padding-top: 18px;
-}
-
 .p-head {
   display: flex;
   align-items: flex-end;

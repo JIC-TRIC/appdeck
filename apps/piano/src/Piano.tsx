@@ -17,6 +17,7 @@ import { IconBars, IconNote, IconToday } from './icons'
 import { getPieces, getSessions, getSettings, getSetlists, getUebung, saveUebung } from './store'
 import { readBackup, type Values } from './storage'
 import { isArchived } from './model'
+import { toLauncher } from './ui'
 import { dayOf } from './util'
 import type { PianoCtx, Piece, Tab, Uebung, View, ViewName, ViewProps } from './types'
 
@@ -41,13 +42,6 @@ const TABS: { id: Tab; label: string; Icon: ComponentType<{ className?: string }
 ]
 
 const TAB_LABEL: Record<Tab, string> = { heute: 'Heute', stuecke: 'Stücke', statistik: 'Statistik' }
-
-// Zurueck zum Launcher. Ohne shell.js (z. B. einzeln geoeffnet) einfach eine
-// Ebene ueber apps/.
-function toLauncher() {
-  if (window.Shell) window.Shell.home()
-  else window.location.href = '../../'
-}
 
 // Seitenwechsel wie auf dem iPhone: lib/PageStage.tsx (mit Zurueckwischen),
 // Stapel an der Browser-History: lib/useHistoryStack.ts - beides wie Kontor.

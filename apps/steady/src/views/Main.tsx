@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { isArchived, isDueWeekly, statesBetween, streaks, todayCount } from '../calc'
-import { IconMore, IconPlus, IconRight, IconStats } from '../icons'
+import { IconGrid, IconMore, IconPlus, IconRight, IconStats } from '../icons'
 import { DayBox, Dot, Streak, hue, ruleShort } from '../ui'
 import { WEEKDAYS_SHORT, addDays, formatDayLong, formatDayMedium, formatDayShort, parseKey, rangeLabel, weekdayIndex } from '../util'
 import type { DayState, Habit, SteadyCtx } from '../types'
@@ -27,7 +27,7 @@ const SAGT: Record<DayState, string> = {
 let merkOffset = 0
 
 function Main({ ctx }: { ctx: SteadyCtx }) {
-  const { habits, log, today, push, enter, lastChange } = ctx
+  const { habits, log, today, push, enter, lastChange, onExit } = ctx
   const active = useMemo(() => habits.filter((h) => !isArchived(h)), [habits])
 
   // Fenster: offset 0 = die letzten 7 Tage bis heute, 1 = die 7 davor, …
@@ -187,7 +187,11 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
   return (
     <div className="s-main">
       <header className="s-hdr">
+        {/* Alle Apps mit einem Tipp, wie in Stash - frueher nur ueber das Menue. */}
         <div className="s-hdr-l">
+          <button type="button" className="s-ib" onClick={onExit} aria-label="Alle Apps">
+            <IconGrid />
+          </button>
           <button type="button" className="s-ib" onClick={() => push({ name: 'stats' })} aria-label="Statistik">
             <IconStats />
           </button>
