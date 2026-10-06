@@ -7,7 +7,10 @@ import type { ViewProps } from '../types'
 const LEGENDE = [
   { smp: <span className="s-c d"><i /></span>, t: 'Erledigt', s: 'abgehakt oder Ziel erreicht' },
   { smp: <span className="s-c r"><i /></span>, t: 'Ruhetag', s: 'automatisch gedeckt, zählt zur Serie' },
-  { smp: <span className="s-c x"><i /></span>, t: 'Verpasst', s: 'nicht erledigt, die Serie beginnt neu' },
+  { smp: <span className="s-c x"><i /></span>, t: 'Nicht geschafft', s: 'so eingetragen, die Serie beginnt neu' },
+  { smp: <span className="s-c l"><i /></span>, t: 'Nichts eingetragen', s: 'zählt wie nicht geschafft – vielleicht vergessen?' },
+  { smp: <span className="s-c r nein"><i /></span>, t: 'Ruhetag, nicht geschafft', s: 'so eingetragen, vom Kontingent gedeckt' },
+  { smp: <span className="s-c z ok">152</span>, t: 'Menge', s: 'der Tageswert, farbig = Ziel erreicht' },
   { smp: <span className="s-c n"><i /></span>, t: 'Noch nicht begonnen', s: 'vor dem Beginn-Datum' },
   { smp: <span className="s-t" />, t: 'Heute offen', s: 'zählt noch, bricht nichts' },
   { smp: <span className="s-t due" />, t: 'Heute fällig', s: 'keine Ruhetage mehr übrig' },
@@ -30,6 +33,16 @@ function Rules({ ctx }: ViewProps) {
               </span>
             </div>
           ))}
+        </Card>
+        <Card title="Eintragen">
+          <p className="s-txt">
+            Ein Tipp auf einen Tag schaltet weiter: <b>geschafft</b>, <b>nicht geschafft</b>, wieder leer. Bei Mengen
+            öffnet sich das Ziffernfeld, „Nicht geschafft“ steht dort oben.
+          </p>
+          <p className="s-txt">
+            Ein leerer Tag zählt wie nicht geschafft – sonst wäre Vergessen besser als ehrlich Eintragen. Der Unterschied
+            zeigt nur, wo du vielleicht bloß vergessen hast einzutragen. Nachtragen geht jederzeit.
+          </p>
         </Card>
         <Card title="Ruhetage">
           <p className="s-txt">

@@ -21,9 +21,10 @@ Ansicht liegen daneben in
 - **Das Wochenraster ist die App.** Eine Hauptansicht: alle Gewohnheiten
   untereinander, die letzten 7 Tage nebeneinander. Abhaken, Lücken sehen,
   nachtragen – alles auf diesem einen Bildschirm.
-- **Gespeichert wird nur, was du einträgst.** Ein Haken oder ein Tageswert.
-  Ruhetage, verpasste Tage, Serien und Quoten werden daraus berechnet, nie
-  gespeichert. Wer nachträgt, bekommt automatisch die richtige Serie.
+- **Gespeichert wird nur, was du einträgst.** Ein Haken, ein Tageswert oder
+  „nicht geschafft“. Ruhetage, verpasste Tage, Serien und Quoten werden daraus
+  berechnet, nie gespeichert. Wer nachträgt, bekommt automatisch die richtige
+  Serie.
 - **Zwei Messarten, zwei Rhythmen.** Abhaken oder Menge; täglich oder x-mal pro
   Woche. Mehr nicht. Jede weitere Variante macht das Raster schwerer zu lesen.
 - **Ruhetage sind kein Schummeln.** Bei „3× pro Woche“ werden die freien Tage
@@ -94,8 +95,18 @@ der Gewohnheit – oder eben keiner.
 | --- | --- | --- |
 | ● | **erledigt** – abgehakt bzw. Tageswert erfüllt das Ziel | gefüllter Kreis, 16 px, Gewohnheitsfarbe |
 | ◌ | **Ruhetag** – nur bei x-mal pro Woche und laufender Serie, automatisch gedeckt | Ring 2 px, Gewohnheitsfarbe, innen leer |
-| × | **verpasst** – vergangener Tag, weder erledigt noch gedeckt | kleines graues Kreuz (Text still) |
+| ⊗ | **Ruhetag, als nicht geschafft eingetragen** – gedeckt wie ◌ | Ring wie ◌, kleines graues Kreuz darin |
+| × | **nicht geschafft** – verpasst und so eingetragen | kleines graues Kreuz (Text still) |
+| ▢ | **nichts eingetragen** – verpasst, aber leer (vielleicht vergessen) | leerer Kasten 13 px, Rand Text still |
+| 152 | **Menge** – der eingetragene Tageswert statt Punkt bzw. Kreuz | Zahl 11 px (vierstellig 9,5 px, enger), Gewohnheitsfarbe wenn erfüllt, sonst Text leise |
 | · | **noch nicht begonnen** – vor dem Beginn-Datum | winziger Punkt, 3 px |
+
+**Drei Zustände beim Eintragen** (seit 06.10.2026): leer, geschafft, nicht
+geschafft. Leer und „nicht geschafft“ **rechnen gleich** (verpasst bzw.
+Ruhetag) – sonst wäre Vergessen besser als ehrliches Eintragen. Der
+Unterschied ist nur zu sehen: ▢ zeigt, wo man vielleicht nur vergessen hat
+einzutragen, × war wirklich nicht. Vor dem 06.10.2026 gab es nur leer, darum
+stehen ältere verpasste Tage als ▢ da.
 
 Die **Heute-Spalte** ist breiter (Kasten 50 × 36 px) und zeigt mehr:
 
@@ -104,6 +115,7 @@ Die **Heute-Spalte** ist breiter (Kasten 50 × 36 px) und zeigt mehr:
 | offen | leerer Kasten, grauer Rand |
 | **heute fällig** (nur x-mal/Woche, keine Ruhetage mehr übrig) | leerer Kasten, Rand in Gewohnheitsfarbe |
 | erledigt (Abhaken) | Kasten gefüllt in Gewohnheitsfarbe, dunkler Haken |
+| nicht geschafft | grauer Rand, graues Kreuz im Kasten |
 | Menge ohne Wert | leerer Kasten, Einheit in Text still („kcal“) |
 | Menge unter Ziel | Wert in weiß, Fortschrittsbalken am unteren Rand in Gewohnheitsfarbe |
 | Menge erfüllt | Kasten gefüllt in Gewohnheitsfarbe, Wert dunkel |
@@ -142,9 +154,12 @@ und ist vollständig getestet, bevor eine Ansicht darauf baut.
 
 ### Status eines Tages
 
-Gespeichert ist pro Gewohnheit und Tag höchstens ein Wert: `1` (abgehakt)
-oder eine Zahl (Tageswert). Daraus ergibt sich:
+Gespeichert ist pro Gewohnheit und Tag höchstens ein Wert: `1` (abgehakt),
+`-1` (nicht geschafft, `NICHT_GESCHAFFT` in `types.ts`) oder eine Zahl
+(Tageswert). Daraus ergibt sich:
 
+- [x] **Nicht geschafft** (`-1`) ist kein Wert: rechnet überall wie kein
+      Eintrag, zählt nie als erledigt – auch nicht bei „höchstens“
 - [x] **Abhaken:** Wert vorhanden → erledigt
 - [x] **Menge „mindestens X“:** Wert ≥ X → erledigt
 - [x] **Menge „höchstens X“:** Wert vorhanden **und** ≤ X → erledigt. Kein Wert
@@ -279,7 +294,7 @@ Gewohnheit (habit)
 Einträge (log) – ein Objekt für alle Gewohnheiten
 {
   [habitId]: {
-    [date: 'YYYY-MM-DD']: number // 1 = abgehakt, sonst Tageswert
+    [date: 'YYYY-MM-DD']: number // 1 = abgehakt, -1 = nicht geschafft, sonst Tageswert
   }
 }
 
@@ -359,7 +374,9 @@ Erststart                       (solange es keine Gewohnheit gibt)
 - [x] **Name in der Gewohnheitsfarbe**, einzeilig, lange Namen enden auf „…“
       („Kein Handy…“). Darunter in Text still die Regel, wenn sie nicht
       „täglich abhaken“ ist: „3× pro Woche“, „≥ 150 g“, „≤ 2500 kcal“
-- [x] Sechs Punkte (●, ◌, ×, ·) für die vergangenen Tage
+- [x] Sechs Punkte (●, ◌, ⊗, ×, ▢, ·) für die vergangenen Tage, bei Mengen
+      stattdessen die eingetragene Zahl (ab 100 ohne Komma, ab 10 000 als
+      „12k“)
 - [x] Heute-Kasten (Zustände siehe Design), bei Mengen mit dem heutigen Wert
 - [x] Serie: kleine Flamme in Bernstein + Zahl
 - [x] Reihenfolge manuell (Menü → Reihenfolge ändern), neue Gewohnheiten unten
@@ -368,8 +385,9 @@ Erststart                       (solange es keine Gewohnheit gibt)
 
 **Tippen und Wischen**
 
-- [x] **Abhaken:** Tipp auf eine Zelle schaltet erledigt ⇄ leer. Ein Tipp auf
-      ◌ oder × macht daraus ● (man war doch da)
+- [x] **Abhaken:** jeder Tipp auf eine Zelle schaltet weiter: leer →
+      geschafft → nicht geschafft → leer. Ein Tipp auf ◌ oder ▢ macht daraus ●
+      (man war doch da). Vorher (bis 05.10.2026) nur erledigt ⇄ leer
 - [x] **Menge:** Tipp auf eine Zelle öffnet das Ziffernfeld-Blatt für genau
       diesen Tag (Ansicht 2)
 - [x] Tage vor dem Beginn (·) reagieren nicht; wer früher anfangen will,
@@ -399,6 +417,11 @@ Erststart                       (solange es keine Gewohnheit gibt)
 - [x] Vorbelegt mit dem bestehenden Wert des Tages, sonst leer
 - [x] Knöpfe: **Leeren** (entfernt den Wert des Tages) und **Sichern** (in der
       Gewohnheitsfarbe)
+- [x] Oben rechts neben dem Schließen-Knopf: **Nicht geschafft** – trägt den
+      Tag ohne Zahl als nicht geschafft ein. Leise, weil meist eine Zahl kommt;
+      ist der Tag schon so eingetragen, ist der Knopf hervorgehoben und unter
+      der Zahl steht „Nicht geschafft · Ziel …“. Sichern ohne Tippen lässt es
+      dabei
 - [x] Validierung: nicht negativ, höchstens eine Nachkommastelle, max. 6
       Stellen
 
@@ -422,9 +445,11 @@ Eine lange Seite, scrollt. Kopf: Zurück, Name in Farbe, **Bearbeiten**.
       Monat
 - [ ] Im Kalender wischen (heute nur Pfeile)
 - [x] **Kalender:** ein Monat, blätterbar mit Pfeilen. Abhaken:
-      Kreise mit Tageszahl (● gefüllt, ◌ Ring, × still). Menge: Kästchen mit
-      dem Tageswert. **Tipp auf einen Tag trägt nach** – der Weg für alles,
-      was älter ist als das Raster
+      Kreise mit Tageszahl (● gefüllt, ◌ Ring, × still gefüllt, nichts
+      eingetragen nur grau umrandet als Kasten). Menge: Kästchen mit dem
+      Tageswert („×“ bei nicht geschafft, leer nur umrandet). **Tipp auf einen
+      Tag trägt nach** – der Weg für alles, was älter ist als das Raster;
+      beim Abhaken schaltet er weiter wie im Raster
 - [x] **Jahresübersicht:** Heatmap seit Beginn (max. 53 Wochen), Spalte =
       Woche, Zeile = Wochentag. ● voll, ◌ blass, × grau
 - [x] Archivierte Gewohnheit: gleiche Seite, oben ein Hinweis
@@ -621,6 +646,12 @@ Beim Konzept offen, am 27.09.2026 so bestätigt und gebaut:
 11. **Keine Gamification** – keine Punkte, Level, Abzeichen. Serie, Rekord und
     Quote sind die einzige Belohnung
 12. **Mengen:** Tagessumme ersetzt, max. eine Nachkommastelle, Einheit Freitext
+
+Ergänzt am 06.10.2026:
+
+13. **Drei Zustände beim Eintragen** – leer, geschafft, nicht geschafft. Leer
+    und nicht geschafft rechnen gleich, nur das Zeichen unterscheidet sie
+14. **Mengen zeigen im Raster ihre Zahl**, nicht nur, ob das Ziel erreicht ist
 
 ---
 

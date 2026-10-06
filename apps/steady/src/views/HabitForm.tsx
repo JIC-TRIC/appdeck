@@ -322,7 +322,7 @@ function HabitForm({ ctx, view }: ViewProps) {
             </span>
             {preview.days.slice(0, 6).map((d, i) => (
               <span key={d} className={`s-cell${weekdayIndex(d) === 0 ? ' mon' : ''}`}>
-                <Dot state={preview.states[i]} />
+                <Dot state={preview.states[i]} eintrag={log[preview.h.id]?.[d]} menge={preview.h.kind === 'amount'} />
               </span>
             ))}
             <span className={`s-wide${weekdayIndex(today) === 0 ? ' mon' : ''}`}>

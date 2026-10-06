@@ -1,9 +1,19 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
-import { isArchived, isDueWeekly, statesBetween, streaks, todayCount } from '../calc'
+import { isArchived, isDueWeekly, messwert, naechsterHaken, statesBetween, streaks, todayCount } from '../calc'
 import { IconGrid, IconMore, IconPlus, IconRight, IconStats } from '../icons'
 import { DayBox, Dot, Streak, hue, ruleShort } from '../ui'
-import { WEEKDAYS_SHORT, addDays, formatDayLong, formatDayMedium, formatDayShort, parseKey, rangeLabel, weekdayIndex } from '../util'
-import type { DayState, Habit, SteadyCtx } from '../types'
+import {
+  WEEKDAYS_SHORT,
+  addDays,
+  formatDayLong,
+  formatDayMedium,
+  formatDayShort,
+  formatValue,
+  parseKey,
+  rangeLabel,
+  weekdayIndex,
+} from '../util'
+import { NICHT_GESCHAFFT, type DayState, type Habit, type SteadyCtx } from '../types'
 
 // Wie lange ein Fenster zum Einrasten gleitet (passt zu .s-track.gleitet).
 const GLEITEN_MS = 300
@@ -16,10 +26,20 @@ const SCHWUNG_MIN_PX = 24
 const SAGT: Record<DayState, string> = {
   done: 'erledigt',
   rest: 'Ruhetag',
-  miss: 'verpasst',
+  miss: 'nichts eingetragen',
   open: 'offen',
   off: 'noch nicht begonnen',
   future: '',
+}
+
+// Fuer den Screenreader: was in der Zelle steht, nicht nur der Zustand.
+function sagt(h: Habit, state: DayState, eintrag: number | undefined) {
+  if (eintrag === NICHT_GESCHAFFT) return state === 'rest' ? 'Ruhetag, nicht geschafft' : 'nicht geschafft'
+  const wert = messwert(eintrag)
+  if (h.kind === 'amount' && wert !== undefined) {
+    return `${formatValue(wert)} ${h.unit}`.trim() + (state === 'done' ? ', Ziel erreicht' : '')
+  }
+  return SAGT[state]
 }
 
 // Wie weit zurueckgeblaettert war, bleibt fuer die Sitzung stehen: wer aus
@@ -60,6 +80,7 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
         return {
           h,
           states: days.map((d) => st[d]),
+          eintraege: days.map((d) => log[h.id]?.[d]),
           value: log[h.id]?.[end],
           // Farbiger Rand nur bei x-mal pro Woche ohne freie Ruhetage -
           // taeglich ist immer faellig, das muss der Kasten nicht sagen.
@@ -169,7 +190,8 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
       push({ name: 'amount', sheet: true, habitId: h.id, day })
       return
     }
-    enter(h, day, log[h.id]?.[day] !== undefined ? null : 1)
+    // Leer -> geschafft -> nicht geschafft -> leer.
+    enter(h, day, naechsterHaken(log[h.id]?.[day]))
   }
 
   const openDetail = (h: Habit) => {
@@ -275,9 +297,15 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                             disabled={r.states[i] === 'off'}
                             tabIndex={live ? 0 : -1}
                             onClick={() => tap(r.h, d, r.states[i])}
-                            aria-label={`${r.h.name}, ${formatDayShort(d)}: ${SAGT[r.states[i]]}`}
+                            aria-label={`${r.h.name}, ${formatDayShort(d)}: ${sagt(r.h, r.states[i], r.eintraege[i])}`}
                           >
-                            <Dot state={r.states[i]} pop={pop(d)} key={pop(d) ? `p${lastChange?.n}` : 'd'} />
+                            <Dot
+                              state={r.states[i]}
+                              eintrag={r.eintraege[i]}
+                              menge={r.h.kind === 'amount'}
+                              pop={pop(d)}
+                              key={pop(d) ? `p${lastChange?.n}` : 'd'}
+                            />
                           </button>
                         ))}
                         <button
@@ -286,7 +314,7 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                           disabled={r.states[6] === 'off'}
                           tabIndex={live ? 0 : -1}
                           onClick={() => tap(r.h, p.end, r.states[6])}
-                          aria-label={`${r.h.name}, ${formatDayShort(p.end)}: ${SAGT[r.states[6]]}`}
+                          aria-label={`${r.h.name}, ${formatDayShort(p.end)}: ${sagt(r.h, r.states[6], r.value)}`}
                         >
                           <DayBox
                             habit={r.h}

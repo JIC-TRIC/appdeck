@@ -42,10 +42,17 @@ export interface Habit {
 }
 
 // Eintraege: pro Gewohnheit pro Tag hoechstens ein Wert. 1 = abgehakt,
-// sonst der Tageswert. Alles andere (Ruhetage, verpasst, Serien) wird
-// daraus berechnet und nie gespeichert.
+// NICHT_GESCHAFFT = ausdruecklich nicht geschafft, sonst der Tageswert. Kein
+// Eintrag heisst: nichts eingetragen. Alles andere (Ruhetage, verpasst,
+// Serien) wird daraus berechnet und nie gespeichert.
 export type HabitLog = Record<string, number>
 export type Log = Record<string, HabitLog>
+
+// "Nicht geschafft", ausdruecklich eingetragen - im Unterschied zu einem Tag,
+// an dem nur das Eintragen vergessen wurde. Rechnet ueberall wie kein Eintrag
+// (verpasst bzw. Ruhetag), sieht im Raster aber anders aus. Mengen sind nie
+// negativ, darum ist -1 frei.
+export const NICHT_GESCHAFFT = -1
 
 export type StatsKind = 'week' | 'month' | 'year'
 

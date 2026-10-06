@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  amountSeries,
   dayScores,
   evaluateWeek,
   inLife,
   meets,
+  messwert,
+  naechsterHaken,
   perfectDays,
+  progress,
   quoteIn,
   ruleAt,
   statesBetween,
@@ -14,7 +18,7 @@ import {
   weeksDone,
 } from './calc'
 import { addDays, daysBetween } from './util'
-import type { Habit, HabitLog, Log } from './types'
+import { NICHT_GESCHAFFT, type Habit, type HabitLog, type Log } from './types'
 
 function habit(patch: Partial<Habit> = {}): Habit {
   const start = patch.start ?? '2026-06-01'
@@ -205,6 +209,46 @@ describe('Mengen', () => {
   it('laesst heute unter dem Ziel offen, gestern unter dem Ziel ist verpasst', () => {
     const st = statesBetween(protein, { '2026-09-29': 140, '2026-09-30': 140 }, '2026-09-29', '2026-09-30', '2026-09-30')
     expect(st).toEqual({ '2026-09-29': 'miss', '2026-09-30': 'open' })
+  })
+
+  it('nimmt "nicht geschafft" nicht als Wert - auch nicht bei "hoechstens"', () => {
+    expect(meets(kcal, NICHT_GESCHAFFT, '2026-09-30')).toBe(false)
+    expect(progress(kcal, NICHT_GESCHAFFT, '2026-09-30')).toMatchObject({ share: 0, met: false, over: false })
+    const series = amountSeries(protein, { h: { '2026-09-29': NICHT_GESCHAFFT, '2026-09-30': 160 } }, '2026-09-29', '2026-09-30')
+    expect(series).toEqual([
+      { day: '2026-09-29', value: undefined, met: false },
+      { day: '2026-09-30', value: 160, met: true },
+    ])
+  })
+})
+
+describe('Nicht geschafft', () => {
+  it('schaltet beim Abhaken weiter: leer, geschafft, nicht geschafft, leer', () => {
+    expect(naechsterHaken(undefined)).toBe(1)
+    expect(naechsterHaken(1)).toBe(NICHT_GESCHAFFT)
+    expect(naechsterHaken(NICHT_GESCHAFFT)).toBeNull()
+  })
+
+  it('ist beim Abhaken nicht erledigt und hat keinen Messwert', () => {
+    expect(meets(habit(), NICHT_GESCHAFFT, '2026-09-30')).toBe(false)
+    expect(messwert(NICHT_GESCHAFFT)).toBeUndefined()
+    expect(messwert(0)).toBe(0)
+  })
+
+  it('rechnet wie ein leerer Tag: verpasst bzw. Ruhetag, Serie und Quote gleich', () => {
+    const leer = logOf(VORHER, '2026-09-03', '2026-09-05')
+    const nein: HabitLog = { ...leer, '2026-08-31': NICHT_GESCHAFFT, '2026-09-06': NICHT_GESCHAFFT }
+    const a = evaluateWeek(imTritt(), leer, KW36, '2026-09-07')
+    const b = evaluateWeek(imTritt(), nein, KW36, '2026-09-07')
+    expect(b.states).toEqual(a.states)
+    expect(b.states[0]).toBe('rest')
+    expect(b.states[6]).toBe('miss')
+    expect(streaks(imTritt(), nein, '2026-09-07')).toEqual(streaks(imTritt(), leer, '2026-09-07'))
+  })
+
+  it('laesst heute offen', () => {
+    const st = statesBetween(habit(), { '2026-09-30': NICHT_GESCHAFFT }, '2026-09-30', '2026-09-30', '2026-09-30')
+    expect(st['2026-09-30']).toBe('open')
   })
 })
 

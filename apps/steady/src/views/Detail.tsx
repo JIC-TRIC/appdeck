@@ -3,6 +3,8 @@ import {
   amountSeries,
   isArchived,
   isWeekly,
+  messwert,
+  naechsterHaken,
   progress,
   quoteIn,
   share,
@@ -13,7 +15,7 @@ import {
 } from '../calc'
 import { AmountChart, Heatmap, MonthCalendar, ShareBars } from '../charts'
 import { IconLeft, IconRight } from '../icons'
-import { Card, Screen, TextButton, hue, ruleLong } from '../ui'
+import { Card, Dot, Screen, TextButton, hue, ruleLong } from '../ui'
 import { colorOf } from '../data'
 import { deleteHabit, restoreHabit } from '../store'
 import {
@@ -30,7 +32,7 @@ import {
   monthShort,
   parseKey,
 } from '../util'
-import type { DayState, Habit, ViewProps } from '../types'
+import { NICHT_GESCHAFFT, type DayState, type Habit, type ViewProps } from '../types'
 
 const firstOfMonth = (key: string) => `${key.slice(0, 7)}-01`
 
@@ -105,10 +107,11 @@ function Detail({ ctx, view }: ViewProps) {
   const onDay = (day: string, state: DayState) => {
     if (state === 'off' || state === 'future') return
     if (habit.kind === 'amount') push({ name: 'amount', sheet: true, habitId: habit.id, day })
-    else enter(habit, day, hlog?.[day] !== undefined ? null : 1)
+    else enter(habit, day, naechsterHaken(hlog?.[day]))
   }
 
-  const todayValue = hlog?.[today]
+  const heuteNein = hlog?.[today] === NICHT_GESCHAFFT
+  const todayValue = messwert(hlog?.[today])
   const p = progress(habit, todayValue, today)
 
   // Mengen: Durchschnitt der eingetragenen Tage und der beste Tag (bei
@@ -177,9 +180,7 @@ function Detail({ ctx, view }: ViewProps) {
           <Card title="Diese Woche" aside={`KW ${isoWeek(today)}`}>
             <div className="s-wk">
               {weekDays.map((d, i) => (
-                <span key={d} className={`s-c ${({ done: 'd', rest: 'r', miss: 'x', open: 'o', off: 'n', future: 'f' } as const)[week.states[i]]}`}>
-                  <i />
-                </span>
+                <Dot key={d} state={week.states[i]} eintrag={hlog?.[d]} />
               ))}
               {weekDays.map((d, i) => (
                 <small key={`l${d}`} className={d === today ? 'now' : undefined}>
@@ -207,7 +208,9 @@ function Detail({ ctx, view }: ViewProps) {
               <b>{todayValue !== undefined ? formatValue(todayValue) : '–'}</b>
               <span>{habit.unit}</span>
               <em>
-                {todayValue === undefined
+                {heuteNein
+                  ? 'nicht geschafft'
+                  : todayValue === undefined
                   ? 'noch nichts eingetragen'
                   : p.met
                     ? 'Ziel erreicht'

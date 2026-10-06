@@ -4,6 +4,7 @@ import {
   applyKey,
   diffDays,
   formatValue,
+  formatValueShort,
   isoWeek,
   logicalToday,
   mondayOf,
@@ -45,6 +46,16 @@ describe('Zahlen', () => {
     expect(formatValue(148)).toBe('148')
     expect(formatValue(5.25)).toBe('5,3')
     expect(formatValue(2750)).toBe('2750')
+  })
+
+  it('kuerzt Tageswerte fuer die schmalen Spalten auf vier Zeichen', () => {
+    expect(formatValueShort(5.2)).toBe('5,2')
+    expect(formatValueShort(99.5)).toBe('99,5')
+    expect(formatValueShort(152.5)).toBe('153')
+    expect(formatValueShort(2850)).toBe('2850')
+    expect(formatValueShort(9999.6)).toBe('10k')
+    expect(formatValueShort(12500)).toBe('13k')
+    expect(formatValueShort(0)).toBe('0')
   })
 
   it('tippt mit einer Nachkommastelle und sechs Stellen', () => {

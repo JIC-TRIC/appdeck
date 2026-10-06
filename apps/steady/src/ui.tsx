@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconCheck, IconFlame, IconLeft } from './icons'
-import { progress, ruleAt } from './calc'
+import { messwert, progress, ruleAt } from './calc'
 import { colorOf } from './data'
-import { addDays, formatValue, mondayOf } from './util'
-import type { DayState, Habit } from './types'
+import { addDays, formatValue, formatValueShort, mondayOf } from './util'
+import { NICHT_GESCHAFFT, type DayState, type Habit } from './types'
 
 // Farbe einer Gewohnheit als CSS-Variable --h: alle Punkte, Kaesten und
 // Namen darunter faerben sich damit.
@@ -135,8 +135,12 @@ export function Segmented<T extends string | number>({
   )
 }
 
-// Ein Tag im Raster: Punkt (erledigt), Ring (Ruhetag), Kreuz (verpasst),
-// winziger Punkt (noch nicht begonnen).
+// Ein Tag im Raster: Punkt (erledigt), Ring (Ruhetag), Kreuz (nicht
+// geschafft), leerer Kasten (verpasst, aber nichts eingetragen - vielleicht
+// nur vergessen), winziger Punkt (noch nicht begonnen). Ein Ruhetag, der
+// ausdruecklich als nicht geschafft eingetragen ist, traegt ein kleines Kreuz
+// im Ring. Mit "menge" steht statt Punkt und Kreuz die eingetragene Zahl -
+// in der Farbe, wenn sie das Ziel erreicht.
 const CELL: Record<DayState, string> = {
   done: 'd',
   rest: 'r',
@@ -146,9 +150,31 @@ const CELL: Record<DayState, string> = {
   future: 'f',
 }
 
-export function Dot({ state, pop }: { state: DayState; pop?: boolean }) {
+export function Dot({
+  state,
+  eintrag,
+  menge,
+  pop,
+}: {
+  state: DayState
+  eintrag?: number
+  menge?: boolean
+  pop?: boolean
+}) {
+  const wert = messwert(eintrag)
+  if (menge && wert !== undefined && (state === 'done' || state === 'rest' || state === 'miss')) {
+    const text = formatValueShort(wert)
+    // Vier Ziffern ("2850") werden enger gesetzt, sonst laufen die Spalten ineinander.
+    const lang = text.replace(',', '').length >= 4 ? ' lang' : ''
+    return <span className={`s-c z${lang}${state === 'done' ? ' ok' : ''}${pop ? ' pop' : ''}`}>{text}</span>
+  }
+  const nein = eintrag === NICHT_GESCHAFFT
+  let cls = CELL[state]
+  if (state === 'miss' && eintrag === undefined) cls = 'l'
+  else if (state === 'rest' && nein) cls = 'r nein'
+  else if (state === 'open' && nein) cls = 'x'
   return (
-    <span className={`s-c ${CELL[state]}${pop ? ' pop' : ''}`}>
+    <span className={`s-c ${cls}${pop ? ' pop' : ''}`}>
       <i />
     </span>
   )
@@ -160,7 +186,7 @@ export function Dot({ state, pop }: { state: DayState; pop?: boolean }) {
 export function DayBox({
   habit,
   state,
-  value,
+  value: eintrag,
   day,
   due,
   pop,
@@ -174,6 +200,7 @@ export function DayBox({
 }) {
   const cls = pop ? ' pop' : ''
   if (state === 'off') return <span className="s-t off"><i /></span>
+  const value = messwert(eintrag)
   if (state === 'done') {
     return habit.kind === 'check' ? (
       <span className={`s-t done${cls}`}>
@@ -184,9 +211,12 @@ export function DayBox({
     )
   }
   if (value === undefined) {
-    // Vergangener Tag im zurueckgeblaetterten Fenster: Ring oder Kreuz im Kasten.
-    if (state === 'rest') return <span className="s-t rest"><i /></span>
-    if (state === 'miss') return <span className="s-t miss"><i /></span>
+    // Nicht geschafft: Kreuz im Kasten. Ein Ruhetag (vergangener Tag im
+    // zurueckgeblaetterten Fenster) behaelt seinen Ring, mit Kreuz darin,
+    // wenn er so eingetragen ist. Nichts eingetragen: leerer Kasten wie heute.
+    const nein = eintrag === NICHT_GESCHAFFT ? ' nein' : ''
+    if (state === 'rest') return <span className={`s-t rest${nein}${cls}`}><i /></span>
+    if (nein) return <span className={`s-t nein${cls}`}><i /></span>
     return (
       <span className={`s-t${due ? ' due' : ''}`}>
         {habit.kind === 'amount' ? <span className="u">{habit.unit || '–'}</span> : null}

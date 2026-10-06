@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
-import { progress, ruleAt } from '../calc'
+import { messwert, progress, ruleAt } from '../calc'
 import { IconBackspace, IconClose } from '../icons'
 import { Sheet, hue } from '../ui'
 import { applyKey, formatDayLong, formatValue, relativeDay, textToValue, valueToText, type PadKey } from '../util'
-import type { ViewProps } from '../types'
+import { NICHT_GESCHAFFT, type ViewProps } from '../types'
 
 // So lange bleibt eine Taste mindestens hervorgehoben - ein schneller Tipp
 // dauert oft nur 50 ms, ohne Mindestdauer saehe man nichts (wie Kontor).
@@ -32,7 +32,8 @@ function AmountSheet({ ctx, view }: ViewProps) {
   const habit = view.habitId ? byId[view.habitId] : undefined
   const day = view.day ?? today
   const before = habit ? log[habit.id]?.[day] : undefined
-  const [z, setZ] = useState({ text: valueToText(before), n: 0, wackelt: false })
+  const warNein = before === NICHT_GESCHAFFT
+  const [z, setZ] = useState({ text: valueToText(messwert(before)), n: 0, wackelt: false })
 
   // Gewohnheit weg (geloescht, Import): Blatt gar nicht erst zeigen.
   useEffect(() => {
@@ -54,14 +55,22 @@ function AmountSheet({ ctx, view }: ViewProps) {
   const save = () => {
     if (!habit) return
     const v = textToValue(textRef.current)
-    // Unveraendert: keine Meldung, kein "eingetragen" fuer nichts.
-    if (v !== (before ?? null)) enter(habit, day, v)
+    // Unveraendert: keine Meldung, kein "eingetragen" fuer nichts. Steht
+    // "nicht geschafft" drin und wurde nichts getippt, bleibt es dabei.
+    if (v !== (before ?? null) && !(v === null && before === NICHT_GESCHAFFT)) enter(habit, day, v)
     zuRef.current()
   }
 
   const clear = () => {
     if (!habit) return
     if (before !== undefined) enter(habit, day, null)
+    zuRef.current()
+  }
+
+  // Ohne Zahl: der Tag war nicht geschafft (und nicht bloss vergessen).
+  const nein = () => {
+    if (!habit) return
+    if (before !== NICHT_GESCHAFFT) enter(habit, day, NICHT_GESCHAFFT)
     zuRef.current()
   }
 
@@ -100,6 +109,8 @@ function AmountSheet({ ctx, view }: ViewProps) {
             : `Ziel höchstens ${ziel} · noch ${formatValue(p.rest)} ${unit} Luft`
     }
   }
+  // Als nicht geschafft eingetragen und noch nichts getippt: das steht vorn.
+  if (warNein && value === null) goalText = goalText ? `Nicht geschafft · ${goalText}` : 'Nicht geschafft'
   const wann = relativeDay(day, today)
   const datum = wann === 'Heute' || wann === 'Gestern' ? `${wann} · ${formatDayLong(day)}` : wann
 
@@ -114,9 +125,14 @@ function AmountSheet({ ctx, view }: ViewProps) {
                 <b>{habit.name}</b>
                 <small>{datum}</small>
               </div>
-              <button type="button" className="s-ib small" onClick={zu} aria-label="Schließen">
-                <IconClose />
-              </button>
+              <div className="s-sh-head-r">
+                <button type="button" className={`s-nein${warNein ? ' on' : ''}`} onClick={nein} aria-pressed={warNein}>
+                  Nicht geschafft
+                </button>
+                <button type="button" className="s-ib small" onClick={zu} aria-label="Schließen">
+                  <IconClose />
+                </button>
+              </div>
             </div>
             <div className={`s-amt${z.text ? '' : ' empty'}`}>
               <span className={`num${z.n === 0 ? '' : z.wackelt ? ' wackelt' : ' tickt'}`} key={z.n}>

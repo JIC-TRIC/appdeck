@@ -146,6 +146,15 @@ export function formatValue(v: number) {
   return Number.isInteger(r) ? String(r) : r.toFixed(1).replace('.', ',')
 }
 
+// Fuer die schmalen Spalten im Raster (28 px): hoechstens vier Zeichen. Ab
+// 100 ohne Nachkommastelle, ab 10 000 in Tausend ('12k').
+export function formatValueShort(v: number) {
+  const r = Math.round(v)
+  if (r >= 10000) return `${Math.round(v / 1000)}k`
+  if (v >= 100) return String(r)
+  return formatValue(v)
+}
+
 export function formatPercent(share: number) {
   return `${Math.round(share * 100)} %`
 }

@@ -14,7 +14,7 @@ import { DayStartSheet, MenuSheet } from './views/Sheets'
 import { getHabits, getLog, getSettings, setValue } from './store'
 import { stapelLesen, stapelSchreiben } from './entwurf'
 import { formatDayShort, logicalToday } from './util'
-import type { Habit, SteadyCtx, View, ViewName, ViewProps } from './types'
+import { NICHT_GESCHAFFT, type Habit, type SteadyCtx, type View, type ViewName, type ViewProps } from './types'
 
 const PAGES: Partial<Record<ViewName, ComponentType<ViewProps>>> = {
   detail: Detail,
@@ -148,9 +148,15 @@ function Steady() {
       setLastChange((c) => ({ habitId: habit.id, day, n: (c?.n ?? 0) + 1 }))
       refresh()
       if (day < today) {
-        notify(`${habit.name} · ${formatDayShort(day)} ${value === null ? 'entfernt' : 'eingetragen'}`, () =>
-          setValue(habit.id, day, before ?? null),
-        )
+        const was =
+          value === null
+            ? 'entfernt'
+            : value === NICHT_GESCHAFFT
+              ? 'nicht geschafft'
+              : habit.kind === 'check'
+                ? 'geschafft'
+                : 'eingetragen'
+        notify(`${habit.name} · ${formatDayShort(day)} ${was}`, () => setValue(habit.id, day, before ?? null))
       }
     },
     [refresh, notify, today],

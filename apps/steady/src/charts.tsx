@@ -2,16 +2,18 @@
 // CSS-Klassen, damit die Tokens aus Steady.css gelten.
 
 import { useLayoutEffect, useRef } from 'react'
-import { ruleAt, type AmountPoint } from './calc'
+import { messwert, ruleAt, type AmountPoint } from './calc'
 import { WEEKDAYS_SHORT, addDays, formatValue, monthShort, parseKey, weekdayIndex } from './util'
-import type { DayState, Habit, HabitLog } from './types'
+import { NICHT_GESCHAFFT, type DayState, type Habit, type HabitLog } from './types'
 
 const CODE: Record<DayState, string> = { done: 'd', rest: 'r', miss: 'x', open: 'o', off: 'n', future: 'f' }
 
 // ---------- Monatskalender ----------
 
 // Abhaken: Kreise mit Tageszahl. Menge: Kaestchen mit dem Tageswert. Ein Tipp
-// traegt nach - der Weg fuer alles, was aelter ist als das Raster.
+// traegt nach - der Weg fuer alles, was aelter ist als das Raster. Verpasst
+// ohne Eintrag steht nur umrandet da (vielleicht vergessen), "nicht geschafft"
+// gefuellt grau bzw. mit Kreuz.
 export function MonthCalendar({
   habit,
   first,
@@ -42,20 +44,23 @@ export function MonthCalendar({
       {days.map((d) => {
         const s = states[d] ?? 'off'
         const tappable = !!onDay && s !== 'off' && s !== 'future'
-        const v = values?.[d]
+        const eintrag = values?.[d]
+        const v = messwert(eintrag)
+        const nein = eintrag === NICHT_GESCHAFFT
+        const extra = s === 'miss' && eintrag === undefined ? ' leer' : nein ? ' nein' : ''
         const n = parseKey(d).getDate()
         return (
           <button
             key={d}
             type="button"
-            className={`${amount ? 's-mc' : 's-cd'} ${CODE[s]}`}
+            className={`${amount ? 's-mc' : 's-cd'} ${CODE[s]}${extra}`}
             disabled={!tappable}
             onClick={tappable ? () => onDay!(d, s) : undefined}
           >
             {amount ? (
               <>
                 <small>{n}</small>
-                {v !== undefined ? formatValue(v) : ''}
+                {v !== undefined ? formatValue(v) : nein ? '×' : ''}
               </>
             ) : (
               n

@@ -5,8 +5,23 @@
 // richtigen Ruhetage und die richtige Serie. Reine Funktionen ohne Speicher-
 // oder DOM-Zugriff, darum vollstaendig testbar (calc.test.ts).
 
-import type { DayState, Habit, HabitLog, Log } from './types'
+import { NICHT_GESCHAFFT, type DayState, type Habit, type HabitLog, type Log } from './types'
 import { addDays, daysBetween, diffDays, maxKey, minKey, mondayOf, weekdayIndex } from './util'
+
+// ---------- Eintraege ----------
+
+// Der Messwert eines Eintrags: ohne Eintrag und bei "nicht geschafft" keiner.
+export function messwert(v: number | undefined) {
+  return v === undefined || v === NICHT_GESCHAFFT ? undefined : v
+}
+
+// Abhaken im Raster und im Kalender: jeder Tipp schaltet weiter,
+// leer -> geschafft -> nicht geschafft -> leer. null = Eintrag entfernen.
+export function naechsterHaken(v: number | undefined): number | null {
+  if (v === undefined) return 1
+  if (v === NICHT_GESCHAFFT) return null
+  return NICHT_GESCHAFFT
+}
 
 // ---------- Regeln einer Gewohnheit ----------
 
@@ -45,13 +60,15 @@ export function inLife(h: Habit, day: string) {
 
 // Erfuellt ein Tageswert das Ziel? Abhaken: jeder Wert. Menge: je nach
 // mindestens/hoechstens. Kein Wert ist nie erledigt - auch nicht bei
-// "hoechstens", sonst waere Nichts-Eintragen der einfachste Erfolg.
+// "hoechstens", sonst waere Nichts-Eintragen der einfachste Erfolg. "Nicht
+// geschafft" ist kein Wert.
 export function meets(h: Habit, value: number | undefined, day: string) {
-  if (value === undefined) return false
+  const v = messwert(value)
+  if (v === undefined) return false
   if (h.kind === 'check') return true
   const g = ruleAt(h.goal, day)
   if (!g) return true
-  return g.dir === 'min' ? value >= g.target : value <= g.target
+  return g.dir === 'min' ? v >= g.target : v <= g.target
 }
 
 // ---------- Eine Woche ----------
@@ -367,12 +384,13 @@ export interface AmountPoint {
 
 export function amountSeries(h: Habit, log: Log, from: string, to: string): AmountPoint[] {
   const hlog = log[h.id]
-  return daysBetween(from, to).map((day) => ({ day, value: hlog?.[day], met: meets(h, hlog?.[day], day) }))
+  return daysBetween(from, to).map((day) => ({ day, value: messwert(hlog?.[day]), met: meets(h, hlog?.[day], day) }))
 }
 
 // Wie weit ist ein Tageswert vom Ziel? Fuer den Balken im Heute-Kasten und
 // den Satz unter der Zahl.
-export function progress(h: Habit, value: number | undefined, day: string) {
+export function progress(h: Habit, eintrag: number | undefined, day: string) {
+  const value = messwert(eintrag)
   const g = ruleAt(h.goal, day)
   if (!g || value === undefined) return { share: 0, rest: g?.target ?? 0, over: false, met: false }
   const met = meets(h, value, day)
