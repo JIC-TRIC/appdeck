@@ -113,7 +113,6 @@ function Schreiben({ entwurf, setEntwurf, vorschlaege, anzahl, onAbgelegt, onSta
                   ablegenJetzt()
                 }
               }}
-              placeholder="Was geht dir durch den Kopf?"
               aria-label="Notiz"
               autoCapitalize="sentences"
             />

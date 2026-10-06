@@ -458,12 +458,6 @@ textarea.s-text {
   overscroll-behavior: contain;
 }
 
-.s-text::placeholder {
-  color: var(--text-3);
-  opacity: 1;
-  font-style: italic;
-}
-
 /* Abgelegt: die Kopie des Blatts fliegt zum Stapel-Knopf oben rechts. */
 .s-flug {
   pointer-events: none;
