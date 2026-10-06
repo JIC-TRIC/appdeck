@@ -33,7 +33,9 @@ Statistik 1, Verlauf, Setlists, Setlist-Programm, Einstellungen.
 ## Design (Richtung „Flügel“)
 
 Nur dunkel. Klavierlack als Grund, Elfenbein für Text, Messing als einzige
-Akzentfarbe (keine Farbwahl). Rot nur fürs Löschen.
+Akzentfarbe (keine Farbwahl). Rot nur fürs Löschen. Einzige Ausnahme: die
+Schwierigkeit hat eine eigene Farbskala von Grün bis Rot (siehe unten), damit
+sie auf den Kacheln klein bleibt und trotzdem auf einen Blick zu sehen ist.
 
 | Token | Wert | Wofür |
 |---|---|---|
@@ -97,14 +99,14 @@ Anlegen, unabhängig davon, wie weit man ist. Wie gut es sitzt, zeigt allein der
 Lernweg. Die Werte bleiben (`Unknown` … `Ultrahard`, kompatibel mit der alten
 App), nur die Bedeutung ist neu:
 
-| Wert | Anzeige | Beschreibung |
-|---|---|---|
-| Unknown | Offen | Noch nicht eingeschätzt. |
-| Free | Sehr leicht | Wenige Töne, ruhiges Tempo – fast vom Blatt. |
-| Easy | Leicht | Überschaubar, nur einzelne Stellen brauchen Übung. |
-| Medium | Mittel | Einige knifflige Stellen, ein paar Wochen Arbeit. |
-| Hard | Schwer | Viele schwierige Stellen: Tempo, Sprünge, volle Griffe. |
-| Ultrahard | Sehr schwer | Eine echte Herausforderung, an der Grenze des Machbaren. |
+| Wert | Anzeige | Farbe | Beschreibung |
+|---|---|---|---|
+| Unknown | Offen | – | Noch nicht eingeschätzt. |
+| Free | Sehr leicht | `#6fbf8e` | Wenige Töne, ruhiges Tempo – fast vom Blatt. |
+| Easy | Leicht | `#b4c95e` | Überschaubar, nur einzelne Stellen brauchen Übung. |
+| Medium | Mittel | `#e8c95a` | Einige knifflige Stellen, ein paar Wochen Arbeit. |
+| Hard | Schwer | `#e8914f` | Viele schwierige Stellen: Tempo, Sprünge, volle Griffe. |
+| Ultrahard | Sehr schwer | `#e0625a` | Eine echte Herausforderung, an der Grenze des Machbaren. |
 
 - [x] Gesetzt im Blatt Neues Stück / Bearbeiten und auf der Stück-Seite
   („Ändern“). Nicht mehr nach jeder Sitzung abgefragt.
@@ -208,9 +210,12 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
   Übezeit, Lernstand, Schwierigkeit, Titel, Hinzugefügt, Zufall; umkehrbar;
   bleibt gespeichert).
 - [x] Filter: Alle · In Arbeit · Gelernt · Auswendig, jeweils mit Anzahl.
-- [x] Kacheln zu zweit: Vorschaubild mit Schwierigkeit oben links (Balken und
-  Wort, bei „Offen“ nichts) und Gesamtzeit unten rechts, Titel, Interpret,
-  Lernstand als Klaviatur.
+- [x] Kacheln zu zweit: Vorschaubild mit Schwierigkeit als farbige Ecke oben
+  links (ohne Zahl, bei „Offen“ keine Ecke) und Gesamtzeit unten rechts, Titel,
+  Interpret, Lernstand als Klaviatur. Unter den Kacheln eine Zeile als Legende
+  („Schwierigkeit: leicht ◤◤◤◤◤ schwer“), nur wenn eine Ecke zu sehen ist.
+  Mockups dazu: Design-Leinwand „Piano – Schwierigkeit in der Übersicht“
+  (claude.ai, privat), gewählt J.
 
 ### 4 – Stück
 - [x] Zurück, Bearbeiten (Blatt 7), „…“ (Zu Setlist hinzufügen, Archivieren bzw.

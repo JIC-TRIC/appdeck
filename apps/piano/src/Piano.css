@@ -588,34 +588,38 @@ button.p-card:active {
   font-variant-numeric: tabular-nums;
 }
 
-/* Schwierigkeit auf der Kachel: oben links, Balken hell auf dunkel */
-.p-thumb-tag.diff {
-  top: 8px;
-  left: 8px;
-  right: auto;
-  bottom: auto;
-  display: inline-flex;
+/* Schwierigkeit auf der Kachel: farbige Ecke oben links (die Rundung der
+   Kachel schneidet sie ab). Farben in model.ts, Offen: keine Ecke. */
+.p-thumb-corner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+/* Legende dazu unter den Kacheln: dieselben Ecken im Kleinen */
+.p-legend {
+  display: flex;
   align-items: center;
-  gap: 5px;
-  font-variant-numeric: normal;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-3);
 }
 
-.p-thumb-tag.diff .p-lvl {
-  height: 10px;
+.p-legend-scale {
+  display: inline-flex;
+  gap: 3px;
 }
 
-.p-thumb-tag.diff .p-lvl i {
-  background: rgba(255, 255, 255, 0.28);
-}
-
-.p-thumb-tag.diff .p-lvl i:nth-child(1) { height: 3px; }
-.p-thumb-tag.diff .p-lvl i:nth-child(2) { height: 5px; }
-.p-thumb-tag.diff .p-lvl i:nth-child(3) { height: 7px; }
-.p-thumb-tag.diff .p-lvl i:nth-child(4) { height: 9px; }
-.p-thumb-tag.diff .p-lvl i:nth-child(5) { height: 10px; }
-
-.p-thumb-tag.diff .p-lvl i.on {
-  background: #fff;
+.p-legend-scale i {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-top-left-radius: 3px;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
 .p-play {

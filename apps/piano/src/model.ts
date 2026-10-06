@@ -244,17 +244,19 @@ export interface DifficultyInfo {
   text: string
   /** Balken 0-5 */
   bars: number
+  /** Farbe der Ecke auf den Kacheln (gruen = leicht … rot = schwer), Offen: keine */
+  color: string | null
   /** Sortierung */
   rank: number
 }
 
 export const DIFFICULTIES: DifficultyInfo[] = [
-  { id: 'Unknown', label: 'Offen', text: 'Noch nicht eingeschätzt.', bars: 0, rank: -1 },
-  { id: 'Free', label: 'Sehr leicht', text: 'Wenige Töne, ruhiges Tempo – fast vom Blatt.', bars: 1, rank: 0 },
-  { id: 'Easy', label: 'Leicht', text: 'Überschaubar, nur einzelne Stellen brauchen Übung.', bars: 2, rank: 1 },
-  { id: 'Medium', label: 'Mittel', text: 'Einige knifflige Stellen, ein paar Wochen Arbeit.', bars: 3, rank: 2 },
-  { id: 'Hard', label: 'Schwer', text: 'Viele schwierige Stellen: Tempo, Sprünge, volle Griffe.', bars: 4, rank: 3 },
-  { id: 'Ultrahard', label: 'Sehr schwer', text: 'Eine echte Herausforderung, an der Grenze des Machbaren.', bars: 5, rank: 4 },
+  { id: 'Unknown', label: 'Offen', text: 'Noch nicht eingeschätzt.', bars: 0, color: null, rank: -1 },
+  { id: 'Free', label: 'Sehr leicht', text: 'Wenige Töne, ruhiges Tempo – fast vom Blatt.', bars: 1, color: '#6fbf8e', rank: 0 },
+  { id: 'Easy', label: 'Leicht', text: 'Überschaubar, nur einzelne Stellen brauchen Übung.', bars: 2, color: '#b4c95e', rank: 1 },
+  { id: 'Medium', label: 'Mittel', text: 'Einige knifflige Stellen, ein paar Wochen Arbeit.', bars: 3, color: '#e8c95a', rank: 2 },
+  { id: 'Hard', label: 'Schwer', text: 'Viele schwierige Stellen: Tempo, Sprünge, volle Griffe.', bars: 4, color: '#e8914f', rank: 3 },
+  { id: 'Ultrahard', label: 'Sehr schwer', text: 'Eine echte Herausforderung, an der Grenze des Machbaren.', bars: 5, color: '#e0625a', rank: 4 },
 ]
 
 export function difficultyInfo(id: Difficulty) {

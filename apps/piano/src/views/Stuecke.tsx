@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { IconList, IconPlus, IconSearch, IconSort } from '../icons'
-import { DifficultyBars, Heading, IconButton, Keys, ListSheet, TabPage, Thumb } from '../ui'
+import { Heading, IconButton, Keys, ListSheet, TabPage, Thumb } from '../ui'
 import { pieceTotal, sortPieces } from '../calc'
-import { difficultyInfo, filterOf, isArchived, type Filter } from '../model'
+import { DIFFICULTIES, difficultyInfo, filterOf, isArchived, type Filter } from '../model'
 import { updateSettings } from '../store'
 import { formatTotal } from '../util'
 import type { PianoCtx, SortBy } from '../types'
@@ -118,31 +118,39 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
           </div>
 
           {shown.length ? (
-            <div className="p-grid">
-              {shown.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  className={`p-card p-tile${isArchived(p) ? ' archived' : ''}`}
-                  onClick={() => push({ name: 'stueck', pieceId: p.id })}
-                >
-                  <Thumb piece={p} className="tile" tag={formatTotal(pieceTotal(sessions, p.id))}>
-                    {/* Schwierigkeit oben auf dem Bild, der Lernstand unten - zwei verschiedene Dinge */}
-                    {p.difficulty !== 'Unknown' ? (
-                      <span className="p-thumb-tag diff">
-                        <DifficultyBars difficulty={p.difficulty} />
-                        {difficultyInfo(p.difficulty).label}
+            <>
+              <div className="p-grid">
+                {shown.map((p) => {
+                  const diff = difficultyInfo(p.difficulty)
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`p-card p-tile${isArchived(p) ? ' archived' : ''}`}
+                      onClick={() => push({ name: 'stueck', pieceId: p.id })}
+                    >
+                      <Thumb piece={p} className="tile" tag={formatTotal(pieceTotal(sessions, p.id))}>
+                        {/* Schwierigkeit als farbige Ecke oben im Bild, der Lernstand unten - zwei verschiedene Dinge */}
+                        {diff.color ? (
+                          <span
+                            className="p-thumb-corner"
+                            style={{ background: diff.color }}
+                            role="img"
+                            aria-label={`Schwierigkeit: ${diff.label}`}
+                          />
+                        ) : null}
+                      </Thumb>
+                      <span className="p-tile-body">
+                        <span className="p-tile-t">{p.title}</span>
+                        <span className="p-s3 p-ell">{p.artist || ' '}</span>
+                        <Keys progress={p.progress} />
                       </span>
-                    ) : null}
-                  </Thumb>
-                  <span className="p-tile-body">
-                    <span className="p-tile-t">{p.title}</span>
-                    <span className="p-s3 p-ell">{p.artist || ' '}</span>
-                    <Keys progress={p.progress} />
-                  </span>
-                </button>
-              ))}
-            </div>
+                    </button>
+                  )
+                })}
+              </div>
+              {shown.some((p) => difficultyInfo(p.difficulty).color) ? <DifficultyLegend /> : null}
+            </>
           ) : (
             <p className="p-note p-center">{filter === 'archiv' && !query ? 'Das Archiv ist leer.' : 'Nichts gefunden.'}</p>
           )}
@@ -181,6 +189,22 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
         />
       ) : null}
     </TabPage>
+  )
+}
+
+// Legende zu den farbigen Ecken - ganz unten, wo sie nicht stoert.
+function DifficultyLegend() {
+  const scale = DIFFICULTIES.filter((d) => d.color)
+  return (
+    <p className="p-legend">
+      Schwierigkeit: leicht
+      <span className="p-legend-scale" role="img" aria-label={scale.map((d) => d.label).join(', ')}>
+        {scale.map((d) => (
+          <i key={d.id} style={{ background: d.color ?? undefined }} />
+        ))}
+      </span>
+      schwer
+    </p>
   )
 }
 
