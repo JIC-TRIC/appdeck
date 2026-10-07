@@ -1902,6 +1902,21 @@ ion-modal.p-full-modal {
   line-height: 1.4;
 }
 
+/* Griff: Ueben laesst sich wie ein Blatt nach unten wegziehen (Ueben.tsx).
+   Unter der Statusleiste, ueber Kreuz und Titel - aus dem Fluss genommen. */
+.p-full-griff {
+  position: absolute;
+  z-index: 2;
+  top: calc(env(safe-area-inset-top) + 5px);
+  left: 50%;
+  width: 38px;
+  height: 5px;
+  margin-left: -19px;
+  border-radius: 3px;
+  background: var(--line);
+  pointer-events: none;
+}
+
 /* width: Ionics Huelle ist eine Flex-Spalte - mit margin auto allein
    schrumpfte der Bereich auf die Breite seines Inhalts. */
 .p-ueben {

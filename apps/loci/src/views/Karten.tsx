@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
-import { IonModal } from '@ionic/react'
 import { vorladen } from '../bilder'
+import { Vollbild } from '../ui'
 import { KARTEN, bestzeiten, mische, wertung, type Antworten } from '../karten'
 import { getVersuche, kartenZuruecksetzen, speichereVersuch } from '../store'
 import type { Einstellungen, Versuch } from '../types'
@@ -90,7 +90,7 @@ export default function Karten({
         />
       )}
 
-      <IonModal isOpen={vollbild} className="l-full-modal" aria-label="Kartendeck">
+      <Vollbild offen={vollbild} label="Kartendeck" onZu={abbrechen}>
         {lauf && sicht === 'merken' ? (
           <Merken
             key={`m:${lauf.merkStart}`}
@@ -112,7 +112,7 @@ export default function Karten({
             onAbbrechen={abbrechen}
           />
         ) : null}
-      </IonModal>
+      </Vollbild>
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { useIonAlert } from '@ionic/react'
 import { bild } from '../bilder'
 import { IconClose, IconLeft, IconRight, IconTakt } from '../icons'
 import { KARTE } from '../karten'
-import { Laufuhr } from '../ui'
+import { Laufuhr, useWegziehen } from '../ui'
 import { taktText, uhr } from '../util'
 
 // Merken: eine Karte pro Ansicht. Tipp oder Wisch nach links = weiter, nach
@@ -66,6 +66,10 @@ export default function Merken({
       onDidDismiss: () => setFragt(false),
     })
   }
+  // Nach unten wegziehen fragt genauso nach wie das Kreuz.
+  useWegziehen(false, () => {
+    if (!fragt) abbrechen()
+  })
 
   // Tasten am Rechner: → Leertaste Enter = weiter, ← = zurueck, Esc = abbrechen.
   useEffect(() => {

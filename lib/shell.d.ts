@@ -14,6 +14,8 @@ interface ShellApi {
   ready(): void;
   store(appId: string): ShellStore;
   toast(message: string, ms?: number): void;
+  /** <dialog class="sheet"> nach unten rausgleiten lassen und schließen */
+  closeSheet(dialog: HTMLDialogElement): void;
 }
 
 interface Window {

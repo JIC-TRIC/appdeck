@@ -207,18 +207,107 @@
     onScroll();
   }
 
-  // Bottom-Sheets: Tippen auf den abgedunkelten Hintergrund oder [data-close] schließt
+  // Bottom-Sheets: Tippen auf den abgedunkelten Hintergrund, [data-close], Escape
+  // oder Herunterziehen schließt - jedes Mal mit Rausgleiten nach unten.
+  var SHEET_ZU_MS = 240;
+
+  function closeSheet(d) {
+    if (!d.open || d.dataset.schliesst) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { d.close(); return; }
+    d.dataset.schliesst = '1';
+    d.style.transition = 'transform ' + SHEET_ZU_MS + 'ms cubic-bezier(0.4, 0, 1, 1)';
+    d.style.transform = 'translateY(100%)';
+    d.style.setProperty('--zug', '1');
+    setTimeout(function () {
+      d.close();
+      d.style.transition = '';
+      d.style.transform = '';
+      d.style.removeProperty('--zug');
+      delete d.dataset.schliesst;
+    }, SHEET_ZU_MS);
+  }
+
   function wireSheets() {
     document.addEventListener('click', function (e) {
       var closeBtn = e.target.closest && e.target.closest('dialog [data-close]');
-      if (closeBtn) { closeBtn.closest('dialog').close(); return; }
+      if (closeBtn) { closeSheet(closeBtn.closest('dialog')); return; }
       var d = e.target;
       if (d.tagName === 'DIALOG' && d.classList.contains('sheet')) {
         var r = d.getBoundingClientRect();
         var inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
-        if (!inside) d.close();
+        if (!inside) closeSheet(d);
       }
     });
+    // Escape: "cancel" blubbert nicht, deshalb in der Capture-Phase
+    document.addEventListener('cancel', function (e) {
+      var d = e.target;
+      if (d.tagName === 'DIALOG' && d.classList.contains('sheet')) {
+        e.preventDefault();
+        closeSheet(d);
+      }
+    }, true);
+    wireSheetDrag();
+  }
+
+  // Herunterziehen wie bei iOS: am Griff und an der Kopfzeile immer, im Inhalt
+  // nur, solange er ganz oben steht - sonst scrollt er. Weit genug (ein knappes
+  // Drittel) oder mit Schwung: zu. Sonst federt das Blatt zurück.
+  function wireSheetDrag() {
+    var zug = null;
+
+    document.addEventListener('touchstart', function (e) {
+      zug = null;
+      var d = e.target.closest && e.target.closest('dialog.sheet[open]');
+      if (!d || e.touches.length !== 1 || d.dataset.schliesst) return;
+      var t = e.touches[0];
+      // Auf dem abgedunkelten Grund (Ziel ist dann der dialog selbst) zieht nichts
+      if (t.clientY < d.getBoundingClientRect().top) return;
+      var amGriff = !!e.target.closest('.sheet-grabber, .sheet-header');
+      if (!amGriff && d.scrollTop > 0) return;
+      zug = { d: d, griff: amGriff, x0: t.clientX, y0: t.clientY, lastY: t.clientY, lastT: e.timeStamp, v: 0, aktiv: false };
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function (e) {
+      if (!zug) return;
+      var t = e.touches[0];
+      var dy = t.clientY - zug.y0;
+      if (!zug.aktiv) {
+        // nach oben oder zur Seite: gehört dem Inhalt
+        if (dy < -4 || Math.abs(t.clientX - zug.x0) > Math.abs(dy)) { zug = null; return; }
+        if (dy < 8) return;
+        if (!zug.griff && zug.d.scrollTop > 0) { zug = null; return; }
+        zug.aktiv = true;
+        zug.y0 += 8;
+        zug.d.style.transition = 'none';
+      }
+      // Solange das Blatt zieht, scrollt und federt nichts darunter
+      e.preventDefault();
+      var dt = Math.max(1, e.timeStamp - zug.lastT);
+      zug.v = 0.7 * ((t.clientY - zug.lastY) / dt) + 0.3 * zug.v;
+      zug.lastY = t.clientY;
+      zug.lastT = e.timeStamp;
+      var weg = Math.max(0, t.clientY - zug.y0);
+      zug.d.style.transform = 'translateY(' + weg + 'px)';
+      zug.d.style.setProperty('--zug', String(Math.min(1, weg / zug.d.offsetHeight)));
+    }, { passive: false });
+
+    function ende(e) {
+      var z = zug;
+      zug = null;
+      if (!z || !z.aktiv) return;
+      var weg = z.lastY - z.y0;
+      var schnell = z.v > 0.5 && e.timeStamp - z.lastT < 100;
+      if (weg > z.d.offsetHeight * 0.3 || schnell) {
+        closeSheet(z.d);
+        return;
+      }
+      z.d.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.25, 1)';
+      z.d.style.transform = '';
+      z.d.style.removeProperty('--zug');
+      setTimeout(function () { if (!z.d.dataset.schliesst) z.d.style.transition = ''; }, 260);
+    }
+    document.addEventListener('touchend', ende);
+    document.addEventListener('touchcancel', ende);
   }
 
   function onReady(fn) {
@@ -258,6 +347,7 @@
     home: home,
     ready: ready,
     store: store,
-    toast: toast
+    toast: toast,
+    closeSheet: closeSheet
   };
 })();

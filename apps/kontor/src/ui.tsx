@@ -174,7 +174,7 @@ export function Sheet({
       aria-label={typeof title === 'string' ? title : undefined}
       onDidDismiss={() => onCloseRef.current()}
     >
-      <div className="k-sheet">
+      <div className="k-sheet ion-content-scroll-host">
         {title ? (
           <div className="k-sheet-head">
             <div className="k-sheet-title">{title}</div>

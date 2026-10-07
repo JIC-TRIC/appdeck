@@ -250,9 +250,17 @@ db.remove('todos'); db.keys(); db.clear();
 Shell.toast('Gespeichert');           // kurze Meldung oben
 Shell.home();                          // zurück zum Launcher
 Shell.isStandalone                     // true, wenn vom Home-Bildschirm gestartet
+Shell.closeSheet(dialog);              // <dialog class="sheet"> nach unten rausgleiten lassen
 ```
 
 HTML-Helfer: Jedes Element mit `data-shell-home` führt zum Launcher.
+`<dialog class="sheet">` schließt sich per `[data-close]`, Tipp auf den Grund, Escape und – wie bei iOS –
+durch Herunterziehen (am Griff immer, im Inhalt, solange er oben steht).
+
+**Fenster in allen Apps:** Was von unten kommt und wie ein Blatt aussieht (Griff, runde Ecken oben), muss
+sich auch nach unten wegziehen lassen. Ionic-Blätter: `breakpoints={[0, 1]} initialBreakpoint={1}`, den
+scrollenden Inhalt mit der Klasse `ion-content-scroll-host` markieren (sonst ziehen Liste und Blatt
+gleichzeitig). Vollbilder von unten genauso; was beim Schließen nachfragt, über `canDismiss`.
 `<script src="../../shared/shell.js" data-home="bottom-right">` verschiebt den Home-Button
 (`bottom-left` | `bottom-right` | `top-left` | `top-right` | `none`).
 

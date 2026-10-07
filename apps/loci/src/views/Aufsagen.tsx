@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { useIonAlert } from '@ionic/react'
 import { IconClose } from '../icons'
 import { mitKomma, weiter, type Konstante } from '../konstanten'
-import { Laufuhr, Ziffernblock } from '../ui'
+import { Laufuhr, Ziffernblock, useWegziehen } from '../ui'
 import { uhr } from '../util'
 import type { KVersuch } from '../types'
 
@@ -80,6 +80,9 @@ export default function Aufsagen({
       ],
     })
   }
+  // Nach unten wegziehen wie das Kreuz: ohne Ziffern oder fertig sofort zu,
+  // sonst erst die Rueckfrage.
+  useWegziehen(!!ende || !getippt, schliessen)
 
   // Die neueste Zeile bleibt sichtbar.
   useLayoutEffect(() => {
@@ -134,7 +137,7 @@ export default function Aufsagen({
         )}
       </header>
 
-      <div className="l-aufsagen" ref={ziffernRef} aria-live="polite">
+      <div className="l-aufsagen ion-content-scroll-host" ref={ziffernRef} aria-live="polite">
         <p className="l-konst-vor">{k.name}</p>
         {lang ? (
           <>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useIonAlert, type AlertOptions } from '@ionic/react'
 import { IconClose, IconLoeschen } from '../icons'
 import { FARBEN, KARTE, WERTE, kartenId, lege, loesche, type Stand } from '../karten'
-import { Laufuhr, Mini } from '../ui'
+import { Laufuhr, Mini, useWegziehen } from '../ui'
 import { uhr } from '../util'
 
 // Wiedergeben mit der Kartentastatur: Wert und Farbe in beliebiger Reihenfolge,
@@ -84,6 +84,10 @@ export default function Wiedergeben({
         { text: 'Abbrechen', role: 'destructive', handler: onAbbrechen },
       ],
     })
+  // Nach unten wegziehen fragt genauso nach wie das Kreuz.
+  useWegziehen(false, () => {
+    if (!fragt) abbrechen()
+  })
 
   // Tasten am Rechner: ⌫ = loeschen, Enter = abgeben, Esc = abbrechen.
   useEffect(() => {

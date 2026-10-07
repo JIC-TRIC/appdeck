@@ -100,7 +100,7 @@ export function Sheet({
       aria-label={label}
       onDidDismiss={() => onCloseRef.current()}
     >
-      <div className="s-sheet">{typeof children === 'function' ? children(schliessen) : children}</div>
+      <div className="s-sheet ion-content-scroll-host">{typeof children === 'function' ? children(schliessen) : children}</div>
     </IonModal>
   )
 }

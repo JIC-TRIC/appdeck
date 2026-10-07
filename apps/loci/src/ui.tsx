@@ -1,6 +1,17 @@
 // Bausteine, die in mehreren Ansichten gleich aussehen oder sich gleich verhalten muessen.
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+  type ReactNode,
+} from 'react'
 import { IonContent, IonModal } from '@ionic/react'
 import { IconClose, IconLeft, IconLoeschen } from './icons'
 import { KARTE } from './karten'
@@ -77,7 +88,10 @@ export function Laufuhr({ zeit, laeuft, format }: { zeit: () => number; laeuft: 
 // Blatt von unten - Ionics Sheet-Modal wie bei Piano. Wegwischen, Antippen des
 // Grundes und die Animationen bringt Ionic mit. onClose laeuft erst, wenn das
 // Blatt ganz zu ist; als Funktion bekommt der Inhalt "schliessen" mit.
-// `gross`: fast volle Hoehe mit eigenem Scrollbereich (Anleitung).
+// `gross`: fast volle Hoehe mit eigenem Scrollbereich (Anleitung). Die Hoehe
+// kommt aus Loci.css (94 %), nicht aus einer Stufe 0.94: Ionic laesst den
+// Inhalt nur auf der obersten Stufe 1 zuerst scrollen - auf 0.94 zog jeder
+// Wisch nach unten das Blatt mit, auch mitten im Text.
 export function Blatt({
   label,
   gross,
@@ -101,12 +115,91 @@ export function Blatt({
     <IonModal
       isOpen={offen}
       className={`l-sheet-modal${gross ? ' gross' : ''}`}
-      breakpoints={gross ? [0, 0.94] : [0, 1]}
-      initialBreakpoint={gross ? 0.94 : 1}
+      breakpoints={[0, 1]}
+      initialBreakpoint={1}
       aria-label={label}
       onDidDismiss={() => onCloseRef.current()}
     >
-      {gross ? <IonContent className="l-sheet-content">{inhalt}</IonContent> : <div className="l-sheet">{inhalt}</div>}
+      {gross ? (
+        <IonContent className="l-sheet-content">{inhalt}</IonContent>
+      ) : (
+        <div className="l-sheet ion-content-scroll-host">{inhalt}</div>
+      )}
+    </IonModal>
+  )
+}
+
+// ---------- Vollbild ----------
+
+interface Wegziehen {
+  setFrei: (frei: boolean) => void
+  fragenRef: MutableRefObject<(() => void) | null>
+}
+
+const WegziehenContext = createContext<Wegziehen | null>(null)
+
+/**
+ * Im Vollbild: was ein Wisch nach unten tun soll - dasselbe wie das Kreuz des
+ * Inhalts. `frei`: es geht nichts verloren, das Blatt zieht frei mit und geht
+ * zu. Sonst bleibt es schwer, und weit genug gezogen kommt `fragen` (die
+ * Rueckfrage des Kreuzes).
+ */
+export function useWegziehen(frei: boolean, fragen: () => void) {
+  const weg = useContext(WegziehenContext)
+  useEffect(() => {
+    weg?.setFrei(frei)
+  }, [weg, frei])
+  useEffect(() => {
+    if (weg) weg.fragenRef.current = fragen
+  })
+}
+
+// Vollbild von unten (Kartendeck, Konstante aufsagen). Laesst sich wie ein
+// Blatt nach unten wegziehen; wie, sagt der Inhalt ueber useWegziehen (Ionic
+// laesst ein Blatt mit canDismiss-Funktion nur ein Stueck mitgehen, wie iOS
+// bei ungesicherten Aenderungen - darum nur, wenn es etwas zu verlieren gibt).
+// onZu laeuft nur, wenn ein Wisch es geschlossen hat - schliesst das Programm
+// (isOpen false), weiss es das ja schon. Esc behandelt der Inhalt selbst
+// (eigene Tasten), darum backdropDismiss aus.
+export function Vollbild({
+  offen,
+  label,
+  onZu,
+  children,
+}: {
+  offen: boolean
+  label: string
+  onZu?: () => void
+  children: ReactNode
+}) {
+  const [frei, setFrei] = useState(true)
+  const fragenRef = useRef<(() => void) | null>(null)
+  const weg = useMemo<Wegziehen>(() => ({ setFrei, fragenRef }), [])
+  return (
+    <IonModal
+      isOpen={offen}
+      className="l-full-modal"
+      aria-label={label}
+      breakpoints={[0, 1]}
+      initialBreakpoint={1}
+      handle={false}
+      backdropDismiss={false}
+      canDismiss={
+        frei
+          ? true
+          : async (_data, role) => {
+              if (role !== 'gesture') return true
+              fragenRef.current?.()
+              return false
+            }
+      }
+      onDidDismiss={(e) => {
+        setFrei(true)
+        if (e.detail.role === 'gesture') onZu?.()
+      }}
+    >
+      <span className="l-voll-griff" aria-hidden="true" />
+      <WegziehenContext.Provider value={weg}>{children}</WegziehenContext.Provider>
     </IonModal>
   )
 }

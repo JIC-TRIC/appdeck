@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type MutableRefObject } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconClose, IconExternal, IconPause, IconPlay } from '../icons'
 import { Sheet, Thumb, PhaseControls } from '../ui'
@@ -9,18 +9,72 @@ import type { PianoCtx, Piece, Progress, Uebung } from '../types'
 
 // Ueben: Vollbild von unten. Die Uhr rechnet mit Zeitstempeln (laeuft im
 // Hintergrund weiter), jede Aenderung landet sofort in piano:uebung.
+//
+// Laesst sich wie ein Blatt nach unten wegziehen (und am Rechner mit Esc
+// schliessen) - das tut dasselbe wie das Kreuz:
+// - unter 30 s: zieht frei mit und geht zu, die Sitzung wird verworfen;
+// - ab 30 s: das Blatt bleibt schwer (Ionic laesst es dann nur ein Stueck
+//   mitgehen, wie bei iOS mit ungesicherten Aenderungen). Weit genug gezogen
+//   kommt das Blatt "Wie lief's?" - die Zeit geht nicht verloren.
+// Zieht das Programm zu (gespeichert, verworfen), fragt nichts.
 function Ueben({ ctx, uebung, onChange }: { ctx: PianoCtx; uebung: Uebung | null; onChange: (u: Uebung | null) => void }) {
   const piece = uebung ? ctx.byId[uebung.pieceId] : undefined
+  // Ab 30 s gibt es etwas zu verlieren - meldet der Inhalt, der die Uhr kennt.
+  const [fragen, setFragen] = useState(false)
+  const fertigRef = useRef<(() => void) | null>(null)
   return (
-    <IonModal isOpen={!!uebung && !!piece} className="p-full-modal" aria-label="Üben">
+    <IonModal
+      isOpen={!!uebung && !!piece}
+      className="p-full-modal"
+      aria-label="Üben"
+      breakpoints={[0, 1]}
+      initialBreakpoint={1}
+      handle={false}
+      canDismiss={
+        fragen
+          ? async (_data, role) => {
+              if (role !== 'gesture' && role !== 'backdrop') return true
+              fertigRef.current?.()
+              return false
+            }
+          : true
+      }
+      onDidDismiss={(e) => {
+        setFragen(false)
+        if (e.detail.role === 'gesture' || e.detail.role === 'backdrop') onChange(null)
+      }}
+    >
+      <span className="p-full-griff" aria-hidden="true" />
       {uebung && piece ? (
-        <UebenInhalt key={`${uebung.pieceId}:${uebung.startedAt}`} ctx={ctx} u={uebung} piece={piece} onChange={onChange} />
+        <UebenInhalt
+          key={`${uebung.pieceId}:${uebung.startedAt}`}
+          ctx={ctx}
+          u={uebung}
+          piece={piece}
+          onChange={onChange}
+          onFragen={setFragen}
+          fertigRef={fertigRef}
+        />
       ) : null}
     </IonModal>
   )
 }
 
-function UebenInhalt({ ctx, u, piece, onChange }: { ctx: PianoCtx; u: Uebung; piece: Piece; onChange: (u: Uebung | null) => void }) {
+function UebenInhalt({
+  ctx,
+  u,
+  piece,
+  onChange,
+  onFragen,
+  fertigRef,
+}: {
+  ctx: PianoCtx
+  u: Uebung
+  piece: Piece
+  onChange: (u: Uebung | null) => void
+  onFragen: (fragen: boolean) => void
+  fertigRef: MutableRefObject<(() => void) | null>
+}) {
   const { settings, sessions, today, byId } = ctx
   const [, setTick] = useState(0)
   const [sheet, setSheet] = useState(false)
@@ -48,6 +102,13 @@ function UebenInhalt({ ctx, u, piece, onChange }: { ctx: PianoCtx; u: Uebung; pi
   // Schliessen: unter 30 s gibt es nichts zu retten, sonst erst fragen.
   const close = () => (seconds < MIN_SESSION_SECONDS ? onChange(null) : finish())
 
+  // Fuers Wegziehen (siehe Ueben): ab 30 s schwer, dann kommt "Wie lief's?".
+  const lang = seconds >= MIN_SESSION_SECONDS
+  useEffect(() => onFragen(lang), [lang, onFragen])
+  useEffect(() => {
+    fertigRef.current = finish
+  })
+
   const before = (sessions[piece.id] ?? [])
     .filter((s) => dayOf(s.timestamp, settings.dayStart) === today)
     .reduce((sum, s) => sum + s.duration, 0)
@@ -64,7 +125,7 @@ function UebenInhalt({ ctx, u, piece, onChange }: { ctx: PianoCtx; u: Uebung; pi
   }
 
   return (
-    <div className="p-ueben">
+    <div className="p-ueben ion-content-scroll-host">
       <header className="p-ueben-bar">
         <button type="button" className="p-ib" aria-label="Schließen" onClick={close}>
           <IconClose />

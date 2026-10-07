@@ -173,7 +173,7 @@ function Setlist({ ctx, view }: ViewProps) {
                 />
               </label>
               {addable.length ? (
-                <div className="p-list p-sheet-list">
+                <div className="p-list p-sheet-list ion-content-scroll-host">
                   {addable.map((p) => (
                     <button
                       key={p.id}

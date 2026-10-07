@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { IonModal } from '@ionic/react'
 import { IconRight } from '../icons'
 import { KONSTANTE, KONSTANTEN, rekorde } from '../konstanten'
 import { getKVersuche, konstantenZuruecksetzen, speichereKVersuch } from '../store'
-import { AppsKnopf, Bestaetigen } from '../ui'
+import { AppsKnopf, Bestaetigen, Vollbild } from '../ui'
 import { wann } from '../util'
 import type { Einstellungen, KVersuch } from '../types'
 import Aufsagen from './Aufsagen'
@@ -70,7 +69,7 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
         ) : null}
       </div>
 
-      <IonModal isOpen={offen !== null} className="l-full-modal" aria-label="Konstante aufsagen" onDidDismiss={() => setOffen(null)}>
+      <Vollbild offen={offen !== null} label="Konstante aufsagen" onZu={() => setOffen(null)}>
         {k ? (
           <Aufsagen
             key={k.id}
@@ -81,7 +80,7 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
             onSchliessen={() => setOffen(null)}
           />
         ) : null}
-      </IonModal>
+      </Vollbild>
     </div>
   )
 }

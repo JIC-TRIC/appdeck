@@ -956,8 +956,9 @@ ion-modal.l-sheet-modal {
   line-height: 1.4;
 }
 
+/* Fast volle Hoehe als Stufe 1 (siehe Blatt in ui.tsx) */
 ion-modal.l-sheet-modal.gross {
-  --height: 100%;
+  --height: 94%;
 }
 
 ion-modal.l-sheet-modal::part(handle) {
@@ -1590,6 +1591,21 @@ ion-modal.l-full-modal {
   font-family: var(--f-ui);
   font-size: 15px;
   line-height: 1.4;
+}
+
+/* Griff: das Vollbild laesst sich wie ein Blatt nach unten wegziehen
+   (Vollbild in ui.tsx). Unter der Statusleiste, aus dem Fluss genommen. */
+.l-voll-griff {
+  position: absolute;
+  z-index: 2;
+  top: calc(env(safe-area-inset-top) + 5px);
+  left: 50%;
+  width: 38px;
+  height: 5px;
+  margin-left: -19px;
+  border-radius: 3px;
+  background: var(--line);
+  pointer-events: none;
 }
 
 /* width: Ionics Huelle ist eine Flex-Spalte - mit margin auto allein
