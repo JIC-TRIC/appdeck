@@ -7,11 +7,15 @@ import {
   heatLevel,
   historyDays,
   longestStreak,
+  monthDays,
+  monthStart,
   remixPlaylist,
   seededRandom,
+  shiftMonth,
   skipToday,
   sortPieces,
   todaysPlaylist,
+  topPieceByDay,
   weekDays,
 } from './calc'
 import { DEFAULT_PROGRESS } from './model'
@@ -98,6 +102,46 @@ describe('Kalender', () => {
 
   it('stuft nach Minuten', () => {
     expect([0, 1, 600, 601, 1500, 2700, 2701].map(heatLevel)).toEqual([0, 1, 1, 2, 2, 3, 4])
+  })
+})
+
+describe('Stueck des Tages', () => {
+  const sessions: Sessions = {
+    a: [
+      { timestamp: at(2026, 10, 4, 18), duration: 600 },
+      { timestamp: at(2026, 10, 5, 1, 30), duration: 300 }, // 1:30 Uhr: noch der 4.
+      { timestamp: at(2026, 10, 6, 18), duration: 300 },
+    ],
+    b: [
+      { timestamp: at(2026, 10, 4, 19), duration: 800 },
+      { timestamp: at(2026, 10, 6, 20), duration: 300 },
+    ],
+    weg: [{ timestamp: at(2026, 10, 7, 18), duration: 900 }],
+  }
+  const tops = topPieceByDay(sessions, 3, (id) => id !== 'weg')
+
+  it('nimmt je Tag das Stueck mit der meisten Zeit, Sitzungen nach Tageswechsel', () => {
+    expect(tops.get('2026-10-04')).toEqual({ pieceId: 'a', seconds: 900, pieces: 2 })
+  })
+
+  it('bei Gleichstand das zuletzt geuebte', () => {
+    expect(tops.get('2026-10-06')).toEqual({ pieceId: 'b', seconds: 300, pieces: 2 })
+  })
+
+  it('geloeschte Stuecke zaehlen nicht', () => {
+    expect(tops.has('2026-10-07')).toBe(false)
+    expect([...tops.keys()].sort()).toEqual(['2026-10-04', '2026-10-06'])
+  })
+
+  it('Monatsblatt beginnt montags, Monate blaettern ueber den Jahreswechsel', () => {
+    expect(monthStart('2026-10-07')).toBe('2026-10-01')
+    const okt = monthDays('2026-10-01')
+    expect(okt.lead).toBe(3) // 1. Oktober 2026 ist ein Donnerstag
+    expect(okt.days).toHaveLength(31)
+    expect(okt.days[30]).toBe('2026-10-31')
+    expect(monthDays('2028-02-01').days).toHaveLength(29)
+    expect(shiftMonth('2026-12-01', 1)).toBe('2027-01-01')
+    expect(shiftMonth('2026-01-01', -1)).toBe('2025-12-01')
   })
 })
 

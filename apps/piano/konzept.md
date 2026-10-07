@@ -268,6 +268,14 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
 - [x] Serie mit Rekord.
 - [x] Kalender der **letzten 17 Wochen**, heute rechts unten (bisher ein Jahr,
   das Neueste rechts außerhalb des Bildschirms).
+- [x] **Meistgeübt pro Tag** (seit 07.10.2026): Monatsblatt Mo–So, an jedem Tag
+  mit Sitzungen das Vorschaubild des Stücks, das an dem Tag am längsten geübt
+  wurde (bei Gleichstand das zuletzt geübte), die Tageszahl klein oben links.
+  Heute mit Messing-Ring. Ein Tipp auf ein Bild zeigt darunter Tag, Zeit,
+  „1 weiteres Stück“ und den Titel; die Zeile führt zum Stück, nochmal tippen
+  hebt die Wahl auf. Blättern mit Pfeilen vom ersten Monat mit Sitzungen bis
+  heute. Gelöschte Stücke zählen nicht, archivierte schon. Nur zu sehen, wenn
+  es Sitzungen gibt.
 - [x] Nächster Meilenstein, Meistgeübt (3), Zeile Verlauf mit Tagen und
   Sitzungen (bisher „0 days“ bis zum Aufklappen).
 
@@ -302,7 +310,7 @@ src/Piano.tsx       Daten, Tabs, Seitenstapel mit Wechsel und Zurückwischen, Ü
 src/storage.ts      Schlüssel, Übernahme, Export/Import (Format der alten App)
 src/store.ts        Lesen/Schreiben der Daten, Stücke/Sitzungen/Setlists ändern
 src/model.ts        Lernweg, Status, Schwierigkeit, Meilensteine
-src/calc.ts         Tage, Woche, Serie, Kalender, Trend, Tagesliste, Verlauf
+src/calc.ts         Tage, Woche, Serie, Kalender, Stück des Tages, Trend, Tagesliste, Verlauf
 src/util.ts         Datum, Formate, YouTube
 src/ui.tsx          Bausteine (Seite, Blatt, Klaviatur, Vorschaubild, …)
 src/icons.tsx       Linien-Icons

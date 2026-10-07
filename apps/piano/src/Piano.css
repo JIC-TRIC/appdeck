@@ -1412,6 +1412,131 @@ button.p-row:active {
   box-shadow: 0 0 0 1.5px var(--text);
 }
 
+/* Meistgeuebt pro Tag: Monatsblatt mit dem Vorschaubild des Stuecks, das an
+   dem Tag am laengsten geuebt wurde. Heute mit Messing-Ring, der angetippte
+   Tag mit Elfenbein-Ring. */
+.p-tk-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: -8px -8px -8px 0;
+  font-size: 14px;
+}
+
+.p-tk-arrow {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--text-2);
+}
+
+.p-tk-arrow svg {
+  width: 17px;
+  height: 17px;
+}
+
+.p-tk-arrow:active {
+  background: var(--surface-2);
+}
+
+.p-tk-arrow:disabled {
+  opacity: 0.25;
+}
+
+.p-tk {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.p-tk-h {
+  padding-bottom: 2px;
+  font-size: 11px;
+  text-align: center;
+}
+
+.p-tk-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 9px;
+  background: var(--surface-2);
+}
+
+.p-tk-day .n {
+  position: relative;
+  font-size: 12px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.p-tk-day.future {
+  background: none;
+  opacity: 0.45;
+}
+
+.p-thumb.p-tk-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* Tageszahl klein oben links auf dem Bild */
+.p-tk-day.has .n {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+.p-tk-day.now::after,
+.p-tk-day.sel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px var(--accent);
+  pointer-events: none;
+}
+
+.p-tk-day.now:not(.has) .n {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.p-tk-day.sel::after {
+  box-shadow: inset 0 0 0 2.5px var(--text);
+}
+
+.p-tk-day.has:active {
+  opacity: 0.75;
+}
+
+.p-tk-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--r);
+  background: var(--surface-2);
+  text-align: left;
+}
+
+.p-tk-info:active {
+  background: var(--surface-3);
+}
+
 .p-meter,
 .p-hbar {
   height: 6px;

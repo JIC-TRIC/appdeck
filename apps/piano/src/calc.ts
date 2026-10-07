@@ -3,7 +3,7 @@
 
 import { STATUS_RANK, difficultyInfo, statusOf } from './model'
 import type { Piece, Playlist, Session, Sessions, Settings } from './types'
-import { MONTHS_SHORT, WEEKDAYS_SHORT, addDays, dayOf, diffDays, mondayOf, parseKey } from './util'
+import { MONTHS_SHORT, WEEKDAYS_SHORT, addDays, dateKey, dayOf, diffDays, mondayOf, parseKey, weekdayIndex } from './util'
 
 const DAY_MS = 86_400_000
 
@@ -143,6 +143,60 @@ export function calendar(totals: Map<string, number>, today: string, weeks = 17)
     }
   }
   return { columns, labels }
+}
+
+// ---------- Stueck des Tages (Monatskalender) ----------
+
+export interface DayTop {
+  pieceId: string
+  /** Sekunden dieses Stuecks an dem Tag */
+  seconds: number
+  /** wie viele Stuecke an dem Tag geuebt wurden */
+  pieces: number
+}
+
+/** Pro logischem Tag das meistgeuebte Stueck - bei Gleichstand das zuletzt
+ *  geuebte. Nur Stuecke, die es noch gibt (Sitzungen geloeschter zaehlen nicht). */
+export function topPieceByDay(sessions: Sessions, dayStart: number, known: (id: string) => boolean) {
+  const perDay = new Map<string, Map<string, { seconds: number; last: string }>>()
+  for (const [id, list] of Object.entries(sessions)) {
+    if (!known(id) || !Array.isArray(list)) continue
+    for (const s of list) {
+      if (!s?.timestamp) continue
+      const day = dayOf(s.timestamp, dayStart)
+      let pieces = perDay.get(day)
+      if (!pieces) perDay.set(day, (pieces = new Map()))
+      const e = pieces.get(id) ?? { seconds: 0, last: '' }
+      e.seconds += s.duration || 0
+      if (s.timestamp > e.last) e.last = s.timestamp
+      pieces.set(id, e)
+    }
+  }
+  const tops = new Map<string, DayTop>()
+  for (const [day, pieces] of perDay) {
+    let best: [string, { seconds: number; last: string }] | null = null
+    for (const e of pieces) {
+      if (!best || e[1].seconds > best[1].seconds || (e[1].seconds === best[1].seconds && e[1].last > best[1].last)) best = e
+    }
+    if (best) tops.set(day, { pieceId: best[0], seconds: best[1].seconds, pieces: pieces.size })
+  }
+  return tops
+}
+
+/** Erster Tag des Monats eines Tages ('YYYY-MM-01'). */
+export const monthStart = (day: string) => `${day.slice(0, 7)}-01`
+
+/** Erster Tag eines Monats n Monate weiter (oder zurueck). */
+export function shiftMonth(first: string, n: number) {
+  const d = parseKey(first)
+  return dateKey(new Date(d.getFullYear(), d.getMonth() + n, 1))
+}
+
+/** Monatsblatt: Leerfelder vor dem 1. (Montag zuerst) und alle Tage des Monats. */
+export function monthDays(first: string) {
+  const d = parseKey(first)
+  const count = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
+  return { lead: weekdayIndex(first), days: Array.from({ length: count }, (_, i) => addDays(first, i)) }
 }
 
 // ---------- Sortierung ----------
