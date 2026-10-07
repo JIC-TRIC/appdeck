@@ -2314,6 +2314,39 @@ ion-alert.l-alert .alert-button-role-destructive {
   font-style: normal;
 }
 
+/* Nach dem Ende: falsche Stelle rot, die richtige Ziffer klein darunter. */
+.l-aufsagen em[data-soll] {
+  position: relative;
+  display: inline-block;
+  padding: 0 1px;
+  margin: 0 -1px;
+  letter-spacing: 0;
+  line-height: 1.15;
+  box-shadow: inset 0 0 0 1.5px var(--bad);
+}
+
+.l-aufsagen em[data-soll]::after {
+  content: attr(data-soll);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  color: var(--good);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+}
+
+.l-ziffern-zeile.mit-fehler {
+  padding-bottom: 16px;
+}
+
+.l-konst-kurz.mit-fehler {
+  line-height: 1.9;
+}
+
 .l-cursor {
   display: inline-block;
   width: 2px;
@@ -2374,6 +2407,31 @@ ion-alert.l-alert .alert-button-role-destructive {
   font-size: 40px;
   font-weight: 600;
   line-height: 1;
+}
+
+.l-konst-fehler {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 12px !important;
+  border-radius: var(--r-s);
+  background: var(--bad-soft);
+}
+
+.l-konst-fehler b {
+  color: var(--bad);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.l-konst-fehler .soll,
+.l-konst-fehler .ist {
+  font-family: var(--f-mono);
+  font-size: 17px;
+}
+
+.l-konst-fehler .soll {
+  color: var(--good);
 }
 
 .l-weiter {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { IconRight } from '../icons'
-import { KONSTANTE, KONSTANTEN, rekorde } from '../konstanten'
+import { KONSTANTE, KONSTANTEN, istLang, rekorde } from '../konstanten'
 import { getKVersuche, konstantenZuruecksetzen, speichereKVersuch } from '../store'
 import { AppsKnopf, Bestaetigen, Vollbild } from '../ui'
 import { wann } from '../util'
@@ -24,13 +24,22 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
     KONSTANTEN.filter((k) => k.gruppe === g).map((k) => {
       const letzter = [...versuche].reverse().find((v) => v.k === k.id)
       const best = rekord[k.id] ?? 0
+      // Bei den langen (1000 Stellen) zaehlt nur, wie weit man schon kommt -
+      // die Gesamtzahl steht nicht da. Die kurzen lassen sich ganz schaffen.
+      const lang = istLang(k)
       return (
         <button key={k.id} type="button" className="l-konst" onClick={() => oeffne(k.id)}>
           <span className="l-konst-symbol">{k.symbol}</span>
           <span className="l-konst-text">
             <span className="l-konst-name">{k.name}</span>
             <small>
-              {best ? `Rekord ${best} von ${k.ziffern.length}` : `${k.ziffern.length} Stellen · ${k.info}`}
+              {best
+                ? lang
+                  ? `Rekord ${best} ${best === 1 ? 'Stelle' : 'Stellen'}`
+                  : `Rekord ${best} von ${k.ziffern.length}`
+                : lang
+                  ? k.info
+                  : `${k.ziffern.length} Stellen · ${k.info}`}
               {letzter ? ` · ${wann(letzter.ende)}` : ''}
             </small>
           </span>
@@ -49,7 +58,7 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
       <div className="l-body">
         <div>
           <h1 className="l-h1">Konstanten</h1>
-          <p className="l-sub">Ziffer für Ziffer aufsagen. Gezählt wird bis zum ersten Fehler.</p>
+          <p className="l-sub">Ziffer für Ziffer aufsagen, bis „Fertig“. Gezählt wird bis zum ersten Fehler.</p>
         </div>
         <section className="l-sec">
           <h2 className="l-h2">Mathematik</h2>

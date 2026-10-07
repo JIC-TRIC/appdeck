@@ -186,16 +186,25 @@ Karten, 4 px Tasten).
   (alle drei exakt seit 2019), Gravitationskonstante G = 6,674 30 · 10⁻¹¹
   m³/(kg·s²) (CODATA), Absoluter Nullpunkt 0 K = −273,15 °C. Exponent und
   Einheit stehen da, gefragt sind alle Ziffern; das Komma setzt die App.
-- [x] **Aufsagen:** Ziffer für Ziffer über den Ziffernblock (ohne ⌫). Die erste
-  falsche Ziffer beendet den Durchgang, sie steht rot da. „Fertig“ beendet ohne
-  Fehler (z. B. wenn man nicht weiterweiß). ✕ bricht ab, nach der ersten Ziffer
-  mit Rückfrage, und speichert nichts.
+- [x] **Aufsagen:** Ziffer für Ziffer über den Ziffernblock (ohne ⌫). **Ein
+  Fehler beendet nichts** (seit 07.10.2026, vorher war beim ersten Fehler Schluss):
+  man tippt weiter, beim Tippen ist nichts markiert. Der Durchgang endet mit
+  „Fertig“ (z. B. wenn man nicht weiterweiß) oder wenn alle Stellen getippt
+  sind. ✕ bricht ab, nach der ersten Ziffer mit Rückfrage, und speichert
+  nichts.
 - [x] Lange Konstanten erscheinen in Zeilen zu 10 (als 5 + 5) mit
   Stellennummer, kurze in einer Zeile mit Platzhaltern.
-- [x] **Ende:** Stellen bis zum Fehler, „Neuer Rekord – vorher 87“, was richtig
-  gewesen wäre, die **nächsten 10 Stellen** („So geht es weiter“), Nochmal oder
-  Fertig.
-- [x] **Liste** mit Rekord je Konstante („Rekord 87 von 1000 · heute, 21:14“).
+- [x] **Ende:** Stellen bis zum ersten Fehler (zählen für den Rekord), „Neuer
+  Rekord – vorher 87“, der erste Fehler hervorgehoben („Stelle 15: richtig wäre
+  9, getippt 8“), dazu was danach kam („Danach noch 9 Stellen getippt, ein
+  weiterer Fehler: Stelle 21“). In den Ziffern steht jede falsche Stelle rot
+  umrandet, die richtige Ziffer klein grün darunter; der erste Fehler wird ins
+  Bild gescrollt. Dann die **nächsten 10 Stellen** ab dem Aufhören („So geht
+  es weiter“), Nochmal oder Fertig.
+- [x] **Liste** mit Rekord je Konstante („Rekord 87 Stellen · heute, 21:14“).
+  Bei den mathematischen steht die Gesamtzahl (1000) nirgends – es sind einfach
+  sehr viele, zählt nur, wie weit man kommt. Die physikalischen lassen sich ganz
+  schaffen und zeigen sie („Rekord 6 von 9“, ohne Versuch „9 Stellen · …“).
   Statistik zurücksetzen löscht alle Durchgänge.
 
 ### Kartendeck: Merken
@@ -274,7 +283,8 @@ Karten, 4 px Tasten).
 - `Versuch` (Karten): `{ zeit (Ende, ms), n, bisFehler, richtig, merk (ms),
   wieder (ms), takt }`.
 - `KVersuch` (Konstanten): `{ k: id, stellen, ende (ms), dauer (ms), fehler }`.
-  Rekord = meiste Stellen je Konstante.
+  `stellen` = richtige Stellen bis zum ersten Fehler, `fehler` = mindestens
+  einer. Rekord = meiste Stellen je Konstante.
 - Gelesenes wird geprüft (`normalisiere*` in `store.ts`), Kaputtes fällt auf den
   Standard zurück. Ältere Einstellungen ohne Rechnen bekommen den Standard dazu.
 - Keine eigene Exportdatei: das Launcher-Backup erfasst `loci:*` automatisch.
@@ -401,8 +411,10 @@ Karten, 4 px Tasten).
 - [x] ✕, „π · 23 Stellen“ mit Uhr, Fertig. Name, „π = 3,“, die getippten
   Ziffern in Zehnerzeilen mit Cursor; Physik in einer Zeile mit Platzhaltern,
   Exponent und Einheit.
-- [x] Ziffernblock ohne ⌫. Nach dem Ende statt Ziffernblock: Stellen groß,
-  Rekord, die falsche Ziffer, „So geht es weiter“, Nochmal · Fertig.
+- [x] Ziffernblock ohne ⌫. Nach dem Ende statt Ziffernblock: Stellen groß
+  („bis zum ersten Fehler“), Rekord, der erste Fehler auf rotem Grund, was
+  danach kam, „So geht es weiter“, Nochmal · Fertig. Oben dann „π · 30
+  getippt“.
 
 ## Querschnitt
 
@@ -432,7 +444,8 @@ Karten, 4 px Tasten).
   - Statistik: Tipp zählt nicht als richtig, Schwächen (ab 20, Mindestanzahl,
     nur über Schnitt, höchstens 3, nur die letzten 200) für beide Übungen
   - Karten: Mischen, Wertung, nächste freie Stelle, ⌫ in allen drei Fällen
-  - Konstanten: alle Stellen, physikalische Werte, Komma, Rekorde
+  - Konstanten: alle Stellen, physikalische Werte, Komma, Rekorde, Prüfen
+    nach dem Weitertippen (Stellen bis zum ersten Fehler, alle Fehler)
   - Gespeichertes lesen: gültige Werte bleiben, kaputte fallen auf den Standard
 
 ## Dateien
@@ -503,6 +516,14 @@ Erweiterung (04.10.2026):
 15. **Vier Reiter in der Tab-Leiste**, keine Skill-Auswahl (die bräuchte es erst
     ab sechs).
 16. **Wurzeln vorerst nicht** (siehe unten).
+
+Änderung (07.10.2026):
+
+17. **Aufsagen: nach einem Fehler weitertippen** bis „Fertig“, statt beim
+    ersten Fehler Schluss. Danach stehen alle Fehler da; der Rekord zählt
+    weiter bis zum ersten.
+18. **Keine „1000 Stellen“** in der Liste der mathematischen Konstanten –
+    relevant ist, wie viele man schon geschafft hat.
 
 ## Nicht drin
 

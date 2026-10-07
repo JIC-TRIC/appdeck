@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { KONSTANTE, KONSTANTEN, mitKomma, rekorde, weiter } from './konstanten'
+import { KONSTANTE, KONSTANTEN, istLang, mitKomma, pruefe, rekorde, weiter } from './konstanten'
 import { ZIFFERN } from './konstanten-ziffern'
 
 // Die 1000 Nachkommastellen stammen aus einem Skript (mpmath). Hier rechnet
@@ -121,5 +121,33 @@ describe('Auswertung', () => {
     expect(weiter(KONSTANTE.c, 7)).toBe('58')
     const v = (k: string, stellen: number) => ({ k, stellen, ende: 0, dauer: 0, fehler: true })
     expect(rekorde([v('pi', 40), v('pi', 87), v('e', 12), v('pi', 50)])).toEqual({ pi: 87, e: 12 })
+  })
+})
+
+describe('Pruefen: nach einem Fehler wird weitergetippt', () => {
+  const pi = KONSTANTE.pi
+
+  it('ohne Fehler zaehlt alles Getippte', () => {
+    expect(pruefe(pi, '')).toEqual({ bisFehler: 0, fehler: [] })
+    expect(pruefe(pi, '14159')).toEqual({ bisFehler: 5, fehler: [] })
+  })
+
+  it('der erste Fehler bestimmt die Stellen, alle falschen werden gesammelt', () => {
+    // 1451926555897 statt 1415926535897: Stellen 3, 4 und 9 falsch
+    const r = pruefe(pi, '1451926555897')
+    expect(r.bisFehler).toBe(2)
+    expect(r.fehler).toEqual([
+      { stelle: 2, ist: '5', soll: '1' },
+      { stelle: 3, ist: '1', soll: '5' },
+      { stelle: 8, ist: '5', soll: '3' },
+    ])
+  })
+
+  it('Fehler an der ersten Stelle: 0 Stellen', () => {
+    expect(pruefe(KONSTANTE.c, '399792458').bisFehler).toBe(0)
+  })
+
+  it('lang sind nur die mathematischen', () => {
+    expect(KONSTANTEN.filter(istLang).map((k) => k.gruppe)).toEqual(['mathe', 'mathe', 'mathe', 'mathe', 'mathe', 'mathe'])
   })
 })

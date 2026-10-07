@@ -103,6 +103,7 @@ export interface KVersuch {
   /** Ende, ms seit 1970 */
   ende: number
   dauer: number
-  /** durch einen Fehler beendet (sonst aufgehoert oder alle Stellen) */
+  /** mindestens ein Fehler (seit 07.10.2026 wird danach weitergetippt; vorher
+   *  beendete der erste Fehler den Durchgang) */
   fehler: boolean
 }

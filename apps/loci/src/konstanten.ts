@@ -45,7 +45,27 @@ export function mitKomma(k: Konstante, getippt: string) {
   return `${getippt.slice(0, k.komma)},${getippt.slice(k.komma)}`
 }
 
-/** Die naechsten Ziffern ab einer Stelle - nach einem Fehler: "so geht es weiter". */
+/** Lange Konstanten (Mathematik, 1000 Stellen): Zehnerzeilen, keine Gesamtzahl in der Liste. */
+export const istLang = (k: Konstante) => k.ziffern.length > 20
+
+export interface KFehler {
+  /** Stelle, 0-basiert */
+  stelle: number
+  ist: string
+  soll: string
+}
+
+/** Getippte Ziffern pruefen: richtige Stellen bis zum ersten Fehler (zaehlt fuer
+ *  den Rekord) und alle falschen Stellen - nach einem Fehler wird weitergetippt. */
+export function pruefe(k: Konstante, getippt: string) {
+  const fehler: KFehler[] = []
+  for (let i = 0; i < getippt.length; i++) {
+    if (getippt[i] !== k.ziffern[i]) fehler.push({ stelle: i, ist: getippt[i], soll: k.ziffern[i] })
+  }
+  return { bisFehler: fehler.length ? fehler[0].stelle : getippt.length, fehler }
+}
+
+/** Die naechsten Ziffern ab einer Stelle - nach dem Aufhoeren: "so geht es weiter". */
 export const weiter = (k: Konstante, ab: number, anzahl = 20) => k.ziffern.slice(ab, ab + anzahl)
 
 /** Bester Versuch je Konstante (Stellen bis zum ersten Fehler). */
