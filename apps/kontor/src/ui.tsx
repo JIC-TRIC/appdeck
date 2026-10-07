@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconLeft, IconRight } from './icons'
 import { padToCent, splitCent } from './util'
+import { MASKE, useDiskret, verdeckt } from './diskret'
 import type { Range } from './types'
 
 // Kopfzeile plus Inhalt. Der Abstand oben haelt die Statusleiste des Handys
@@ -189,13 +190,38 @@ export function Sheet({
 export type MoneySign = 'auto' | 'minus' | 'plus' | 'none'
 
 // Betrag mit kleinerem Cent-Teil.
-export function Money({ cent, sign = 'none', className = '' }: { cent: number; sign?: MoneySign; className?: string }) {
+//
+// Beim Verbergen (diskret.ts) steht statt der Zahl ••••, das Vorzeichen bleibt.
+// Standard ist "Summe" - immer verdeckt. "einzel" ist eine einzelne Buchung,
+// verdeckt erst ab der Grenze. "offen" zeigt ihn immer (Eingabe, Korrektur).
+export function Money({
+  cent,
+  sign = 'none',
+  className = '',
+  einzel,
+  offen,
+}: {
+  cent: number
+  sign?: MoneySign
+  className?: string
+  einzel?: boolean
+  offen?: boolean
+}) {
+  const diskret = useDiskret()
   const { neg, int, frac } = splitCent(cent)
   let prefix = ''
   if (sign === 'minus') prefix = '−'
   else if (sign === 'plus') prefix = '+'
   else if (sign === 'auto') prefix = neg ? '−' : '+'
   else if (neg) prefix = '−'
+  if (!offen && verdeckt(diskret, cent, einzel)) {
+    return (
+      <span className={`k-money verdeckt ${className}`} aria-label="Betrag verborgen">
+        {prefix}
+        {MASKE}
+      </span>
+    )
+  }
   return (
     <span className={`k-money ${className}`}>
       {prefix}
@@ -233,7 +259,7 @@ export function Amount({
         className={`k-amount-val${signal.n === 0 ? '' : signal.wackelt ? ' wackelt' : ' tickt'}`}
         key={signal.n}
       >
-        <Money cent={padToCent(text)} sign={sign} />
+        <Money cent={padToCent(text)} sign={sign} offen />
         <span className="k-amount-cur">€</span>
       </span>
       {caret ? <span className="k-caret" style={{ background: color ?? 'var(--ink)' }} /> : null}

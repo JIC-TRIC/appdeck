@@ -31,6 +31,7 @@ import {
 } from './kontorStore'
 import { formatCent, todayKey } from './util'
 import { stapelLesen, stapelSchreiben } from './entwurf'
+import { betragOderMaske, diskretAus, DiskretContext } from './diskret'
 import type { Account, Category, Entry, KontorCtx, Period, View, ViewName, ViewProps } from './types'
 
 const PAGES: Partial<Record<ViewName, ComponentType<ViewProps>>> = {
@@ -79,6 +80,26 @@ function Kontor() {
   // zweite Wahrheit im Speicher.
   const [tick, setTick] = useState(0)
   const refresh = useCallback(() => setTick((t) => t + 1), [])
+
+  // "Beim Öffnen verbergen": einmal vor dem ersten Zeichnen ...
+  useState(() => {
+    const s = getSettings()
+    if (s.diskretBeimStart && !s.diskret) updateSettings({ diskret: true })
+  })
+  // ... und jedes Mal, wenn Kontor in den Hintergrund geht. iOS holt eine
+  // Web-App oft ohne Neuladen zurueck - dann stuende sonst noch alles offen da.
+  useEffect(() => {
+    const weg = () => {
+      if (document.visibilityState !== 'hidden') return
+      const s = getSettings()
+      if (s.diskretBeimStart && !s.diskret) {
+        updateSettings({ diskret: true })
+        refresh()
+      }
+    }
+    document.addEventListener('visibilitychange', weg)
+    return () => document.removeEventListener('visibilitychange', weg)
+  }, [refresh])
 
   const data = useMemo(() => {
     const settings = getSettings()
@@ -175,14 +196,24 @@ function Kontor() {
   // Loeschen ist sofort und ohne Rueckfrage - dafuer laesst es sich ein paar
   // Sekunden lang zuruecknehmen. Eine Rueckfrage bei jedem Wisch waere laestig,
   // ein Versehen ohne Ausweg aergerlich.
+  const diskret = useMemo(() => diskretAus(data.settings), [data.settings])
+  const setDiskret = useCallback(
+    (an: boolean) => {
+      updateSettings({ diskret: an })
+      refresh()
+    },
+    [refresh],
+  )
+
   const removeEntry = useCallback(
     (entry: Entry) => {
       const look = entryLook(entry, data.catById, data.accById)
       deleteEntry(entry.id)
       refresh()
-      notify(`Gelöscht: ${look.title}, ${formatCent(entry.amountCent)} €`, () => restoreEntry(entry))
+      const betrag = betragOderMaske(diskret, entry.amountCent, formatCent(entry.amountCent), true)
+      notify(`Gelöscht: ${look.title}, ${betrag} €`, () => restoreEntry(entry))
     },
-    [data, refresh, notify],
+    [data, diskret, refresh, notify],
   )
 
   const ctx: KontorCtx = {
@@ -198,6 +229,8 @@ function Kontor() {
     onExit: toLauncher,
     notify,
     removeEntry,
+    diskret,
+    setDiskret,
   }
 
   // ---------- Seiten und Blatt ----------
@@ -222,18 +255,20 @@ function Kontor() {
   }
 
   return (
-    <div className="kontor">
-      <PageStage
-        className="k-buehne"
-        pages={seiten}
-        rootKey="start"
-        pageKey={seitenKey}
-        render={seite}
-        onBack={back}
-        swipe={!topIsSheet}
-      />
-      {SheetComponent ? <SheetComponent ctx={ctx} view={top} /> : null}
-    </div>
+    <DiskretContext.Provider value={diskret}>
+      <div className={`kontor${diskret.an ? ' diskret' : ''}`}>
+        <PageStage
+          className="k-buehne"
+          pages={seiten}
+          rootKey="start"
+          pageKey={seitenKey}
+          render={seite}
+          onBack={back}
+          swipe={!topIsSheet}
+        />
+        {SheetComponent ? <SheetComponent ctx={ctx} view={top} /> : null}
+      </div>
+    </DiskretContext.Provider>
   )
 }
 

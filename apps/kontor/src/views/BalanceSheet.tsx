@@ -48,13 +48,14 @@ function BalanceSheet({ ctx, view }: ViewProps) {
       <div className="k-diff">
         <div>
           <div className="k-label">Bisher</div>
-          <div className="k-small-num strong"><Money cent={account.balanceCent} /> €</div>
+          {/* Korrigieren heisst vergleichen - hier steht der Saldo auch beim Verbergen offen. */}
+          <div className="k-small-num strong"><Money cent={account.balanceCent} offen /> €</div>
         </div>
         <span className="k-diff-arrow"><IconRight /></span>
         <div className="right">
           <div className="k-label">Differenz</div>
           <div className={`k-small-num strong ${diff < 0 ? 'exp' : diff > 0 ? 'inc' : ''}`}>
-            <Money cent={diff} sign={diff === 0 ? 'none' : 'auto'} /> €
+            <Money cent={diff} sign={diff === 0 ? 'none' : 'auto'} offen /> €
           </div>
         </div>
       </div>

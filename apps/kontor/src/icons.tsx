@@ -208,6 +208,20 @@ export function GlyphPath({ name }: { name: string }) {
 // ---------- Bedien-Symbole ----------
 
 export const IconFilter = () => <Svg><path d="M4 6h16l-6 7v6l-4-2v-4z" /></Svg>
+export const IconEye = () => (
+  <Svg>
+    <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" />
+    <circle cx="12" cy="12" r="3" />
+  </Svg>
+)
+export const IconEyeOff = () => (
+  <Svg>
+    <path d="M9.9 5.8A9.6 9.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-2.6 3.4" />
+    <path d="M6.3 7.4C3.9 9.1 2.5 12 2.5 12S6 18.5 12 18.5c1.6 0 3-.4 4.2-1" />
+    <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+    <path d="M4 4l16 16" />
+  </Svg>
+)
 export const IconSearch = () => <Svg><circle cx="11" cy="11" r="6" /><path d="M15.5 15.5 20 20" /></Svg>
 export const IconTransfer = () => <Svg>{GLYPHS.transfer}</Svg>
 export const IconMore = () => (

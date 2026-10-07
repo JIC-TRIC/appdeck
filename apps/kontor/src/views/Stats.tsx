@@ -12,6 +12,7 @@ import {
 import { Empty, Money, PeriodBar, Screen } from '../ui'
 import { Glyph, IconRight } from '../icons'
 import { WEEKDAYS, formatCent, formatDate, parseKey, periodRange, shiftPeriod, todayKey } from '../util'
+import { betragOderMaske } from '../diskret'
 import type { ViewProps } from '../types'
 
 function Stats({ ctx }: ViewProps) {
@@ -50,6 +51,7 @@ function Stats({ ctx }: ViewProps) {
   const proj = projection(totals.exp, range, firstKey)
   const savings = totals.inc > 0 ? totals.diff / totals.inc : null
   const avgPerDay = free.total ? Math.round(totals.exp / free.total) : 0
+  const spitze = series.points.reduce((m, p) => Math.max(m, p.exp), 0)
   const incomeDays = new Set(
     entries
       .filter((e) => e.type === 'income' && (!range.from || (e.date >= range.from && e.date <= (range.to as string))))
@@ -149,7 +151,11 @@ function Stats({ ctx }: ViewProps) {
             </div>
             <div className="k-card k-kpi4-tile">
               <div className="k-kpi4-l">Hochrechnung</div>
-              <div className="k-kpi4-v">{proj === null ? '–' : `~${Math.round(proj / 100).toLocaleString('de-DE')} €`}</div>
+              <div className="k-kpi4-v">
+                {proj === null
+                  ? '–'
+                  : `~${betragOderMaske(ctx.diskret, proj, Math.round(proj / 100).toLocaleString('de-DE'))} €`}
+              </div>
               <div className="k-kpi4-s">{proj === null ? 'nur im laufenden Zeitraum' : `für ${ganz}`}</div>
             </div>
             <div className="k-card k-kpi4-tile">
@@ -165,7 +171,7 @@ function Stats({ ctx }: ViewProps) {
                 Ausgaben pro {series.perMonth ? 'Monat' : 'Tag'}
               </span>
               <span className="k-small-num muted">
-                Spitze {formatCent(series.points.reduce((m, p) => Math.max(m, p.exp), 0))} €
+                Spitze {betragOderMaske(ctx.diskret, spitze, formatCent(spitze))} €
               </span>
             </div>
             <Bars points={series.points} avg={avgBalken} />

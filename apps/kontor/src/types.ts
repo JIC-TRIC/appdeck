@@ -1,5 +1,7 @@
 // Datenmodell und die Typen, die zwischen den Ansichten wandern.
 
+import type { Diskret } from './diskret'
+
 // Betraege sind immer ganze Cent und positiv - das Vorzeichen steckt im Typ.
 // Ausnahme 'adjustment': eine Korrektur kann in beide Richtungen gehen und
 // traegt ihr Vorzeichen selbst.
@@ -55,6 +57,12 @@ export interface Settings {
   lastUsed?: LastUsed
   /** Aus der Zeit, als der Startzeitraum eine Einstellung war. */
   defaultPeriod?: PeriodKind
+  /** Betraege verbergen (diskret.ts) */
+  diskret?: boolean
+  /** Beim Oeffnen und nach dem Hintergrund immer verbergen */
+  diskretBeimStart?: boolean
+  /** Einzelbuchungen erst ab hier verbergen (Cent); null = nie, 0 = alle, fehlt = 100 € */
+  diskretAbCent?: number | null
 }
 
 export interface Period {
@@ -141,6 +149,9 @@ export interface KontorCtx {
   notify: (message: string, undo?: () => void, options?: { hoch?: boolean }) => void
   /** Buchung löschen - mit "Rückgängig" in der Meldung danach. */
   removeEntry: (entry: Entry) => void
+  /** Betraege verbergen: Zustand und Umschalter (Auge neben der Gesamtbalance) */
+  diskret: Diskret
+  setDiskret: (an: boolean) => void
 }
 
 export interface ViewProps {

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { Donut } from '../charts'
 import { breakdown, totalsInRange } from '../calc'
-import { IconGrid, IconMinus, IconMore, IconPlus, IconRight } from '../icons'
+import { IconEye, IconEyeOff, IconGrid, IconMinus, IconMore, IconPlus, IconRight } from '../icons'
 import { Money, PeriodBar } from '../ui'
 import { imZeitraum, periodRange, shiftPeriod } from '../util'
 import { totalBalance } from '../kontorStore'
@@ -26,7 +26,7 @@ function Main({ ctx }: { ctx: KontorCtx }) {
   // Angetippte Kategorie: nur ihr Segment bleibt farbig, und in der Mitte
   // steht ihr Betrag statt der Gesamtsumme. Nochmal tippen hebt es auf.
   const [picked, setPicked] = useState<string | null>(null)
-  const { entries, accounts, accById, catById, settings, period, setPeriod, push, firstKey, onExit } = ctx
+  const { entries, accounts, accById, catById, settings, period, setPeriod, push, firstKey, onExit, diskret, setDiskret } = ctx
   const countBoundary = settings.countBoundaryTransfers
   const blaetterbar = period.kind !== 'all'
 
@@ -275,18 +275,31 @@ function Main({ ctx }: { ctx: KontorCtx }) {
       {/* Keine schwebende Karte - eine Haarlinie und der Betrag. Die
           Gesamtbalance ist die Summe der Konten, also fuehrt sie auch dorthin;
           die Buchungen liegen hinter der Ringmitte. */}
-      <button type="button" className="k-balance" onClick={() => push({ name: 'accounts' })}>
-        <span className="k-balance-main">
-          <span className="k-label">Gesamtbalance</span>
-          <span className={`k-balance-num${balance < 0 ? ' neg' : ''}`}>
-            <Money cent={balance} /> <span className="k-cur">€</span>
+      <div className="k-balance-row">
+        <button type="button" className="k-balance" onClick={() => push({ name: 'accounts' })}>
+          <span className="k-balance-main">
+            <span className="k-label">Gesamtbalance</span>
+            <span className={`k-balance-num${balance < 0 ? ' neg' : ''}`}>
+              <Money cent={balance} /> <span className="k-cur">€</span>
+            </span>
           </span>
-        </span>
-        <span className="k-balance-side">
-          {offen} {offen === 1 ? 'Konto' : 'Konten'}
-          <span className="k-balance-chev"><IconRight /></span>
-        </span>
-      </button>
+          <span className="k-balance-side">
+            {offen} {offen === 1 ? 'Konto' : 'Konten'}
+            <span className="k-balance-chev"><IconRight /></span>
+          </span>
+        </button>
+        {/* Betraege verbergen, z. B. in der Bahn: ein Tipp, gleich neben der
+            groessten Zahl. Gilt fuer alle Ansichten, bleibt gespeichert. */}
+        <button
+          type="button"
+          className={`k-ic k-eye${diskret.an ? ' on' : ''}`}
+          aria-pressed={diskret.an}
+          aria-label={diskret.an ? 'Beträge zeigen' : 'Beträge verbergen'}
+          onClick={() => setDiskret(!diskret.an)}
+        >
+          {diskret.an ? <IconEyeOff /> : <IconEye />}
+        </button>
+      </div>
 
       <div className="k-actions">
         <button

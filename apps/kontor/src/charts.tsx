@@ -4,6 +4,7 @@
 import { Glyph, GlyphPath, IconRight } from './icons'
 import { Money } from './ui'
 import { formatCent, splitCent, todayKey } from './util'
+import { MASKE, useDiskret } from './diskret'
 import type { CategoryKind, Segment } from './types'
 import type { SeriesPoint } from './calc'
 
@@ -353,6 +354,8 @@ const KAPPEN_AB = 2
 const KOPF_PX = 18
 
 function Bars({ points, height = 112, avg }: { points: SeriesPoint[]; height?: number; avg?: number | null }) {
+  // Beim Verbergen bleiben die Balken, nur die Zahlen fallen weg.
+  const verborgen = useDiskret().an
   const today = todayKey()
   const werte = points.map((p) => p.exp).filter((v) => v > 0).sort((a, b) => b - a)
   const kappen = werte.length > 1 && werte[0] > werte[1] * KAPPEN_AB
@@ -367,12 +370,12 @@ function Bars({ points, height = 112, avg }: { points: SeriesPoint[]; height?: n
         if (!p.exp) {
           return <span key={p.key} className={`k-bar-stub${isFuture ? ' future' : ''}`} />
         }
-        const title = `${p.full}: ${splitCent(p.exp).int},${splitCent(p.exp).frac} €`
+        const title = verborgen ? p.full : `${p.full}: ${splitCent(p.exp).int},${splitCent(p.exp).frac} €`
         if (p.exp > skala) {
           return (
             <span key={p.key} className="k-bar-col" title={title}>
               <span className={`k-bar-cap${i > points.length / 2 ? ' rechts' : ''}`}>
-                {Math.round(p.exp / 100).toLocaleString('de-DE')} €
+                {verborgen ? MASKE : Math.round(p.exp / 100).toLocaleString('de-DE')} €
               </span>
               <span className={`k-bar gekappt${isToday ? ' now' : ''}`} style={{ height: height + 4 }} />
             </span>
@@ -390,7 +393,7 @@ function Bars({ points, height = 112, avg }: { points: SeriesPoint[]; height?: n
       {avgY !== null ? (
         <>
           <i className="k-bars-avg" style={{ bottom: avgY }} />
-          <span className="k-bars-avg-l" style={{ bottom: avgY + 3 }}>Ø {formatCent(avg!)}</span>
+          <span className="k-bars-avg-l" style={{ bottom: avgY + 3 }}>Ø {verborgen ? MASKE : formatCent(avg!)}</span>
         </>
       ) : null}
     </div>
@@ -411,13 +414,14 @@ function LabelledBars({
   height?: number
   highlight?: number
 }) {
+  const verborgen = useDiskret().an
   const max = points.reduce((m, p) => Math.max(m, p.value), 0)
   const farbig = highlight ?? points.length - 1
   return (
     <div className="k-lbars">
       {points.map((p, i) => (
         <div className="k-lbar-col" key={`${p.label}-${i}`}>
-          <span className="k-lbar-val">{Math.round(p.value / 100)}</span>
+          <span className="k-lbar-val">{verborgen ? MASKE : Math.round(p.value / 100)}</span>
           <span
             className="k-lbar"
             style={{

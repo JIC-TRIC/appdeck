@@ -15,6 +15,7 @@ import { byUsage, categoryUsage } from '../calc'
 import { addEntry, deleteEntry, updateEntry, updateSettings } from '../kontorStore'
 import { entryLook } from './EntryRow'
 import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
+import { betragOderMaske } from '../diskret'
 import {
   addDays,
   centToPad,
@@ -190,7 +191,7 @@ function EntryForm({ ctx, view }: ViewProps) {
     // laesst einen Vertipper ein paar Sekunden lang zuruecknehmen.
     const vorzeichen = type === 'expense' ? '−' : type === 'income' ? '+' : ''
     notify(
-      `Gebucht: ${entryLook(neu, ctx.catById, ctx.accById).title}, ${vorzeichen}${formatCent(cent)} €`,
+      `Gebucht: ${entryLook(neu, ctx.catById, ctx.accById).title}, ${vorzeichen}${betragOderMaske(ctx.diskret, cent, formatCent(cent), true)} €`,
       () => deleteEntry(neu.id),
       { hoch: true },
     )

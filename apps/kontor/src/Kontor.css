@@ -778,19 +778,44 @@ ion-modal.k-sheet-modal {
 /* Eine Haarlinie statt einer schwebenden Karte: der Ring darueber ist schon
    eine Flaeche, eine zweite direkt darunter macht die Uebersicht unruhig.
    Der Betrag steht allein auf seiner Zeile und darf dafuer gross sein. */
+.k-balance-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin: 0 0.75rem 0 1.25rem;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
 .k-balance {
   display: flex;
   align-items: flex-end;
   gap: 0.625rem;
-  margin: 0 1.25rem;
+  flex-grow: 1;
+  min-width: 0;
   padding: 0.75rem 0 0.125rem;
-  border-top: 1px solid var(--line);
   text-align: left;
-  flex-shrink: 0;
 }
 
 .k-balance:active {
   opacity: 0.55;
+}
+
+/* Auge rechts neben der Saldoleiste: leise, solange alles offen steht;
+   verborgen hinterlegt wie ein eingeschalteter Knopf. */
+.k-eye {
+  color: var(--muted);
+  margin-bottom: 0.0625rem;
+}
+
+.k-eye.on {
+  color: var(--ink);
+}
+
+/* Verborgener Betrag: •••• statt der Ziffern, etwas gesperrt, damit die
+   Punkte nicht zu einem Strich verschwimmen. */
+.k-money.verdeckt {
+  letter-spacing: 0.08em;
 }
 
 .k-balance-main {
@@ -2531,6 +2556,22 @@ ion-modal.k-sheet-modal {
   background: var(--surface);
   color: var(--ink);
   font-weight: 600;
+}
+
+/* Ueber die ganze Breite, unter einer Zeile mit Erklaerung (Verbergen ab …) */
+.k-mini-seg.wide {
+  margin-top: 0.625rem;
+}
+
+.k-mini-seg.wide button {
+  flex: 1 1 0;
+  min-height: 2rem;
+}
+
+.k-diskret-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .k-footer {

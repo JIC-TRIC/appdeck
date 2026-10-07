@@ -159,7 +159,7 @@ function CategoryDetailInner({ ctx, seg, kind }: { ctx: KontorCtx; seg: Segment;
           <div className="k-kpi-lbl">Ø pro Zeitraum</div>
         </div>
         <div className="k-card k-kpi">
-          <div className="k-kpi-num"><Money cent={biggest} /></div>
+          <div className="k-kpi-num"><Money cent={biggest} einzel /></div>
           <div className="k-kpi-lbl">größte Buchung</div>
         </div>
         <div className="k-card k-kpi">

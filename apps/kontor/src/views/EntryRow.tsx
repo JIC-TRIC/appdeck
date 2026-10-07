@@ -92,7 +92,7 @@ function EntryRow({
         </span>
       </span>
       <span className={`k-entry-amount ${look.amountClass}`}>
-        <Money cent={entry.amountCent} sign={look.sign} />
+        <Money cent={entry.amountCent} sign={look.sign} einzel />
       </span>
     </button>
   )
