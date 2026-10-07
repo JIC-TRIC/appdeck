@@ -160,7 +160,8 @@ notes (neu), archivedAt (neu), lastPracticed, createdAt, practiceTime (Altlast, 
 Stücke mit `milestones[]` werden beim Lesen in `progress` übersetzt.
 
 Einstellungen: `dailyGoalMinutes` (30), `videoMode` (`app` | `youtube`),
-`dayStart` (3), `sort { by, reverse }`. Felder der alten App
+`dayStart` (3), `sort { by, reverse }`, `filter { difficulty[], status[] }`
+(leer = alles). Felder der alten App
 (`showExternalYouTubeButton`, `favoritePiecesCount`, `colorScheme`) bleiben
 stehen; `videoMode` fehlt → aus `showExternalYouTubeButton` (alt: an = YouTube).
 
@@ -210,6 +211,15 @@ Start übernimmt Piano die alten Schlüssel ohne Präfix, falls vorhanden.
   Übezeit, Lernstand, Schwierigkeit, Titel, Hinzugefügt, Zufall; umkehrbar;
   bleibt gespeichert).
 - [x] Filter: Alle · In Arbeit · Gelernt · Auswendig, jeweils mit Anzahl.
+- [x] **Filter-Blatt** (Trichter neben der Sortierung, seit 07.10.2026 – gab es
+  in der alten App, fehlte nach dem Umzug): **Schwierigkeit** (Sehr leicht …
+  Sehr schwer, Offen) und **Lernstand** (die sechs Status), jeweils mehrere
+  wählbar. In einer Gruppe reicht eins, beide Gruppen müssen passen. Jeder Tipp
+  wirkt sofort; die Zahl an einer Option sagt, wie viele Stücke dazukämen.
+  Bleibt gespeichert wie die Sortierung – deshalb steht ein gesetzter Filter
+  immer als Zeile unter den Chips („Leicht, Mittel · Zusammen“, Tipp öffnet das
+  Blatt, „Aufheben“), der Trichter trägt einen Messing-Ring mit Anzahl. Gilt
+  zusätzlich zu den Chips; deren Zahlen zählen nur, was der Filter durchlässt.
 - [x] Kacheln zu zweit: Vorschaubild mit Schwierigkeit als farbige Ecke oben
   links (ohne Zahl, bei „Offen“ keine Ecke) und Gesamtzeit unten rechts, Titel,
   Interpret, Lernstand als Klaviatur. Unter den Kacheln eine Zeile als Legende

@@ -51,12 +51,19 @@ export type SortBy =
   | 'default'
   | 'random'
 
+/** Filter in Stuecke: in einer Gruppe reicht eins, beide Gruppen muessen passen. Leer = alles. */
+export interface PieceFilter {
+  difficulty: Difficulty[]
+  status: Status[]
+}
+
 export interface Settings {
   dailyGoalMinutes: number
   videoMode: 'app' | 'youtube'
   /** Tageswechsel in Stunden, 0-6 */
   dayStart: number
   sort: { by: SortBy; reverse: boolean }
+  filter: PieceFilter
   /** Felder der alten App (showExternalYouTubeButton, colorScheme, …) bleiben stehen */
   [legacy: string]: unknown
 }

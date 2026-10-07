@@ -1,6 +1,6 @@
 // Lernweg, Status, Schwierigkeit, Meilensteine - die Regeln aus konzept.md.
 
-import type { Difficulty, Level, Piece, Progress, Status } from './types'
+import type { Difficulty, Level, Piece, PieceFilter, Progress, Status } from './types'
 
 export const DEFAULT_PROGRESS: Progress = {
   rightHand: 0,
@@ -112,6 +112,27 @@ export function filterOf(p: Progress): Exclude<Filter, 'alle'> {
   if (s === 'memorizing' || s === 'mastered') return 'auswendig'
   return 'arbeit'
 }
+
+/** Alle Status in der Reihenfolge des Lernwegs - fuers Filter-Blatt */
+export const STATUSES = Object.keys(STATUS_RANK) as Status[]
+
+// Gespeicherten Filter pruefen: Unbekanntes faellt weg, doppelte Werte auch.
+export function normalizeFilter(raw: unknown): PieceFilter {
+  const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>
+  const pick = <T extends string>(v: unknown, allowed: readonly T[]) =>
+    Array.isArray(v) ? allowed.filter((a) => v.includes(a)) : []
+  return { difficulty: pick(r.difficulty, DIFFICULTY_IDS), status: pick(r.status, STATUSES) }
+}
+
+/** In einer Gruppe reicht eins, beide Gruppen muessen passen. Leere Gruppe = alles. */
+export function matchesFilter(p: Piece, f: PieceFilter) {
+  return (
+    (!f.difficulty.length || f.difficulty.includes(p.difficulty)) &&
+    (!f.status.length || f.status.includes(statusOf(p.progress)))
+  )
+}
+
+export const filterSize = (f: PieceFilter) => f.difficulty.length + f.status.length
 
 /** Erreichte Stufen 0-9 - in der Reihenfolge der Klaviatur */
 export function stepsOn(p: Progress): boolean[] {

@@ -4,9 +4,11 @@ import {
   currentPhase,
   filterOf,
   lockOf,
+  matchesFilter,
   migratePiece,
   nextMilestone,
   nextStepShort,
+  normalizeFilter,
   normalizeProgress,
   phaseSummary,
   statusOf,
@@ -77,5 +79,40 @@ describe('Meilensteine', () => {
     expect(nextMilestone(120 * 3600)?.hours).toBe(150)
     expect(nextMilestone(520 * 3600)?.hours).toBe(600)
     expect(nextMilestone(2000 * 3600)).toBeNull()
+  })
+})
+
+describe('Filter nach Schwierigkeit und Lernstand', () => {
+  const stueck = (difficulty: string, progress: Partial<Progress>) =>
+    migratePiece({ id: 'x', title: 'T', difficulty, progress: p(progress) })
+  const leichtNeu = stueck('Easy', {})
+  const schwerZusammen = stueck('Hard', { rightHand: 2, leftHand: 2, together: 1 })
+  const offenGelernt = stueck('Unknown', { rightHand: 2, leftHand: 2, together: 2, dynamics: true })
+
+  it('laesst ohne Auswahl alles durch', () => {
+    const f = { difficulty: [], status: [] }
+    expect([leichtNeu, schwerZusammen, offenGelernt].every((s) => matchesFilter(s, f))).toBe(true)
+  })
+
+  it('in einer Gruppe reicht eins', () => {
+    const f = normalizeFilter({ difficulty: ['Easy', 'Hard'] })
+    expect(matchesFilter(leichtNeu, f)).toBe(true)
+    expect(matchesFilter(schwerZusammen, f)).toBe(true)
+    expect(matchesFilter(offenGelernt, f)).toBe(false)
+  })
+
+  it('beide Gruppen muessen passen', () => {
+    const f = normalizeFilter({ difficulty: ['Easy', 'Hard'], status: ['together'] })
+    expect(matchesFilter(leichtNeu, f)).toBe(false)
+    expect(matchesFilter(schwerZusammen, f)).toBe(true)
+    expect(matchesFilter(offenGelernt, normalizeFilter({ difficulty: ['Unknown'], status: ['learned'] }))).toBe(true)
+  })
+
+  it('wirft Unbekanntes und Doppeltes aus gespeicherten Einstellungen', () => {
+    expect(normalizeFilter(undefined)).toEqual({ difficulty: [], status: [] })
+    expect(normalizeFilter({ difficulty: ['Hard', 'Hard', 'Brutal'], status: 'together' })).toEqual({
+      difficulty: ['Hard'],
+      status: [],
+    })
   })
 })

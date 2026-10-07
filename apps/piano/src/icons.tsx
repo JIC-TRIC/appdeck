@@ -103,6 +103,11 @@ export const IconList = ({ className }: P) => (
     <circle className="f" cx="4.5" cy="18" r="1.3" />
   </I>
 )
+export const IconFilter = ({ className }: P) => (
+  <I className={className}>
+    <path d="M4 5h16l-6 7.5V19l-4-2v-4.5z" />
+  </I>
+)
 export const IconPencil = ({ className }: P) => (
   <I className={className}>
     <path d="M4 20h4L19 9l-4-4L4 16z" />

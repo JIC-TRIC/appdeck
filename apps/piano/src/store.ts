@@ -2,7 +2,7 @@
 // ctx.refresh(), Piano.tsx liest dann alles neu - bei dieser Datenmenge
 // einfacher als eine zweite Wahrheit im Speicher (wie Kontor und Steady).
 
-import { migratePiece, normalizeProgress } from './model'
+import { migratePiece, normalizeFilter, normalizeProgress } from './model'
 import { readKey, readUebung, writeKey, writeUebung } from './storage'
 import type { Difficulty, Piece, Playlist, Progress, Session, Sessions, Settings, Setlist, Uebung } from './types'
 import { extractVideoId, thumbnailUrl } from './util'
@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS: Settings = {
   videoMode: 'youtube',
   dayStart: 3,
   sort: { by: 'trending', reverse: false },
+  filter: { difficulty: [], status: [] },
 }
 
 // ---------- Lesen ----------
@@ -38,6 +39,7 @@ export function getSettings(): Settings {
   if (typeof s.dailyGoalMinutes !== 'number' || s.dailyGoalMinutes < 5) s.dailyGoalMinutes = 30
   if (typeof s.dayStart !== 'number' || s.dayStart < 0 || s.dayStart > 6) s.dayStart = 3
   if (!s.sort || typeof s.sort !== 'object') s.sort = DEFAULT_SETTINGS.sort
+  s.filter = normalizeFilter(r.filter)
   return s
 }
 
