@@ -573,8 +573,10 @@ Rückmeldung, kein Schmuck.
 - [x] Anlegen **nicht** über `npm run new` (das legt die Vorlage an), sondern
       Kontors Aufbau übernehmen. Eintrag in `apps.js`:
       `{ id: 'steady', name: 'Steady', icon: 'icons/steady.svg', color: '#0F1113', path: 'apps/steady/' }`
-- [x] App-Symbol `icons/steady.svg`: 3 × 3 Punkte auf Graphit, einer davon ein
-      Ring (siehe Mockups)
+- [x] App-Symbol `icons/steady.svg`: seit 07.10.2026 im Zettel-Stil aller
+      App-Symbole (wie Stash): ein Zettel in weißer Tinte auf Graphit mit
+      Titelstrich und zwei Zeilen des Rasters, jede Gewohnheit in ihrer Farbe,
+      ein Ruhetag als Ring. Vorher 3 × 3 Punkte (gefiel nicht).
 - [x] Zurück-Navigation an der Browser-History
 - [x] **Entwürfe** wie Kontor: ein halb ausgefülltes Formular und die offene
       Ansicht überleben einen Neustart für drei Stunden

@@ -410,7 +410,9 @@ Karten, 4 px Tasten).
   CSS, kein schwebender Home-Knopf.
 - [x] Eintrag in `apps.js`:
   `{ id: 'loci', name: 'Loci', icon: 'icons/loci.svg', color: '#F7F8F3', bg: '#F7F8F3', path: 'apps/loci/' }`
-- [x] Symbol `icons/loci.svg`: Schlüsselloch im Bogen, Tintenblau auf Karo.
+- [x] Symbol `icons/loci.svg`: Schlüsselloch im Bogen, Tintenblau auf Karo –
+  seit 07.10.2026 im Zettel-Stil aller App-Symbole (wie Stash): ein Zettel
+  Rechenheft-Karo, dahinter ein zweiter, schräg.
 - [x] **Kartenbilder:** die 52 PNGs aus Gedächtnispalast (500 × 750, CC0) in
   voller Größe als WebP (Qualität 75, zusammen rund 1 MB; kleiner wäre auf dem
   iPhone-Display unscharf), in `src/karten/`, eingebunden per

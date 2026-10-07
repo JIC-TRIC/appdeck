@@ -112,6 +112,12 @@ Statt eines Emojis geht auch ein Bild: Datei nach `icons/` legen (quadratisch, z
 `apps.js` `icon: 'icons/habits.png'` eintragen. (Bei Ionic-Apps landen nur die gebauten Dateien auf der
 Website, ein Bild direkt in `apps/habits/` würde also nicht mitkopiert.)
 
+**Symbol-Stil (alle App-Symbole, seit 07.10.2026 – Vorbild `icons/stash.svg`):** SVG 180×180, Grund =
+Hintergrund der App (= `color` in `apps.js`). Darauf zwei Zettel 96×84 mit `rx="5"`, der hintere um −10°
+gedreht, alles in `translate(90 94) scale(1.18) translate(-90 -94)`. Umriss 4,5 in der Tinte der App
+(dunkel auf hellen Apps, hell auf dunklen), auf dem vorderen Zettel das Motiv der App mit einer
+Akzentfarbe; ein Titelstrich (6,5, rund) wo es passt. Keine Verläufe, keine Schatten im Bild.
+
 ---
 
 ## 3. Bestehende App umziehen
