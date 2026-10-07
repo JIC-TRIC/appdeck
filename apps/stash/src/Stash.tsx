@@ -105,7 +105,7 @@ function Stash() {
         entwurf={entwurf}
         setEntwurf={setEntwurf}
         vorschlaege={daten.titel}
-        anzahl={daten.notizen.length}
+        notizen={daten.notizen}
         onAbgelegt={refresh}
         onStapel={zumStapel}
       />

@@ -391,7 +391,8 @@ textarea {
 }
 
 .stage-layer .s-body,
-.stage-layer .s-text {
+.stage-layer .s-text,
+.stage-layer .s-schon-liste {
   touch-action: pan-y;
 }
 
@@ -418,6 +419,80 @@ textarea {
   background: var(--ink);
   border-color: var(--ink);
   color: var(--sheet);
+}
+
+/* Schon im Stapel: was zu diesem Titel noch nicht abgeholt ist. Erst eine
+   Zeile, aufgeklappt hoechstens knapp die Haelfte des Blatts (scrollt), damit
+   die neue Notiz darunter Platz behaelt. */
+.s-schon {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+  background: #faf6ec;
+}
+
+.s-schon.offen {
+  max-height: 45%;
+}
+
+.s-schon-zeile {
+  flex: none;
+  width: 100%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px;
+  color: var(--text-2);
+  font-size: 14px;
+}
+
+.s-schon-was {
+  flex: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.s-schon-liste {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 18px 12px;
+}
+
+.s-schon-liste li {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-left: 10px;
+  border-left: 2px solid var(--line-strong);
+}
+
+.s-schon-zeit {
+  color: var(--text-3);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.s-schon-text {
+  color: var(--text);
+  font-family: var(--f-serif);
+  font-size: 15.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.s-schon-text.ohne {
+  color: var(--text-3);
+  font-style: italic;
 }
 
 /* Die Notiz auf Linien: Zeilenabstand und Linienabstand sind gleich, die

@@ -1,26 +1,33 @@
 import { useRef, useState } from 'react'
 import { IconRight } from '../icons'
 import { ablegen, LEER } from '../store'
-import { istGewaehlt, passendeTitel } from '../text'
+import { anzahl as anzahlText, imStapelZuTitel, istGewaehlt, passendeTitel, wann } from '../text'
 import { fokusBleibt, Leiste } from '../ui'
-import type { Entwurf } from '../types'
+import type { Entwurf, Notiz } from '../types'
 
 interface Props {
   entwurf: Entwurf
   setEntwurf: (e: Entwurf) => void
   vorschlaege: string[]
-  anzahl: number
+  notizen: Notiz[]
   onAbgelegt: () => void
   onStapel: () => void
 }
 
 // Startseite: Titel und Notiz schreiben, ablegen - weg ist sie. Das Blatt
 // fliegt Richtung Stapel-Knopf, darunter liegt schon ein leeres.
-function Schreiben({ entwurf, setEntwurf, vorschlaege, anzahl, onAbgelegt, onStapel }: Props) {
+function Schreiben({ entwurf, setEntwurf, vorschlaege, notizen, onAbgelegt, onStapel }: Props) {
   const [flug, setFlug] = useState<{ key: string; titel: string; text: string } | null>(null)
   const textRef = useRef<HTMLTextAreaElement>(null)
   const leer = !entwurf.titel.trim() && !entwurf.text.trim()
   const passend = passendeTitel(vorschlaege, entwurf.titel)
+  const anzahl = notizen.length
+
+  // Was zu diesem Titel schon im Stapel liegt: erst nur als Zeile, ein Tipp
+  // klappt es auf. Passt der Titel nicht mehr, ist die Liste von selbst zu.
+  const schon = imStapelZuTitel(notizen, entwurf.titel)
+  const [schonOffen, setSchonOffen] = useState(false)
+  const zeigeSchon = schonOffen && schon.length > 0
 
   const ablegenJetzt = () => {
     const notiz = ablegen(entwurf)
@@ -29,17 +36,24 @@ function Schreiben({ entwurf, setEntwurf, vorschlaege, anzahl, onAbgelegt, onSta
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
     setFlug({ key: notiz.id, titel: notiz.titel, text: notiz.text })
     setEntwurf(LEER)
+    setSchonOffen(false)
     onAbgelegt()
+  }
+
+  // Ein anderer Titel klappt die Liste "Schon im Stapel" wieder zu.
+  const setTitel = (titel: string) => {
+    setEntwurf({ ...entwurf, titel })
+    setSchonOffen(false)
   }
 
   // Vorschlag antippen setzt den Titel und springt in die Notiz; der schon
   // gewaehlte nimmt ihn wieder heraus.
   const waehle = (t: string) => {
     if (istGewaehlt(t, entwurf.titel)) {
-      setEntwurf({ ...entwurf, titel: '' })
+      setTitel('')
       return
     }
-    setEntwurf({ ...entwurf, titel: t })
+    setTitel(t)
     textRef.current?.focus()
   }
 
@@ -68,7 +82,7 @@ function Schreiben({ entwurf, setEntwurf, vorschlaege, anzahl, onAbgelegt, onSta
             <input
               className="s-titel"
               value={entwurf.titel}
-              onChange={(e) => setEntwurf({ ...entwurf, titel: e.target.value })}
+              onChange={(e) => setTitel(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
@@ -99,6 +113,30 @@ function Schreiben({ entwurf, setEntwurf, vorschlaege, anzahl, onAbgelegt, onSta
                     </button>
                   )
                 })}
+              </div>
+            ) : null}
+            {schon.length ? (
+              <div className={`s-schon${zeigeSchon ? ' offen' : ''}`}>
+                <button
+                  type="button"
+                  className="s-schon-zeile"
+                  aria-expanded={zeigeSchon}
+                  onMouseDown={fokusBleibt}
+                  onClick={() => setSchonOffen(!zeigeSchon)}
+                >
+                  <span>Schon im Stapel: {anzahlText(schon.length)}</span>
+                  <span className="s-schon-was">{zeigeSchon ? 'Ausblenden' : 'Zeigen'}</span>
+                </button>
+                {zeigeSchon ? (
+                  <ol className="s-schon-liste">
+                    {schon.map((n) => (
+                      <li key={n.id}>
+                        <span className="s-schon-zeit">{wann(n.erstellt)}</span>
+                        <span className={`s-schon-text${n.text ? '' : ' ohne'}`}>{n.text || 'Nur der Titel'}</span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
               </div>
             ) : null}
             <textarea

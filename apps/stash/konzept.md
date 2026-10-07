@@ -68,6 +68,19 @@ bearbeiten oder löschen. Offene Fragen stehen unten unter „Später klären“
   auf den schon gewählten nimmt ihn wieder heraus.
 - Die Vorschläge bleiben auch nach dem Löschen des Stapels erhalten.
 
+### Schon im Stapel (seit 07.10.2026)
+
+Damit sich beim zweiten Eintrag zum selben Thema nichts doppelt:
+
+- Steht im Titelfeld genau ein Titel, zu dem noch Notizen im Stapel liegen
+  (Groß/klein und Leerzeichen egal, per Chip oder getippt), erscheint unter den
+  Chips die Zeile „Schon im Stapel: 2 Notizen · Zeigen“.
+- Ein Tipp klappt die Notizen auf: Zeit und Text, älteste zuerst, höchstens
+  knapp die halbe Blatthöhe (scrollt), darunter bleibt das Notizfeld. Die
+  Tastatur bleibt dabei offen. Ohne Text steht kursiv „Nur der Titel“.
+- Ein anderer Titel und das Ablegen klappen die Liste wieder zu. Was schon
+  kopiert und gelöscht ist, taucht nicht auf – nur der aktuelle Stapel zählt.
+
 ### Kopieren
 
 Der ganze Stapel als ein Text, älteste Notiz zuerst, eine Leerzeile dazwischen.

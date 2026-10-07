@@ -69,3 +69,12 @@ export function passendeTitel(liste: string[], eingabe: string): string[] {
 /** Steht genau dieser Vorschlag im Feld? (Gross/klein egal) */
 export const istGewaehlt = (vorschlag: string, eingabe: string) =>
   vorschlag.toLowerCase() === eingabe.replace(/\s+/g, ' ').trim().toLowerCase()
+
+/**
+ * Was zu genau diesem Titel noch im Stapel liegt (Gross/klein egal), aelteste
+ * zuerst - damit man beim zweiten Eintrag zum selben Thema nichts doppelt schreibt.
+ */
+export function imStapelZuTitel(notizen: Notiz[], eingabe: string): Notiz[] {
+  const t = eingabe.replace(/\s+/g, ' ').trim().toLowerCase()
+  return t ? notizen.filter((n) => n.titel.toLowerCase() === t) : []
+}

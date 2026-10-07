@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { anzahl, istGewaehlt, kopierText, merkeTitel, passendeTitel, TITEL_MAX, wann, zeitpunkt } from './text'
+import {
+  anzahl,
+  imStapelZuTitel,
+  istGewaehlt,
+  kopierText,
+  merkeTitel,
+  passendeTitel,
+  TITEL_MAX,
+  wann,
+  zeitpunkt,
+} from './text'
 import type { Notiz } from './types'
 
 // Ortszeit, wie auf dem iPhone
@@ -90,5 +100,19 @@ describe('Titel-Vorschlaege', () => {
   it('istGewaehlt vergleicht ohne Gross/klein und Leerzeichen am Rand', () => {
     expect(istGewaehlt('Kontor', ' kontor ')).toBe(true)
     expect(istGewaehlt('Kontor', 'Kont')).toBe(false)
+  })
+})
+
+describe('imStapelZuTitel', () => {
+  const n = (id: string, titel: string, text = 'x'): Notiz => ({ id, titel, text, erstellt: Number(id) })
+  const stapel = [n('1', 'Kontor'), n('2', 'Piano'), n('3', 'kontor', 'zweite'), n('4', ''), n('5', 'Kontor Ideen')]
+
+  it('findet genau diesen Titel, Gross/klein und Leerzeichen egal, aelteste zuerst', () => {
+    expect(imStapelZuTitel(stapel, '  KONTOR ').map((x) => x.id)).toEqual(['1', '3'])
+  })
+
+  it('findet nichts bei leerem Titel oder nur halb getipptem', () => {
+    expect(imStapelZuTitel(stapel, '')).toEqual([])
+    expect(imStapelZuTitel(stapel, 'Kon')).toEqual([])
   })
 })
