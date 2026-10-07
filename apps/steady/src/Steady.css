@@ -561,6 +561,30 @@ button.s-nm:active {
   letter-spacing: -0.05em;
 }
 
+.s-c.z b {
+  font-weight: inherit;
+}
+
+/* Menge am Ruhetag: Ziel verfehlt, aber vom Kontingent gedeckt - die Zahl
+   steht in einem Ring wie der Ruhetag, die Serie haelt. */
+.s-c.z.ruhe {
+  color: var(--text);
+}
+
+.s-c.z.ruhe b {
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 3.5px;
+  border-radius: 9px;
+  box-shadow: inset 0 0 0 1.5px var(--h);
+}
+
+.s-c.z.ruhe.lang b {
+  padding: 0 2px;
+}
+
 .s-c.pop i,
 .s-c.z.pop,
 .s-t.pop {
@@ -608,6 +632,13 @@ button.s-nm:active {
 
 .s-t.over {
   color: var(--text-3);
+}
+
+/* Menge am Ruhetag (vergangener Tag im zurueckgeblaetterten Fenster): Rand in
+   der Farbe wie der Ring im Raster. */
+.s-t.over.ruhe {
+  box-shadow: inset 0 0 0 2px var(--h);
+  color: var(--text);
 }
 
 .s-t .u {

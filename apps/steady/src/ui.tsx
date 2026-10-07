@@ -140,7 +140,8 @@ export function Segmented<T extends string | number>({
 // nur vergessen), winziger Punkt (noch nicht begonnen). Ein Ruhetag, der
 // ausdruecklich als nicht geschafft eingetragen ist, traegt ein kleines Kreuz
 // im Ring. Mit "menge" steht statt Punkt und Kreuz die eingetragene Zahl -
-// in der Farbe, wenn sie das Ziel erreicht.
+// in der Farbe, wenn sie das Ziel erreicht. Verfehlt sie das Ziel an einem
+// Ruhetag, steht sie in einem Ring wie der Ruhetag: die Serie haelt.
 const CELL: Record<DayState, string> = {
   done: 'd',
   rest: 'r',
@@ -166,7 +167,12 @@ export function Dot({
     const text = formatValueShort(wert)
     // Vier Ziffern ("2850") werden enger gesetzt, sonst laufen die Spalten ineinander.
     const lang = text.replace(',', '').length >= 4 ? ' lang' : ''
-    return <span className={`s-c z${lang}${state === 'done' ? ' ok' : ''}${pop ? ' pop' : ''}`}>{text}</span>
+    const art = state === 'done' ? ' ok' : state === 'rest' ? ' ruhe' : ''
+    return (
+      <span className={`s-c z${lang}${art}${pop ? ' pop' : ''}`}>
+        <b>{text}</b>
+      </span>
+    )
   }
   const nein = eintrag === NICHT_GESCHAFFT
   let cls = CELL[state]
@@ -224,11 +230,13 @@ export function DayBox({
     )
   }
   // Menge eingetragen, Ziel (noch) nicht erreicht. Heute mit Balken, sonst
-  // - oder ueber "hoechstens" - still und grau.
+  // - oder ueber "hoechstens" - still und grau. An einem Ruhetag (vergangener
+  // Tag im zurueckgeblaetterten Fenster) mit Rand in der Farbe: die Serie haelt.
   const p = progress(habit, value, day)
   const still = p.over || state !== 'open'
+  const ruhe = state === 'rest' ? ' ruhe' : ''
   return (
-    <span className={`s-t${still ? ' over' : ''}${due ? ' due' : ''}${cls}`}>
+    <span className={`s-t${still ? ' over' : ''}${ruhe}${due ? ' due' : ''}${cls}`}>
       {formatValue(value)}
       {!still ? <i className="bar" style={{ width: `${p.share * 100}%` }} /> : null}
     </span>

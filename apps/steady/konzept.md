@@ -99,6 +99,7 @@ der Gewohnheit – oder eben keiner.
 | × | **nicht geschafft** – verpasst und so eingetragen | kleines graues Kreuz (Text still) |
 | ▢ | **nichts eingetragen** – verpasst, aber leer (vielleicht vergessen) | leerer Kasten 13 px, Rand Text still |
 | 152 | **Menge** – der eingetragene Tageswert statt Punkt bzw. Kreuz | Zahl 11 px (vierstellig 9,5 px, enger), Gewohnheitsfarbe wenn erfüllt, sonst Text leise |
+| (90) | **Menge am Ruhetag** – Ziel verfehlt, aber vom Kontingent gedeckt, die Serie hält (seit 07.10.2026) | Zahl in weiß in einem Ring 1,5 px in Gewohnheitsfarbe, wie ◌ |
 | · | **noch nicht begonnen** – vor dem Beginn-Datum | winziger Punkt, 3 px |
 
 **Drei Zustände beim Eintragen** (seit 06.10.2026): leer, geschafft, nicht
@@ -120,6 +121,7 @@ Die **Heute-Spalte** ist breiter (Kasten 50 × 36 px) und zeigt mehr:
 | Menge unter Ziel | Wert in weiß, Fortschrittsbalken am unteren Rand in Gewohnheitsfarbe |
 | Menge erfüllt | Kasten gefüllt in Gewohnheitsfarbe, Wert dunkel |
 | Menge über „höchstens“ | Wert in Text still, grauer Rand – verfehlt |
+| Menge am Ruhetag (nur zurückgeblättert) | Wert in weiß, Rand 2 px in Gewohnheitsfarbe – verfehlt, aber gedeckt |
 
 ### Hochformat – von Kontor übernommen
 
@@ -376,7 +378,8 @@ Erststart                       (solange es keine Gewohnheit gibt)
       „täglich abhaken“ ist: „3× pro Woche“, „≥ 150 g“, „≤ 2500 kcal“
 - [x] Sechs Punkte (●, ◌, ⊗, ×, ▢, ·) für die vergangenen Tage, bei Mengen
       stattdessen die eingetragene Zahl (ab 100 ohne Komma, ab 10 000 als
-      „12k“)
+      „12k“). Verfehlt die Zahl das Ziel an einem Ruhetag, steht sie in einem
+      Ring – sonst sähe sie aus wie ein verpasster Tag, obwohl die Serie hält
 - [x] Heute-Kasten (Zustände siehe Design), bei Mengen mit dem heutigen Wert
 - [x] Serie: kleine Flamme in Bernstein + Zahl
 - [x] Reihenfolge manuell (Menü → Reihenfolge ändern), neue Gewohnheiten unten
@@ -539,8 +542,8 @@ Ganze Seite, Kopf: Abbrechen · Titel · **Sichern** (erst aktiv mit Namen).
 Wie Kontors „Über Kontor“: wer die App in einem halben Jahr öffnet, soll die
 Regeln in der App finden und nicht nur hier.
 
-- [x] Legende aller Zeichen mit echtem Aussehen (●, ◌, ×, ·, offener und
-      fälliger Heute-Kasten)
+- [x] Legende aller Zeichen mit echtem Aussehen (●, ◌, ×, ·, Menge, Menge
+      am Ruhetag, offener und fälliger Heute-Kasten)
 - [x] Kurz erklärt: Ruhetage, Woche Mo–So, Serie, Tageswechsel, warum es
       keine Pausen gibt
 
@@ -654,6 +657,13 @@ Ergänzt am 06.10.2026:
 13. **Drei Zustände beim Eintragen** – leer, geschafft, nicht geschafft. Leer
     und nicht geschafft rechnen gleich, nur das Zeichen unterscheidet sie
 14. **Mengen zeigen im Raster ihre Zahl**, nicht nur, ob das Ziel erreicht ist
+
+Ergänzt am 07.10.2026:
+
+15. **Menge am Ruhetag im Ring.** Eine Zahl unter dem Ziel sah an einem
+    Ruhetag genauso aus wie an einem verpassten Tag. Jetzt trägt sie den Ring
+    des Ruhetags (im breiten Kasten den Rand in der Farbe): verfehlt, aber die
+    Serie hält
 
 ---
 

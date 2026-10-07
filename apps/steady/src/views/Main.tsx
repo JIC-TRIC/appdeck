@@ -37,7 +37,8 @@ function sagt(h: Habit, state: DayState, eintrag: number | undefined) {
   if (eintrag === NICHT_GESCHAFFT) return state === 'rest' ? 'Ruhetag, nicht geschafft' : 'nicht geschafft'
   const wert = messwert(eintrag)
   if (h.kind === 'amount' && wert !== undefined) {
-    return `${formatValue(wert)} ${h.unit}`.trim() + (state === 'done' ? ', Ziel erreicht' : '')
+    const zusatz = state === 'done' ? ', Ziel erreicht' : state === 'rest' ? ', Ruhetag' : ''
+    return `${formatValue(wert)} ${h.unit}`.trim() + zusatz
   }
   return SAGT[state]
 }
