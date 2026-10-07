@@ -1,15 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
-  <!-- Kontor: ein Zettel mit dem Donut der Startseite, Segmente in den Farben der Standardkategorien mit feinen Luecken (Zettel-Stil wie stash.svg) -->
+  <!-- Kontor: der Donut der Startseite in den Farben der Standardkategorien, Umriss und Trennstriche in Tinte (Symbol-Stil siehe README) -->
   <rect width="180" height="180" fill="#FAF8F4"/>
   <g transform="translate(90 94) scale(1.18) translate(-90 -94)">
-    <rect x="42" y="50" width="96" height="84" rx="5" fill="#FFFFFF" stroke="#1F1D1A" stroke-width="4.5" transform="rotate(-10 90 92)"/>
-    <rect x="42" y="54" width="96" height="84" rx="5" fill="#FFFFFF" stroke="#1F1D1A" stroke-width="4.5"/>
-    <circle cx="90" cy="96" r="27" fill="none" stroke="#1F1D1A" stroke-width="21"/>
-    <g transform="rotate(-90 90 96)" fill="none" stroke-width="16">
-      <circle cx="90" cy="96" r="27" stroke="#E2685F" stroke-dasharray="59.77 109.88" stroke-dashoffset="-1.5"/>
-      <circle cx="90" cy="96" r="27" stroke="#D99A2B" stroke-dasharray="36.02 133.63" stroke-dashoffset="-64.27"/>
-      <circle cx="90" cy="96" r="27" stroke="#4A6FA5" stroke-dasharray="37.72 131.93" stroke-dashoffset="-103.29"/>
-      <circle cx="90" cy="96" r="27" stroke="#2E9E6B" stroke-dasharray="24.14 145.51" stroke-dashoffset="-144.01"/>
+    <circle cx="90" cy="94" r="46" fill="#FFFFFF"/>
+    <g transform="rotate(-90 90 94)" fill="none" stroke-width="25">
+      <circle cx="90" cy="94" r="33.5" stroke="#E2685F" stroke-dasharray="73.67 136.82" stroke-dashoffset="0"/>
+      <circle cx="90" cy="94" r="33.5" stroke="#D99A2B" stroke-dasharray="46.31 164.18" stroke-dashoffset="-73.67"/>
+      <circle cx="90" cy="94" r="33.5" stroke="#4A6FA5" stroke-dasharray="50.52 159.97" stroke-dashoffset="-119.98"/>
+      <circle cx="90" cy="94" r="33.5" stroke="#2E9E6B" stroke-dasharray="39.99 170.49" stroke-dashoffset="-170.49"/>
     </g>
+    <path d="M90 73V48M106.99 106.34L127.21 121.04M81.06 113L70.41 135.62M70.47 86.27L47.23 77.07" stroke="#1F1D1A" stroke-width="4.5"/>
+    <circle cx="90" cy="94" r="46" fill="none" stroke="#1F1D1A" stroke-width="4.5"/>
+    <circle cx="90" cy="94" r="21" fill="#FAF8F4" stroke="#1F1D1A" stroke-width="4.5"/>
   </g>
 </svg>

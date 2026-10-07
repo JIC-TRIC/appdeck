@@ -112,11 +112,14 @@ Statt eines Emojis geht auch ein Bild: Datei nach `icons/` legen (quadratisch, z
 `apps.js` `icon: 'icons/habits.png'` eintragen. (Bei Ionic-Apps landen nur die gebauten Dateien auf der
 Website, ein Bild direkt in `apps/habits/` würde also nicht mitkopiert.)
 
-**Symbol-Stil (alle App-Symbole, seit 07.10.2026 – Vorbild `icons/stash.svg`):** SVG 180×180, Grund =
-Hintergrund der App (= `color` in `apps.js`). Darauf zwei Zettel 96×84 mit `rx="5"`, der hintere um −10°
-gedreht, alles in `translate(90 94) scale(1.18) translate(-90 -94)`. Umriss 4,5 in der Tinte der App
-(dunkel auf hellen Apps, hell auf dunklen), auf dem vorderen Zettel das Motiv der App mit einer
-Akzentfarbe; ein Titelstrich (6,5, rund) wo es passt. Keine Verläufe, keine Schatten im Bild.
+**Symbol-Stil (alle App-Symbole, seit 07.10.2026):** Jede App hat ihr eigenes Motiv, alle sprechen
+dieselbe Sprache. SVG 180×180, Grund = Hintergrund der App (= `color` in `apps.js`). Das Motiv liegt in
+`translate(90 94) scale(1.18) translate(-90 -94)` und füllt ungefähr x 40–140, y 50–140. Umriss 4,5 in der
+Tinte der App (dunkel auf hellen Apps, hell auf dunklen), flache Farben aus der App, wenige runde Formen,
+keine Verläufe, keine Schatten im Bild. **Der Zettelstapel gehört nur Stash** – andere Apps bekommen kein
+Blatt mit Text darauf, sondern ein Ding aus ihrer eigenen Oberfläche: Kontor den Donut, Steady den
+abgehakten Heute-Kasten mit Flamme, Piano Tasten mit Messing-Taste, Loci den Bogen mit Schlüsselloch.
+(Am 07.10.2026 trugen kurz alle den Zettel – sah zu gleich aus.)
 
 ---
 
