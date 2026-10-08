@@ -192,8 +192,8 @@ export type MoneySign = 'auto' | 'minus' | 'plus' | 'none'
 // Betrag mit kleinerem Cent-Teil.
 //
 // Beim Verbergen (diskret.ts) steht statt der Zahl ••••, das Vorzeichen bleibt.
-// Standard ist "Summe" - immer verdeckt. "einzel" ist eine einzelne Buchung,
-// verdeckt erst ab der Grenze. "offen" zeigt ihn immer (Eingabe, Korrektur).
+// Standard ist "Summe" - verdeckt. "einzel" ist eine einzelne Buchung, die
+// bleibt lesbar. "offen" zeigt ihn immer (Eingabe, Korrektur).
 export function Money({
   cent,
   sign = 'none',
@@ -214,7 +214,7 @@ export function Money({
   else if (sign === 'plus') prefix = '+'
   else if (sign === 'auto') prefix = neg ? '−' : '+'
   else if (neg) prefix = '−'
-  if (!offen && verdeckt(diskret, cent, einzel)) {
+  if (!offen && verdeckt(diskret, einzel)) {
     return (
       <span className={`k-money verdeckt ${className}`} aria-label="Betrag verborgen">
         {prefix}

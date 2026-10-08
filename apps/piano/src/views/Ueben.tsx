@@ -156,7 +156,7 @@ function UebenInhalt({
             <span className="p-play">
               <IconPlay />
             </span>
-            <span className="p-video-hint">In YouTube öffnen – die Uhr läuft weiter</span>
+            <span className="p-video-hint">In YouTube öffnen</span>
           </Thumb>
         </a>
       ) : (
@@ -191,11 +191,12 @@ function UebenInhalt({
         <section className="p-card p-pad p-stack" style={{ gap: 4, width: '100%' }}>
           <span className="p-lbl">Ziel dieser Sitzung</span>
           <span className="p-strong">{nextStepLong(piece.progress)}</span>
-          <span className="p-s3">
-            {queue.length
-              ? `Danach: ${byId[queue[0]].title}${queue.length > 1 ? ` und ${queue.length - 1} weitere` : ''}`
-              : 'Unter 30 Sekunden wird nichts gespeichert.'}
-          </span>
+          {queue.length ? (
+            <span className="p-s3">
+              Danach: {byId[queue[0]].title}
+              {queue.length > 1 ? ` und ${queue.length - 1} weitere` : ''}
+            </span>
+          ) : null}
         </section>
       </main>
 

@@ -89,7 +89,6 @@ function Statistik({ ctx }: { ctx: PianoCtx }) {
       <section className="p-card p-pad p-stack" style={{ gap: 10 }} aria-label="Kalender der letzten 17 Wochen">
         <div className="p-between">
           <span className="p-lbl">Letzte 17 Wochen</span>
-          <span className="p-s3">heute rechts unten</span>
         </div>
         <div className="p-cal">
           <span />
@@ -268,9 +267,7 @@ function Tageskalender({ ctx, tops }: { ctx: PianoCtx; tops: Map<string, DayTop>
           </span>
           <IconRight className="p-chev" />
         </button>
-      ) : (
-        <span className="p-s3">Tipp auf ein Bild zeigt den Titel.</span>
-      )}
+      ) : null}
     </section>
   )
 }

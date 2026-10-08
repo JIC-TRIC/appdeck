@@ -71,11 +71,6 @@ function Setlists({ ctx }: ViewProps) {
         <IconPlus />
         Neue Setlist
       </button>
-      <p className="p-note p-center">
-        {setlists.length
-          ? 'Dauer = Ø deiner Sitzungen pro Stück.'
-          : 'Eine Setlist ist ein Programm: Stücke in fester Reihenfolge, zum Durchspielen.'}
-      </p>
 
       {naming ? (
         <SetlistNameSheet

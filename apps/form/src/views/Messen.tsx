@@ -126,7 +126,6 @@ function Messen({ ctx, start }: { ctx: FormCtx; start: string }) {
                   inputMode="decimal"
                   enterKeyHint={i < werte.length - 1 ? 'next' : 'done'}
                   autoComplete="off"
-                  placeholder={davor ? formatZahl(davor.zahl) : '–'}
                   value={text}
                   onChange={(e) => tippe(w.id, e.target.value)}
                   onKeyDown={weiter(i)}
@@ -138,9 +137,6 @@ function Messen({ ctx, start }: { ctx: FormCtx; start: string }) {
           )
         })}
       </div>
-      <p className="f-note f-note-unter">
-        Leere Felder bleiben leer. Pro Tag zählt eine Messung – nochmal messen ersetzt sie.
-      </p>
     </Seite>
   )
 }

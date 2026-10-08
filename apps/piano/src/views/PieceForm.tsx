@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { IconClipboard, IconExternal } from '../icons'
 import { Sheet, SheetHead, Thumb } from '../ui'
-import { DIFFICULTIES, PRESETS, difficultyInfo } from '../model'
+import { DIFFICULTIES, PRESETS } from '../model'
 import { addPiece, findDuplicate, updatePiece } from '../store'
 import { extractVideoId, thumbnailUrl, youtubeSearchUrl } from '../util'
 import type { Difficulty, PianoCtx } from '../types'
@@ -97,7 +97,6 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
                 autoCapitalize="off"
                 autoCorrect="off"
                 spellCheck={false}
-                placeholder="https://youtu.be/…"
                 value={url}
                 onChange={(e) => {
                   setUrl(e.target.value)
@@ -112,10 +111,9 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
             {videoId ? (
               <div className="p-hstack" style={{ gap: 10 }}>
                 <Thumb src={thumbnailUrl(url)} className="preview" />
-                <span className="p-s2">Video erkannt – das Vorschaubild kommt von YouTube.</span>
               </div>
             ) : url.trim() ? (
-              <span className="p-s2">Kein YouTube-Link erkannt. Speichern geht trotzdem, nur ohne Video.</span>
+              <span className="p-s2">Kein YouTube-Link erkannt.</span>
             ) : null}
           </div>
 
@@ -128,7 +126,6 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
               className="p-input"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="z. B. Clair de Lune"
               enterKeyHint="next"
             />
           </div>
@@ -142,7 +139,6 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
               className="p-input"
               value={artist}
               onChange={(e) => setArtist(e.target.value)}
-              placeholder="z. B. Claude Debussy"
               enterKeyHint="done"
             />
           </div>
@@ -166,11 +162,6 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
                 </button>
               ))}
             </div>
-            <span className="p-s3">
-              {difficulty === 'Unknown'
-                ? 'Deine Einschätzung – egal, wie weit du schon bist.'
-                : difficultyInfo(difficulty).text}
-            </span>
           </div>
 
           {!editing ? (
@@ -192,7 +183,6 @@ function PieceForm({ ctx, pieceId, onClose }: { ctx: PianoCtx; pieceId?: string;
                   </button>
                 ))}
               </div>
-              <span className="p-s3">Genauer geht’s später auf der Seite des Stücks.</span>
             </div>
           ) : null}
 

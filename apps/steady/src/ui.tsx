@@ -190,12 +190,14 @@ export function Dot({
 // Fenster) mit Haken bzw. Tageswert. Bei Mengen zeigt ein Balken am unteren
 // Rand, wie weit es noch zum Ziel ist. "frei": heute ist noch ein Ruhetag
 // uebrig - der Kasten traegt schon den Ring, solange nichts erledigt ist.
+// Heute faellig sieht aus wie jeder offene Tag: was keinen Ring traegt, ist
+// heute zu machen (der farbige Rand dafuer war leicht mit dem Ruhetag zu
+// verwechseln).
 export function DayBox({
   habit,
   state,
   value: eintrag,
   day,
-  due,
   frei,
   pop,
 }: {
@@ -203,7 +205,6 @@ export function DayBox({
   state: DayState
   value: number | undefined
   day: string
-  due?: boolean
   frei?: boolean
   pop?: boolean
 }) {
@@ -223,14 +224,18 @@ export function DayBox({
     // Nicht geschafft: Kreuz im Kasten. Ein Ruhetag (vergangener Tag im
     // zurueckgeblaetterten Fenster oder heute frei) behaelt seinen Ring, mit
     // Kreuz darin, wenn er so eingetragen ist. Nichts eingetragen: leerer Kasten.
+    // Eine Menge traegt ihre Einheit im Ring, sonst saehe sie aus wie ein Haken.
     const nein = eintrag === NICHT_GESCHAFFT ? ' nein' : ''
+    if ((state === 'rest' || frei) && habit.kind === 'amount' && !nein) {
+      return (
+        <span className={`s-t rest${cls}`}>
+          <span className="u">{habit.unit || '–'}</span>
+        </span>
+      )
+    }
     if (state === 'rest' || frei) return <span className={`s-t rest${nein}${cls}`}><i /></span>
     if (nein) return <span className={`s-t nein${cls}`}><i /></span>
-    return (
-      <span className={`s-t${due ? ' due' : ''}`}>
-        {habit.kind === 'amount' ? <span className="u">{habit.unit || '–'}</span> : null}
-      </span>
-    )
+    return <span className="s-t">{habit.kind === 'amount' ? <span className="u">{habit.unit || '–'}</span> : null}</span>
   }
   // Menge eingetragen, Ziel (noch) nicht erreicht. Heute mit Balken, sonst
   // - oder ueber "hoechstens" - still und grau. An einem Ruhetag (vergangener
@@ -239,7 +244,7 @@ export function DayBox({
   const still = p.over || state !== 'open'
   const ruhe = state === 'rest' ? ' ruhe' : ''
   return (
-    <span className={`s-t${still ? ' over' : ''}${ruhe}${due ? ' due' : ''}${cls}`}>
+    <span className={`s-t${still ? ' over' : ''}${ruhe}${cls}`}>
       {formatValue(value)}
       {!still ? <i className="bar" style={{ width: `${p.share * 100}%` }} /> : null}
     </span>

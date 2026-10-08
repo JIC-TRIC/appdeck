@@ -113,14 +113,13 @@ function Setlist({ ctx, view }: ViewProps) {
           </IonReorderGroup>
         </IonList>
       ) : (
-        <p className="p-note p-center">Noch leer. Füge Stücke hinzu – die Reihenfolge änderst du später am Griff.</p>
+        <p className="p-note p-center">Noch leer.</p>
       )}
 
       <button type="button" className="p-link center" onClick={() => setSheet('add')}>
         <IconPlus />
         Stück hinzufügen
       </button>
-      {list.length > 1 ? <p className="p-note p-center">Am Griff ziehen zum Umsortieren, nach links wischen zum Entfernen.</p> : null}
 
       {sheet === 'actions' ? (
         <ListSheet
@@ -130,7 +129,6 @@ function Setlist({ ctx, view }: ViewProps) {
             { key: 'rename', label: 'Umbenennen', onPick: () => setSheet('rename') },
             { key: 'delete', label: 'Setlist löschen', danger: true, onPick: remove },
           ]}
-          note="Die Stücke selbst bleiben erhalten."
         />
       ) : null}
 
@@ -168,7 +166,6 @@ function Setlist({ ctx, view }: ViewProps) {
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Titel oder Interpret"
                   aria-label="Suchen"
                 />
               </label>

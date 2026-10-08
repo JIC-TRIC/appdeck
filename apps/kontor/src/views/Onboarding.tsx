@@ -71,7 +71,6 @@ function Onboarding({ ctx }: { ctx: KontorCtx }) {
         <div className="k-row-card">
           <div className="grow">
             <div className="k-row-title">Zur Gesamtbalance zählen</div>
-            <div className="k-row-hint">Später pro Konto änderbar</div>
           </div>
           <Toggle on={includeInTotal} onChange={setInclude} label="Zur Gesamtbalance zählen" />
         </div>

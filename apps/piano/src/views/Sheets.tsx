@@ -51,7 +51,6 @@ export function SetlistNameSheet({
                 className="p-input"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="z. B. Vorspiel im Januar"
                 enterKeyHint="done"
               />
             </div>
@@ -71,7 +70,6 @@ export function DayStartSheet({ value, onClose, onSaved }: { value: number; onCl
       label="Tageswechsel"
       title="Tageswechsel"
       onClose={onClose}
-      note="Bis zu dieser Uhrzeit zählt noch der Vortag. Wer nach Mitternacht übt, übt so noch für den Abend davor – Serie und Tagesziel stimmen."
       items={HOURS.map((h) => ({
         key: String(h),
         label: h === 0 ? 'Mitternacht' : `${h}:00 Uhr`,

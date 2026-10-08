@@ -89,10 +89,6 @@ export function DayStartSheet({ ctx }: ViewProps) {
               </button>
             ))}
           </div>
-          <p className="s-note">
-            Bis zu dieser Uhrzeit zählt noch der Vortag. Wer nach Mitternacht liest, hakt „Lesen“ so für den richtigen
-            Tag ab.
-          </p>
         </div>
       )}
     </Sheet>

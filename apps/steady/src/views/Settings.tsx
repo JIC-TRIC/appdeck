@@ -62,12 +62,6 @@ function Settings({ ctx }: ViewProps) {
           </span>
         </button>
       </div>
-      <p className="s-note">
-        {settings.dayStart === 0
-          ? 'Der Tag wechselt um Mitternacht.'
-          : `Bis ${settings.dayStart}:00 Uhr nachts gilt noch der Vortag.`}{' '}
-        Wochen beginnen immer am Montag.
-      </p>
 
       <div className="s-label">Daten</div>
       <div className="s-list">
@@ -81,6 +75,7 @@ function Settings({ ctx }: ViewProps) {
         <button type="button" className="s-li" onClick={() => fileRef.current?.click()}>
           Import aus JSON
           <span className="v">
+            ersetzt alles
             <IconRight />
           </span>
         </button>
@@ -96,7 +91,6 @@ function Settings({ ctx }: ViewProps) {
           e.target.value = ''
         }}
       />
-      <p className="s-note">Der Import ersetzt alle Steady-Daten.</p>
 
       <div className="s-list">
         <button
@@ -131,10 +125,6 @@ function Settings({ ctx }: ViewProps) {
 
       <div className="s-footer">
         <div className="s-wordmark small">steady</div>
-        <p className="s-note center">
-          Deine Daten liegen nur auf diesem Gerät. Gesichert wird über das Backup im Launcher (Zahnrad) oder den Export
-          hier.
-        </p>
       </div>
     </Screen>
   )

@@ -39,7 +39,6 @@ function Reorder({ ctx }: ViewProps) {
           )
         })}
       </IonReorderGroup>
-      <p className="s-note">Am Griff ziehen. Die Reihenfolge gilt für das Raster.</p>
     </Screen>
   )
 }

@@ -91,12 +91,10 @@ function Einstellungen({ ctx }: ViewProps) {
                 refresh()
               }}
             />
-            <span className="p-s3">In der YouTube-App laufen Videos mit Premium ohne Werbung. Die Uhr läuft trotzdem weiter.</span>
           </div>
           <button type="button" className="p-set-row" onClick={() => setDayStartOpen(true)}>
             <span className="p-row-main">
               <span className="p-strong">Tageswechsel</span>
-              <span className="p-s3">Wer nach Mitternacht übt, zählt zum Vortag.</span>
             </span>
             <span className="p-s2 p-num">{dayStartLabel}</span>
             <IconRight className="p-chev" />
@@ -120,10 +118,6 @@ function Einstellungen({ ctx }: ViewProps) {
             <span className="p-s2 p-num">{formatBytes(storageBytes())}</span>
           </div>
         </div>
-        <p className="p-note p-grp">
-          „Teilen“ öffnet das iOS-Menü: In Dateien sichern, AirDrop, Mail. Der Import nimmt auch Exporte der alten
-          Piano-App und ersetzt alle Piano-Daten.
-        </p>
       </section>
 
       <div className="p-list">
@@ -134,7 +128,7 @@ function Einstellungen({ ctx }: ViewProps) {
         </button>
       </div>
 
-      <p className="p-note p-center">Piano {VERSION} · Deine Daten liegen nur auf diesem Gerät.</p>
+      <p className="p-note p-center">Piano {VERSION}</p>
 
       {dayStartOpen ? (
         <DayStartSheet value={settings.dayStart} onClose={() => setDayStartOpen(false)} onSaved={refresh} />

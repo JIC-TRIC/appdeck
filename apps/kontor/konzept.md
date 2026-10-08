@@ -526,9 +526,8 @@ fuers Hochformat gerechnet – von oben nach unten:
 ### 12 – Einstellungen
 
 - [x] Wochenstart (Montag/Sonntag)
-- [x] **Betraege verbergen** (seit 07.10.2026, siehe „Betraege verbergen"
-      unten): Schalter, „Beim Oeffnen verbergen", „Einzelne Buchungen
-      verbergen ab" (Nie · 50 € · 100 € · 250 € · Alle)
+- Betraege verbergen hat keine Einstellungen mehr (seit 08.10.2026), nur
+  das Auge auf der Hauptansicht – siehe „Betraege verbergen" unten
 - [x] Umbuchungen ueber die Grenze zaehlen (Standard an)
 - [x] **Export als JSON** / **Import aus JSON** (ersetzt alles, prueft die
       Struktur und meldet eine kaputte Datei)
@@ -556,22 +555,22 @@ Kontor in der Bahn oder an der Kasse oeffnen, ohne dass jemand ueber die
 Schulter Gesamtbalance oder Gehalt mitliest. Gedacht als Sichtschutz, nicht
 als Sperre – die Daten liegen weiter unverschluesselt auf dem Geraet.
 
-**Was verborgen wird.** Die Regel ist eine einzige: *alles Zusammengerechnete
-immer, Einzelbuchungen erst ab einer Grenze.*
+**Was verborgen wird.** Die Regel ist eine einzige: *alles Zusammengerechnete,
+nie eine einzelne Buchung.*
 
-| verborgen (immer) | offen bis zur Grenze | immer offen |
-|---|---|---|
-| Gesamtbalance, Kontosalden | einzelne Buchungen in Listen | Eingabe im Ziffernfeld |
-| Ausgaben/Einnahmen des Zeitraums (Kacheln) | „groesste Buchung" im Kategoriedetail | Saldo korrigieren (Bisher, Differenz) |
-| Ringmitte („übrig"), Kategoriebetrag | Meldungen „Gebucht: …" / „Gelöscht: …" | Prozentwerte, Sparquote, Anzahl |
-| Budgets, Durchschnitte, Hochrechnung, Spitze | | Balkenhoehen und Ringanteile |
-| Tagessummen in der Buchungsliste, Zahlen an Balken | | |
+| verborgen | immer offen |
+|---|---|
+| Gesamtbalance, Kontosalden | einzelne Buchungen in Listen |
+| Ausgaben/Einnahmen des Zeitraums (Kacheln) | „groesste Buchung" im Kategoriedetail |
+| Ringmitte („übrig"), Kategoriebetrag | Meldungen „Gebucht: …" / „Gelöscht: …" |
+| Budgets, Durchschnitte, Hochrechnung, Spitze | Eingabe im Ziffernfeld, Saldo korrigieren (Bisher, Differenz) |
+| Tagessummen in der Buchungsliste, Zahlen an Balken | Prozentwerte, Sparquote, Anzahl, Balkenhoehen und Ringanteile |
 
 - Eine Summe aus lauter kleinen Buchungen ist trotzdem verborgen: was
   zusammengerechnet ist, verraet mehr als jeder einzelne Kaffee.
-- **Grenze fuer Einzelbuchungen** (Einstellungen): Nie · 50 € · 100 € ·
-  250 € · Alle. Standard **100 €** – Einkauf und Kaffee bleiben lesbar, Miete,
-  Gehalt und groessere Anschaffungen nicht. Betrag zaehlt ohne Vorzeichen.
+- Bis 08.10.2026 gab es eine Grenze fuer Einzelbuchungen (Nie · 50 € · 100 € ·
+  250 € · Alle) und „Beim Oeffnen verbergen" in den Einstellungen. Beides kostete
+  zu viel Platz und fiel weg, Einzelbuchungen bleiben seitdem immer lesbar.
 - **Anzeige:** `••••` statt der Ziffern, Vorzeichen und Farbe bleiben (man
   sieht, ob plus oder minus, nicht wie viel). Diagramme bleiben stehen, nur
   ihre Zahlen fallen weg.
@@ -579,18 +578,15 @@ immer, Einzelbuchungen erst ab einer Grenze.*
   abgleicht, tippt die Zahl gerade selbst bzw. muss vergleichen koennen.
 
 **Bedienung.**
-- [x] **Auge rechts neben der Gesamtbalance** auf der Hauptansicht: ein Tipp
-      verbirgt bzw. zeigt alles. Neben der groessten Zahl, weil man es dort
-      sucht; die Hauptansicht wird dadurch nicht hoeher.
+- [x] **Kleines Auge hinter „Gesamtbalance"** auf der Hauptansicht: ein Tipp
+      verbirgt bzw. zeigt alles. So gross und leise wie die Beschriftung, die
+      Zeile wird davon nicht hoeher. (Bis 08.10.2026 ein runder Knopf rechts
+      neben der Gesamtbalance – zu aufdringlich.)
 - [x] Der Zustand bleibt gespeichert (`settings.diskret`).
-- [x] **„Beim Oeffnen verbergen"** (`settings.diskretBeimStart`): beim Start
-      und jedes Mal, wenn Kontor in den Hintergrund geht. iOS holt Web-Apps oft
-      ohne Neuladen zurueck – sonst stuende nach dem Entsperren in der Bahn noch
-      alles offen da.
 - [x] Gesetzt wird es zentral: `<Money>` liest den Zustand aus
       `DiskretContext` (`diskret.ts`). Standard ist „Summe"; `einzel` fuer
-      eine Buchung, `offen` fuer Eingabe und Korrektur. Text ausserhalb von
-      `<Money>` geht ueber `betragOderMaske`.
+      eine Buchung und `offen` fuer Eingabe und Korrektur bleiben lesbar. Text
+      ausserhalb von `<Money>` geht ueber `betragOderMaske`.
 
 **Bewusst nicht:** kurz antippen zum Aufdecken einzelner Betraege (die meisten
 Betraege sind selbst schon Knoepfe), Code oder Face ID (geht fuer Web-Apps
@@ -681,7 +677,7 @@ apps/kontor/
    │                       Uebernahme der Daten aus k-deploy
    ├─ calc.ts              Summen, Donut-Segmente, Reihen, Vergleiche
    ├─ util.ts              Geld, Datum, Zeitraeume
-   ├─ diskret.ts           Betraege verbergen: Regel, Grenzen, Context
+   ├─ diskret.ts           Betraege verbergen: Regel, Context
    ├─ charts.tsx           Donut, Balken, Linie
    ├─ icons.tsx            Strich-Icon-Set
    ├─ data.ts              Startdaten, Farben

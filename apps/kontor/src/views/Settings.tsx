@@ -3,11 +3,10 @@ import { IconDownload, IconInfo, IconRight, IconTrash, IconUpload } from '../ico
 import { Label, Screen, Toggle } from '../ui'
 import { dateKey } from '../util'
 import { clearAll, exportSnapshot, importFile, updateSettings } from '../kontorStore'
-import { DISKRET_GRENZEN, MASKE } from '../diskret'
 import type { Settings as SettingsData, ViewProps } from '../types'
 
 function Settings({ ctx }: ViewProps) {
-  const { settings, entries, accounts, back, push, refresh, onExit, diskret, setDiskret } = ctx
+  const { settings, entries, back, push, refresh, onExit } = ctx
   const fileRef = useRef<HTMLInputElement>(null)
   // Erfolg gruen, Fehler rot - vorher sahen beide gleich aus.
   const [status, setStatus] = useState<{ text: string; error?: boolean } | null>(null)
@@ -83,56 +82,11 @@ function Settings({ ctx }: ViewProps) {
         </div>
       </div>
 
-      <Label>Beträge verbergen</Label>
-      <div className="k-card k-pad16 k-diskret-card">
-        <div className="k-row-card bare">
-          <div className="grow">
-            <div className="k-row-title">Beträge verbergen</div>
-            <div className="k-row-hint">
-              Summen, Salden und Budgets stehen als {MASKE}. Schneller: das Auge neben der Gesamtbalance.
-            </div>
-          </div>
-          <Toggle on={diskret.an} label="Beträge verbergen" onChange={setDiskret} />
-        </div>
-        <div className="k-row-card bare">
-          <div className="grow">
-            <div className="k-row-title">Beim Öffnen verbergen</div>
-            <div className="k-row-hint">Jedes Mal, wenn Kontor startet oder aus dem Hintergrund zurückkommt.</div>
-          </div>
-          <Toggle
-            on={settings.diskretBeimStart === true}
-            label="Beim Öffnen verbergen"
-            onChange={(on) => set({ diskretBeimStart: on })}
-          />
-        </div>
-        <div>
-          <div className="k-row-title">Einzelne Buchungen verbergen ab</div>
-          <div className="k-row-hint">Ein Kaffee verrät nichts, das Gehalt schon. Summen sind immer verborgen.</div>
-          <div className="k-mini-seg wide" role="radiogroup" aria-label="Einzelne Buchungen verbergen ab">
-            {DISKRET_GRENZEN.map((g) => (
-              <button
-                key={g.label}
-                type="button"
-                role="radio"
-                aria-checked={diskret.abCent === g.cent}
-                className={diskret.abCent === g.cent ? 'on' : ''}
-                onClick={() => set({ diskretAbCent: g.cent })}
-              >
-                {g.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       <Label>Berechnung</Label>
       <div className="k-card k-pad16">
         <div className="k-row-card bare">
           <div className="grow">
             <div className="k-row-title">Umbuchungen über die Grenze zählen</div>
-            <div className="k-row-hint">
-              An: Geld auf ein Konto außerhalb der Gesamtbalance zählt als Ausgabe.
-            </div>
           </div>
           <Toggle
             on={settings.countBoundaryTransfers}
@@ -206,11 +160,6 @@ function Settings({ ctx }: ViewProps) {
 
       <div className="k-footer">
         <div className="k-brand small">Kontor</div>
-        <div className="k-meta center">
-          {accounts.length} {accounts.length === 1 ? 'Konto' : 'Konten'} · alles liegt nur auf diesem
-          Gerät. Kein Konto, keine Cloud, kein Sync. Gesichert wird über das Backup im Launcher
-          (Zahnrad) oder den Export hier.
-        </div>
       </div>
     </Screen>
   )

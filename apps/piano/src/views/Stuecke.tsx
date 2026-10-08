@@ -127,7 +127,6 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
                 type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Titel oder Interpret"
                 aria-label="Suchen"
                 enterKeyHint="search"
               />
@@ -220,7 +219,7 @@ function Stuecke({ ctx }: { ctx: PianoCtx }) {
         </>
       ) : (
         <div className="p-empty small">
-          <p className="p-sub p-center">Noch keine Stücke. Leg das erste mit einem YouTube-Link an.</p>
+          <p className="p-sub p-center">Noch keine Stücke.</p>
           <button type="button" className="p-btn" onClick={() => openForm()}>
             <IconPlus />
             Stück hinzufügen
@@ -347,10 +346,6 @@ function FilterSheet({
               })}
             </div>
           </div>
-
-          <p className="p-note">
-            Mehrere in einer Gruppe: eins davon reicht. In beiden Gruppen gewählt: beides muss passen.
-          </p>
 
           <div className="p-hstack">
             <button

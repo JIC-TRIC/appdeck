@@ -61,7 +61,6 @@ function Stapel({ notizen, geleert, onZurueck, onKopieren, onLoeschen, onZurueck
         ) : (
           <div className="s-leer">
             <p className="s-leer-t">Nichts im Stapel.</p>
-            <p className="s-note">Was du ablegst, sammelt sich hier, bis du es kopierst.</p>
             {geleert ? (
               <div className="s-geleert">
                 <p className="s-note">

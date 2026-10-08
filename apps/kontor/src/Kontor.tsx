@@ -31,7 +31,7 @@ import {
 } from './kontorStore'
 import { formatCent, todayKey } from './util'
 import { stapelLesen, stapelSchreiben } from './entwurf'
-import { betragOderMaske, diskretAus, DiskretContext } from './diskret'
+import { diskretAus, DiskretContext } from './diskret'
 import type { Account, Category, Entry, KontorCtx, Period, View, ViewName, ViewProps } from './types'
 
 const PAGES: Partial<Record<ViewName, ComponentType<ViewProps>>> = {
@@ -80,26 +80,6 @@ function Kontor() {
   // zweite Wahrheit im Speicher.
   const [tick, setTick] = useState(0)
   const refresh = useCallback(() => setTick((t) => t + 1), [])
-
-  // "Beim Öffnen verbergen": einmal vor dem ersten Zeichnen ...
-  useState(() => {
-    const s = getSettings()
-    if (s.diskretBeimStart && !s.diskret) updateSettings({ diskret: true })
-  })
-  // ... und jedes Mal, wenn Kontor in den Hintergrund geht. iOS holt eine
-  // Web-App oft ohne Neuladen zurueck - dann stuende sonst noch alles offen da.
-  useEffect(() => {
-    const weg = () => {
-      if (document.visibilityState !== 'hidden') return
-      const s = getSettings()
-      if (s.diskretBeimStart && !s.diskret) {
-        updateSettings({ diskret: true })
-        refresh()
-      }
-    }
-    document.addEventListener('visibilitychange', weg)
-    return () => document.removeEventListener('visibilitychange', weg)
-  }, [refresh])
 
   const data = useMemo(() => {
     const settings = getSettings()
@@ -210,10 +190,9 @@ function Kontor() {
       const look = entryLook(entry, data.catById, data.accById)
       deleteEntry(entry.id)
       refresh()
-      const betrag = betragOderMaske(diskret, entry.amountCent, formatCent(entry.amountCent), true)
-      notify(`Gelöscht: ${look.title}, ${betrag} €`, () => restoreEntry(entry))
+      notify(`Gelöscht: ${look.title}, ${formatCent(entry.amountCent)} €`, () => restoreEntry(entry))
     },
-    [data, diskret, refresh, notify],
+    [data, refresh, notify],
   )
 
   const ctx: KontorCtx = {

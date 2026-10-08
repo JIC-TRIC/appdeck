@@ -779,21 +779,23 @@ ion-modal.k-sheet-modal {
    eine Flaeche, eine zweite direkt darunter macht die Uebersicht unruhig.
    Der Betrag steht allein auf seiner Zeile und darf dafuer gross sein. */
 .k-balance-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.25rem;
-  margin: 0 0.75rem 0 1.25rem;
+  margin: 0 1.25rem;
+  padding-top: 0.75rem;
   border-top: 1px solid var(--line);
   flex-shrink: 0;
+}
+
+.k-balance-head {
+  display: flex;
+  align-items: center;
 }
 
 .k-balance {
   display: flex;
   align-items: flex-end;
   gap: 0.625rem;
-  flex-grow: 1;
-  min-width: 0;
-  padding: 0.75rem 0 0.125rem;
+  width: 100%;
+  padding: 0.0625rem 0 0.125rem;
   text-align: left;
 }
 
@@ -801,15 +803,25 @@ ion-modal.k-sheet-modal {
   opacity: 0.55;
 }
 
-/* Auge rechts neben der Saldoleiste: leise, solange alles offen steht;
-   verborgen hinterlegt wie ein eingeschalteter Knopf. */
+/* Auge hinter "Gesamtbalance": so klein und leise wie die Beschriftung. Die
+   Tippflaeche ist groesser als das Symbol, die Zeile wird davon nicht hoeher. */
 .k-eye {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 1.75rem;
+  margin: -0.5rem 0 -0.5rem 0.125rem;
   color: var(--muted);
-  margin-bottom: 0.0625rem;
 }
 
-.k-eye.on {
-  color: var(--ink);
+.k-eye svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.k-eye:active {
+  opacity: 0.55;
 }
 
 /* Verborgener Betrag: •••• statt der Ziffern, etwas gesperrt, damit die
@@ -818,15 +830,9 @@ ion-modal.k-sheet-modal {
   letter-spacing: 0.08em;
 }
 
-.k-balance-main {
-  display: flex;
-  flex-direction: column;
-  gap: 0.0625rem;
+.k-balance-num {
   flex-grow: 1;
   min-width: 0;
-}
-
-.k-balance-num {
   font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -2556,22 +2562,6 @@ ion-modal.k-sheet-modal {
   background: var(--surface);
   color: var(--ink);
   font-weight: 600;
-}
-
-/* Ueber die ganze Breite, unter einer Zeile mit Erklaerung (Verbergen ab …) */
-.k-mini-seg.wide {
-  margin-top: 0.625rem;
-}
-
-.k-mini-seg.wide button {
-  flex: 1 1 0;
-  min-height: 2rem;
-}
-
-.k-diskret-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
 }
 
 .k-footer {

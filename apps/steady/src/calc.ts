@@ -195,13 +195,6 @@ export function weekOf(h: Habit, log: Log, day: string, today: string) {
   return evaluateWeek(h, log[h.id], mondayOf(day), today)
 }
 
-// Heute noetig, obwohl x-mal pro Woche: keine Ruhetage mehr frei. Nur dann
-// bekommt der Heute-Kasten den Rand in der Gewohnheitsfarbe.
-export function isDueWeekly(h: Habit, log: Log, today: string) {
-  const w = weekOf(h, log, today, today)
-  return w.perWeek < 7 && w.due
-}
-
 // Heute frei, x-mal pro Woche: noch Ruhetage uebrig und eine laufende Serie.
 // Bleibt heute leer, wird es nach dem Tageswechsel ein Ruhetag - der
 // Heute-Kasten zeigt darum schon den Ring, und eintragen muss man nichts.

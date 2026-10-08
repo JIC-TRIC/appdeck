@@ -14,12 +14,6 @@ const RICHTUNGEN: { id: Richtung; label: string }[] = [
   { id: 'egal', label: 'Egal' },
 ]
 
-const RICHTUNG_NOTIZ: Record<Richtung, string> = {
-  mehr: 'Zunahme zählt als Fortschritt und wird orange – zum Beispiel beim Bizeps.',
-  weniger: 'Abnahme zählt als Fortschritt und wird orange – zum Beispiel bei der Taille.',
-  egal: 'Veränderungen werden nur angezeigt, nicht bewertet.',
-}
-
 // Wert anlegen oder bearbeiten: Name, Einheit, Richtung, Ziel. Beim
 // Bearbeiten unten auch Loeschen - mit allen Eintraegen.
 function WertForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
@@ -86,7 +80,6 @@ function WertForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
             type="text"
             value={name}
             maxLength={NAME_MAX}
-            placeholder="z. B. Bizeps rechts"
             autoComplete="off"
             enterKeyHint="next"
             onChange={(e) => setName(e.target.value)}
@@ -102,7 +95,6 @@ function WertForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
             type="text"
             value={einheit}
             maxLength={EINHEIT_MAX}
-            placeholder="kg, cm, % … oder leer"
             autoComplete="off"
             autoCapitalize="none"
             onChange={(e) => setEinheit(e.target.value)}
@@ -125,7 +117,6 @@ function WertForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
         <div className="f-feld">
           <span className="f-label">Was ist besser?</span>
           <Segment label="Was ist besser?" optionen={RICHTUNGEN} wert={richtung} onWahl={setRichtung} />
-          <p className="f-note">{RICHTUNG_NOTIZ[richtung]}</p>
         </div>
 
         <label className="f-feld">
@@ -135,15 +126,12 @@ function WertForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
               type="text"
               inputMode="decimal"
               value={zielText}
-              placeholder="optional"
               autoComplete="off"
               onChange={(e) => setZielText(e.target.value)}
             />
             {sauber(einheit, EINHEIT_MAX) ? <em>{sauber(einheit, EINHEIT_MAX)}</em> : null}
           </span>
-          <span className={`f-note${zielFalsch ? ' f-fehler' : ''}`}>
-            {zielFalsch ? 'Das ist keine Zahl.' : 'Erscheint als Linie im Verlauf.'}
-          </span>
+          {zielFalsch ? <span className="f-note f-fehler">Das ist keine Zahl.</span> : null}
         </label>
       </div>
 

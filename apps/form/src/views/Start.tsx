@@ -36,7 +36,7 @@ function Start({ ctx }: { ctx: FormCtx }) {
       }
     >
       <header className="f-kopf">
-        <p className="f-kicker">{zuletzt ? `Zuletzt gemessen ${wieLange(zuletzt, heute)}` : 'Fortschritt in Zahlen'}</p>
+        {zuletzt ? <p className="f-kicker">Zuletzt gemessen {wieLange(zuletzt, heute)}</p> : null}
         <h1 className="f-marke">
           Form<span>.</span>
         </h1>
@@ -51,10 +51,6 @@ function Start({ ctx }: { ctx: FormCtx }) {
       ) : (
         <div className="f-leer">
           <p className="f-leer-t">Was willst du verfolgen?</p>
-          <p className="f-note">
-            Gewicht, Bizeps, Taille – alles, was sich messen lässt. Jeder Wert bekommt eine Einheit, eine Richtung und auf
-            Wunsch ein Ziel.
-          </p>
           <button type="button" className="f-haupt" onClick={() => push({ name: 'wertForm' })}>
             Ersten Wert anlegen
           </button>

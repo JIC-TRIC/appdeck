@@ -110,11 +110,7 @@ export default function Wiedergeben({
   const wert = WERTE.find((w) => w.id === wahl.wert)
   const halb = !!(wahl.wert || wahl.farbe)
 
-  let vorschauText = `Stelle ${stand.aktiv + 1} · Wert und Farbe antippen`
-  if (voll) vorschauText = 'Alle Stellen belegt'
-  else if (wahl.wert && !wahl.farbe) vorschauText = `Stelle ${stand.aktiv + 1} · jetzt die Farbe`
-  else if (wahl.farbe && !wahl.wert) vorschauText = `Stelle ${stand.aktiv + 1} · jetzt der Wert`
-  else if (aktivId) vorschauText = `Stelle ${stand.aktiv + 1} · die nächste Karte ersetzt sie`
+  const vorschauText = voll ? 'Alle Stellen belegt' : `Stelle ${stand.aktiv + 1}`
 
   return (
     <div className="l-voll">
@@ -161,7 +157,7 @@ export default function Wiedergeben({
         <span>
           {belegt} von {n} gelegt
         </span>
-        <span>{aktivId ? `Stelle ${stand.aktiv + 1} wird ersetzt` : 'Antippen = Stelle wählen'}</span>
+        <span>{aktivId ? `Stelle ${stand.aktiv + 1} wird ersetzt` : ''}</span>
       </div>
 
       <div className="l-vorschau" aria-live="polite">

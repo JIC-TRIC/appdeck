@@ -221,10 +221,6 @@ function Heute({ ctx }: { ctx: PianoCtx }) {
                   )
                 })}
               </IonList>
-              <p className="p-note">
-                Gewählt nach „lange nicht geübt“, Lernstand und etwas Zufall – so viele Stücke, wie ins Tagesziel von{' '}
-                {settings.dailyGoalMinutes} min passen. Nach links wischen: heute nicht, ein anderes rückt nach.
-              </p>
             </div>
           )}
         </Sheet>
@@ -235,7 +231,7 @@ function Heute({ ctx }: { ctx: PianoCtx }) {
 
 // Alle Stuecke liegen im Archiv: nichts fuer die Tagesliste.
 function AllesArchiviert({ ctx }: { ctx: PianoCtx }) {
-  const { today, push, openForm, pieces } = ctx
+  const { today, push, openForm } = ctx
   return (
     <TabPage>
       <Heading
@@ -250,10 +246,6 @@ function AllesArchiviert({ ctx }: { ctx: PianoCtx }) {
       <section className="p-card p-pad p-stack p-done">
         <span className="p-lbl">Tagesliste</span>
         <h2 className="p-h2">Alles im Archiv</h2>
-        <p className="p-s2">
-          Alle {pieces.length} {pieces.length === 1 ? 'Stück liegt' : 'Stücke liegen'} im Archiv. Hol eins zurück
-          (Stücke → Archiv) oder leg ein neues an.
-        </p>
         <button type="button" className="p-btn" onClick={() => openForm()}>
           <IconPlus />
           Stück hinzufügen
@@ -294,7 +286,6 @@ function Erststart({ ctx }: { ctx: PianoCtx }) {
         </div>
         <div className="p-stack p-center" style={{ gap: 8, maxWidth: 300 }}>
           <h2 className="p-h2">Noch keine Stücke</h2>
-          <p className="p-sub">Füge ein Stück mit einem YouTube-Link hinzu – oder hol deinen Stand aus der alten Piano-App.</p>
         </div>
         <div className="p-stack" style={{ gap: 10, width: '100%' }}>
           <button type="button" className="p-btn" onClick={() => openForm()}>
@@ -305,7 +296,6 @@ function Erststart({ ctx }: { ctx: PianoCtx }) {
             <IconImport />
             Backup importieren
           </button>
-          <p className="p-s3 p-center">Exportdatei der alten App oder Launcher-Backup</p>
         </div>
       </div>
     </TabPage>

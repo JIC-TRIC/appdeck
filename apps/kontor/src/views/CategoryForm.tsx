@@ -21,7 +21,7 @@ const KINDS: { id: CategoryKind; label: string }[] = [
 ]
 
 function CategoryForm({ ctx, view }: ViewProps) {
-  const { categories, entries, back, refresh } = ctx
+  const { categories, back, refresh } = ctx
   const existing = view.categoryId ? categories.find((c) => c.id === view.categoryId) ?? null : null
 
   const draftKey = entwurfKey(view)
@@ -43,8 +43,6 @@ function CategoryForm({ ctx, view }: ViewProps) {
     entwurfLoeschen(draftKey)
     back()
   }
-
-  const used = existing ? entries.filter((e) => e.categoryId === existing.id).length : 0
 
   const save = () => {
     if (!name.trim()) {
@@ -82,7 +80,6 @@ function CategoryForm({ ctx, view }: ViewProps) {
           className="k-input"
           type="text"
           value={name}
-          placeholder="Lebensmittel"
           onChange={(e) => setName(e.target.value)}
           maxLength={30}
         />
@@ -139,15 +136,10 @@ function CategoryForm({ ctx, view }: ViewProps) {
                 type="text"
                 inputMode="decimal"
                 value={budget}
-                placeholder="z. B. 350"
                 onChange={(e) => setBudget(e.target.value.replace(/[^\d,]/g, ''))}
                 maxLength={10}
               />
               <span className="k-input-suffix">€</span>
-            </div>
-            <div className="k-meta tight">
-              Budgets sind Monatsbudgets. Der Fortschritt steht im Kategoriedetail, solange der
-              Zeitraum ein Monat ist.
             </div>
           </>
         ) : null}
@@ -156,11 +148,6 @@ function CategoryForm({ ctx, view }: ViewProps) {
           <div className="k-row-card">
             <div className="grow">
               <div className="k-row-title">Archiviert</div>
-              <div className="k-row-hint">
-                {used > 0
-                  ? `${used} ${used === 1 ? 'Buchung' : 'Buchungen'} hängen daran – die bleiben erhalten.`
-                  : 'Verschwindet aus Formular und Donut.'}
-              </div>
             </div>
             <Toggle
               on={!!existing.archived}

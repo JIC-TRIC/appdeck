@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import NumPad, { useBetrag } from './NumPad'
 import { IconRight } from '../icons'
 import { Amount, Money, Sheet } from '../ui'
-import { centToPad, formatDate, padToCent, todayKey } from '../util'
+import { centToPad, padToCent } from '../util'
 import { setAccountBalance } from '../kontorStore'
 import type { ViewProps } from '../types'
 import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
@@ -58,12 +58,6 @@ function BalanceSheet({ ctx, view }: ViewProps) {
             <Money cent={diff} sign={diff === 0 ? 'none' : 'auto'} offen /> €
           </div>
         </div>
-      </div>
-
-      <div className="k-meta">
-        {diff === 0
-          ? 'Noch keine Änderung.'
-          : `Die Differenz wird als Korrektur vom ${formatDate(todayKey())} protokolliert. Sie zählt in keiner Einnahmen- oder Ausgabenstatistik mit.`}
       </div>
 
       <div className="k-pad-wrap sheet">

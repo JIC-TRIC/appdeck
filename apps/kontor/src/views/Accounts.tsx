@@ -38,7 +38,7 @@ function AccountRow({
 }
 
 function Accounts({ ctx }: ViewProps) {
-  const { accounts, entries, settings, back, push } = ctx
+  const { accounts, entries, back, push } = ctx
   const open = accounts.filter((a) => !a.archived)
   const counted = open.filter((a) => a.includeInTotal)
   const excluded = open.filter((a) => !a.includeInTotal)
@@ -113,15 +113,6 @@ function Accounts({ ctx }: ViewProps) {
           </div>
         </>
       ) : null}
-
-      {/* Der Satz muss der Einstellung folgen, sonst behauptet er das
-          Gegenteil von dem, was die App rechnet. */}
-      <div className="k-meta">
-        Ausgeschlossene Konten bleiben voll benutzbar.{' '}
-        {settings.countBoundaryTransfers
-          ? 'Eine Umbuchung dorthin wirkt in der Statistik wie eine Ausgabe – das Geld verlässt die gezählte Balance.'
-          : 'Eine Umbuchung dorthin senkt nur die Gesamtbalance und taucht in keiner Statistik auf.'}
-      </div>
 
       <div className="k-stack">
         <button type="button" className="k-dashed" onClick={() => push({ name: 'accountForm' })}>

@@ -6,7 +6,6 @@ import {
   IconCalendar,
   IconClose,
   IconDown,
-  IconInfo,
   IconSwap,
   IconTrash,
 } from '../icons'
@@ -15,7 +14,6 @@ import { byUsage, categoryUsage } from '../calc'
 import { addEntry, deleteEntry, updateEntry, updateSettings } from '../kontorStore'
 import { entryLook } from './EntryRow'
 import { entwurfKey, entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
-import { betragOderMaske } from '../diskret'
 import {
   addDays,
   centToPad,
@@ -140,11 +138,6 @@ function EntryForm({ ctx, view }: ViewProps) {
     }
   }
 
-  const from = open.find((a) => a.id === accountId)
-  const to = open.find((a) => a.id === toAccountId)
-  const crossesBoundary =
-    isTransfer && from && to && from.includeInTotal !== to.includeInTotal && settings.countBoundaryTransfers
-
   const validate = () => {
     if (cent <= 0) return 'Betrag fehlt'
     if (!accountId) return 'Konto fehlt'
@@ -191,7 +184,7 @@ function EntryForm({ ctx, view }: ViewProps) {
     // laesst einen Vertipper ein paar Sekunden lang zuruecknehmen.
     const vorzeichen = type === 'expense' ? '−' : type === 'income' ? '+' : ''
     notify(
-      `Gebucht: ${entryLook(neu, ctx.catById, ctx.accById).title}, ${vorzeichen}${betragOderMaske(ctx.diskret, cent, formatCent(cent), true)} €`,
+      `Gebucht: ${entryLook(neu, ctx.catById, ctx.accById).title}, ${vorzeichen}${formatCent(cent)} €`,
       () => deleteEntry(neu.id),
       { hoch: true },
     )
@@ -280,7 +273,7 @@ function EntryForm({ ctx, view }: ViewProps) {
         <input
           type="text"
           value={note}
-          placeholder={isTransfer ? 'Notiz (optional)' : 'Wofür?'}
+          placeholder={isTransfer ? 'Notiz' : 'Wofür?'}
           onChange={(e) => setNote(e.target.value)}
           maxLength={140}
         />
@@ -307,16 +300,6 @@ function EntryForm({ ctx, view }: ViewProps) {
           </div>
           <Label>Nach</Label>
           {accountSelect(toAccountId, setToAccountId, 'Nach Konto')}
-          {crossesBoundary ? (
-            <div className="k-note-box">
-              <span className="k-note-ic"><IconInfo /></span>
-              <div>
-                <strong>{from.includeInTotal ? to.name : from.name}</strong> zählt nicht zur
-                Gesamtbalance. Diese Umbuchung wirkt in der Statistik darum wie eine{' '}
-                <strong>{from.includeInTotal ? 'Ausgabe' : 'Einnahme'}</strong>.
-              </div>
-            </div>
-          ) : null}
         </div>
       ) : (
         <>

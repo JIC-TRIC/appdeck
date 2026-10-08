@@ -33,7 +33,6 @@ export default function StufeBlatt({
                   <span className="l-radio-punkt" />
                   <span className="l-radio-text">
                     <span className="l-num">{s.name}</span>
-                    <small>{s.info}</small>
                   </span>
                 </button>
               )
@@ -55,13 +54,9 @@ export default function StufeBlatt({
               </button>
             ))}
           </div>
-          <p className="l-note">{METHODEN.find((m) => m.id === r.methode)!.info}. Danach richten sich Tipps und Rechenweg.</p>
 
           <div className="l-zeile-schalter">
-            <span>
-              <span className="l-zs-titel">Uhr anzeigen</span>
-              <small>Gemessen wird trotzdem. Gilt für alle Übungen.</small>
-            </span>
+            <span className="l-zs-titel">Uhr anzeigen</span>
             <Schalter an={einst.uhr} label="Uhr anzeigen" onChange={(uhr) => aendere({ uhr })} />
           </div>
         </div>

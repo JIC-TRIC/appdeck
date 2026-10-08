@@ -183,10 +183,6 @@ export default function Rechnen({
         {!antwort ? (
           <div className="l-rechnen-tasten">
             <Ziffernblock onZiffer={tippe} onLoeschen={loesche} onOk={pruefe} okBereit={eingabe.length > 0} />
-            <p className="l-note l-center">
-              {vonRechts ? 'Überkreuz: Ziffern von rechts eintippen.' : 'Zerlegen: Ziffern von links eintippen.'}
-              {tipps > 0 ? ' Mit Tipp zählt die Aufgabe nicht als richtig.' : ''}
-            </p>
           </div>
         ) : (
           <section className="l-loesung" aria-live="polite">

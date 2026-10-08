@@ -101,24 +101,6 @@ function CategoryDetailInner({ ctx, seg, kind }: { ctx: KontorCtx; seg: Segment;
         {range.label}
       </div>
 
-      {isGroup ? (
-        <div className="k-note-box plain">
-          <div>
-            „Sonstiges" bündelt die kleinsten Kategorien, damit der Ring lesbar bleibt. Hier stehen
-            die Buchungen aller {seg.members?.length ?? 0} gebündelten Kategorien.
-          </div>
-        </div>
-      ) : null}
-
-      {isTransfer ? (
-        <div className="k-note-box plain">
-          <div>
-            Umbuchungen auf Konten außerhalb der Gesamtbalance. Es ist keine echte Ausgabe – das
-            Geld liegt weiter auf einem deiner Konten, nur nicht im gezählten Teil.
-          </div>
-        </div>
-      ) : null}
-
       {showBudget ? (
         <div className="k-card k-pad16">
           <div className="k-row-base">

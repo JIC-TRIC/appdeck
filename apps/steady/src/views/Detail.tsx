@@ -196,7 +196,7 @@ function Detail({ ctx, view }: ViewProps) {
                 ? ' · Wochenziel erreicht'
                 : !week.streakAlive && week.states[weekDays.indexOf(today)] !== 'done'
                   ? // Keine Serie: freie Tage zaehlen als verpasst, bis wieder etwas eingetragen ist.
-                    ' · Ruhetage erst wieder ab dem nächsten Eintrag'
+                    ' · keine Ruhetage'
                   : ` · noch ${week.restLeft} ${week.restLeft === 1 ? 'Ruhetag' : 'Ruhetage'}${week.due ? ' · heute nötig' : ''}`}
             </p>
           </Card>
@@ -238,7 +238,6 @@ function Detail({ ctx, view }: ViewProps) {
               <span>
                 bester Tag <b>{best === null ? '–' : `${formatValue(best)} ${habit.unit}`}</b>
               </span>
-              <span>blass = Ziel verfehlt</span>
             </div>
           </Card>
         ) : null}
@@ -284,7 +283,6 @@ function Detail({ ctx, view }: ViewProps) {
           }
         >
           <MonthCalendar habit={habit} first={month} states={monthStates} values={hlog} onDay={archived ? undefined : onDay} />
-          {!archived ? <p className="s-cap">Tipp auf einen Tag trägt nach.</p> : null}
         </Card>
 
         <Card title="Seit Beginn" aside={`${(diffDays(facts.hmFrom, facts.hmTo) + 1) / 7} Wochen`}>

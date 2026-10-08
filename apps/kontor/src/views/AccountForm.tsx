@@ -71,7 +71,6 @@ function AccountForm({ ctx, view }: ViewProps) {
           className="k-input"
           type="text"
           value={name}
-          placeholder="Girokonto"
           onChange={(e) => setName(e.target.value)}
           maxLength={40}
         />
@@ -97,26 +96,14 @@ function AccountForm({ ctx, view }: ViewProps) {
         <div className="k-row-card">
           <div className="grow">
             <div className="k-row-title">Zur Gesamtbalance zählen</div>
-            <div className="k-row-hint">
-              Aus, wenn das Konto in der Übersicht nicht mitgezählt werden soll
-            </div>
           </div>
           <Toggle on={includeInTotal} onChange={setInclude} label="Zur Gesamtbalance zählen" />
         </div>
 
-        {existing ? (
-          <div className="k-meta">
-            Den Saldo änderst du im Kontodetail über „Korrigieren" – so bleibt die Änderung als
-            Korrektur nachvollziehbar.
-          </div>
-        ) : (
+        {existing ? null : (
           <>
             <Label>Aktueller Saldo</Label>
             <Amount text={betrag.text} signal={betrag.signal} variant="small" />
-            <div className="k-meta tight">
-              Wird als Buchung „Anfangssaldo" protokolliert, damit Saldo und Buchungen von Anfang an
-              zusammenpassen.
-            </div>
           </>
         )}
       </div>

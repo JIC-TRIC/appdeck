@@ -113,9 +113,8 @@ Die **Heute-Spalte** ist breiter (Kasten 50 × 36 px) und zeigt mehr:
 
 | Zustand | Aussehen |
 | --- | --- |
-| offen | leerer Kasten, grauer Rand |
-| **heute fällig** (nur x-mal/Woche, keine Ruhetage mehr übrig) | leerer Kasten, Rand in Gewohnheitsfarbe |
-| **heute frei** (nur x-mal/Woche, Ruhetag übrig, Serie läuft; seit 08.10.2026) | grauer Rand, Ring in Gewohnheitsfarbe im Kasten wie ◌ – bleibt der Tag leer, wird er ein Ruhetag |
+| offen (auch **heute fällig**: x-mal/Woche ohne übrige Ruhetage) | leerer Kasten, grauer Rand. Bis 08.10.2026 hatte „fällig“ einen Rand in der Gewohnheitsfarbe – zu leicht mit dem Ruhetag-Ring zu verwechseln |
+| **heute frei** (nur x-mal/Woche, Ruhetag übrig, Serie läuft; seit 08.10.2026) | grauer Rand, Ring in Gewohnheitsfarbe im Kasten wie ◌ – bleibt der Tag leer, wird er ein Ruhetag. Bei Mengen steht die Einheit im Ring |
 | erledigt (Abhaken) | Kasten gefüllt in Gewohnheitsfarbe, dunkler Haken |
 | nicht geschafft | grauer Rand, graues Kreuz im Kasten (heute frei: Ring mit Kreuz wie ⊗) |
 | Menge ohne Wert | leerer Kasten, Einheit in Text still („kcal“) |
@@ -195,8 +194,9 @@ Beispiel Gym 3× pro Woche → jede Woche hat **7 − 3 = 4 Ruhetage**.
 - [x] **Heute verbraucht nichts**, solange heute läuft. Erst nach dem
       Tageswechsel wird entschieden
 - [x] **Heute fällig:** sind keine Ruhetage mehr übrig, muss heute trainiert
-      werden, damit die Serie hält. Die Heute-Zelle bekommt einen Rand in der
-      Gewohnheitsfarbe, und die Gewohnheit zählt im Tageszähler mit
+      werden, damit die Serie hält. Die Heute-Zelle sieht aus wie bei einer
+      täglichen Gewohnheit (kein Ring), und die Gewohnheit zählt im
+      Tageszähler mit
 - [x] **Heute frei** (seit 08.10.2026): ist noch ein Ruhetag übrig und läuft
       eine Serie, trägt die Heute-Zelle schon den Ring des Ruhetags – man sieht
       auch heute, was nicht sein muss. Ohne laufende Serie ist heute nicht frei
@@ -553,7 +553,7 @@ Wie Kontors „Über Kontor“: wer die App in einem halben Jahr öffnet, soll d
 Regeln in der App finden und nicht nur hier.
 
 - [x] Legende aller Zeichen mit echtem Aussehen (●, ◌, ×, ·, Menge, Menge
-      am Ruhetag, offener, fälliger und freier Heute-Kasten)
+      am Ruhetag, offener und freier Heute-Kasten)
 - [x] Kurz erklärt: Ruhetage, Woche Mo–So, Serie, Tageswechsel, warum es
       keine Pausen gibt
 
@@ -685,6 +685,10 @@ Ergänzt am 08.10.2026:
     perfekt machen
 17. **Heute frei im Ring.** Was heute nicht sein muss (Ruhetag übrig, Serie
     läuft), trägt schon im Heute-Kasten den Ring wie ein vergangener Ruhetag
+18. **Heute fällig ohne eigenes Zeichen.** Der farbige Rand für „fällig“ las
+    sich wie der Ring des Ruhetags. Jetzt gilt: Ring = darf frei bleiben, kein
+    Ring = heute machen. Mengen zeigen am freien Tag ihre Einheit im Ring,
+    damit sie nicht wie ein Haken aussehen
 
 ---
 

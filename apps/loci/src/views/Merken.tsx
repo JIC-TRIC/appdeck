@@ -154,7 +154,7 @@ export default function Merken({
               <IconTakt />
               Takt {taktText(takt)}
             </span>
-            <span>{taktLaeuft ? 'Zurück hält den Takt an' : 'Takt angehalten'}</span>
+            {taktLaeuft ? null : <span>Takt angehalten</span>}
           </div>
           <div className="l-takt-bahn">
             <i key={`${pos}:${taktLaeuft}`} className={taktLaeuft ? 'laeuft' : ''} style={{ animationDuration: `${takt}s` }} />
@@ -167,7 +167,7 @@ export default function Merken({
           <IconLeft />
           Zurück
         </button>
-        <span className="l-s3 l-center">{takt !== null ? 'Tippen = sofort weiter' : 'Tippen oder wischen'}</span>
+        <span />
         <button type="button" className="l-btn rund" onClick={weiter}>
           {letzte ? 'Fertig' : 'Weiter'}
           <IconRight />

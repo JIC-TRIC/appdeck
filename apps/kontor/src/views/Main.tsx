@@ -276,28 +276,29 @@ function Main({ ctx }: { ctx: KontorCtx }) {
           Gesamtbalance ist die Summe der Konten, also fuehrt sie auch dorthin;
           die Buchungen liegen hinter der Ringmitte. */}
       <div className="k-balance-row">
+        {/* Betraege verbergen, z. B. in der Bahn: ein kleines Auge hinter dem
+            Wort, leise wie die Beschriftung selbst. Gilt fuer alle Ansichten,
+            bleibt gespeichert. */}
+        <div className="k-balance-head">
+          <span className="k-label">Gesamtbalance</span>
+          <button
+            type="button"
+            className="k-eye"
+            aria-pressed={diskret.an}
+            aria-label={diskret.an ? 'Beträge zeigen' : 'Beträge verbergen'}
+            onClick={() => setDiskret(!diskret.an)}
+          >
+            {diskret.an ? <IconEyeOff /> : <IconEye />}
+          </button>
+        </div>
         <button type="button" className="k-balance" onClick={() => push({ name: 'accounts' })}>
-          <span className="k-balance-main">
-            <span className="k-label">Gesamtbalance</span>
-            <span className={`k-balance-num${balance < 0 ? ' neg' : ''}`}>
-              <Money cent={balance} /> <span className="k-cur">€</span>
-            </span>
+          <span className={`k-balance-num${balance < 0 ? ' neg' : ''}`}>
+            <Money cent={balance} /> <span className="k-cur">€</span>
           </span>
           <span className="k-balance-side">
             {offen} {offen === 1 ? 'Konto' : 'Konten'}
             <span className="k-balance-chev"><IconRight /></span>
           </span>
-        </button>
-        {/* Betraege verbergen, z. B. in der Bahn: ein Tipp, gleich neben der
-            groessten Zahl. Gilt fuer alle Ansichten, bleibt gespeichert. */}
-        <button
-          type="button"
-          className={`k-ic k-eye${diskret.an ? ' on' : ''}`}
-          aria-pressed={diskret.an}
-          aria-label={diskret.an ? 'Beträge zeigen' : 'Beträge verbergen'}
-          onClick={() => setDiskret(!diskret.an)}
-        >
-          {diskret.an ? <IconEyeOff /> : <IconEye />}
         </button>
       </div>
 

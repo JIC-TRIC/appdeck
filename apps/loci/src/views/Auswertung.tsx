@@ -76,9 +76,6 @@ export default function Auswertung({
               )
             })}
           </div>
-          {perfekt ? null : (
-            <p className="l-note">Umrandet: falsch gelegt. Der erste Fehler liegt bei Stelle {v.bisFehler + 1}.</p>
-          )}
         </section>
 
         {fehler.length ? (

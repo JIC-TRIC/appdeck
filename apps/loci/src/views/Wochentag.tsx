@@ -193,8 +193,6 @@ export default function Wochentag({
           })}
         </div>
 
-        {!antwort && tipps > 0 ? <p className="l-note l-center">Mit Tipp zählt die Aufgabe nicht als richtig.</p> : null}
-
         {antwort ? (
           <section className="l-loesung" aria-live="polite">
             <div className="l-urteil">

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Blatt, BlattKopf, Schalter } from '../ui'
-import { FRUEHESTES_JAHR, ZEITRAEUME, diesesJahr, jahre, pruefeEigenen } from '../wochentag'
+import { FRUEHESTES_JAHR, ZEITRAEUME, jahre, pruefeEigenen } from '../wochentag'
 import type { Einstellungen, ZeitraumId } from '../types'
 
 // Zeitraum und Uhr. Jede Wahl gilt sofort; der Wochentag zieht dann ein neues Datum.
@@ -20,14 +20,6 @@ export default function ZeitraumBlatt({
   const [bis, setBis] = useState(String(jetzt.bis))
   const [eigenOffen, setEigenOffen] = useState(z.id === 'eigen')
   const [fehler, setFehler] = useState<string | null>(null)
-  const dj = diesesJahr(jahr)
-
-  const unterzeile: Record<ZeitraumId, string> = {
-    jahr: `${jahr} · du rechnest nur Tag + Monat${dj.rest ? ` + ${dj.rest}` : ''}`,
-    '1900': 'Jahrhundertzahl 0 oder 6',
-    '1600': 'alle acht Jahrhundertzahlen',
-    eigen: `beliebige Jahre ab ${FRUEHESTES_JAHR}`,
-  }
 
   const uebernimmEigenen = () => {
     const v = Number(von)
@@ -63,7 +55,6 @@ export default function ZeitraumBlatt({
                     <span className="l-radio-punkt" />
                     <span className="l-radio-text">
                       <span className={v.id === '1900' || v.id === '1600' ? 'l-num' : ''}>{v.name}</span>
-                      <small>{unterzeile[v.id]}</small>
                     </span>
                   </button>
                   {v.id === 'eigen' && eigenOffen ? (
@@ -106,10 +97,7 @@ export default function ZeitraumBlatt({
           </div>
 
           <div className="l-zeile-schalter">
-            <span>
-              <span className="l-zs-titel">Uhr anzeigen</span>
-              <small>Gemessen wird trotzdem. Gilt für alle Übungen.</small>
-            </span>
+            <span className="l-zs-titel">Uhr anzeigen</span>
             <Schalter an={einst.uhr} label="Uhr anzeigen" onChange={(uhr) => aendere({ uhr })} />
           </div>
         </div>

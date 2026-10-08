@@ -106,7 +106,6 @@ function WertSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
       ) : (
         <div className="f-leer">
           <p className="f-leer-t">Noch nichts eingetragen.</p>
-          <p className="f-note">Sobald du misst, steht hier der Verlauf.</p>
           <button type="button" className="f-haupt" onClick={() => push({ name: 'messen', tag: heute })}>
             Jetzt messen
           </button>

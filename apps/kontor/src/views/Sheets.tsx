@@ -50,11 +50,6 @@ export function PeriodSheet({ ctx }: ViewProps) {
           </button>
         )
       })}
-
-      <div className="k-meta">
-        Jede Auswahl landet im heutigen Zeitraum. Wischen auf der Startseite
-        blättert von dort vor oder zurück.
-      </div>
       </>
       )}
     </Sheet>
@@ -75,7 +70,7 @@ function MenuTile({
   color: string
   title: string
   value?: ReactNode
-  sub: ReactNode
+  sub?: ReactNode
   onClick: () => void
 }) {
   return (
@@ -88,7 +83,7 @@ function MenuTile({
       </span>
       <span className="k-menu-tile-t">{title}</span>
       {value ? <span className="k-menu-tile-v">{value}</span> : null}
-      <span className="k-menu-tile-s">{sub}</span>
+      {sub ? <span className="k-menu-tile-s">{sub}</span> : null}
     </button>
   )
 }
@@ -146,7 +141,7 @@ export function MenuSheet({ ctx }: ViewProps) {
                 color="var(--inc)"
                 title="Statistik"
                 value={savings === null ? '–' : `${(savings * 100).toFixed(1).replace('-', '−').replace('.', ',')} %`}
-                sub={savings === null ? 'Verlauf und Auswertungen' : `gespart ${imZeitraum(period.kind, range)}`}
+                sub={savings === null ? undefined : `gespart ${imZeitraum(period.kind, range)}`}
                 onClick={go({ name: 'stats' })}
               />
               <MenuTile
@@ -165,7 +160,6 @@ export function MenuSheet({ ctx }: ViewProps) {
                 icon={<IconSliders />}
                 color="var(--muted)"
                 title="Einstellungen"
-                sub="Export, Wochenstart, Daten"
                 onClick={go({ name: 'settings' })}
               />
             </div>

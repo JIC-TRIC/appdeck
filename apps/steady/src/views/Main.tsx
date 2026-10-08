@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
-import { isArchived, isDueWeekly, isRestToday, messwert, naechsterHaken, statesBetween, streaks, todayToEnter } from '../calc'
+import { isArchived, isRestToday, messwert, naechsterHaken, statesBetween, streaks, todayToEnter } from '../calc'
 import { IconGrid, IconMore, IconPlus, IconRight, IconStats } from '../icons'
 import { DayBox, Dot, Streak, hue, ruleShort } from '../ui'
 import {
@@ -84,9 +84,6 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
           states: days.map((d) => st[d]),
           eintraege: days.map((d) => log[h.id]?.[d]),
           value: log[h.id]?.[end],
-          // Farbiger Rand nur bei x-mal pro Woche ohne freie Ruhetage -
-          // taeglich ist immer faellig, das muss der Kasten nicht sagen.
-          due: end === today && isDueWeekly(h, log, today),
           // Heute noch ein Ruhetag frei: der Kasten traegt schon den Ring.
           frei: end === today && isRestToday(h, log, today),
         }
@@ -325,7 +322,6 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                             state={r.states[6]}
                             value={r.value}
                             day={p.end}
-                            due={r.due}
                             frei={r.frei}
                             pop={pop(p.end)}
                             key={pop(p.end) ? `p${lastChange?.n}` : 'd'}

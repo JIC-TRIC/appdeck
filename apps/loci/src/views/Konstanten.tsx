@@ -38,9 +38,9 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
                   ? `Rekord ${best} ${best === 1 ? 'Stelle' : 'Stellen'}`
                   : `Rekord ${best} von ${k.ziffern.length}`
                 : lang
-                  ? k.info
-                  : `${k.ziffern.length} Stellen · ${k.info}`}
-              {letzter ? ` · ${wann(letzter.ende)}` : ''}
+                  ? ''
+                  : `${k.ziffern.length} Stellen`}
+              {letzter ? `${best || !lang ? ' · ' : ''}${wann(letzter.ende)}` : ''}
             </small>
           </span>
           <IconRight />
@@ -58,7 +58,6 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
       <div className="l-body">
         <div>
           <h1 className="l-h1">Konstanten</h1>
-          <p className="l-sub">Ziffer für Ziffer aufsagen, bis „Fertig“. Gezählt wird bis zum ersten Fehler.</p>
         </div>
         <section className="l-sec">
           <h2 className="l-h2">Mathematik</h2>
@@ -67,7 +66,6 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
         <section className="l-sec">
           <h2 className="l-h2">Physik</h2>
           <div className="l-card l-konst-liste">{gruppe('physik')}</div>
-          <p className="l-note">Exponent und Einheit stehen da, gefragt sind die Ziffern.</p>
         </section>
         {versuche.length ? (
           <Bestaetigen

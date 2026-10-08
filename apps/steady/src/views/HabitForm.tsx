@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { isArchived, isDueWeekly, isRestToday, ruleAt, statesBetween } from '../calc'
+import { isArchived, isRestToday, ruleAt, statesBetween } from '../calc'
 import { IconRight } from '../icons'
 import { DayBox, Dot, Screen, Segmented, TextButton, hue, ruleShort } from '../ui'
 import { MAX_NAME, PALETTE, UNIT_SUGGESTIONS, colorOf } from '../data'
 import { entwurfLesen, entwurfLoeschen, entwurfSchreiben } from '../entwurf'
 import { addHabit, archiveHabit, buildHabit, hasEntries, nextHabit, restoreHabit, updateHabit, type HabitInput } from '../store'
-import { addDays, formatDate, formatValue, isoWeek, mondayOf, parseKey, parseNumber, relativeDay, weekdayIndex, WEEKDAYS_SHORT } from '../util'
+import { addDays, formatDate, formatValue, mondayOf, parseKey, parseNumber, relativeDay, weekdayIndex, WEEKDAYS_SHORT } from '../util'
 import type { GoalDir, HabitKind, ViewProps } from '../types'
 
 interface FormData {
@@ -19,8 +19,6 @@ interface FormData {
   dir: GoalDir
   start: string
 }
-
-const rhythmText = (perWeek: number) => (perWeek < 7 ? `${perWeek}× pro Woche` : 'täglich')
 
 function HabitForm({ ctx, view }: ViewProps) {
   const { habits, byId, log, today, back, refresh, notify } = ctx
@@ -139,13 +137,9 @@ function HabitForm({ ctx, view }: ViewProps) {
     const h = built.kind === 'amount' && target === null ? { ...built, goal: [] } : built
     const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6))
     const st = statesBetween(h, log[h.id], days[0], today, today)
-    return { h, days, states: days.map((d) => st[d]), due: isDueWeekly(h, log, today), frei: isRestToday(h, log, today) }
+    return { h, days, states: days.map((d) => st[d]), frei: isRestToday(h, log, today) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(input), editing, locked, log, today])
-
-  const rhythmChanged = !!current && locked && current.perWeek !== perWeek
-  const goalChanged =
-    !!current && locked && input.kind === 'amount' && (!current.goal || current.goal.target !== target || current.goal.dir !== f.dir)
 
   return (
     <Screen
@@ -200,7 +194,6 @@ function HabitForm({ ctx, view }: ViewProps) {
           onChange={(kind) => set({ kind })}
           disabled={locked}
         />
-        {locked ? <p className="s-hint">Nach dem ersten Eintrag fest. Für eine andere Messart archivieren und neu anlegen.</p> : null}
 
         {input.kind === 'amount' ? (
           <>
@@ -262,18 +255,8 @@ function HabitForm({ ctx, view }: ViewProps) {
                 +
               </button>
             </div>
-            <p className="s-hint">
-              {7 - f.n} {7 - f.n === 1 ? 'Ruhetag' : 'Ruhetage'} pro Woche. Sie halten eine laufende Serie, solange sie
-              reichen. Ohne Serie zählt ein freier Tag als verpasst.
-            </p>
           </>
         ) : null}
-        {rhythmChanged && current ? (
-          <p className="s-hint box">
-            Gilt ab dieser Woche (KW {isoWeek(today)}). Frühere Wochen bleiben bei {rhythmText(current.perWeek)}.
-          </p>
-        ) : null}
-        {goalChanged ? <p className="s-hint box">Das neue Ziel gilt ab heute. Frühere Tage behalten ihr Ziel.</p> : null}
 
         <div className="s-label">Beginnt</div>
         <label className="s-list s-date">
@@ -301,7 +284,6 @@ function HabitForm({ ctx, view }: ViewProps) {
             }}
           />
         </label>
-        {f.start < today ? <p className="s-hint">Ab diesem Tag lässt sich nachtragen.</p> : null}
 
         <div className="s-label">Vorschau</div>
         <div className="s-card s-preview">
@@ -326,7 +308,7 @@ function HabitForm({ ctx, view }: ViewProps) {
               </span>
             ))}
             <span className={`s-wide${weekdayIndex(today) === 0 ? ' mon' : ''}`}>
-              <DayBox habit={preview.h} state={preview.states[6]} value={log[preview.h.id]?.[today]} day={today} due={preview.due} frei={preview.frei} />
+              <DayBox habit={preview.h} state={preview.states[6]} value={log[preview.h.id]?.[today]} day={today} frei={preview.frei} />
             </span>
             <span className="s-strk" />
           </div>
@@ -337,7 +319,6 @@ function HabitForm({ ctx, view }: ViewProps) {
             <button type="button" className="s-btn block" onClick={archive}>
               Archivieren
             </button>
-            <p className="s-hint center">Verschwindet aus dem Raster, die Historie bleibt. Löschen geht nur im Archiv.</p>
           </>
         ) : null}
       </div>

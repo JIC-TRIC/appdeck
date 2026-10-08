@@ -59,10 +59,6 @@ export interface Settings {
   defaultPeriod?: PeriodKind
   /** Betraege verbergen (diskret.ts) */
   diskret?: boolean
-  /** Beim Oeffnen und nach dem Hintergrund immer verbergen */
-  diskretBeimStart?: boolean
-  /** Einzelbuchungen erst ab hier verbergen (Cent); null = nie, 0 = alle, fehlt = 100 € */
-  diskretAbCent?: number | null
 }
 
 export interface Period {

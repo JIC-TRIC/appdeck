@@ -1145,13 +1145,6 @@ ion-content.l-sheet-content {
   font-weight: 500;
 }
 
-.l-zeile-schalter small {
-  display: block;
-  margin-top: 3px;
-  color: var(--text-2);
-  font-size: 13px;
-}
-
 /* Anleitung */
 
 .l-anleitung {
@@ -1396,13 +1389,6 @@ ion-content.l-sheet-content {
   display: block;
   font-size: 16px;
   font-weight: 500;
-}
-
-.l-einst-zeile small {
-  display: block;
-  margin-top: 3px;
-  color: var(--text-2);
-  font-size: 13px;
 }
 
 .l-chips {

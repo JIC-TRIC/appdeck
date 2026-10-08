@@ -37,10 +37,6 @@ function Archive({ ctx }: ViewProps) {
       ) : (
         <p className="s-note center">Nichts archiviert.</p>
       )}
-      <p className="s-note">
-        Archivierte Gewohnheiten zählen in der Statistik für die Zeit, in der sie liefen. Im Detail: Wiederherstellen
-        (startet eine neue Serie) oder endgültig löschen.
-      </p>
     </Screen>
   )
 }

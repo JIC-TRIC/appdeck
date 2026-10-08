@@ -1,5 +1,5 @@
 import { Bestaetigen } from '../ui'
-import { LETZTE_MAX, quote, schnitt, zaehle, type Schwaechen } from '../statistik'
+import { quote, schnitt, zaehle, type Schwaechen } from '../statistik'
 import { sekunden, sekundenZahl } from '../util'
 import type { Ergebnis, Gesamt } from '../types'
 
@@ -78,13 +78,10 @@ export default function UebungsStatistik({
       <section className="l-sec">
         <h2 className="l-h2">Schwächen</h2>
         {sw === null ? (
-          <p className="l-note">Ab 20 Aufgaben siehst du hier, wo du oft danebenliegst. Noch {20 - letzteAnzahl}.</p>
+          <p className="l-note">Noch {20 - letzteAnzahl} {20 - letzteAnzahl === 1 ? 'Aufgabe' : 'Aufgaben'}.</p>
         ) : (
           <>
-            <p className="l-note">
-              Aus den letzten {Math.min(letzteAnzahl, LETZTE_MAX)} Aufgaben, mit Tipp zählt wie falsch. Der Strich ist dein
-              Schnitt: {Math.round(sw.schnitt * 100)} % falsch.
-            </p>
+            <p className="l-note">Schnitt: {Math.round(sw.schnitt * 100)} % falsch</p>
             {sw.gruppen.length ? (
               <div className="l-schwaechen">
                 {sw.gruppen.map((g) => (
@@ -103,7 +100,7 @@ export default function UebungsStatistik({
                 ))}
               </div>
             ) : (
-              <p className="l-note">Nichts Auffälliges: keine Gruppe liegt über deinem Schnitt.</p>
+              <p className="l-note">Nichts Auffälliges.</p>
             )}
           </>
         )}

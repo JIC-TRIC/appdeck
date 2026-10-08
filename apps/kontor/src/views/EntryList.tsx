@@ -114,7 +114,6 @@ function EntryList({ ctx }: ViewProps) {
             type="search"
             enterKeyHint="search"
             value={query}
-            placeholder="Notiz, Kategorie, Konto, Betrag"
             aria-label="Buchungen durchsuchen"
             autoFocus
             onChange={(e) => setQuery(e.target.value)}
@@ -159,16 +158,12 @@ function EntryList({ ctx }: ViewProps) {
 
       {groups.length === 0 ? (
         searching ? (
-          <Empty
-            title="Nichts gefunden"
-            hint="Gesucht wird in Notiz, Kategorie, Konto und Betrag – über alle Zeiträume."
-          />
+          <Empty title="Nichts gefunden" />
         ) : filter !== 'all' ? (
           <Empty title={`${FILTERS.find((f) => f.id === filter)?.leer} in diesem Zeitraum`} />
         ) : (
           <Empty
             title="Keine Buchungen in diesem Zeitraum"
-            hint="Mit − und + auf der Startseite erfasst du die erste."
             action={
               <button type="button" className="k-primary" onClick={() => push({ name: 'entry', type: 'expense' })}>
                 Ausgabe erfassen

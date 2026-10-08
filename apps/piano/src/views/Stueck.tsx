@@ -159,7 +159,6 @@ function Stueck({ ctx, view }: ViewProps) {
           </button>
         </div>
         <span className="p-strong">{diff.label}</span>
-        <span className="p-s2">{diff.text}</span>
       </section>
 
       <Notes key={piece.id} pieceId={piece.id} initial={piece.notes ?? ''} onSaved={refresh} />
@@ -185,7 +184,7 @@ function Stueck({ ctx, view }: ViewProps) {
             ))}
           </div>
         ) : (
-          <p className="p-note">Noch keine Sitzung. Die Uhr läuft, sobald du auf „Üben starten“ tippst.</p>
+          <p className="p-note">Noch keine Sitzung.</p>
         )}
       </section>
 
@@ -205,7 +204,6 @@ function Stueck({ ctx, view }: ViewProps) {
               : { key: 'archive', label: 'Archivieren', icon: <IconArchive />, onPick: archive },
             { key: 'delete', label: 'Stück löschen', danger: true, onPick: remove },
           ]}
-          note="Archivieren nimmt das Stück aus Tagesliste und Übersicht – Sitzungen und Statistik bleiben. Löschen nimmt auch die Sitzungen mit. Beides lässt sich ein paar Sekunden lang zurücknehmen."
         />
       ) : null}
 
@@ -213,12 +211,10 @@ function Stueck({ ctx, view }: ViewProps) {
         <ListSheet
           label="Schwierigkeit"
           title="Wie schwer ist das Stück?"
-          note="Deine Einschätzung des Stücks – wie weit du schon bist, zeigt der Lernweg."
           onClose={() => setSheet(null)}
           items={DIFFICULTIES.map((d) => ({
             key: d.id,
             label: d.label,
-            sub: d.text,
             checked: piece.difficulty === d.id,
             onPick: () => {
               updatePiece(piece.id, { difficulty: d.id })
@@ -233,7 +229,7 @@ function Stueck({ ctx, view }: ViewProps) {
           label="Zu Setlist hinzufügen"
           title="Setlists"
           onClose={() => setSheet(null)}
-          note={setlists.length ? 'Tippen nimmt das Stück auf oder heraus.' : 'Noch keine Setlists – anlegen unter Stücke → Setlists.'}
+          note={setlists.length ? undefined : 'Noch keine Setlists.'}
           items={setlists.map((s) => {
             const has = s.pieceIds.includes(piece.id)
             return {
@@ -290,7 +286,6 @@ function Notes({ pieceId, initial, onSaved }: { pieceId: string; initial: string
         className="p-notes"
         value={text}
         rows={2}
-        placeholder="Fingersätze, schwierige Takte, was als Nächstes dran ist …"
         onChange={(e) => {
           const v = e.target.value
           setText(v)

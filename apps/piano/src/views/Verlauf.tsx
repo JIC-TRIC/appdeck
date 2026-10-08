@@ -81,7 +81,6 @@ function Verlauf({ ctx, view }: ViewProps) {
           Mehr zeigen ({days.length - shown} {days.length - shown === 1 ? 'Tag' : 'Tage'})
         </button>
       ) : null}
-      {days.length ? <p className="p-note p-center">Nach links wischen zum Löschen.</p> : null}
     </Page>
   )
 }

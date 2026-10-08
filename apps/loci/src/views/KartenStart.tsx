@@ -30,7 +30,6 @@ export default function KartenStart({
       <div className="l-body">
         <div>
           <h1 className="l-h1">Kartendeck</h1>
-          <p className="l-sub">Gemischtes Deck merken, dann in der richtigen Reihenfolge wiedergeben.</p>
         </div>
 
         <section className="l-card l-einst">
@@ -52,10 +51,7 @@ export default function KartenStart({
             </div>
           </div>
           <div className={`l-einst-zeile${deck.taktAn ? ' ohne-linie' : ''}`}>
-            <span>
-              <span className="l-einst-name">Taktgeber</span>
-              <small>Karten blättern von selbst weiter</small>
-            </span>
+            <span className="l-einst-name">Taktgeber</span>
             <Schalter an={deck.taktAn} label="Taktgeber" onChange={(taktAn) => setDeck({ taktAn })} />
           </div>
           {deck.taktAn ? (
@@ -96,7 +92,6 @@ export default function KartenStart({
         <section className="l-sec">
           <div className="l-sec-kopf">
             <h2 className="l-h2">Bestzeiten</h2>
-            <span className="l-s3">Merkzeit, nur fehlerfrei</span>
           </div>
           <div className="l-liste">
             {ANZAHLEN.map((n) => (

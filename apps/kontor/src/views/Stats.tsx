@@ -121,10 +121,7 @@ function Stats({ ctx }: ViewProps) {
       }
     >
       {totals.count === 0 ? (
-        <Empty
-          title="Nichts zu rechnen"
-          hint="In diesem Zeitraum gibt es keine Buchungen."
-        />
+        <Empty title="Keine Buchungen in diesem Zeitraum" />
       ) : (
         <>
           {/* Auf einen Blick: die vier Zahlen, die man meistens sucht. */}
@@ -154,9 +151,9 @@ function Stats({ ctx }: ViewProps) {
               <div className="k-kpi4-v">
                 {proj === null
                   ? '–'
-                  : `~${betragOderMaske(ctx.diskret, proj, Math.round(proj / 100).toLocaleString('de-DE'))} €`}
+                  : `~${betragOderMaske(ctx.diskret, Math.round(proj / 100).toLocaleString('de-DE'))} €`}
               </div>
-              <div className="k-kpi4-s">{proj === null ? 'nur im laufenden Zeitraum' : `für ${ganz}`}</div>
+              <div className="k-kpi4-s">{proj === null ? '' : `für ${ganz}`}</div>
             </div>
             <div className="k-card k-kpi4-tile">
               <div className="k-kpi4-l">Ohne Ausgaben</div>
@@ -171,7 +168,7 @@ function Stats({ ctx }: ViewProps) {
                 Ausgaben pro {series.perMonth ? 'Monat' : 'Tag'}
               </span>
               <span className="k-small-num muted">
-                Spitze {betragOderMaske(ctx.diskret, spitze, formatCent(spitze))} €
+                Spitze {betragOderMaske(ctx.diskret, formatCent(spitze))} €
               </span>
             </div>
             <Bars points={series.points} avg={avgBalken} />
@@ -259,10 +256,6 @@ function Stats({ ctx }: ViewProps) {
                 </span>
               </div>
               <LabelledBars points={profil} color="var(--exp)" highlight={profilTop ? profilMax : -1} />
-              <div className="k-meta tight">
-                Was an einem Wochentag typischerweise weggeht (Median bis heute). Einzelne große
-                Posten wie die Miete verzerren das Bild so nicht.
-              </div>
             </div>
           ) : null}
 
