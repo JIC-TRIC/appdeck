@@ -4,6 +4,7 @@ import {
   dayScores,
   evaluateWeek,
   inLife,
+  isRestToday,
   meets,
   messwert,
   naechsterHaken,
@@ -14,6 +15,7 @@ import {
   statesBetween,
   streaks,
   todayCount,
+  todayToEnter,
   weekdayQuotes,
   weeksDone,
 } from './calc'
@@ -294,6 +296,35 @@ describe('Zaehler und Quoten', () => {
     expect(todayCount([daily, weekly], log, today)).toEqual({ done: 0, due: 1 })
     const erledigt = { ...log, w: { ...log.w, [today]: 1 } }
     expect(todayCount([daily, weekly], erledigt, today)).toEqual({ done: 1, due: 2 })
+  })
+
+  it('ist heute frei nur mit Ruhetagen und laufender Serie', () => {
+    // Gym am Di trainiert, heute Mi: Serie laeuft, Ruhetage uebrig
+    expect(isRestToday(weekly, log, today)).toBe(true)
+    expect(isRestToday(daily, log, today)).toBe(false)
+    // Ohne Training keine Serie: ein leerer Tag waere verpasst, nicht frei
+    expect(isRestToday(weekly, {}, today)).toBe(false)
+    // Sa 3.10. nach Mo-Fr ohne weiteres Training: Ruhetage aufgebraucht, heute faellig
+    expect(isRestToday(weekly, log, '2026-10-03')).toBe(false)
+  })
+
+  it('zaehlt, was heute noch einzutragen ist', () => {
+    // taeglich offen: einzutragen. Gym heute frei: nicht
+    expect(todayToEnter([daily, weekly], log, today)).toEqual({ open: 1, total: 1 })
+    // Nicht geschafft ist auch eingetragen
+    const nein = { ...log, d: { ...log.d, [today]: NICHT_GESCHAFFT } }
+    expect(todayToEnter([daily, weekly], nein, today)).toEqual({ open: 0, total: 1 })
+    // Freies Gym eingetragen zaehlt mit
+    const beide = { ...nein, w: { ...log.w, [today]: 1 } }
+    expect(todayToEnter([daily, weekly], beide, today)).toEqual({ open: 0, total: 2 })
+    // Ohne laufende Serie ist Gym nicht frei - leer bliebe ein leerer Kasten
+    expect(todayToEnter([daily, weekly], { d: log.d }, today)).toEqual({ open: 2, total: 2 })
+  })
+
+  it('wertet eine Menge unter dem Ziel als eingetragen', () => {
+    const protein = habit({ id: 'p', kind: 'amount', unit: 'g', goal: [{ from: '2026-06-01', target: 150, dir: 'min' }] })
+    expect(todayToEnter([protein], {}, today)).toEqual({ open: 1, total: 1 })
+    expect(todayToEnter([protein], { p: { [today]: 80 } }, today)).toEqual({ open: 0, total: 1 })
   })
 
   it('ignoriert ein offenes Heute in der Quote', () => {

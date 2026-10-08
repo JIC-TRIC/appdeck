@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
-import { isArchived, isDueWeekly, messwert, naechsterHaken, statesBetween, streaks, todayCount } from '../calc'
+import { isArchived, isDueWeekly, isRestToday, messwert, naechsterHaken, statesBetween, streaks, todayToEnter } from '../calc'
 import { IconGrid, IconMore, IconPlus, IconRight, IconStats } from '../icons'
 import { DayBox, Dot, Streak, hue, ruleShort } from '../ui'
 import {
@@ -33,13 +33,14 @@ const SAGT: Record<DayState, string> = {
 }
 
 // Fuer den Screenreader: was in der Zelle steht, nicht nur der Zustand.
-function sagt(h: Habit, state: DayState, eintrag: number | undefined) {
-  if (eintrag === NICHT_GESCHAFFT) return state === 'rest' ? 'Ruhetag, nicht geschafft' : 'nicht geschafft'
+function sagt(h: Habit, state: DayState, eintrag: number | undefined, frei = false) {
+  if (eintrag === NICHT_GESCHAFFT) return state === 'rest' || frei ? 'Ruhetag, nicht geschafft' : 'nicht geschafft'
   const wert = messwert(eintrag)
   if (h.kind === 'amount' && wert !== undefined) {
     const zusatz = state === 'done' ? ', Ziel erreicht' : state === 'rest' ? ', Ruhetag' : ''
     return `${formatValue(wert)} ${h.unit}`.trim() + zusatz
   }
+  if (frei && state === 'open') return 'frei, sonst Ruhetag'
   return SAGT[state]
 }
 
@@ -65,7 +66,7 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
     [active, log, today],
   )
 
-  const count = useMemo(() => todayCount(active, log, today), [active, log, today])
+  const count = useMemo(() => todayToEnter(active, log, today), [active, log, today])
 
   // Karussell wie in Kontor: das aeltere Fenster liegt links bereit, das
   // neuere rechts (nur, wenn man zurueckgeblaettert hat). Beim Wischen zieht
@@ -86,6 +87,8 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
           // Farbiger Rand nur bei x-mal pro Woche ohne freie Ruhetage -
           // taeglich ist immer faellig, das muss der Kasten nicht sagen.
           due: end === today && isDueWeekly(h, log, today),
+          // Heute noch ein Ruhetag frei: der Kasten traegt schon den Ring.
+          frei: end === today && isRestToday(h, log, today),
         }
       })
       return { versatz: v, offset: o, days, end, rows }
@@ -204,7 +207,7 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
   const kopfOffset = offset - fahrt
   const kopfEnd = addDays(today, -7 * kopfOffset)
   const title = kopfOffset === 0 ? formatDayLong(today) : rangeLabel(addDays(kopfEnd, -6), kopfEnd)
-  const sub = !count.due ? 'Heute nichts fällig' : count.done === count.due ? 'Alles erledigt' : `${count.done} von ${count.due} erledigt`
+  const sub = !count.total ? 'Heute nichts einzutragen' : !count.open ? 'Alles eingetragen' : `Noch ${count.open} einzutragen`
   const spur = `translateX(calc(${-100 - fahrt * 100}% + ${zug}px))`
 
   return (
@@ -315,7 +318,7 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                           disabled={r.states[6] === 'off'}
                           tabIndex={live ? 0 : -1}
                           onClick={() => tap(r.h, p.end, r.states[6])}
-                          aria-label={`${r.h.name}, ${formatDayShort(p.end)}: ${sagt(r.h, r.states[6], r.value)}`}
+                          aria-label={`${r.h.name}, ${formatDayShort(p.end)}: ${sagt(r.h, r.states[6], r.value, r.frei)}`}
                         >
                           <DayBox
                             habit={r.h}
@@ -323,6 +326,7 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                             value={r.value}
                             day={p.end}
                             due={r.due}
+                            frei={r.frei}
                             pop={pop(p.end)}
                             key={pop(p.end) ? `p${lastChange?.n}` : 'd'}
                           />

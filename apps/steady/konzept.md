@@ -115,8 +115,9 @@ Die **Heute-Spalte** ist breiter (Kasten 50 × 36 px) und zeigt mehr:
 | --- | --- |
 | offen | leerer Kasten, grauer Rand |
 | **heute fällig** (nur x-mal/Woche, keine Ruhetage mehr übrig) | leerer Kasten, Rand in Gewohnheitsfarbe |
+| **heute frei** (nur x-mal/Woche, Ruhetag übrig, Serie läuft; seit 08.10.2026) | grauer Rand, Ring in Gewohnheitsfarbe im Kasten wie ◌ – bleibt der Tag leer, wird er ein Ruhetag |
 | erledigt (Abhaken) | Kasten gefüllt in Gewohnheitsfarbe, dunkler Haken |
-| nicht geschafft | grauer Rand, graues Kreuz im Kasten |
+| nicht geschafft | grauer Rand, graues Kreuz im Kasten (heute frei: Ring mit Kreuz wie ⊗) |
 | Menge ohne Wert | leerer Kasten, Einheit in Text still („kcal“) |
 | Menge unter Ziel | Wert in weiß, Fortschrittsbalken am unteren Rand in Gewohnheitsfarbe |
 | Menge erfüllt | Kasten gefüllt in Gewohnheitsfarbe, Wert dunkel |
@@ -196,6 +197,10 @@ Beispiel Gym 3× pro Woche → jede Woche hat **7 − 3 = 4 Ruhetage**.
 - [x] **Heute fällig:** sind keine Ruhetage mehr übrig, muss heute trainiert
       werden, damit die Serie hält. Die Heute-Zelle bekommt einen Rand in der
       Gewohnheitsfarbe, und die Gewohnheit zählt im Tageszähler mit
+- [x] **Heute frei** (seit 08.10.2026): ist noch ein Ruhetag übrig und läuft
+      eine Serie, trägt die Heute-Zelle schon den Ring des Ruhetags – man sieht
+      auch heute, was nicht sein muss. Ohne laufende Serie ist heute nicht frei
+      (ein leerer Tag wäre verpasst), die Zelle bleibt grau
 - [x] Mehr als x Einträge sind erlaubt. Übrige Ruhetage **verfallen am
       Sonntag**, kein Übertrag in die nächste Woche
 - [x] **Nachtragen rechnet die Woche neu.** Wird ein × nachträglich erledigt,
@@ -244,10 +249,15 @@ Nur Mi gelaufen:
       Gezählt wird bis gestern, heute nur, wenn schon erledigt – ein offenes
       Heute drückt die Quote nicht
 - [x] **Perfekter Tag** = alle an diesem Tag aktiven Gewohnheiten ● oder ◌
-- [x] **Tageszähler** in der Kopfzeile („3 von 6 erledigt“): zählt, was heute
-      fällig ist. Tägliche Gewohnheiten immer; x-mal pro Woche nur, wenn heute
-      fällig (keine Ruhetage mehr) oder heute schon erledigt. Gym an einem
-      Tag mit freien Ruhetagen ist heute optional und zählt nicht mit
+- [x] **Tageszähler** in der Kopfzeile („Noch 3 einzutragen“, seit
+      08.10.2026): zählt, was heute noch einen Eintrag braucht – es geht um
+      Vollständigkeit, nicht um einen perfekten Tag. **Jeder Eintrag zählt**,
+      auch „nicht geschafft“ und eine Menge unter dem Ziel. Keinen Eintrag
+      braucht, was heute frei ist (leer wird es ein Ruhetag). Alles drin:
+      „Alles eingetragen“. Vorher „3 von 6 erledigt“, da zählte nur Erledigtes
+- [x] **Heute in der Statistik** (Tagesquote, perfekter Tag) zählt weiter nur
+      Erledigtes: tägliche Gewohnheiten immer, x-mal pro Woche nur, wenn heute
+      fällig (keine Ruhetage mehr) oder heute schon erledigt
 
 ### Regeln ändern
 
@@ -356,7 +366,7 @@ Erststart                       (solange es keine Gewohnheit gibt)
       „Fläche“. Alle Apps steht seit 06.10.2026 direkt hier (ein Tipp, wie in
       Stash), vorher nur im Menü
 - [x] Mitte: das Datum des jüngsten Tages im Fenster („Mittwoch,
-      30. September“), darunter der Tageszähler „3 von 6 erledigt“
+      30. September“), darunter der Tageszähler „Noch 3 einzutragen“
 - [x] Beim Zurückblättern steht dort der Bereich („17.–23. September“) und
       statt des Zählers ein Knopf **„Heute“**; auch ein Tipp auf den Titel
       springt zurück
@@ -543,7 +553,7 @@ Wie Kontors „Über Kontor“: wer die App in einem halben Jahr öffnet, soll d
 Regeln in der App finden und nicht nur hier.
 
 - [x] Legende aller Zeichen mit echtem Aussehen (●, ◌, ×, ·, Menge, Menge
-      am Ruhetag, offener und fälliger Heute-Kasten)
+      am Ruhetag, offener, fälliger und freier Heute-Kasten)
 - [x] Kurz erklärt: Ruhetage, Woche Mo–So, Serie, Tageswechsel, warum es
       keine Pausen gibt
 
@@ -647,6 +657,7 @@ Beim Konzept offen, am 27.09.2026 so bestätigt und gebaut:
 6. **Erste Woche anteilig** (gerundet)
 7. **Wiederherstellen aus dem Archiv startet eine neue Serie**, der Rekord bleibt
 8. **Tageszähler** zählt x-mal/Woche nur, wenn heute fällig oder erledigt
+   (am 08.10.2026 abgelöst durch 16)
 9. **Messart nach dem ersten Eintrag fest**
 10. **Rückgängig-Meldung** nur für Tage vor heute
 11. **Keine Gamification** – keine Punkte, Level, Abzeichen. Serie, Rekord und
@@ -665,6 +676,15 @@ Ergänzt am 07.10.2026:
     Ruhetag genauso aus wie an einem verpassten Tag. Jetzt trägt sie den Ring
     des Ruhetags (im breiten Kasten den Rand in der Farbe): verfehlt, aber die
     Serie hält
+
+Ergänzt am 08.10.2026:
+
+16. **Tageszähler fragt nach Einträgen, nicht nach Erfolg.** „Noch 3
+    einzutragen“ statt „3 von 6 erledigt“; „nicht geschafft“ ist ein Eintrag.
+    Steady soll beim Festhalten helfen und Muster zeigen, nicht jeden Tag
+    perfekt machen
+17. **Heute frei im Ring.** Was heute nicht sein muss (Ruhetag übrig, Serie
+    läuft), trägt schon im Heute-Kasten den Ring wie ein vergangener Ruhetag
 
 ---
 

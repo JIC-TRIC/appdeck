@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
-import { isArchived, isDueWeekly, ruleAt, statesBetween } from '../calc'
+import { isArchived, isDueWeekly, isRestToday, ruleAt, statesBetween } from '../calc'
 import { IconRight } from '../icons'
 import { DayBox, Dot, Screen, Segmented, TextButton, hue, ruleShort } from '../ui'
 import { MAX_NAME, PALETTE, UNIT_SUGGESTIONS, colorOf } from '../data'
@@ -139,7 +139,7 @@ function HabitForm({ ctx, view }: ViewProps) {
     const h = built.kind === 'amount' && target === null ? { ...built, goal: [] } : built
     const days = Array.from({ length: 7 }, (_, i) => addDays(today, i - 6))
     const st = statesBetween(h, log[h.id], days[0], today, today)
-    return { h, days, states: days.map((d) => st[d]), due: isDueWeekly(h, log, today) }
+    return { h, days, states: days.map((d) => st[d]), due: isDueWeekly(h, log, today), frei: isRestToday(h, log, today) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(input), editing, locked, log, today])
 
@@ -326,7 +326,7 @@ function HabitForm({ ctx, view }: ViewProps) {
               </span>
             ))}
             <span className={`s-wide${weekdayIndex(today) === 0 ? ' mon' : ''}`}>
-              <DayBox habit={preview.h} state={preview.states[6]} value={log[preview.h.id]?.[today]} day={today} due={preview.due} />
+              <DayBox habit={preview.h} state={preview.states[6]} value={log[preview.h.id]?.[today]} day={today} due={preview.due} frei={preview.frei} />
             </span>
             <span className="s-strk" />
           </div>

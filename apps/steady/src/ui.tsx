@@ -188,13 +188,15 @@ export function Dot({
 
 // Der breite Kasten rechts im Raster: heute (oder der juengste Tag im
 // Fenster) mit Haken bzw. Tageswert. Bei Mengen zeigt ein Balken am unteren
-// Rand, wie weit es noch zum Ziel ist.
+// Rand, wie weit es noch zum Ziel ist. "frei": heute ist noch ein Ruhetag
+// uebrig - der Kasten traegt schon den Ring, solange nichts erledigt ist.
 export function DayBox({
   habit,
   state,
   value: eintrag,
   day,
   due,
+  frei,
   pop,
 }: {
   habit: Habit
@@ -202,6 +204,7 @@ export function DayBox({
   value: number | undefined
   day: string
   due?: boolean
+  frei?: boolean
   pop?: boolean
 }) {
   const cls = pop ? ' pop' : ''
@@ -218,10 +221,10 @@ export function DayBox({
   }
   if (value === undefined) {
     // Nicht geschafft: Kreuz im Kasten. Ein Ruhetag (vergangener Tag im
-    // zurueckgeblaetterten Fenster) behaelt seinen Ring, mit Kreuz darin,
-    // wenn er so eingetragen ist. Nichts eingetragen: leerer Kasten wie heute.
+    // zurueckgeblaetterten Fenster oder heute frei) behaelt seinen Ring, mit
+    // Kreuz darin, wenn er so eingetragen ist. Nichts eingetragen: leerer Kasten.
     const nein = eintrag === NICHT_GESCHAFFT ? ' nein' : ''
-    if (state === 'rest') return <span className={`s-t rest${nein}${cls}`}><i /></span>
+    if (state === 'rest' || frei) return <span className={`s-t rest${nein}${cls}`}><i /></span>
     if (nein) return <span className={`s-t nein${cls}`}><i /></span>
     return (
       <span className={`s-t${due ? ' due' : ''}`}>

@@ -202,6 +202,15 @@ export function isDueWeekly(h: Habit, log: Log, today: string) {
   return w.perWeek < 7 && w.due
 }
 
+// Heute frei, x-mal pro Woche: noch Ruhetage uebrig und eine laufende Serie.
+// Bleibt heute leer, wird es nach dem Tageswechsel ein Ruhetag - der
+// Heute-Kasten zeigt darum schon den Ring, und eintragen muss man nichts.
+// Ohne laufende Serie wuerde der leere Tag verpasst, dann ist er nicht frei.
+export function isRestToday(h: Habit, log: Log, today: string) {
+  const w = weekOf(h, log, today, today)
+  return w.perWeek < 7 && !w.due && w.streakAlive
+}
+
 // Zustaende fuer jeden Tag von from bis to. Gerechnet wird wochenweise, weil
 // ein Ruhetag vom Rest seiner Woche abhaengt.
 export function statesBetween(
@@ -314,9 +323,27 @@ export function weeksDone(h: Habit, log: Log, today: string) {
 
 // ---------- Heute ----------
 
-// Tageszaehler "3 von 6 erledigt": zaehlt, was heute faellig ist. Taeglich
-// immer; x-mal pro Woche nur, wenn heute keine Ruhetage mehr uebrig sind
-// oder es schon erledigt ist.
+// Tageszaehler in der Kopfzeile, "Noch 3 einzutragen": es geht um
+// Vollstaendigkeit, nicht um einen perfekten Tag. Eingetragen ist jeder
+// Eintrag - auch "nicht geschafft" und eine Menge unter dem Ziel. Keinen
+// Eintrag braucht, was heute frei ist (leer wird es ein Ruhetag).
+export function todayToEnter(habits: Habit[], log: Log, today: string) {
+  let open = 0
+  let total = 0
+  for (const h of habits) {
+    if (isArchived(h) || !inLife(h, today)) continue
+    if (log[h.id]?.[today] !== undefined) total += 1
+    else if (!isRestToday(h, log, today)) {
+      open += 1
+      total += 1
+    }
+  }
+  return { open, total }
+}
+
+// Heute in der Statistik: zaehlt, was heute faellig ist. Taeglich immer;
+// x-mal pro Woche nur, wenn heute keine Ruhetage mehr uebrig sind oder es
+// schon erledigt ist.
 export function todayCount(habits: Habit[], log: Log, today: string) {
   let done = 0
   let due = 0
@@ -343,7 +370,7 @@ export interface DayScore {
 }
 
 // Pro Tag: wie viele Gewohnheiten erfuellt, wie viele faellig. Heute zaehlt
-// nur, was schon erledigt oder heute noetig ist (wie der Tageszaehler).
+// nur, was schon erledigt oder heute noetig ist (todayCount).
 export function dayScores(habits: Habit[], log: Log, from: string, to: string, today: string): DayScore[] {
   const end = minKey(to, today)
   if (end < from) return []
