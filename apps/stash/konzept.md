@@ -39,8 +39,8 @@ bearbeiten oder löschen. Offene Fragen stehen unten unter „Später klären“
 - **Newsreader** (Serifenschrift) für alles, was man schreibt und liest:
   Wortmarke, Titel, Notizen. Knöpfe und Kleinkram in der Systemschrift.
 - Nur hell, kein Dark Mode.
-- Symbol: drei gestapelte Zettel, der vordere mit Titelstrich und zwei Zeilen
-  (`icons/stash.svg`).
+- Symbol: Zettelstapel, der vordere in Papierweiß mit Titelstrich und zwei
+  Zeilen, auf Tinte (`icons/stash.svg`, Symbol-Stil „Signal“ siehe README).
 
 ## Regeln
 

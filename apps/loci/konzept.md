@@ -423,10 +423,10 @@ Karten, 4 px Tasten).
 - [x] Ionic-React-App wie Piano: `apps/loci/src/main.tsx` mit `mountApp`, eigenes
   CSS, kein schwebender Home-Knopf.
 - [x] Eintrag in `apps.js`:
-  `{ id: 'loci', name: 'Loci', icon: 'icons/loci.svg', color: '#F7F8F3', bg: '#F7F8F3', path: 'apps/loci/' }`
-- [x] Symbol `icons/loci.svg`: Schlüsselloch im Bogen, Tintenblau auf Karo,
-  Umriss und Standlinie in der Stärke aller App-Symbole (Symbol-Stil siehe
-  README). Am 07.10.2026 kurz auf einem Zettel (alle Apps sahen gleich aus).
+  `{ id: 'loci', name: 'Loci', icon: 'icons/loci.svg', color: '#1E4DB7', bg: '#F7F8F3', path: 'apps/loci/' }`
+- [x] Symbol `icons/loci.svg`: Schlüsselloch im Bogen mit Standlinie, weiß auf
+  Tintenblau (Symbol-Stil „Signal“ siehe README). Vorher Tintenblau mit Umriss
+  auf Karo, am 07.10.2026 kurz auf einem Zettel (alle Apps sahen gleich aus).
 - [x] **Kartenbilder:** die 52 PNGs aus Gedächtnispalast (500 × 750, CC0) in
   voller Größe als WebP (Qualität 75, zusammen rund 1 MB; kleiner wäre auf dem
   iPhone-Display unscharf), in `src/karten/`, eingebunden per

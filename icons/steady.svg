@@ -1,9 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
-  <!-- Steady: der Heute-Kasten erledigt (Gewohnheitsfarbe, Haken) mit der Flamme der Serie in Bernstein, Umriss in weisser Tinte auf Graphit (Symbol-Stil siehe README) -->
-  <rect width="180" height="180" fill="#0F1113"/>
-  <g transform="translate(90 94) scale(1.18) translate(-90 -94)">
-    <rect x="40" y="82" width="84" height="60" rx="18" fill="#F2785C" stroke="#EDEFF1" stroke-width="4.5"/>
-    <path d="M64 112l11 11 22-23" fill="none" stroke="#0F1113" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-    <path transform="translate(104.2 42.8) scale(3.3)" d="M6.2.4c.3 2.3 4.3 4 4.3 8A4.5 4.5 0 0 1 1.5 8.6c0-1.9 1-3.2 2.2-4 .1 1.4.7 2.3 1.6 2.7C5.7 5.1 5.3 2.6 6.2.4z" fill="#F2B84B" stroke="#0F1113" stroke-width="1.6" stroke-linejoin="round"/>
-  </g>
+  <!-- Steady: der abgehakte Heute-Kasten, weiss auf Koralle (erste Gewohnheitsfarbe), Haken in der Kachelfarbe (Symbol-Stil „Signal“ siehe README) -->
+  <rect width="180" height="180" fill="#F2785C"/>
+  <rect x="44" y="44" width="92" height="92" rx="28" fill="#FFFFFF"/>
+  <path d="M68 91l15 15 30-31" fill="none" stroke="#F2785C" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

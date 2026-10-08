@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- appdeck (Home-Bildschirm): vier Kacheln auf Indigo, eine in Bernstein. Quelle fuer icon-180/192/512.png; icon-maskable-512.png mit Motiv auf 80 % (Symbol-Stil „Signal“ siehe README) -->
+  <rect width="180" height="180" fill="#4F52D9"/>
+  <rect x="40" y="40" width="44" height="44" rx="13" fill="#FFFFFF"/>
+  <rect x="96" y="40" width="44" height="44" rx="13" fill="#FFFFFF"/>
+  <rect x="40" y="96" width="44" height="44" rx="13" fill="#FFFFFF"/>
+  <rect x="96" y="96" width="44" height="44" rx="13" fill="#F2B84B"/>
+</svg>

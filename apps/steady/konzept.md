@@ -585,12 +585,12 @@ Rückmeldung, kein Schmuck.
       eigenes CSS statt Ionic-Listen-Look
 - [x] Anlegen **nicht** über `npm run new` (das legt die Vorlage an), sondern
       Kontors Aufbau übernehmen. Eintrag in `apps.js`:
-      `{ id: 'steady', name: 'Steady', icon: 'icons/steady.svg', color: '#0F1113', path: 'apps/steady/' }`
-- [x] App-Symbol `icons/steady.svg`: der Heute-Kasten erledigt (Koralle mit
-      dunklem Haken, Umriss in weißer Tinte auf Graphit), oben rechts die
-      Flamme der Serie in Bernstein (Symbol-Stil siehe README). Vorher 3 × 3
-      Punkte (gefiel nicht), am 07.10.2026 kurz ein Zettel mit zwei
-      Rasterzeilen (alle Apps sahen gleich aus).
+      `{ id: 'steady', name: 'Steady', icon: 'icons/steady.svg', color: '#F2785C', bg: '#0F1113', path: 'apps/steady/' }`
+- [x] App-Symbol `icons/steady.svg`: der abgehakte Heute-Kasten, weiß auf
+      Koralle, der Haken in der Kachelfarbe (Symbol-Stil „Signal“ siehe
+      README). Vorher 3 × 3 Punkte (gefiel nicht), am 07.10.2026 kurz ein
+      Zettel mit zwei Rasterzeilen (alle Apps sahen gleich aus), danach der
+      Kasten mit Flamme als Umriss auf Graphit.
 - [x] Zurück-Navigation an der Browser-History
 - [x] **Entwürfe** wie Kontor: ein halb ausgefülltes Formular und die offene
       Ansicht überleben einen Neustart für drei Stunden

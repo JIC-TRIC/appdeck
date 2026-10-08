@@ -112,14 +112,19 @@ Statt eines Emojis geht auch ein Bild: Datei nach `icons/` legen (quadratisch, z
 `apps.js` `icon: 'icons/habits.png'` eintragen. (Bei Ionic-Apps landen nur die gebauten Dateien auf der
 Website, ein Bild direkt in `apps/habits/` würde also nicht mitkopiert.)
 
-**Symbol-Stil (alle App-Symbole, seit 07.10.2026):** Jede App hat ihr eigenes Motiv, alle sprechen
-dieselbe Sprache. SVG 180×180, Grund = Hintergrund der App (= `color` in `apps.js`). Das Motiv liegt in
-`translate(90 94) scale(1.18) translate(-90 -94)` und füllt ungefähr x 40–140, y 50–140. Umriss 4,5 in der
-Tinte der App (dunkel auf hellen Apps, hell auf dunklen), flache Farben aus der App, wenige runde Formen,
-keine Verläufe, keine Schatten im Bild. **Der Zettelstapel gehört nur Stash** – andere Apps bekommen kein
-Blatt mit Text darauf, sondern ein Ding aus ihrer eigenen Oberfläche: Kontor den Donut, Steady den
-abgehakten Heute-Kasten mit Flamme, Piano Tasten mit Messing-Taste, Loci den Bogen mit Schlüsselloch.
-(Am 07.10.2026 trugen kurz alle den Zettel – sah zu gleich aus.)
+**Symbol-Stil „Signal“ (alle App-Symbole und das Home-Bildschirm-Symbol, seit 08.10.2026):** Jede App
+hat ihr eigenes Motiv aus ihrer Oberfläche, alle sprechen dieselbe Sprache. SVG 180×180, Grund ist eine
+kräftige, flache Farbfläche (= `color` in `apps.js`; sie darf vom Hintergrund der App abweichen, beim
+Öffnen blendet der Launcher in `bg` über). Darauf **ein** helles Motiv ohne Umriss, das ungefähr
+x 40–140, y 40–140 füllt. Abstufungen nur über Deckkraft oder Aussparungen in der Kachelfarbe, höchstens
+eine zweite Farbe aus der App. Keine Verläufe, keine Schatten im Bild. Jede App hat ihre eigene
+Kachelfarbe: Kontor Grün `#2E9E6B` (Donut als Ring), Steady Koralle `#F2785C` (abgehakter Heute-Kasten),
+Piano Messing `#D9A953` (Tasten mit Klappe), Loci Tintenblau `#1E4DB7` (Bogen mit Schlüsselloch), Stash
+Tinte `#1F1D1A` (Zettelstapel – **der gehört nur Stash**). Das Home-Bildschirm-Symbol ist
+`icons/appdeck.svg`: vier Kacheln auf Indigo `#4F52D9`, eine in Bernstein. `icon-180/192/512.png` sind
+daraus gerendert (z. B. in Chrome auf ein Canvas in Zielgröße gezeichnet), `icon-maskable-512.png` mit dem
+Motiv auf 80 %, damit Android beim Zuschneiden nichts abschneidet. (Vorher: Motive mit Umriss 4,5 auf dem
+Grund der App, am 07.10.2026 kurz alle im Zettel-Stil.)
 
 ---
 
