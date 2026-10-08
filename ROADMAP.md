@@ -105,31 +105,32 @@ Messtag, Verlauf pro Wert. Nicht im MVP (siehe `apps/form/konzept.md`):
 - **Startvorlagen** (Gewicht, Bizeps, Brust, Taille …) und **Notiz pro Messtag** – in der Fragerunde
   zurückgestellt.
 - **Fortschrittsfotos** – erst nach dem IndexedDB-Umzug (siehe oben).
-- Das große Ziel: das **Trainingsbuch** (unten) als zweiter Teil von Form oder als eigene App, die
-  Forms Daten liest.
+
+### Trainingsbuch – zweiter Bereich in Form
+
+Entschieden am 08.10.2026: das Training kommt als zweiter Bereich in Form, keine eigene App.
+Übungen, Sätze, Wiederholungen und Gewicht erfassen – schnell genug, um es zwischen zwei Sätzen im
+Studio zu machen. Vor dem Bau wie gewohnt: Fragerunde, dann Konzept (in `apps/form/konzept.md`) und
+Mockups.
+
+- **Letzter Wert steht schon da**: beim nächsten Training zeigt jede Übung, was man zuletzt geschafft
+  hat („3×8 à 100 kg"), ein Tipp übernimmt es als Startwert.
+- **Fortschrittskurve pro Übung**, z. B. schwerster Satz über die Zeit – wie der Verlauf der
+  Körperwerte.
+- **Verbindung zu Steady**: ein erfasstes Training zählt dort als erledigte Gewohnheit (z. B. „Gym").
+  Geht, weil alle Apps unter derselben Adresse liegen und gegenseitig ihre Daten lesen können. Würde
+  die Steady-Idee „Notiz pro Eintrag" fürs Training überflüssig machen.
+- Körpergewicht erfasst Form schon als normalen Wert.
+- Offen: wie man zwischen Werten und Training wechselt (Tab-Leiste oder Umschalter), feste
+  Pläne/Vorlagen (Push/Pull/Beine) oder frei? Pausentimer läuft nur, solange die App offen ist (iOS
+  hält Web-Apps im Hintergrund an).
+- Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
+  zusammen mit Kontor ein Grund mehr für den IndexedDB-Umzug (siehe oben).
 
 ## Ideen für neue Apps
 
 Nur festgehalten, noch nicht entschieden. Vor dem Bau wie gewohnt: Fragerunde, dann `konzept.md`
 und `mockups.html`.
-
-### Trainingsbuch
-
-Übungen, Sätze, Wiederholungen und Gewicht erfassen – schnell genug, um es zwischen zwei Sätzen im
-Studio zu machen.
-
-- **Letzter Wert steht schon da**: beim nächsten Training zeigt jede Übung, was man zuletzt geschafft
-  hat („3×8 à 100 kg"), ein Tipp übernimmt es als Startwert.
-- **Fortschrittskurve pro Übung**, z. B. schwerster Satz über die Zeit.
-- **Verbindung zu Steady**: ein erfasstes Training zählt dort als erledigte Gewohnheit (z. B. „Gym").
-  Geht, weil alle Apps unter derselben Adresse liegen und gegenseitig ihre Daten lesen können. Würde
-  die Steady-Idee „Notiz pro Eintrag" fürs Training überflüssig machen.
-- **Gehört zu Form**: Körperwerte (auch das Körpergewicht) erfasst seit 08.10.2026 Form. Das Training
-  soll dort andocken – als zweiter Bereich in Form oder als eigene App, die Forms Daten liest.
-- Offen: feste Pläne/Vorlagen (Push/Pull/Beine) oder frei? Pausentimer läuft nur, solange die App
-  offen ist (iOS hält Web-Apps im Hintergrund an).
-- Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
-  zusammen mit Kontor ein Grund mehr für den IndexedDB-Umzug (siehe oben).
 
 ### Ein Satz am Tag
 

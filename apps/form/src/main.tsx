@@ -1,11 +1,13 @@
 import { mountApp } from '@lib/mount'
 
 // Schriften liegen mit im Build statt bei Google Fonts: funktioniert offline
-// und schickt keine Anfrage an Dritte. Schibsted Grotesk (sehr fett) fuer
-// Wortmarke, Namen und grosse Zahlen, Instrument Sans fuer alles andere. Nur
-// die lateinischen Teile - Umlaute und ß sind darin.
-import '@fontsource/schibsted-grotesk/latin-800.css'
-import '@fontsource/schibsted-grotesk/latin-900.css'
+// und schickt keine Anfrage an Dritte. Barlow Condensed (schmal und fett, wie
+// auf einer Anzeigetafel) fuer Wortmarke, Namen und grosse Zahlen,
+// Instrument Sans fuer alles andere. Nur die lateinischen Teile - Umlaute und
+// ß sind darin.
+import '@fontsource/barlow-condensed/latin-600.css'
+import '@fontsource/barlow-condensed/latin-700.css'
+import '@fontsource/barlow-condensed/latin-800.css'
 import '@fontsource/instrument-sans/latin-400.css'
 import '@fontsource/instrument-sans/latin-500.css'
 import '@fontsource/instrument-sans/latin-600.css'

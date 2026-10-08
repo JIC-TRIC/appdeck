@@ -5,8 +5,9 @@
    Orange als einzige Akzentfarbe: Hauptknopf, juengster Punkt im Verlauf,
    Ziel und jede Veraenderung, die in die gewuenschte Richtung geht. Was in
    die falsche Richtung geht, bleibt weiss - kein Rot. Rot gibt es nur fuers
-   Loeschen. Schibsted Grotesk (sehr fett, Versalien) fuer Wortmarke, Namen
-   und grosse Zahlen, Instrument Sans fuer alles andere.
+   Loeschen. Barlow Condensed (schmal, fett, Versalien - wie auf einer
+   Anzeigetafel im Studio) fuer Wortmarke, Namen und grosse Zahlen,
+   Instrument Sans fuer alles andere.
    Werte und Gruende: konzept.md.
 
    Die Tokens haengen an :root und nicht an .form: Ionic haengt Rueckfragen
@@ -28,7 +29,7 @@
   --on-accent: #0d0d0e;
   --danger: #ff5c6c;
 
-  --f-disp: "Schibsted Grotesk", "Instrument Sans", system-ui, -apple-system, sans-serif;
+  --f-disp: "Barlow Condensed", "Instrument Sans", system-ui, -apple-system, sans-serif;
   --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --gutter: 16px;
@@ -281,9 +282,9 @@ input {
   color: var(--on-accent);
   text-align: center;
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 18px;
-  letter-spacing: 0.08em;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: transform 0.12s, background-color 0.12s;
 }
@@ -312,10 +313,10 @@ input {
 
 .f-marke {
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 54px;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
+  font-weight: 800;
+  font-size: 68px;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
 }
 
@@ -325,10 +326,10 @@ input {
 
 .f-h1 {
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 34px;
-  line-height: 1;
-  letter-spacing: -0.015em;
+  font-weight: 800;
+  font-size: 42px;
+  line-height: 0.95;
+  letter-spacing: 0;
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
@@ -336,9 +337,9 @@ input {
 .f-h2 {
   margin: 8px 4px -4px;
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 14px;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-2);
 }
@@ -359,8 +360,8 @@ input {
 
 /* ---------- Zahlen und Veraenderungen ---------- */
 
-/* Keine Tabellenziffern: in Schibsted Grotesk bekaeme das Komma Ziffernbreite
-   (Kontors Lehre). */
+/* Keine Tabellenziffern: dann bekaeme das Komma Ziffernbreite und stuende
+   wie ein Leerzeichen da (Kontors Lehre). */
 .f-zahl {
   display: inline-flex;
   align-items: baseline;
@@ -370,10 +371,10 @@ input {
 
 .f-zahl b {
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 40px;
-  line-height: 1;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: 50px;
+  line-height: 0.95;
+  letter-spacing: 0;
 }
 
 .f-zahl small {
@@ -387,7 +388,7 @@ input {
 }
 
 .f-zahl.gross b {
-  font-size: 68px;
+  font-size: 88px;
 }
 
 .f-zahl.gross small {
@@ -447,9 +448,9 @@ input {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--f-disp);
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -528,9 +529,9 @@ input {
 
 .f-leer-t {
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 26px;
-  line-height: 1.05;
+  font-weight: 800;
+  font-size: 34px;
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -557,9 +558,10 @@ input {
 
 .f-tag-mitte b {
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 22px;
-  line-height: 1.1;
+  font-weight: 800;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -629,9 +631,9 @@ input {
   padding: 9px 12px;
   text-align: right;
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 22px;
-  line-height: 1.2;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.1;
 }
 
 .f-mess-r input:focus,
@@ -641,7 +643,7 @@ input {
 
 .f-mess-r input::placeholder {
   color: var(--text-3);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .f-mess-r em,
@@ -694,9 +696,9 @@ input {
 
 .f-kachel .f-diff {
   font-family: var(--f-disp);
-  font-weight: 900;
-  font-size: 20px;
-  line-height: 1.2;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -844,8 +846,8 @@ input {
 
 .f-zeile-r b {
   font-family: var(--f-disp);
-  font-weight: 800;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 20px;
 }
 
 .f-zeile-r .f-i {

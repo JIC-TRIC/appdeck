@@ -1,7 +1,7 @@
 # Form – Konzept
 
 Fortschritt in Zahlen: Körperwerte wie Gewicht, Bizeps oder Taille von Hand eintragen und sehen, wohin
-es geht. Später soll Form auch das Training aufnehmen (Idee „Trainingsbuch“ in der ROADMAP) – dort
+es geht. Später bekommt Form das Training als zweiten Bereich (siehe „Richtung Training“ unten) – dort
 macht man genauso mit der Zeit Fortschritte. Der erste Stand kann nur das Verfolgen von Werten.
 
 Projekt-ID `form`, Ordner `apps/form/`, Speicher unter `form:*`. Gebaut in TypeScript + Ionic wie
@@ -30,7 +30,7 @@ gebaut, ohne Mockups. Gewählt wurde: Name **Form**, Look **Kreide (dunkel) mit 
 ## Design (Richtung „Kreide“)
 
 Schwarz wie eine Gummimatte im Studio, Kreideweiß für Text und Linien, ein grelles Orange als einzige
-Akzentfarbe. Versalien in sehr fetter Grotesk für Wortmarke, Namen und große Zahlen.
+Akzentfarbe. Schmale, fette Versalien wie auf einer Anzeigetafel für Wortmarke, Namen und große Zahlen.
 
 | Token | Wert | Wofür |
 |---|---|---|
@@ -41,9 +41,10 @@ Akzentfarbe. Versalien in sehr fetter Grotesk für Wortmarke, Namen und große Z
 | `--accent` | `#FF6A00` | Hauptknopf, jüngster Punkt, Ziel, Fortschritt |
 | `--danger` | `#FF5C6C` | nur „Wert löschen“ und „keine Zahl“ |
 
-- **Schrift:** Schibsted Grotesk 800/900 für Wortmarke („FORM.“ mit orangem Punkt), Namen und große
-  Zahlen, Instrument Sans für alles andere. Beide sind schon im Repo (`@fontsource`), keine neue
-  Abhängigkeit. Keine Tabellenziffern – in Schibsted bekäme das Komma Ziffernbreite (Kontors Lehre).
+- **Schrift:** Barlow Condensed 600–800 für Wortmarke („FORM.“ mit orangem Punkt), Namen und große
+  Zahlen, Instrument Sans für alles andere. Barlow Condensed ist die einzige Schrift, die nur Form
+  braucht (`@fontsource/barlow-condensed`, seit 08.10.2026; vorher Schibsted Grotesk, wirkte zu
+  brav). Keine Tabellenziffern – sonst bekäme das Komma Ziffernbreite (Kontors Lehre).
 - Rundungen weich (Karten 18–20 px, Hauptknopf 16 px).
 - Symbol `icons/form.svg`: der Verlauf mit gestrichelter Ziellinie, weiße Kurve auf `#FF6A00`, der
   jüngste Punkt in Mattschwarz (Symbol-Stil „Signal“ siehe README). Reines Orange statt Steadys
@@ -131,7 +132,12 @@ Launcher-Backup erfasst alles automatisch.
 
 ## Richtung Training
 
-Der Workout-Teil ist ein eigenes, größeres Projekt (ROADMAP, „Trainingsbuch“). Was Form dafür schon
-vorbereitet: Körpergewicht ist hier ein ganz normaler Wert – die offene Frage „Körpergewicht mit
-erfassen?“ im Trainingsbuch ist damit beantwortet. Offen bleibt, ob das Training als zweiter Bereich in
-Form kommt (dann mit Tab oder Umschalter auf der Übersicht) oder als eigene App, die Forms Daten liest.
+Der Workout-Teil ist ein eigenes, größeres Projekt (ROADMAP, „Trainingsbuch“). **Entschieden
+(08.10.2026): Das Training wird ein zweiter Bereich in Form**, keine eigene App. Körpergewicht ist hier
+ein ganz normaler Wert – die Frage „Körpergewicht mit erfassen?“ aus dem Trainingsbuch ist damit
+beantwortet.
+
+Beim Bau zu klären: wie man zwischen den Bereichen wechselt. Mit zwei Bereichen ist eine Tab-Leiste
+(Werte / Training) naheliegend – das hebt das Prinzip „Keine Tab-Leiste“ von oben auf. Die Alternative
+wäre ein Umschalter oben auf der Übersicht. Der Speicher bleibt unter `form:*`, das Training bekommt
+eigene Schlüssel daneben.
