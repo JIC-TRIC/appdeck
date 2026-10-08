@@ -6,7 +6,8 @@ import { Laufuhr, Ziffernblock, useWegziehen } from '../ui'
 import { uhr } from '../util'
 import type { KVersuch } from '../types'
 
-// Aufsagen: Ziffer fuer Ziffer, ohne Loeschen (wie beim Aufsagen aus dem Kopf).
+// Aufsagen: Ziffer fuer Ziffer. ⌫ nimmt die letzte Ziffer zurueck, wenn man
+// sich vertippt hat - gewertet wird nur, was am Ende dasteht.
 // Ein Fehler beendet nichts und ist beim Tippen nicht zu sehen - weiter geht es
 // bis "Fertig" oder bis alle Stellen getippt sind. Danach stehen die falschen
 // Stellen rot da, die richtige Ziffer klein darunter. Fuer den Rekord zaehlen
@@ -68,6 +69,10 @@ export default function Aufsagen({
     if (neu.length === k.ziffern.length) beende(neu)
   }
 
+  const loesche = () => {
+    if (!ende) setGetippt((t) => t.slice(0, -1))
+  }
+
   const fertig = () => {
     if (!ende) beende(getippt)
   }
@@ -104,12 +109,13 @@ export default function Aufsagen({
     else el.scrollTop = el.scrollHeight
   }, [getippt, ende])
 
-  // Tasten am Rechner: Ziffern, Enter = fertig bzw. nochmal, Esc = schliessen.
+  // Tasten am Rechner: Ziffern, ⌫, Enter = fertig bzw. nochmal, Esc = schliessen.
   useEffect(() => {
     const taste = (ev: KeyboardEvent) => {
       if (ev.ctrlKey || ev.metaKey || ev.altKey) return
       if (ev.target instanceof HTMLButtonElement && (ev.key === 'Enter' || ev.key === ' ')) return
       if (/^\d$/.test(ev.key)) tippe(ev.key)
+      else if (ev.key === 'Backspace') loesche()
       else if (ev.key === 'Enter') {
         if (ende) nochmal()
         else fertig()
@@ -237,7 +243,7 @@ export default function Aufsagen({
         </div>
       ) : (
         <div className="l-tastatur">
-          <Ziffernblock onZiffer={tippe} />
+          <Ziffernblock onZiffer={tippe} onLoeschen={loesche} />
         </div>
       )}
     </div>

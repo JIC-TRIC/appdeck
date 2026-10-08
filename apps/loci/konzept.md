@@ -186,7 +186,9 @@ Karten, 4 px Tasten).
   (alle drei exakt seit 2019), Gravitationskonstante G = 6,674 30 · 10⁻¹¹
   m³/(kg·s²) (CODATA), Absoluter Nullpunkt 0 K = −273,15 °C. Exponent und
   Einheit stehen da, gefragt sind alle Ziffern; das Komma setzt die App.
-- [x] **Aufsagen:** Ziffer für Ziffer über den Ziffernblock (ohne ⌫). **Ein
+- [x] **Aufsagen:** Ziffer für Ziffer über den Ziffernblock. **⌫** nimmt die
+  letzte Ziffer zurück, falls man sich vertippt hat (seit 08.10.2026, vorher ohne
+  ⌫); gewertet wird nur, was am Ende dasteht. **Ein
   Fehler beendet nichts** (seit 07.10.2026, vorher war beim ersten Fehler Schluss):
   man tippt weiter, beim Tippen ist nichts markiert. Der Durchgang endet mit
   „Fertig“ (z. B. wenn man nicht weiterweiß) oder wenn alle Stellen getippt
@@ -313,7 +315,7 @@ Karten, 4 px Tasten).
   durch iOS.
 - [x] Tasten am Rechner: Wochentag 1–6, 0/7, Enter/Leertaste; Rechnen Ziffern,
   ⌫, Enter; Merken → ← Leertaste Enter Esc; Wiedergeben ⌫, Enter, Esc;
-  Aufsagen Ziffern, Enter, Esc.
+  Aufsagen Ziffern, ⌫, Enter, Esc.
 
 ## Ansichten
 
@@ -411,7 +413,7 @@ Karten, 4 px Tasten).
 - [x] ✕, „π · 23 Stellen“ mit Uhr, Fertig. Name, „π = 3,“, die getippten
   Ziffern in Zehnerzeilen mit Cursor; Physik in einer Zeile mit Platzhaltern,
   Exponent und Einheit.
-- [x] Ziffernblock ohne ⌫. Nach dem Ende statt Ziffernblock: Stellen groß
+- [x] Ziffernblock mit ⌫ (ohne OK). Nach dem Ende statt Ziffernblock: Stellen groß
   („bis zum ersten Fehler“), Rekord, der erste Fehler auf rotem Grund, was
   danach kam, „So geht es weiter“, Nochmal · Fertig. Oben dann „π · 30
   getippt“.
