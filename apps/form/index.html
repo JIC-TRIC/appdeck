@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <!-- maximum-scale=1: sonst zoomt iOS beim Antippen der Eingabefelder hinein -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <!-- Form ist bewusst nur dunkel (Kreide, siehe konzept.md) -->
+  <meta name="theme-color" content="#0D0D0E">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Form</title>
+  <!-- Shell: Speicher, Offline, Shell.home(). Kein schwebender Home-Button – „‹ Apps“ steht oben links -->
+  <script src="../../shared/shell.js" data-home="none"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="./src/main.tsx"></script>
+</body>
+</html>

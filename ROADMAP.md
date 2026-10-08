@@ -96,6 +96,18 @@ Erster Stand ist gebaut (05.10.2026). Offene Fragen stehen in `apps/stash/konzep
 - **Titel-Vorschläge entfernen**, **Teilen-Knopf** direkt zu WhatsApp, **nach Titel gruppieren**,
   einzelne Notizen bearbeiten oder löschen, Wortmarke kleiner.
 
+## Form
+
+Erster Stand ist gebaut (08.10.2026): Körperwerte mit Einheit, Richtung und Ziel, ein Blatt pro
+Messtag, Verlauf pro Wert. Nicht im MVP (siehe `apps/form/konzept.md`):
+
+- **Reihenfolge** der Werte ändern, Werte archivieren.
+- **Startvorlagen** (Gewicht, Bizeps, Brust, Taille …) und **Notiz pro Messtag** – in der Fragerunde
+  zurückgestellt.
+- **Fortschrittsfotos** – erst nach dem IndexedDB-Umzug (siehe oben).
+- Das große Ziel: das **Trainingsbuch** (unten) als zweiter Teil von Form oder als eigene App, die
+  Forms Daten liest.
+
 ## Ideen für neue Apps
 
 Nur festgehalten, noch nicht entschieden. Vor dem Bau wie gewohnt: Fragerunde, dann `konzept.md`
@@ -112,8 +124,10 @@ Studio zu machen.
 - **Verbindung zu Steady**: ein erfasstes Training zählt dort als erledigte Gewohnheit (z. B. „Gym").
   Geht, weil alle Apps unter derselben Adresse liegen und gegenseitig ihre Daten lesen können. Würde
   die Steady-Idee „Notiz pro Eintrag" fürs Training überflüssig machen.
-- Offen: feste Pläne/Vorlagen (Push/Pull/Beine) oder frei? Körpergewicht mit erfassen? Pausentimer
-  läuft nur, solange die App offen ist (iOS hält Web-Apps im Hintergrund an).
+- **Gehört zu Form**: Körperwerte (auch das Körpergewicht) erfasst seit 08.10.2026 Form. Das Training
+  soll dort andocken – als zweiter Bereich in Form oder als eigene App, die Forms Daten liest.
+- Offen: feste Pläne/Vorlagen (Push/Pull/Beine) oder frei? Pausentimer läuft nur, solange die App
+  offen ist (iOS hält Web-Apps im Hintergrund an).
 - Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
   zusammen mit Kontor ein Grund mehr für den IndexedDB-Umzug (siehe oben).
 

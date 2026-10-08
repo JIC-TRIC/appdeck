@@ -18,4 +18,5 @@ self.APPS = [
   { id: 'piano', name: 'Piano', icon: 'icons/piano.svg', color: '#D9A953', bg: '#0E0D0B', path: 'apps/piano/' },
   { id: 'loci', name: 'Loci', icon: 'icons/loci.svg', color: '#1E4DB7', bg: '#F7F8F3', path: 'apps/loci/' },
   { id: 'stash', name: 'Stash', icon: 'icons/stash.svg', color: '#1F1D1A', bg: '#F3EEE3', path: 'apps/stash/' },
+  { id: 'form', name: 'Form', icon: 'icons/form.svg', color: '#FF6A00', bg: '#0D0D0E', path: 'apps/form/' },
 ];

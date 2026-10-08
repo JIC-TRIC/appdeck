@@ -120,7 +120,8 @@ x 40–140, y 40–140 füllt. Abstufungen nur über Deckkraft oder Aussparungen
 eine zweite Farbe aus der App. Keine Verläufe, keine Schatten im Bild. Jede App hat ihre eigene
 Kachelfarbe: Kontor Grün `#2E9E6B` (Donut als Ring), Steady Koralle `#F2785C` (abgehakter Heute-Kasten),
 Piano Messing `#D9A953` (Tasten mit Klappe), Loci Tintenblau `#1E4DB7` (Bogen mit Schlüsselloch), Stash
-Tinte `#1F1D1A` (Zettelstapel – **der gehört nur Stash**). Das Home-Bildschirm-Symbol ist
+Tinte `#1F1D1A` (Zettelstapel – **der gehört nur Stash**), Form Orange `#FF6A00` (Verlauf mit Ziellinie;
+reines Orange, damit es neben Steadys Koralle nicht verschwimmt). Das Home-Bildschirm-Symbol ist
 `icons/appdeck.svg`: vier Kacheln auf Indigo `#4F52D9`, eine in Bernstein. `icon-180/192/512.png` sind
 daraus gerendert (z. B. in Chrome auf ein Canvas in Zielgröße gezeichnet), `icon-maskable-512.png` mit dem
 Motiv auf 80 %, damit Android beim Zuschneiden nichts abschneidet. (Vorher: Motive mit Umriss 4,5 auf dem
