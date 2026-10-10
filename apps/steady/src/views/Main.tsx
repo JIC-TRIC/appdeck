@@ -279,16 +279,23 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                         </span>
                       )
                     })}
-                    <span />
                   </div>
                   {p.rows.map((r) => {
                     const rule = ruleShort(r.h, p.end)
+                    const serie = serien[r.h.id] ?? 0
                     const pop = (d: string) => live && lastChange?.habitId === r.h.id && lastChange.day === d
                     return (
                       <div className="s-row" style={hue(r.h)} key={r.h.id}>
+                        {/* Die Serie steht unter dem Namen, nicht in einer eigenen
+                            Spalte - so bleibt fuer Name und Ziel mehr Platz. */}
                         <button type="button" className="s-nm" onClick={() => openDetail(r.h)} tabIndex={live ? 0 : -1}>
                           <b>{r.h.name}</b>
-                          {rule ? <small>{rule}</small> : null}
+                          {serie || rule ? (
+                            <small>
+                              <Streak n={serie} tick={live && lastChange?.habitId === r.h.id} />
+                              {rule ? <span className="rl">{rule}</span> : null}
+                            </small>
+                          ) : null}
                         </button>
                         {p.days.slice(0, 6).map((d, i) => (
                           <button
@@ -327,9 +334,6 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                             key={pop(p.end) ? `p${lastChange?.n}` : 'd'}
                           />
                         </button>
-                        <span className="s-strk">
-                          <Streak n={serien[r.h.id] ?? 0} tick={live && lastChange?.habitId === r.h.id} />
-                        </span>
                       </div>
                     )
                   })}

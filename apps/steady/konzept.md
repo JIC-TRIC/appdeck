@@ -241,7 +241,8 @@ Nur Mi gelaufen:
       dabei, genau wie an Trainingstagen
 - [x] Beginnt frühestens am Beginn-Datum der Gewohnheit
 - [x] **Rekord** = längste Serie der ganzen Historie
-- [x] Anzeige in der Zeile: Flamme + Zahl; bei 0 ein stilles „–“
+- [x] Anzeige in der Zeile: Flamme + Zahl unter dem Namen; bei 0 nichts
+      (bis 10.10.2026 eigene Spalte ganz rechts, bei 0 ein stilles „–“)
 
 ### Quoten und Tageszähler
 
@@ -378,20 +379,24 @@ Erststart                       (solange es keine Gewohnheit gibt)
 - [x] **Wochengrenze:** eine feine senkrechte Linie links vom Montag, durch
       Kopf und alle Zeilen. Links davon die alte Kalenderwoche, rechts die
       laufende – so sieht man, welche Ruhetage zu welchem Wochenziel gehören
-- [x] Ganz rechts eine schmale Spalte (34 px) für die Serie
+- [x] Keine eigene Spalte für die Serie (seit 10.10.2026, vorher 34 px ganz
+      rechts): sie steht unter dem Namen, der Platz geht an Name und Regel
 
 **Zeilen**
 
 - [x] Eine Zeile pro Gewohnheit, 56 px hoch, feine Trennlinie
 - [x] **Name in der Gewohnheitsfarbe**, einzeilig, lange Namen enden auf „…“
-      („Kein Handy…“). Darunter in Text still die Regel, wenn sie nicht
-      „täglich abhaken“ ist: „3× pro Woche“, „≥ 150 g“, „≤ 2500 kcal“
+      („Kein Handy im B…“). Darunter die Serie (Flamme + Zahl) und in Text
+      still die Regel, wenn sie nicht „täglich abhaken“ ist: „3×/Wo.“,
+      „≥ 150 g“, „≤ 2500 kcal“. **Ziel vor Rhythmus** („≥ 5 km · 3×/Wo.“):
+      wird es eng, fällt hinten der Rhythmus ab, nicht das Ziel. Bis
+      10.10.2026 stand „3× pro Woche“ vorn und verdrängte das Ziel
 - [x] Sechs Punkte (●, ◌, ⊗, ×, ▢, ·) für die vergangenen Tage, bei Mengen
       stattdessen die eingetragene Zahl (ab 100 ohne Komma, ab 10 000 als
       „12k“). Verfehlt die Zahl das Ziel an einem Ruhetag, steht sie in einem
       Ring – sonst sähe sie aus wie ein verpasster Tag, obwohl die Serie hält
 - [x] Heute-Kasten (Zustände siehe Design), bei Mengen mit dem heutigen Wert
-- [x] Serie: kleine Flamme in Bernstein + Zahl
+- [x] Serie: kleine Flamme in Bernstein + Zahl, unter dem Namen vor der Regel
 - [x] Reihenfolge manuell (Menü → Reihenfolge ändern), neue Gewohnheiten unten
 - [x] Bei vielen Gewohnheiten scrollt nur der Zeilenbereich; Kopfzeile und
       Spaltenkopf bleiben stehen. Platz ist für ~12 Zeilen auf 844 px
@@ -689,6 +694,13 @@ Ergänzt am 08.10.2026:
     sich wie der Ring des Ruhetags. Jetzt gilt: Ring = darf frei bleiben, kein
     Ring = heute machen. Mengen zeigen am freien Tag ihre Einheit im Ring,
     damit sie nicht wie ein Haken aussehen
+
+Ergänzt am 10.10.2026:
+
+19. **Serie unter dem Namen, Regel knapp.** Die Serien-Spalte rechts kostete
+    34 px, und unter dem Namen verdrängte „3× pro Woche“ das Mengenziel. Jetzt
+    steht die Serie klein vor der Regel, die Regel nennt erst das Ziel, dann
+    „3×/Wo.“ – das Raster hat mehr Platz, und das Ziel bleibt lesbar
 
 ---
 

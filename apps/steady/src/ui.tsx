@@ -251,8 +251,9 @@ export function DayBox({
   )
 }
 
+// Serie unter dem Namen im Raster. Ohne Serie steht dort nichts.
 export function Streak({ n, tick }: { n: number; tick?: boolean }) {
-  if (!n) return <span className="s-st"><em>–</em></span>
+  if (!n) return null
   return (
     <span className="s-st" aria-label={`Serie ${n} Tage`}>
       <IconFlame />
@@ -280,12 +281,14 @@ export function Label({ children }: { children: ReactNode }) {
 }
 
 // Regel in Kurzform fuer die Zeile im Raster - leer bei "taeglich abhaken".
+// Das Ziel zuerst und der Rhythmus knapp: wird es unter dem Namen eng, faellt
+// hinten der Rhythmus ab, nicht das Ziel.
 export function ruleShort(h: Habit, day: string) {
   const perWeek = ruleAt(h.rhythm, addDays(mondayOf(day), 6))?.perWeek ?? 7
   const parts: string[] = []
-  if (perWeek < 7) parts.push(`${perWeek}× pro Woche`)
   const g = h.kind === 'amount' ? ruleAt(h.goal, day) : undefined
   if (g) parts.push(`${g.dir === 'min' ? '≥' : '≤'} ${formatValue(g.target)} ${h.unit}`.trim())
+  if (perWeek < 7) parts.push(`${perWeek}×/Wo.`)
   return parts.join(' · ')
 }
 

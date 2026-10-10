@@ -295,12 +295,15 @@ function HabitForm({ ctx, view }: ViewProps) {
                 <span className="dn">{parseKey(d).getDate()}</span>
               </span>
             ))}
-            <span />
           </div>
           <div className="s-row" style={hue(f.color)}>
             <span className="s-nm">
               <b style={{ color: colorOf(f.color) }}>{name || 'Name'}</b>
-              {ruleShort(preview.h, today) ? <small>{ruleShort(preview.h, today)}</small> : null}
+              {ruleShort(preview.h, today) ? (
+                <small>
+                  <span className="rl">{ruleShort(preview.h, today)}</span>
+                </small>
+              ) : null}
             </span>
             {preview.days.slice(0, 6).map((d, i) => (
               <span key={d} className={`s-cell${weekdayIndex(d) === 0 ? ' mon' : ''}`}>
@@ -310,7 +313,6 @@ function HabitForm({ ctx, view }: ViewProps) {
             <span className={`s-wide${weekdayIndex(today) === 0 ? ' mon' : ''}`}>
               <DayBox habit={preview.h} state={preview.states[6]} value={log[preview.h.id]?.[today]} day={today} frei={preview.frei} />
             </span>
-            <span className="s-strk" />
           </div>
         </div>
 
