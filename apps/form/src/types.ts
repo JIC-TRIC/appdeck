@@ -117,6 +117,9 @@ export interface Einstellungen {
 
 export type AppBereich = 'werte' | 'training'
 
+/** Die Tab-Leiste im Training (nicht waehrend eines laufenden). */
+export type TrainingTab = 'vorlagen' | 'kalender' | 'statistik' | 'uebungen'
+
 /** Seiten ueber der Uebersicht. */
 export type View =
   | { name: 'wert'; id: string }
@@ -125,13 +128,12 @@ export type View =
   /** Die Werte waehrend eines laufenden Trainings (ueber das Menue). */
   | { name: 'werte' }
   | { name: 'fertig'; id: string }
-  | { name: 'verlauf' }
   | { name: 'training'; id: string }
   /** Ein beendetes Training aendern oder ein nachgetragenes fertig machen. */
   | { name: 'bearbeiten'; id: string }
   | { name: 'neu'; training: Training }
-  | { name: 'nachtragen' }
-  | { name: 'uebungen' }
+  /** Aus dem Kalender mit dem gewaehlten Tag, sonst gestern. */
+  | { name: 'nachtragen'; tag?: string }
   | { name: 'uebung'; id: string }
   | { name: 'uebungForm'; id?: string }
   | { name: 'vorlagen' }

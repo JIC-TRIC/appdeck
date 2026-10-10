@@ -13,14 +13,14 @@ function EinTraining({ ctx, id }: { ctx: FormCtx; id: string }) {
   const alsVorlage = useAlsVorlage(ctx)
   const t = trainings.find((x) => x.id === id)
   // Gerade geloescht: die Seite gleitet noch hinaus.
-  if (!t) return <Seite links={<Zurueck label="Verlauf" onClick={back} />}>{null}</Seite>
+  if (!t) return <Seite links={<Zurueck label="Zurück" onClick={back} />}>{null}</Seite>
 
   const st = statistik(t, uebungById)
   const pr = new Set(rekordeIn(t, trainings, uebungById).map((r) => `${r.ui}:${r.si}`))
 
   return (
     <Seite
-      links={<Zurueck label="Verlauf" onClick={back} />}
+      links={<Zurueck label="Zurück" onClick={back} />}
       rechts={<TextKnopf onClick={() => push({ name: 'bearbeiten', id })}>Bearbeiten</TextKnopf>}
     >
       <header className="f-kopf">

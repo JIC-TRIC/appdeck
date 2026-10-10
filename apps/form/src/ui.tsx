@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconLeft, IconMinus, IconPlus } from './icons'
 import { urteil } from './calc'
+import type { RekordArt } from './trainingCalc'
 import { formatDiff, mitEinheit } from './util'
 import type { AppBereich, Wert } from './types'
 
@@ -108,7 +109,14 @@ export const RICHTUNG_TEXT: Record<Wert['richtung'], string> = {
   egal: 'Ohne Richtung',
 }
 
-/** Werte oder Training - in der Kopfleiste der beiden Startseiten. */
+export const REKORD_TEXT: Record<RekordArt, string> = {
+  gewicht: 'schwerster Satz',
+  '1rm': 'bestes 1RM',
+  wdh: 'meiste Wdh',
+  zeit: 'längste Zeit',
+}
+
+/** Werte oder Training - in der Kopfleiste der Startseiten. */
 export function Umschalter({ wert, onWahl }: { wert: AppBereich; onWahl: (b: AppBereich) => void }) {
   return (
     <div className="f-seg f-seg-bar" role="radiogroup" aria-label="Bereich">

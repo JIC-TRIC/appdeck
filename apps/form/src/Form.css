@@ -2161,6 +2161,148 @@ button.f-nr:active {
   color: var(--text-3);
 }
 
+/* =========================
+   Tab-Leiste im Training: Vorlagen, Kalender, Statistik, Uebungen (seit
+   11.10.2026). Nicht waehrend eines laufenden Trainings, nicht ueber
+   Formularen und "Fertig" (Form.tsx). Wie bei Piano im Seitenfluss unter der
+   Buehne, nicht darueber - so endet der Scrollbereich genau an ihr.
+   ========================= */
+
+.f-tabs {
+  position: relative;
+  z-index: 10;
+  flex: none;
+  height: calc(54px + env(safe-area-inset-bottom));
+  padding: 4px max(4px, calc(50% - 280px)) env(safe-area-inset-bottom);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: rgba(13, 13, 14, 0.92);
+  border-top: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+/* Aktiv in Kreide, nicht Orange - Orange bleibt dem Fortschritt. */
+.f-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  transition: color 0.15s;
+}
+
+.f-tab .f-i {
+  width: 24px;
+  height: 24px;
+}
+
+.f-tab.an {
+  color: var(--text);
+}
+
+.f-tab:active {
+  opacity: 0.6;
+}
+
+/* Titel der Tabs: ohne Zeile darueber braucht das Ü oben Platz fuer seine
+   Punkte, sonst schneidet der Scrollbereich sie ab. */
+.f-kopf.tab {
+  padding-top: 6px;
+}
+
+/* Den Abstand zum Home-Balken traegt dann die Leiste. */
+.form.mit-leiste .f-body {
+  padding-bottom: 24px;
+}
+
+.form.mit-leiste .f-unten {
+  padding-bottom: 12px;
+}
+
+/* Kalender: Trainingstage in Kreide, mit Rekord ein oranger Punkt, heute
+   umrandet, der gewaehlte Tag mit orangem Ring. */
+.f-kal {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px 2px;
+  justify-items: center;
+}
+
+.f-kal-wt {
+  padding-bottom: 2px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.f-kal-tag {
+  position: relative;
+  width: 100%;
+  max-width: 42px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1;
+  color: var(--text-2);
+}
+
+.f-kal-tag.zukunft {
+  color: var(--surface-3);
+}
+
+.f-kal-tag.heute {
+  box-shadow: inset 0 0 0 1.5px var(--text-3);
+}
+
+.f-kal-tag.trainiert {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.f-kal-tag.pr::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.f-kal-tag.gewaehlt {
+  box-shadow: inset 0 0 0 2.5px var(--accent);
+}
+
+button.f-kal-tag:active {
+  transform: scale(0.92);
+}
+
+/* Statistik: Rekorde fuehren zur Uebung. */
+.f-rek-knopf {
+  width: 100%;
+  text-align: left;
+}
+
+.f-rek-knopf:active {
+  background: var(--surface-2);
+}
+
 /* ---------- Ionic: Meldung und Rueckfrage ---------- */
 
 ion-toast.f-toast {

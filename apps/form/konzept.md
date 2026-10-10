@@ -7,7 +7,8 @@ genug für zwischen zwei Sätzen im Studio (siehe „Training“ unten).
 Projekt-ID `form`, Ordner `apps/form/`, Speicher unter `form:*`. Gebaut in TypeScript + Ionic wie
 Kontor, Steady, Piano, Loci und Stash.
 
-`[ ]` = offen, `[x]` = gebaut. **Stand: Werte gebaut (08.10.2026), Training gebaut (10.10.2026).**
+`[ ]` = offen, `[x]` = gebaut. **Stand: Werte gebaut (08.10.2026), Training gebaut (10.10.2026),
+Tab-Leiste im Training (11.10.2026).**
 Die Werte nach einer kurzen Fragerunde direkt gebaut, ohne Mockups. Gewählt wurde: Name **Form**, Look **Kreide (dunkel) mit grellem Orange**, dazu
 **Richtung pro Wert** und **Zielwert pro Wert**. Nicht gewählt: Startvorlagen, Notiz pro Messtag.
 
@@ -24,9 +25,10 @@ Die Werte nach einer kurzen Fragerunde direkt gebaut, ohne Mockups. Gewählt wur
 - **Fortschritt wird gefeiert, Rückschritt nicht bestraft.** Was in die gewünschte Richtung geht, ist
   orange. Was in die andere Richtung geht, steht einfach weiß da – kein Rot.
 - **Nur dunkel.** Kein heller Modus.
-- **Keine Tab-Leiste.** Übersicht, darunter Seiten mit Zurückwischen wie Kontor, Piano und Stash.
-  Zwischen Werten und Training wechselt ein Umschalter in der Kopfleiste der beiden Startseiten; Form
-  öffnet den Bereich, in dem man zuletzt war.
+- **Tab-Leiste nur im Training.** Die Werte haben keine: Übersicht, darunter Seiten mit Zurückwischen
+  wie Kontor, Piano und Stash. Das Training hat seit 11.10.2026 unten **Vorlagen · Kalender · Statistik ·
+  Übungen** (siehe „Training“). Zwischen Werten und Training wechselt ein Umschalter in der Kopfleiste
+  der Startseiten (bei den Werten und in jedem Tab); Form öffnet den Bereich, in dem man zuletzt war.
 - Lokal im Browser (`localStorage`), kein Account, kein Server, offline nutzbar.
 
 ## Design (Richtung „Kreide“)
@@ -145,8 +147,16 @@ Wert.
 
 ### Prinzipien
 
-- **Läuft ein Training, gehört ihm der ganze Bildschirm.** Kein Umschalter, kein Zurück, Form öffnet
-  direkt dort. Zu den Werten geht es nur über ⋯ → „Werte ansehen“ (darüber „‹ Training“ zurück).
+- **Unten eine Tab-Leiste** (seit 11.10.2026, vorher Zeilen „Verlauf“, „Übungen“, „Vorlagen“ auf der
+  Startseite): **Vorlagen** (Startseite, hier startet man), **Kalender**, **Statistik**, **Übungen**. Im
+  Seitenfluss unter der Bühne wie bei Piano, aktiv in Kreide statt Orange. Ein Tipp auf den aktiven Tab
+  führt zu seiner Startseite zurück, Form öffnet immer bei den Vorlagen. Sie steht auch unter „Ein
+  Training“, „Eine Übung“ und der Liste der Vorlagen, aber **nicht** im laufenden Training, nicht über
+  Formularen (Vorlage, Übung, Nachtragen), dem Bearbeiten eines Trainings und „Fertig“ – dort würde
+  ein Tipp die Eingabe verwerfen.
+- **Läuft ein Training, gehört ihm der ganze Bildschirm.** Kein Umschalter, keine Tab-Leiste, kein
+  Zurück, Form öffnet direkt dort. Zu den Werten geht es nur über ⋯ → „Werte ansehen“ (darüber
+  „‹ Training“ zurück).
 - **Grau steht das letzte Mal.** Ein Haken übernimmt es – wer dasselbe schafft wie letztes Mal, tippt
   nur Haken. Kein eigenes „Zuletzt“-Feld.
 - **Die Pause wird berechnet, nicht gezählt.** Jeder Haken speichert seine Uhrzeit, die Pause ist jetzt
@@ -232,9 +242,19 @@ Pause, Beenden, Nachtragen:
 
 Rückblick:
 
-- [x] **Verlauf:** oben Trainings pro Woche als Balken (12 Wochen, die laufende in Kreide), dazu „Diese
-  Woche“ und der Schnitt der Wochen davor. Ganz unten **Export als CSV** (Semikolon, Komma, mit BOM für
-  Excel) über das Teilen-Blatt bzw. als Download.
+- [x] **Kalender** (Tab, seit 11.10.2026, ersetzt mit der Statistik den Verlauf): ein Monat als Blatt ab
+  Montag, Trainingstage in Kreide, Tage mit Rekord mit orangem Punkt, heute umrandet. Blättern vom ersten
+  Monat mit Training bis heute. Darunter die Trainings des Monats, neueste oben; ein Tipp auf einen Tag
+  zeigt nur dessen Trainings (mit Uhrzeit), an einem Tag ohne Training „Training nachtragen“ für genau
+  diesen Tag. „+“ trägt für den gewählten Tag nach, sonst für gestern. Monat und Tag bleiben stehen, wenn
+  man ein Training öffnet und zurückkommt (am selben Tag).
+- [x] **Statistik** (Tab): oben Trainings pro Woche als Balken (12 Wochen, die laufende in Kreide), dazu
+  „Diese Woche“ und der Schnitt der Wochen davor. Drei Kacheln: Trainings insgesamt (und im laufenden
+  Jahr), **Serie** (Wochen in Folge mit Training – die laufende zählt, sobald darin trainiert wurde, und
+  bricht sie vorher nicht; ab zwei Wochen orange), Dauer im Schnitt. Die **letzten Rekorde** (fünf, pro
+  Training und Übung der letzte) und die **häufigsten Übungen** (in den meisten Trainings, fünf) – ein
+  Tipp öffnet die Übung. Ganz unten **Export als CSV** (Semikolon, Komma, mit BOM für Excel) über das
+  Teilen-Blatt bzw. als Download.
 - [x] **Eine Übung:** Bestwerte je Wdh-Zahl – schwerstes Gewicht für mindestens 1, 3, 5, 8, 10, 12 Wdh,
   was ein höherer Eintrag schon abdeckt, fällt weg. Zeiten ab einer Minute als „1:30“.
 
@@ -259,9 +279,9 @@ Gelesenes wird geprüft (`normalisiere*` in `trainingStore.ts`, getestet). Die R
 Nummern wie in den Mockups.
 
 - [x] **1 Werte:** wie bisher, neu der Umschalter in der Kopfleiste.
-- [x] **2 Training:** „Zuletzt trainiert vor 2 Tagen“, Wortmarke, Vorlagen (Name, wann zuletzt,
-  oranger Start), „Leeres Training“, darunter Verlauf, Übungen und Vorlagen. „Bearbeiten“ neben der
-  Überschrift führt ebenfalls zu den Vorlagen.
+- [x] **2 Training** (Tab „Vorlagen“): „Zuletzt trainiert vor 2 Tagen“, Wortmarke, Vorlagen (Name, wann
+  zuletzt, oranger Start), „Leeres Training“. „+“ oben rechts legt eine Vorlage an, „Bearbeiten“ neben der
+  Überschrift führt zur Liste der Vorlagen. Kalender, Statistik und Übungen liegen in der Tab-Leiste.
 - [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“, ein Knopf
   und darunter „Vorlage anlegen“.
 - [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden. Pro Übung Name, Vorschlag, Wdh-Bereich, ⋯,
@@ -276,12 +296,12 @@ Nummern wie in den Mockups.
   Werte ansehen, Training verwerfen.
 - [x] **9 Fertig:** Dauer, Sätze, Volumen und Vergleich zum letzten Mal, Rekorde, Vorlage anpassen bzw.
   als Vorlage speichern.
-- [x] **10 Verlauf:** Wochenbalken, eine Zeile pro Training, nach Monaten, „PR“ wenn es einen Rekord gab,
-  „+“ trägt nach, unten Export als CSV.
+- [x] **10 Kalender und Statistik** (Tabs, seit 11.10.2026; vorher eine Seite „Verlauf“ mit
+  Wochenbalken und allen Trainings nach Monaten): siehe „Rückblick“ oben.
 - [x] **11 Ein Training:** alle Sätze kompakt, Rekorde orange, unten „Als Vorlage speichern“.
   „Bearbeiten“: Name, Sätze, „Training löschen“.
 - [x] **12 Nachtragen.**
-- [x] **13 Übungen:** alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
+- [x] **13 Übungen** (Tab): alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
 - [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem,
   Rekord), Verlauf (Gewicht oder 1RM, 3 M / 1 J / Alles), Bestwerte je Wdh-Zahl, jedes Training mit allen
   Sätzen.
@@ -297,4 +317,5 @@ Bestwerte, CSV-Export, „als Nächstes“.
 
 Bewusst weggelassen, weil es die Oberfläche voller macht als nötig: Drop-Sätze und Satz bis zum Versagen,
 RPE/RIR, Supersätze, Muskelgruppen und Statistik je Muskel, Aufwärmrechner. Offen (ROADMAP): Verbindung
-zu Steady, Körpergewicht in Körpergewichtsübungen, Monatskalender.
+zu Steady, Körpergewicht in Körpergewichtsübungen. Der Monatskalender kam am 11.10.2026 mit der
+Tab-Leiste.

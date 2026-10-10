@@ -6,8 +6,11 @@ import {
   endeFuer,
   formatSek,
   gleicherSatz,
+  haeufigste,
+  letzteRekorde,
   naechsteVorlage,
   scheiben,
+  serie,
   steigerung,
   voriges,
   wochen,
@@ -314,5 +317,45 @@ describe('Hilfen', () => {
       '2026-10-10;17:40;"Push; schwer";bank;1;82,5;8;',
       '',
     ])
+  })
+})
+
+describe('Statistik', () => {
+  const am = (tag: string, uebungen: Training['uebungen'] = []) => tr(tag, null, new Date(`${tag}T18:00:00`).getTime(), uebungen)
+
+  it('serie zaehlt Wochen in Folge, die laufende erst mit Training', () => {
+    // Sa 10.10.2026, Wochen ab Mo 21.9., 28.9., 5.10. - die Woche ab 14.9. fehlt.
+    const ts = [am('2026-09-07'), am('2026-09-22'), am('2026-09-30'), am('2026-10-04')]
+    expect(serie(ts, '2026-10-10')).toBe(2)
+    expect(serie([...ts, am('2026-10-06')], '2026-10-10')).toBe(3)
+    expect(serie(ts, '2026-10-12')).toBe(0)
+    expect(serie([], '2026-10-10')).toBe(0)
+  })
+
+  it('letzteRekorde: neueste zuerst, pro Training und Uebung der letzte', () => {
+    const ts = [
+      am('2026-10-01', [{ uebung: 'bank', saetze: [s(80, 8)] }, { uebung: 'dips', saetze: [s(null, 10)] }]),
+      am('2026-10-03', [{ uebung: 'bank', saetze: [s(82.5, 8), s(85, 6)] }]),
+      am('2026-10-05', [{ uebung: 'dips', saetze: [s(null, 12)] }, { uebung: 'bank', saetze: [s(80, 8)] }]),
+    ]
+    expect(letzteRekorde(ts, byId).map((x) => [x.training.id, x.rekord.uebung, x.rekord.si, x.rekord.art])).toEqual([
+      ['2026-10-05', 'dips', 0, 'wdh'],
+      ['2026-10-03', 'bank', 1, 'gewicht'],
+    ])
+    expect(letzteRekorde(ts, byId, 1)).toHaveLength(1)
+  })
+
+  it('haeufigste: Trainings pro Uebung, bei Gleichstand die juengste zuerst', () => {
+    const ts = [
+      am('2026-10-01', [{ uebung: 'bank', saetze: [s(80, 8)] }, { uebung: 'bank', saetze: [s(80, 8)] }]),
+      am('2026-10-03', [{ uebung: 'face', saetze: [s(20, 12)] }, { uebung: 'bank', saetze: [s(80, 8)] }]),
+      am('2026-10-05', [{ uebung: 'dips', saetze: [s(null, 10)] }]),
+    ]
+    expect(haeufigste(ts)).toEqual([
+      { uebung: 'bank', anzahl: 2 },
+      { uebung: 'dips', anzahl: 1 },
+      { uebung: 'face', anzahl: 1 },
+    ])
+    expect(haeufigste(ts, 1)).toEqual([{ uebung: 'bank', anzahl: 2 }])
   })
 })

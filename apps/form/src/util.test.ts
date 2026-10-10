@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest'
-import { addMonths, diffDays, formatDiff, formatTag, formatZahl, istTag, parseZahl, relativTag, wieLange } from './util'
+import {
+  addMonths,
+  diffDays,
+  formatDiff,
+  formatMonat,
+  formatTag,
+  formatZahl,
+  istTag,
+  monatsBlatt,
+  parseZahl,
+  relativTag,
+  wieLange,
+} from './util'
 
 describe('formatZahl', () => {
   it('setzt ein Komma und laesst Nullen am Ende weg', () => {
@@ -87,5 +99,26 @@ describe('Datum', () => {
     expect(relativTag('2026-10-08', '2026-10-08')).toBe('Heute')
     expect(relativTag('2026-10-07', '2026-10-08')).toBe('Gestern')
     expect(relativTag('2026-10-01', '2026-10-08')).toBe('Do 1. Okt')
+  })
+})
+
+describe('Kalender', () => {
+  it('monatsBlatt beginnt am Montag', () => {
+    // 1. Oktober 2026 ist ein Donnerstag: Mo, Di, Mi bleiben leer.
+    const okt = monatsBlatt('2026-10-17')
+    expect(okt.leer).toBe(3)
+    expect(okt.tage).toHaveLength(31)
+    expect(okt.tage[0]).toBe('2026-10-01')
+    expect(okt.tage[30]).toBe('2026-10-31')
+    // Februar 2027: Montag der Erste, 28 Tage
+    expect(monatsBlatt('2027-02-01')).toMatchObject({ leer: 0, tage: expect.arrayContaining(['2027-02-28']) })
+    expect(monatsBlatt('2027-02-01').tage).toHaveLength(28)
+    // Sonntag der Erste: sechs leere Felder
+    expect(monatsBlatt('2026-11-05').leer).toBe(6)
+  })
+
+  it('formatMonat nennt das Jahr nur, wenn es nicht dieses ist', () => {
+    expect(formatMonat('2026-10-01', '2026-10-11')).toBe('Oktober')
+    expect(formatMonat('2025-12-01', '2026-10-11')).toBe('Dezember 2025')
   })
 })

@@ -7,12 +7,13 @@ import { addDays, formatTagLang, parseKey, relativTag } from '../util'
 import type { FormCtx, Training } from '../types'
 
 // Ein vergessenes Training nachtragen: Tag (wie beim Messen, nicht in die
-// Zukunft), Vorlage, Beginn und Dauer. "Weiter" fuehrt in dieselbe Ansicht
+// Zukunft; aus dem Kalender der dort gewaehlte, sonst gestern), Vorlage,
+// Beginn und Dauer. "Weiter" fuehrt in dieselbe Ansicht
 // wie das laufende Training, nur ohne Pause - die Vorlage fuellt die Uebungen
 // vor, grau steht das letzte Mal davor.
-function Nachtragen({ ctx }: { ctx: FormCtx }) {
+function Nachtragen({ ctx, tag: start }: { ctx: FormCtx; tag?: string }) {
   const { vorlagen, heute, back, replace, melde } = ctx
-  const [tag, setTag] = useState(() => addDays(heute, -1))
+  const [tag, setTag] = useState(() => (start && start <= heute ? start : addDays(heute, -1)))
   const [vorlageId, setVorlageId] = useState<string | null>(vorlagen[0]?.id ?? null)
   const [beginn, setBeginn] = useState('18:00')
   const [dauerText, setDauerText] = useState('60')

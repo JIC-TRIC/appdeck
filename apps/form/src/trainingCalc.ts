@@ -527,6 +527,59 @@ export function wochen(trainings: Training[], heute: string, n = 12): { montag: 
   return out
 }
 
+// ---------- Statistik ----------
+
+/** Montag der Woche, in der der Tag liegt. */
+const montagVon = (tag: string) => addDays(tag, -((parseKey(tag).getDay() + 6) % 7))
+
+/**
+ * Wochen in Folge mit mindestens einem Training, bis heute. Die laufende
+ * Woche zaehlt, sobald darin trainiert wurde - vorher bricht sie die Serie
+ * nicht.
+ */
+export function serie(trainings: Training[], heute: string): number {
+  const trainiert = new Set(trainings.map((t) => montagVon(dateKey(new Date(t.start)))))
+  let montag = montagVon(heute)
+  if (!trainiert.has(montag)) montag = addDays(montag, -7)
+  let n = 0
+  while (trainiert.has(montag)) {
+    n += 1
+    montag = addDays(montag, -7)
+  }
+  return n
+}
+
+/**
+ * Die juengsten Rekorde, neueste Trainings zuerst. Pro Training und Uebung
+ * nur einer: der letzte, denn er hat alle davor im selben Training geschlagen.
+ */
+export function letzteRekorde(trainings: Training[], byId: Record<string, Uebung>, n = 5): { training: Training; rekord: Rekord }[] {
+  const alle = alleRekorde(trainings, byId)
+  const out: { training: Training; rekord: Rekord }[] = []
+  for (let i = trainings.length - 1; i >= 0 && out.length < n; i -= 1) {
+    const t = trainings[i]
+    const proUebung = new Map<string, Rekord>()
+    for (const r of alle.get(t.id) ?? []) proUebung.set(r.uebung, r)
+    for (const r of proUebung.values()) if (out.length < n) out.push({ training: t, rekord: r })
+  }
+  return out
+}
+
+/** Die Uebungen aus den meisten Trainings - bei Gleichstand die zuletzt trainierte zuerst. */
+export function haeufigste(trainings: Training[], n = 5): { uebung: string; anzahl: number }[] {
+  const zaehler = new Map<string, { anzahl: number; zuletzt: number }>()
+  for (const t of trainings) {
+    for (const id of new Set(t.uebungen.map((tu) => tu.uebung))) {
+      const z = zaehler.get(id)
+      zaehler.set(id, { anzahl: (z?.anzahl ?? 0) + 1, zuletzt: Math.max(t.start, z?.zuletzt ?? 0) })
+    }
+  }
+  return [...zaehler]
+    .sort((a, b) => b[1].anzahl - a[1].anzahl || b[1].zuletzt - a[1].zuletzt)
+    .slice(0, n)
+    .map(([uebung, z]) => ({ uebung, anzahl: z.anzahl }))
+}
+
 /**
  * Die Vorlage, die in der Reihenfolge dran ist: die am laengsten nicht
  * trainierte. Nur unter denen, die schon einmal dran waren, und erst ab zwei -

@@ -11,7 +11,7 @@ function Vorlagen({ ctx }: { ctx: FormCtx }) {
 
   return (
     <Seite
-      links={<Zurueck label="Training" onClick={back} />}
+      links={<Zurueck label="Zurück" onClick={back} />}
       titel="Vorlagen"
       rechts={
         <button type="button" className="f-rund" onClick={() => push({ name: 'vorlageForm' })} aria-label="Neue Vorlage">

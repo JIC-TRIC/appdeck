@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { IconPlus, IconRight, IconSuche } from '../icons'
 import { alphabetisch } from '../trainingStore'
-import { Seite, Zurueck } from '../ui'
+import { Seite, Umschalter, Zurueck, zumLauncher } from '../ui'
 import type { FormCtx, Uebung } from '../types'
 
-// Alle Uebungen alphabetisch, mit Suche. Archivierte ganz unten.
+// Tab "Uebungen": alle Uebungen alphabetisch, mit Suche. Archivierte ganz unten.
 function Uebungen({ ctx }: { ctx: FormCtx }) {
-  const { uebungen, push, back } = ctx
+  const { uebungen, push, bereich, setzeBereich } = ctx
   const [suche, setSuche] = useState('')
   const [archivOffen, setArchivOffen] = useState(false)
 
@@ -26,14 +26,18 @@ function Uebungen({ ctx }: { ctx: FormCtx }) {
 
   return (
     <Seite
-      links={<Zurueck label="Training" onClick={back} />}
-      titel="Übungen"
+      links={<Zurueck label="Apps" onClick={zumLauncher} />}
+      titel={<Umschalter wert={bereich} onWahl={setzeBereich} />}
       rechts={
         <button type="button" className="f-rund" onClick={() => push({ name: 'uebungForm' })} aria-label="Neue Übung">
           <IconPlus />
         </button>
       }
     >
+      <header className="f-kopf tab">
+        <h1 className="f-marke">Übungen</h1>
+      </header>
+
       {uebungen.length ? (
         <label className="f-suche">
           <IconSuche />

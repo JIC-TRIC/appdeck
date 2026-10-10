@@ -8,19 +8,11 @@ import {
   statistik,
   voriges,
   vorlageAus,
-  type RekordArt,
 } from '../trainingCalc'
 import { speichereVorlage } from '../trainingStore'
-import { Seite } from '../ui'
+import { REKORD_TEXT, Seite } from '../ui'
 import { useAlsVorlage } from './alsVorlage'
 import type { FormCtx } from '../types'
-
-const ART: Record<RekordArt, string> = {
-  gewicht: 'schwerster Satz',
-  '1rm': 'bestes 1RM',
-  wdh: 'meiste Wdh',
-  zeit: 'längste Zeit',
-}
 
 // Nach "Beenden": Dauer, Saetze, Volumen (verglichen mit dem letzten Mal
 // derselben Vorlage), die Rekorde - und wenn das Training
@@ -94,7 +86,7 @@ function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
                 <div key={`${r.ui}:${r.si}`} className="f-rek">
                   <div>
                     <b>{u?.name ?? 'Übung'}</b>
-                    <small>{ART[r.art]}</small>
+                    <small>{REKORD_TEXT[r.art]}</small>
                   </div>
                   <em>{formatSatz(r.satz, u?.erfassung ?? 'gewicht')}</em>
                 </div>

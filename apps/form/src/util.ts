@@ -91,6 +91,23 @@ export function relativTag(key: string, heute: string) {
   return formatTag(key, heute)
 }
 
+// 'Oktober', in einem anderen Jahr als heute 'Oktober 2025'
+export function formatMonat(key: string, heute: string) {
+  const jahr = key.slice(0, 4) === heute.slice(0, 4) ? '' : ` ${key.slice(0, 4)}`
+  return `${MONATE[Number(key.slice(5, 7)) - 1]}${jahr}`
+}
+
+// Ein Monat als Kalenderblatt ab Montag: wie viele Felder vor dem Ersten leer
+// bleiben, und alle Tage. `key` ist irgendein Tag im Monat.
+export function monatsBlatt(key: string): { leer: number; tage: string[] } {
+  const d = parseKey(`${key.slice(0, 7)}-01`)
+  const anzahl = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()
+  return {
+    leer: (d.getDay() + 6) % 7,
+    tage: Array.from({ length: anzahl }, (_, i) => `${key.slice(0, 7)}-${String(i + 1).padStart(2, '0')}`),
+  }
+}
+
 // ---------- Zahlen ----------
 
 /** Zwei Nachkommastellen genuegen fuer alles, was man am Koerper misst. */

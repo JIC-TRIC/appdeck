@@ -71,3 +71,30 @@ export const IconPlay = () => (
     <path d="M7.5 5.5v13l11-6.5z" fill="currentColor" stroke="none" />
   </I>
 )
+
+// ---------- Tab-Leiste im Training ----------
+
+export const IconVorlagen = () => (
+  <I>
+    <path d="M9.5 6.5H20M9.5 12H20M9.5 17.5H20" />
+    <circle cx="5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="5" cy="17.5" r="1.5" fill="currentColor" stroke="none" />
+  </I>
+)
+export const IconKalender = () => (
+  <I>
+    <rect x="4" y="5" width="16" height="15" rx="2.5" />
+    <path d="M4 10h16M9 3v4M15 3v4" />
+  </I>
+)
+export const IconStatistik = () => (
+  <I>
+    <path d="M5 20v-8M12 20V5M19 20v-5" />
+  </I>
+)
+export const IconHantel = () => (
+  <I>
+    <path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" />
+  </I>
+)
