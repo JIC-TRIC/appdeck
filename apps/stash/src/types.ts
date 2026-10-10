@@ -24,5 +24,12 @@ export interface Geleert {
   notizen: Notiz[]
 }
 
+/** Wohin „Senden“ geht: ein privates GitHub-Repo und ein Token, der nur dort schreiben darf. */
+export interface Inbox {
+  /** „besitzer/name“ */
+  repo: string
+  token: string
+}
+
 /** Seiten ueber der Startseite (Schreiben). */
 export type View = { name: 'stapel' }

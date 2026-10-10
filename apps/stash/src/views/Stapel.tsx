@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { IconKopie } from '../icons'
+import { IconZahnrad } from '../icons'
 import { anzahl, wann } from '../text'
 import { Leiste } from '../ui'
 import type { Geleert, Notiz } from '../types'
@@ -8,16 +8,30 @@ interface Props {
   notizen: Notiz[]
   geleert: Geleert | null
   onZurueck: () => void
+  /** Laeuft gerade ein Senden? Dann ist der Knopf aus. */
+  sendet: boolean
+  onSenden: () => void
   onKopieren: () => void
   onLoeschen: () => void
   onZurueckholen: () => void
+  onEinrichten: () => void
 }
 
 // Alles, was abgelegt wurde, aelteste zuerst - so, wie es auch kopiert wird.
-// Antippen klappt eine lange Notiz ganz auf. Unten: alles kopieren oder
-// alles loeschen. Ist der Stapel leer, laesst sich der zuletzt geleerte
-// zurueckholen.
-function Stapel({ notizen, geleert, onZurueck, onKopieren, onLoeschen, onZurueckholen }: Props) {
+// Antippen klappt eine lange Notiz ganz auf. Unten: alles an die Inbox
+// senden, kopieren oder loeschen; das Zahnrad oben richtet das Senden ein.
+// Ist der Stapel leer, laesst sich der zuletzt geleerte zurueckholen.
+function Stapel({
+  notizen,
+  geleert,
+  sendet,
+  onZurueck,
+  onSenden,
+  onKopieren,
+  onLoeschen,
+  onZurueckholen,
+  onEinrichten,
+}: Props) {
   const [offen, setOffen] = useState<ReadonlySet<string>>(() => new Set())
   const jetzt = Date.now()
 
@@ -31,7 +45,15 @@ function Stapel({ notizen, geleert, onZurueck, onKopieren, onLoeschen, onZurueck
 
   return (
     <div className="s-screen">
-      <Leiste zurueck="Schreiben" onZurueck={onZurueck} />
+      <Leiste
+        zurueck="Schreiben"
+        onZurueck={onZurueck}
+        rechts={
+          <button type="button" className="s-einrichten" aria-label="Senden einrichten" onClick={onEinrichten}>
+            <IconZahnrad />
+          </button>
+        }
+      />
 
       <div className="s-body">
         <header className="s-kopf">
@@ -76,13 +98,15 @@ function Stapel({ notizen, geleert, onZurueck, onKopieren, onLoeschen, onZurueck
       </div>
 
       {notizen.length ? (
-        <div className="s-unten zwei">
+        <div className="s-unten drei">
           <button type="button" className="s-neben" onClick={onLoeschen}>
             Löschen
           </button>
-          <button type="button" className="s-haupt" onClick={onKopieren}>
-            <IconKopie />
-            Alles kopieren
+          <button type="button" className="s-neben tinte" onClick={onKopieren}>
+            Kopieren
+          </button>
+          <button type="button" className="s-haupt" disabled={sendet} onClick={onSenden}>
+            {sendet ? 'Sendet …' : 'Senden'}
           </button>
         </div>
       ) : null}

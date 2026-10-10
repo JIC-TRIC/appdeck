@@ -6,7 +6,8 @@ und über den Zurück-Link bzw. den runden Home-Button wieder zurück.
 
 - Kein Backend: Daten liegen im `localStorage` auf dem Gerät.
 - Läuft als Web-App ohne Safari-Leisten, im Dark Mode, offline.
-- Backup/Wiederherstellen ist im Launcher eingebaut (Zahnrad oben rechts).
+- Backup/Wiederherstellen ist im Launcher eingebaut (Zahnrad oben rechts). Schlüssel auf
+  `:geheim` (Zugangsdaten, z. B. der GitHub-Token von Stash) bleiben dabei draußen.
 - Offene Punkte und Ideen: [ROADMAP.md](ROADMAP.md) (u. a. Ideen für neue Apps und der Umzug auf IndexedDB, bevor der Speicher eng wird).
 
 ```

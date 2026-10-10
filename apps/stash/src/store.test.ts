@@ -3,14 +3,17 @@ import {
   ablegen,
   getEntwurf,
   getGeleert,
+  getInbox,
   getNotizen,
   getTitel,
   leeren,
   normalisiereEntwurf,
   normalisiereGeleert,
+  normalisiereInbox,
   normalisiereNotizen,
   normalisiereTitel,
   speichereEntwurf,
+  speichereInbox,
   zurueckholen,
 } from './store'
 
@@ -145,5 +148,34 @@ describe('leeren und zurueckholen', () => {
     ablegen({ titel: 'B', text: '' }, 3000)
     leeren(4000)
     expect(getGeleert()?.notizen.map((n) => n.titel)).toEqual(['B'])
+  })
+
+  it('mit ids nur diese: was waehrend des Sendens dazukam, bleibt liegen', () => {
+    const a = ablegen({ titel: 'A', text: '' }, 1000)!
+    const b = ablegen({ titel: 'B', text: '' }, 2000)!
+    ablegen({ titel: 'C', text: '' }, 3000)
+    leeren(4000, new Set([a.id, b.id]))
+    expect(getNotizen().map((n) => n.titel)).toEqual(['C'])
+    expect(getGeleert()?.notizen.map((n) => n.titel)).toEqual(['A', 'B'])
+  })
+})
+
+describe('Inbox', () => {
+  it('braucht Repo als besitzer/name und einen Token', () => {
+    expect(normalisiereInbox({ repo: ' JIC-TRIC/stash-inbox ', token: ' github_pat_x ' })).toEqual({
+      repo: 'JIC-TRIC/stash-inbox',
+      token: 'github_pat_x',
+    })
+    expect(normalisiereInbox({ repo: 'stash-inbox', token: 'x' })).toBeNull()
+    expect(normalisiereInbox({ repo: 'a/b', token: '  ' })).toBeNull()
+    expect(normalisiereInbox(null)).toBeNull()
+  })
+
+  it('liegt unter einem Schluessel, den das Backup auslaesst', () => {
+    speichereInbox({ repo: 'a/b', token: 't' })
+    expect(localStorage.getItem('stash:inbox:geheim')).not.toBeNull()
+    expect(getInbox()).toEqual({ repo: 'a/b', token: 't' })
+    speichereInbox(null)
+    expect(getInbox()).toBeNull()
   })
 })

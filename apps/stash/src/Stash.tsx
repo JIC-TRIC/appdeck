@@ -5,10 +5,22 @@ import { useHistoryStack } from '@lib/useHistoryStack'
 import Schreiben from './views/Schreiben'
 import Stapel from './views/Stapel'
 import { kopiere } from './kopieren'
+import { pruefe, REPO_VORSCHLAG, sende } from './senden'
 import { useSichtbar } from './sichtbar'
-import { getEntwurf, getGeleert, getNotizen, getTitel, leeren, speichereEntwurf, zurueckholen } from './store'
+import {
+  getEntwurf,
+  getGeleert,
+  getInbox,
+  getNotizen,
+  getTitel,
+  leeren,
+  normalisiereInbox,
+  speichereEntwurf,
+  speichereInbox,
+  zurueckholen,
+} from './store'
 import { anzahl, kopierText } from './text'
-import type { Entwurf, View } from './types'
+import type { Entwurf, Inbox, View } from './types'
 
 // Zwei Seiten: Schreiben (Start) und Stapel. Seitenwechsel mit Zurueckwischen
 // wie Kontor und Piano (lib/PageStage.tsx, lib/useHistoryStack.ts).
@@ -18,7 +30,7 @@ function Stash() {
   const [tick, setTick] = useState(0)
   const refresh = useCallback(() => setTick((t) => t + 1), [])
   const daten = useMemo(
-    () => ({ notizen: getNotizen(), titel: getTitel(), geleert: getGeleert() }),
+    () => ({ notizen: getNotizen(), titel: getTitel(), geleert: getGeleert(), inbox: getInbox() }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tick],
   )
@@ -73,6 +85,79 @@ function Stash() {
     })
   }
 
+  // Senden: der ganze Stapel als eine Datei in die Inbox, danach ist er leer
+  // (zurueckholen geht wie nach dem Loeschen). Ohne Inbox erst einrichten.
+  const [sendet, setSendet] = useState(false)
+  const senden = async (inbox: Inbox | null = daten.inbox) => {
+    const notizen = daten.notizen
+    if (!notizen.length || sendet) return
+    if (!inbox) return einrichten(true)
+    setSendet(true)
+    const r = await sende(inbox, notizen)
+    setSendet(false)
+    if (!r.ok) return melde(`Nicht gesendet: ${r.meldung}`)
+    leeren(Date.now(), new Set(notizen.map((n) => n.id)))
+    refresh()
+    melde(`${anzahl(notizen.length)} gesendet`)
+  }
+
+  const einrichten = (dannSenden = false) => {
+    const bisher = daten.inbox
+    frage({
+      header: 'Senden an GitHub',
+      message: 'Privates Repo und ein Fine-grained Token nur für dieses Repo (Contents: Read and write).',
+      cssClass: 's-alert',
+      inputs: [
+        {
+          name: 'repo',
+          value: bisher?.repo ?? REPO_VORSCHLAG,
+          placeholder: 'besitzer/repo',
+          attributes: { autocapitalize: 'off', autocorrect: 'off', spellcheck: false },
+        },
+        {
+          name: 'token',
+          type: 'password',
+          value: bisher?.token ?? '',
+          placeholder: 'github_pat_…',
+          attributes: { autocomplete: 'off' },
+        },
+      ],
+      buttons: [
+        { text: 'Abbrechen', role: 'cancel' },
+        ...(bisher
+          ? [
+              {
+                text: 'Entfernen',
+                role: 'destructive',
+                handler: () => {
+                  speichereInbox(null)
+                  refresh()
+                  melde('Token entfernt')
+                },
+              },
+            ]
+          : []),
+        {
+          text: dannSenden ? 'Speichern und senden' : 'Speichern',
+          handler: (werte: unknown) => {
+            const inbox = normalisiereInbox(werte)
+            if (!inbox) {
+              melde('Repo als besitzer/name und den Token eintragen.')
+              return false
+            }
+            speichereInbox(inbox)
+            refresh()
+            if (dannSenden) void senden(inbox)
+            else
+              void pruefe(inbox).then((r) =>
+                melde(r.ok ? `Verbunden mit ${inbox.repo}` : `Nicht verbunden: ${r.meldung}`),
+              )
+          },
+        },
+      ],
+    })
+  }
+
   const loeschen = () => {
     const n = daten.notizen.length
     frage({
@@ -91,9 +176,12 @@ function Stash() {
       <Stapel
         notizen={daten.notizen}
         geleert={daten.geleert}
+        sendet={sendet}
         onZurueck={back}
+        onSenden={() => void senden()}
         onKopieren={kopieren}
         onLoeschen={loeschen}
+        onEinrichten={() => einrichten()}
         onZurueckholen={() => {
           zurueckholen()
           refresh()

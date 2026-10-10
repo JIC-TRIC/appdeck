@@ -95,6 +95,9 @@ Erster Stand ist gebaut (05.10.2026). Offene Fragen stehen in `apps/stash/konzep
 - Kopierformat für **Notizen ohne Titel**, wie lange **„Zuletzt geleert“** gespeichert bleibt.
 - **Titel-Vorschläge entfernen**, **Teilen-Knopf** direkt zu WhatsApp, **nach Titel gruppieren**,
   einzelne Notizen bearbeiten oder löschen, Wortmarke kleiner.
+- Seit 10.10.2026 gibt es **Senden** an eine private GitHub-Inbox, am Laptop holt `/stash` in
+  Claude Code sie ab (`Developer/.claude/skills/stash/`). Offen: Token und gleiche Adresse (siehe
+  Konzept).
 
 ## Form
 

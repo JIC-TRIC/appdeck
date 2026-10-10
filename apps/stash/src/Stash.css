@@ -220,6 +220,14 @@ textarea {
   margin-left: -2px;
 }
 
+.s-einrichten {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text-3);
+}
+
 .s-zahl {
   min-width: 24px;
   height: 24px;
@@ -295,6 +303,15 @@ textarea {
 
 .s-neben:active {
   background: var(--sheet-press);
+}
+
+.s-neben.tinte {
+  color: var(--ink);
+}
+
+/* Drei Knoepfe auf dem Stapel: Loeschen, Kopieren, Senden - auch auf 320 pt. */
+.drei .s-neben {
+  padding: 0 14px;
 }
 
 /* ---------- Schreiben ---------- */

@@ -7,9 +7,12 @@
  *   stash:entwurf   { titel, text }  was gerade im Formular steht
  *   stash:titel     string[]         zuletzt benutzte Titel, neuester zuerst
  *   stash:geleert   { am, notizen }  der zuletzt geleerte Stapel, bis zum naechsten Leeren
+ *   stash:inbox:geheim { repo, token } wohin „Senden“ geht - Schluessel auf
+ *                   ":geheim" laesst das Backup aus (shared/backup.js)
  */
+import { istRepo } from './senden'
 import { merkeTitel, TITEL_MAX } from './text'
-import type { Entwurf, Geleert, Notiz } from './types'
+import type { Entwurf, Geleert, Inbox, Notiz } from './types'
 
 export const APP_ID = 'stash'
 
@@ -95,12 +98,16 @@ export function normalisiereGeleert(raw: unknown): Geleert | null {
 
 export const getGeleert = () => normalisiereGeleert(lies('geleert'))
 
-/** Leert den Stapel. Der alte Stand bleibt bis zum naechsten Leeren zum Zurueckholen. */
-export function leeren(jetzt = Date.now()) {
+/**
+ * Leert den Stapel, mit ids nur diese Notizen (nach dem Senden: was waehrenddessen
+ * dazukam, bleibt liegen). Das Entfernte bleibt bis zum naechsten Leeren zum Zurueckholen.
+ */
+export function leeren(jetzt = Date.now(), ids?: ReadonlySet<string>) {
   const notizen = getNotizen()
-  if (!notizen.length) return
-  schreibe('geleert', { am: jetzt, notizen })
-  schreibe('notizen', [])
+  const weg = ids ? notizen.filter((n) => ids.has(n.id)) : notizen
+  if (!weg.length) return
+  schreibe('geleert', { am: jetzt, notizen: weg })
+  schreibe('notizen', ids ? notizen.filter((n) => !ids.has(n.id)) : [])
 }
 
 /** Holt den zuletzt geleerten Stapel zurueck - zu dem, was seitdem dazukam. */
@@ -140,4 +147,20 @@ export const getEntwurf = () => normalisiereEntwurf(lies('entwurf'))
 export function speichereEntwurf(e: Entwurf) {
   if (e.titel || e.text) schreibe('entwurf', e)
   else entferne('entwurf')
+}
+
+// ---------- Inbox (Senden) ----------
+
+export function normalisiereInbox(raw: unknown): Inbox | null {
+  const r = obj(raw)
+  const repo = typeof r.repo === 'string' ? r.repo.trim() : ''
+  const token = typeof r.token === 'string' ? r.token.trim() : ''
+  return istRepo(repo) && token ? { repo, token } : null
+}
+
+export const getInbox = () => normalisiereInbox(lies('inbox:geheim'))
+
+export function speichereInbox(inbox: Inbox | null) {
+  if (inbox) schreibe('inbox:geheim', inbox)
+  else entferne('inbox:geheim')
 }

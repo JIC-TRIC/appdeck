@@ -16,11 +16,16 @@
   var FORMAT = 'appdeck-backup';
   var script = document.currentScript;
 
+  // Zugangsdaten bleiben auf dem Gerät: Schlüssel auf ":geheim" (z. B. der
+  // GitHub-Token von Stash) kommen nicht ins Backup, und Ersetzen beim
+  // Wiederherstellen lässt sie stehen.
+  var GEHEIM = /:geheim$/;
+
   function allData() {
     var data = {};
     for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
-      data[k] = localStorage.getItem(k);
+      if (!GEHEIM.test(k)) data[k] = localStorage.getItem(k);
     }
     return data;
   }
@@ -104,7 +109,9 @@
   function restore(text, options) {
     var data = parse(text);
     var keys = Object.keys(data);
-    if (options && options.replace) localStorage.clear();
+    if (options && options.replace) {
+      Object.keys(localStorage).forEach(function (k) { if (!GEHEIM.test(k)) localStorage.removeItem(k); });
+    }
     keys.forEach(function (k) {
       var v = data[k];
       localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
