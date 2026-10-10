@@ -1,14 +1,14 @@
 # Form – Konzept
 
-Fortschritt in Zahlen: Körperwerte wie Gewicht, Bizeps oder Taille von Hand eintragen und sehen, wohin
-es geht. Später bekommt Form das Training als zweiten Bereich (siehe „Richtung Training“ unten) – dort
-macht man genauso mit der Zeit Fortschritte. Der erste Stand kann nur das Verfolgen von Werten.
+Fortschritt in Zahlen, in zwei Bereichen: **Werte** – Körperwerte wie Gewicht, Bizeps oder Taille von
+Hand eintragen und sehen, wohin es geht – und **Training** – Übungen, Sätze, Gewicht und Wdh, schnell
+genug für zwischen zwei Sätzen im Studio (siehe „Training“ unten).
 
 Projekt-ID `form`, Ordner `apps/form/`, Speicher unter `form:*`. Gebaut in TypeScript + Ionic wie
 Kontor, Steady, Piano, Loci und Stash.
 
-`[ ]` = offen, `[x]` = gebaut. **Stand: gebaut (08.10.2026).** Nach einer kurzen Fragerunde direkt
-gebaut, ohne Mockups. Gewählt wurde: Name **Form**, Look **Kreide (dunkel) mit grellem Orange**, dazu
+`[ ]` = offen, `[x]` = gebaut. **Stand: Werte gebaut (08.10.2026), Training gebaut (10.10.2026).**
+Die Werte nach einer kurzen Fragerunde direkt gebaut, ohne Mockups. Gewählt wurde: Name **Form**, Look **Kreide (dunkel) mit grellem Orange**, dazu
 **Richtung pro Wert** und **Zielwert pro Wert**. Nicht gewählt: Startvorlagen, Notiz pro Messtag.
 
 ---
@@ -25,6 +25,8 @@ gebaut, ohne Mockups. Gewählt wurde: Name **Form**, Look **Kreide (dunkel) mit 
   orange. Was in die andere Richtung geht, steht einfach weiß da – kein Rot.
 - **Nur dunkel.** Kein heller Modus.
 - **Keine Tab-Leiste.** Übersicht, darunter Seiten mit Zurückwischen wie Kontor, Piano und Stash.
+  Zwischen Werten und Training wechselt ein Umschalter in der Kopfleiste der beiden Startseiten; Form
+  öffnet den Bereich, in dem man zuletzt war.
 - Lokal im Browser (`localStorage`), kein Account, kein Server, offline nutzbar.
 
 ## Design (Richtung „Kreide“)
@@ -45,7 +47,9 @@ Akzentfarbe. Schmale, fette Versalien wie auf einer Anzeigetafel für Wortmarke,
   Zahlen, Instrument Sans für alles andere. Barlow Condensed ist die einzige Schrift, die nur Form
   braucht (`@fontsource/barlow-condensed`, seit 08.10.2026; vorher Schibsted Grotesk, wirkte zu
   brav). Keine Tabellenziffern – sonst bekäme das Komma Ziffernbreite (Kontors Lehre).
-- Rundungen weich (Karten 18–20 px, Hauptknopf 16 px).
+- **Dicht** (seit 10.10.2026, für beide Bereiche): Kopfleiste 44 px, Wortmarke 48 px, Karten mit
+  14–16 px Rundung, Hauptknopf 46 px hoch. Im laufenden Training sind etwa fünf Übungen auf einmal zu
+  sehen. Vorher waren alle Elemente größer, es passte zu wenig auf den Bildschirm.
 - Symbol `icons/form.svg`: der Verlauf mit gestrichelter Ziellinie, weiße Kurve auf `#FF6A00`, der
   jüngste Punkt in Mattschwarz (Symbol-Stil „Signal“ siehe README). Reines Orange statt Steadys
   Koralle, damit die beiden Kacheln im Launcher nicht verschwimmen.
@@ -130,14 +134,120 @@ Launcher-Backup erfasst alles automatisch.
 - Fortschrittsfotos (zu groß für `localStorage`, siehe IndexedDB-Umzug in der ROADMAP).
 - Export als CSV.
 
-## Richtung Training
+## Training
 
-Der Workout-Teil ist ein eigenes, größeres Projekt (ROADMAP, „Trainingsbuch“). **Entschieden
-(08.10.2026): Das Training wird ein zweiter Bereich in Form**, keine eigene App. Körpergewicht ist hier
-ein ganz normaler Wert – die Frage „Körpergewicht mit erfassen?“ aus dem Trainingsbuch ist damit
-beantwortet.
+Der zweite Bereich. **Stand: gebaut (10.10.2026)** nach einer Feature-Liste und Mockups aller
+Ansichten ([mockups.html](mockups.html), Beispieltag Sa 10. Okt 2026, 18:14, „Push“ läuft). Entschieden
+in der Runde: Umschalter statt Tab-Leiste, während eines Trainings sind die Werte schwer zu erreichen,
+erst `localStorage` (IndexedDB später), grau steht das letzte Mal aus derselben Vorlage, die Pause wird
+aus dem letzten Haken berechnet, alles dichter als die Werte bisher. Körpergewicht bleibt ein normaler
+Wert.
 
-Beim Bau zu klären: wie man zwischen den Bereichen wechselt. Mit zwei Bereichen ist eine Tab-Leiste
-(Werte / Training) naheliegend – das hebt das Prinzip „Keine Tab-Leiste“ von oben auf. Die Alternative
-wäre ein Umschalter oben auf der Übersicht. Der Speicher bleibt unter `form:*`, das Training bekommt
-eigene Schlüssel daneben.
+### Prinzipien
+
+- **Läuft ein Training, gehört ihm der ganze Bildschirm.** Kein Umschalter, kein Zurück, Form öffnet
+  direkt dort. Zu den Werten geht es nur über ⋯ → „Werte ansehen“ (darüber „‹ Training“ zurück).
+- **Grau steht das letzte Mal.** Ein Haken übernimmt es – wer dasselbe schafft wie letztes Mal, tippt
+  nur Haken. Kein eigenes „Zuletzt“-Feld.
+- **Die Pause wird berechnet, nicht gezählt.** Jeder Haken speichert seine Uhrzeit, die Pause ist jetzt
+  minus letzter Haken. App zu, Handy gesperrt – beim Öffnen stimmt sie trotzdem.
+- **Gespeichert wird nur, was du einträgst:** Zahlen und die Uhrzeit des Hakens. Rekorde, Volumen,
+  Dauer, Fortschritt werden berechnet (`trainingCalc.ts`).
+- **Orange heißt Fortschritt** – mehr als letztes Mal, Rekorde, „Pause um“. Weniger steht weiß da.
+- **Ein Tipp startet.** Vorlagen ohne Vorschau, die Übungen weiß man.
+
+### Regeln
+
+Übungen:
+
+- [x] Name (40 Zeichen), Erfassung **Gewicht × Wdh**, **nur Wdh** oder **Zeit** (Sekunden), Pause
+  (0:15–10:00 in 15-s-Schritten, Standard 2:00), Notiz (80 Zeichen, steht im Training unter dem Namen).
+- [x] Kein Startkatalog: Übungen entstehen beim Hinzufügen über die Suche („‚Facepull‘ anlegen“, mit
+  Gewicht × Wdh) oder unter Übungen.
+- [x] Die Erfassung lässt sich nur ändern, solange die Übung nie trainiert wurde. Trainierte werden
+  archiviert statt gelöscht (Verlauf bleibt, taucht beim Hinzufügen nicht mehr auf), nie trainierte
+  lassen sich löschen – auch aus den Vorlagen.
+
+Vorlagen:
+
+- [x] Name und Übungen, pro Übung Satzzahl (1–20) und Wdh-Bereich (optional, steht im Training neben
+  dem Namen). Reihenfolge auf der Startseite und in der Vorlage per Griff.
+- [x] Neu entweder unter Vorlagen oder beim Beenden eines leeren Trainings („Als Vorlage speichern“ –
+  das Training gehört danach zur Vorlage).
+- [x] Weicht ein Training von seiner Vorlage ab (Übung fehlt oder kam dazu, andere Satzzahl oder
+  Reihenfolge), fragt „Fertig“: anpassen oder so lassen. Anpassen übernimmt Übungen, Reihenfolge und
+  Satzzahl, die Wdh-Bereiche bleiben.
+
+Sätze:
+
+- [x] **Grau:** derselbe Satz aus dem letzten Training mit derselben Vorlage. Gab es die Übung dort noch
+  nie (oder ist es ein leeres Training): das letzte Mal überhaupt. Hat das letzte Mal weniger Sätze,
+  gilt der Satz davor in diesem Training.
+- [x] **Haken:** füllt leere Felder mit dem Grauen und speichert die Uhrzeit. Fehlt eine Zahl, geht das
+  Tastenfeld auf. Ein zweiter Tipp nimmt den Haken wieder weg.
+- [x] **Tastenfeld** statt iOS-Tastatur: der erste Tastendruck ersetzt, ±2,5 kg / ±1 Wdh / ±5 s, jeder
+  Tastendruck wird sofort gesichert. Darunter „Zuletzt bei Push: 30 × 9“.
+- [x] **Orange** am abgehakten Satz: mehr Gewicht als der gleiche Satz vom letzten Mal, oder mehr Wdh
+  bei mindestens gleichem Gewicht.
+- [x] **Rekord** („PR“ statt Satznummer): schwerster Satz oder bestes geschätztes 1RM (Epley) bisher,
+  über alle Vorlagen – bei nur Wdh die meisten, bei Zeit die längste. Zählt auch gegen frühere Sätze im
+  selben Training. Im ersten Training einer Übung gibt es keinen.
+- [x] Fertige Übungen (alle Sätze abgehakt) schrumpfen auf eine Zeile, ein Tipp klappt sie auf.
+
+Pause, Beenden, Nachtragen:
+
+- [x] Oben in der Kopfleiste: jetzt minus letzter Haken, der Strich füllt sich bis zur Pause der
+  Übung des letzten Hakens, danach orange. Vor dem ersten Haken die Trainingsdauer. Kein Ton, keine
+  Mitteilung (geht als Web-App im Hintergrund nicht).
+- [x] Beenden mit offenen Sätzen: verwerfen oder abhaken (mit dem Grauen). Ohne abgehakten Satz:
+  verwerfen. Übungen ohne Satz fallen weg.
+- [x] Beliebig viele Trainings am Tag. Nachtragen: Tag (nicht in die Zukunft), Vorlage, Beginn, Dauer –
+  danach dieselbe Ansicht wie im Training, ohne Pause, erst „Sichern“ schreibt.
+
+### Speicher
+
+```
+form:uebungen   [{ id, name, erfassung, pause, notiz, archiviert, erstellt }]
+form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, von, bis }] }]
+form:trainings  [{ id, vorlage, name, start, ende, uebungen: [{ uebung, saetze: [{ kg, wdh, sek, fertig }] }] }]
+form:laufend    das laufende Training (gleiche Form, ende null) – nach jedem Tipp gesichert
+form:bereich    'werte' | 'training' – wo Form zuletzt war
+```
+
+Gelesenes wird geprüft (`normalisiere*` in `trainingStore.ts`, getestet). Die Rechnungen stehen in
+`trainingCalc.ts` (getestet). Grob 4.000 Sätze im Jahr, ein paar hundert KB – passt vorerst in
+`localStorage`.
+
+### Ansichten
+
+Nummern wie in den Mockups.
+
+- [x] **1 Werte:** wie bisher, neu der Umschalter in der Kopfleiste.
+- [x] **2 Training:** „Zuletzt trainiert vor 2 Tagen“, Wortmarke, Vorlagen (Name, wann zuletzt,
+  oranger Start), „Leeres Training“, darunter Verlauf und Übungen. „Bearbeiten“ führt zu den Vorlagen.
+- [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“ und ein Knopf.
+- [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden. Pro Übung Name, Wdh-Bereich, ⋯, Notiz, Sätze
+  `Nr | kg × Wdh | Haken`, „+ Satz“. Unten „+ Übung“.
+- [x] **5 Satz eingeben:** Blatt mit beiden Feldern, Schnellknöpfen, Ziffern und „Abhaken“.
+- [x] **6 Übung hinzufügen:** ganze Seite, Suche, „Zuletzt“ (bis 5, nicht schon dabei), „Alle“.
+  Mehrere auf einmal; beim Tauschen genügt ein Tipp.
+- [x] **7 Übung im Training:** Pause der Übung, Verlauf ansehen, tauschen (Satzzahl bleibt),
+  verschieben, letzten Satz entfernen, herausnehmen.
+- [x] **8 Menü im Training:** Beginn ändern, Werte ansehen, Training verwerfen.
+- [x] **9 Fertig:** Dauer, Sätze, Volumen, Rekorde, Vorlage anpassen bzw. als Vorlage speichern.
+- [x] **10 Verlauf:** eine Zeile pro Training, nach Monaten, „PR“ wenn es einen Rekord gab, „+“
+  trägt nach.
+- [x] **11 Ein Training:** alle Sätze kompakt, Rekorde orange, „Bearbeiten“, darin „Training löschen“.
+- [x] **12 Nachtragen.**
+- [x] **13 Übungen:** alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
+- [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem,
+  Rekord), Verlauf (Gewicht oder 1RM, 3 M / 1 J / Alles), jedes Training mit allen Sätzen.
+- [x] **15 Übung bearbeiten.**
+- [x] **16 Vorlage bearbeiten** und die Liste der Vorlagen (sortieren, neu).
+
+### Noch nicht gebaut
+
+Aus der Feature-Liste zurückgestellt (ROADMAP, „Training“): Satzarten (Aufwärmen, Drop-Satz), RPE/RIR,
+Supersätze, Notiz pro Training, Rotation und Progressionsvorschlag, Rekordtabelle, Monatskalender,
+Wochenstatistik, Muskelgruppen, Geräteart und Gewichtsschritte, Scheiben- und Aufwärmrechner, Ton und
+Bildschirm-an, Verbindung zu Steady, Körpergewicht in Körpergewichtsübungen, Export als CSV.

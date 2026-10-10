@@ -109,26 +109,21 @@ Messtag, Verlauf pro Wert. Nicht im MVP (siehe `apps/form/konzept.md`):
   zurückgestellt.
 - **Fortschrittsfotos** – erst nach dem IndexedDB-Umzug (siehe oben).
 
-### Trainingsbuch – zweiter Bereich in Form
+### Training – zweiter Bereich in Form
 
-Entschieden am 08.10.2026: das Training kommt als zweiter Bereich in Form, keine eigene App.
-Übungen, Sätze, Wiederholungen und Gewicht erfassen – schnell genug, um es zwischen zwei Sätzen im
-Studio zu machen. Vor dem Bau wie gewohnt: Fragerunde, dann Konzept (in `apps/form/konzept.md`) und
-Mockups.
+Gebaut am 10.10.2026 nach Feature-Liste und Mockups (`apps/form/mockups.html`), Regeln in
+`apps/form/konzept.md` („Training“): Vorlagen, laufendes Training mit eigenem Tastenfeld, grau das
+letzte Mal aus derselben Vorlage, Pause aus dem letzten Haken berechnet, Rekorde, Verlauf, Nachtragen,
+Übungen mit Kurve. Noch offen aus der Feature-Liste:
 
-- **Letzter Wert steht schon da**: beim nächsten Training zeigt jede Übung, was man zuletzt geschafft
-  hat („3×8 à 100 kg"), ein Tipp übernimmt es als Startwert.
-- **Fortschrittskurve pro Übung**, z. B. schwerster Satz über die Zeit – wie der Verlauf der
-  Körperwerte.
-- **Verbindung zu Steady**: ein erfasstes Training zählt dort als erledigte Gewohnheit (z. B. „Gym").
-  Geht, weil alle Apps unter derselben Adresse liegen und gegenseitig ihre Daten lesen können. Würde
-  die Steady-Idee „Notiz pro Eintrag" fürs Training überflüssig machen.
-- Körpergewicht erfasst Form schon als normalen Wert.
-- Offen: wie man zwischen Werten und Training wechselt (Tab-Leiste oder Umschalter), feste
-  Pläne/Vorlagen (Push/Pull/Beine) oder frei? Pausentimer läuft nur, solange die App offen ist (iOS
-  hält Web-Apps im Hintergrund an).
+- Satzarten (Aufwärmen, Drop-Satz), RPE/RIR, Supersätze, Notiz pro Training.
+- Rotation („Als Nächstes: Pull“) und Progressionsvorschlag (+2,5 kg, wenn alle Sätze oben im Bereich).
+- Rekordtabelle (bestes Gewicht für 1/3/5/8/10 Wdh), Monatskalender, Wochenstatistik pro Muskelgruppe.
+- Scheiben- und Aufwärmrechner, Gewichtsschritte pro Gerät.
+- **Verbindung zu Steady**: ein beendetes Training hakt eine gewählte Gewohnheit ab (z. B. „Gym“).
+- Körpergewicht aus den Werten für Körpergewichtsübungen, Export als CSV.
 - Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
-  zusammen mit Kontor ein Grund mehr für den IndexedDB-Umzug (siehe oben).
+  bleibt vorerst in localStorage, zusammen mit Kontor ein Grund für den IndexedDB-Umzug (siehe oben).
 
 ## Ideen für neue Apps
 

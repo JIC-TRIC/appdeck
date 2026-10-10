@@ -1,0 +1,763 @@
+<meta charset="utf-8">
+<title>Form Training Mockups</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Form ist nur dunkel - die Seite auch. Farben wie in src/Form.css,
+   Groessen fuer das Training dichter als bei den Werten bisher. */
+:root {
+  color-scheme: dark;
+  --page: #08080a;
+  --bg: #0d0d0e;
+  --surface: #161618;
+  --surface-2: #1f1f22;
+  --surface-3: #2c2c30;
+  --line: #262629;
+  --text: #f2f0eb;
+  --text-2: #a8a49c;
+  --text-3: #77736c;
+  --accent: #ff6a00;
+  --accent-soft: rgba(255, 106, 0, 0.15);
+  --on-accent: #0d0d0e;
+  --danger: #ff5c6c;
+  --f-disp: "Barlow Condensed", "Instrument Sans", system-ui, -apple-system, sans-serif;
+  --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+html, body { background: var(--page); color: var(--text); }
+body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+
+/* ---------- Seite ---------- */
+.pg { max-width: 1340px; margin: 0 auto; padding-inline: 20px; padding-block: 48px 96px; }
+.pg-intro { display: grid; gap: 24px; margin-bottom: 64px; }
+.pg-brand { display: flex; align-items: center; gap: 18px; }
+.pg-brand svg { width: 68px; height: 68px; flex: none; border-radius: 16px; }
+.pg-wm { font-family: var(--f-disp); font-weight: 800; font-size: clamp(48px, 8vw, 72px); line-height: .85; text-transform: uppercase; margin: 0; }
+.pg-wm span { color: var(--accent); }
+.pg-brand p { margin: 8px 0 0; color: var(--text-2); font-size: 15px; }
+.pg-lede { max-width: 72ch; color: var(--text-2); font-size: 16px; margin: 0; text-wrap: pretty; }
+.pg-lede strong { color: var(--text); font-weight: 600; }
+.pg-dec { margin: 0; padding-left: 20px; max-width: 72ch; color: var(--text-2); display: grid; gap: 6px; }
+.pg-dec b { color: var(--text); font-weight: 600; }
+.pg-toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.pg-toc a { color: var(--text-2); text-decoration: none; background: var(--surface); border-radius: 999px; padding: 6px 13px; font-size: 13.5px; }
+.pg-toc a:hover, .pg-toc a:focus-visible { color: var(--text); background: var(--surface-2); outline: none; }
+.pg-toc a b { color: var(--text-3); font-weight: 600; margin-right: 6px; }
+.pg-sec { margin-bottom: 80px; }
+.pg-h2 { font-family: var(--f-disp); font-weight: 800; font-size: 34px; line-height: 1; letter-spacing: .02em; text-transform: uppercase; margin: 0 0 8px; }
+.pg-sub { color: var(--text-2); margin: 0 0 26px; max-width: 72ch; }
+.pg-bs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.pg-bs { background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: grid; gap: 12px; align-content: start; }
+.pg-bs .smp { background: var(--surface); border-radius: 14px; padding: 10px; min-height: 58px; display: grid; align-items: center; }
+.pg-bs .smp.mitte { justify-items: center; }
+.pg-bs b { display: block; font-weight: 600; font-size: 14.5px; }
+.pg-bs small { display: block; color: var(--text-2); font-size: 13px; line-height: 1.4; }
+.pg-screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 402px), 1fr)); gap: 72px 44px; align-items: start; }
+.pg-shot { margin: 0; display: grid; gap: 20px; min-width: 0; scroll-margin-top: 24px; }
+.pg-fit { width: 100%; max-width: 402px; }
+.pg-cap { max-width: 402px; }
+.pg-cap h3 { margin: 0 0 8px; font: 600 19px/1.3 var(--f-ui); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.pg-cap h3 span { font-family: var(--f-disp); color: var(--text-3); font-weight: 800; }
+.pg-cap ul { margin: 0; padding-left: 18px; color: var(--text-2); font-size: 14px; display: grid; gap: 5px; }
+.pg-foot { color: var(--text-3); font-size: 13px; border-top: 1px solid var(--line); padding-top: 20px; }
+
+/* ---------- Geraet ---------- */
+.device { width: 402px; border-radius: 58px; padding: 6px; background: #1a1a1c; box-shadow: 0 0 0 1px #2c2c30, 0 40px 80px -30px rgba(0,0,0,.8); }
+.screen { width: 390px; height: 844px; border-radius: 52px; overflow: hidden; background: var(--bg); position: relative; display: flex; flex-direction: column; }
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 9; }
+.sb { height: 54px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 8px 32px 0 46px; font: 600 16px/1 var(--f-ui); color: var(--text); }
+.sb .ico { display: flex; gap: 6px; align-items: center; }
+.sb svg { fill: currentColor; }
+.homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 136px; height: 5px; border-radius: 3px; background: var(--text); z-index: 10; }
+.app { flex: 1 1 auto; min-height: 0; position: relative; display: flex; flex-direction: column; font-size: 15px; line-height: 1.35; }
+
+/* ---------- App: Geruest ---------- */
+.f-i { display: block; flex: none; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.f-bar { flex: none; height: 44px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 0 8px 0 4px; }
+.f-bar-l { display: flex; justify-content: flex-start; padding-left: 4px; }
+.f-bar-mid { font-weight: 600; font-size: 15px; white-space: nowrap; }
+.f-bar-r { display: flex; justify-content: flex-end; }
+.f-body { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 0 12px 24px; }
+.f-body > * { flex-shrink: 0; }
+.f-unten { flex: none; padding: 6px 12px 28px; }
+.f-back { display: inline-flex; align-items: center; gap: 1px; min-height: 40px; padding-right: 6px; font-size: 16px; font-weight: 500; }
+.f-back .f-i { width: 22px; height: 22px; }
+.f-textbtn { display: inline-flex; align-items: center; min-height: 40px; padding: 0 6px; font-size: 16px; font-weight: 500; }
+.f-textbtn.stark { color: var(--accent); font-weight: 600; }
+.f-rund { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); }
+.f-rund .f-i { width: 18px; height: 18px; }
+.f-rund.klein { width: 28px; height: 28px; }
+.f-rund.klein .f-i { width: 14px; height: 14px; }
+.f-haupt { width: 100%; height: 46px; border-radius: 14px; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-family: var(--f-disp); font-weight: 800; font-size: 19px; letter-spacing: .1em; text-transform: uppercase; }
+.f-kopf { display: flex; flex-direction: column; gap: 1px; padding: 0 2px 2px; }
+.f-kicker { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); }
+.f-marke { margin: 0; font-family: var(--f-disp); font-weight: 800; font-size: 48px; line-height: .9; letter-spacing: -.01em; text-transform: uppercase; }
+.f-marke span { color: var(--accent); }
+.f-h1 { margin: 0; font-family: var(--f-disp); font-weight: 800; font-size: 30px; line-height: 1; text-transform: uppercase; overflow-wrap: anywhere; }
+.f-h2 { margin: 6px 4px -2px; font-family: var(--f-disp); font-weight: 700; font-size: 13.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-2); }
+.f-diff { font-style: normal; font-weight: 600; white-space: nowrap; color: var(--text-2); }
+.f-diff.gut { color: var(--accent); }
+.f-zahl { display: inline-flex; align-items: baseline; gap: 5px; min-width: 0; }
+.f-zahl b { font-family: var(--f-disp); font-weight: 700; font-size: 36px; line-height: .95; }
+.f-zahl small { font-size: 14px; font-weight: 500; color: var(--text-2); }
+.f-zahl.gross b { font-size: 60px; }
+.f-zahl.gross small { font-size: 18px; }
+
+/* Uebersicht der Werte */
+.f-karten { display: flex; flex-direction: column; gap: 8px; }
+.f-karte { display: flex; flex-direction: column; gap: 3px; padding: 10px 14px; border-radius: 16px; background: var(--surface); }
+.f-karte-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.f-karte-name { font-family: var(--f-disp); font-weight: 700; font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+.f-karte-wann { font-size: 12px; color: var(--text-3); }
+.f-karte-mitte { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.f-linie { flex: none; width: 80px; height: 28px; overflow: visible; }
+.f-linie .linie { fill: none; stroke: var(--text-2); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.f-linie .letzter { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.f-karte-info { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 12.5px; color: var(--text-2); }
+.f-karte-ziel { margin-left: auto; padding: 2px 8px; border-radius: 8px; background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--text); }
+
+/* Segment, Gruppen, Zeilen, Felder */
+.f-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; padding: 2px; border-radius: 10px; background: var(--surface-2); }
+.f-seg span { height: 28px; border-radius: 8px; display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--text-2); }
+.f-seg span.an { background: var(--surface-3); color: var(--text); }
+.f-seg-bar { width: 168px; }
+.f-seg-bar span { height: 26px; }
+.f-gruppe { border-radius: 14px; background: var(--surface); overflow: hidden; }
+.f-zeile { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 42px; padding: 8px 10px 8px 14px; border-bottom: 1px solid var(--line); font-size: 15px; }
+.f-zeile:last-child { border-bottom: 0; }
+.f-zeile-r { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 14px; }
+.f-zeile-r .f-i { width: 15px; height: 15px; color: var(--text-3); }
+.f-zeile.gefahr { color: var(--danger); }
+.f-felder { display: flex; flex-direction: column; gap: 8px; padding-top: 2px; }
+.f-feld { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 14px; background: var(--surface); }
+.f-feld.quer { flex-direction: row; align-items: center; justify-content: space-between; }
+.f-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
+.f-in { padding: 8px 12px; border-radius: 10px; background: var(--surface-2); font-size: 16px; }
+.f-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.f-chip { height: 30px; padding: 0 12px; border-radius: 15px; background: var(--surface-2); display: grid; place-items: center; font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+.f-chip.an { background: var(--accent); color: var(--on-accent); }
+.f-loeschen { width: 100%; height: 44px; margin-top: 4px; border-radius: 14px; background: var(--surface); color: var(--danger); display: grid; place-items: center; font-size: 15px; font-weight: 600; }
+.f-loeschen.neutral { color: var(--text); }
+.f-leer { display: flex; flex-direction: column; gap: 8px; padding-top: 14px; }
+.f-leer-t { margin: 0; font-family: var(--f-disp); font-weight: 800; font-size: 28px; line-height: 1; text-transform: uppercase; }
+.f-leer .f-haupt { margin-top: 8px; }
+.f-tag { display: grid; grid-template-columns: 32px 1fr 32px; align-items: center; gap: 8px; padding: 0 0 2px; }
+.f-tag-mitte { text-align: center; display: flex; flex-direction: column; gap: 1px; }
+.f-tag-mitte b { font-family: var(--f-disp); font-weight: 800; font-size: 22px; line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+.f-tag-mitte small { font-size: 12.5px; color: var(--text-2); }
+.f-kacheln { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.f-kachel { display: flex; flex-direction: column; gap: 1px; padding: 8px 10px; border-radius: 12px; background: var(--surface); min-width: 0; }
+.f-kachel small { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
+.f-kachel .f-diff { font-family: var(--f-disp); font-weight: 700; font-size: 21px; line-height: 1.1; color: var(--text); }
+.f-kachel .f-diff.gut { color: var(--accent); }
+.f-kachel span { font-size: 12px; color: var(--text-2); }
+.f-karte-flach { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 16px; background: var(--surface); }
+.f-chart { display: block; width: 100%; height: auto; overflow: visible; }
+.f-chart .grid { stroke: var(--line); stroke-width: 1; }
+.f-chart .lbl { fill: var(--text-3); font-family: var(--f-ui); font-size: 11px; }
+.f-chart .linie { fill: none; stroke: var(--text); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.f-chart .punkt { fill: var(--text); }
+.f-chart .letzter { fill: var(--accent); stroke: var(--surface); stroke-width: 3; }
+.f-stand { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 0 2px; }
+.f-stand-wann { font-size: 13px; color: var(--text-2); }
+.f-notiz { margin: -4px 2px 0; font-size: 13.5px; color: var(--text-2); }
+
+/* ---------- Training ---------- */
+.f-h2-zeile { display: flex; justify-content: space-between; align-items: baseline; margin: 6px 4px -2px; }
+.f-h2-zeile .f-h2 { margin: 0; }
+.f-textlink { font-size: 13.5px; font-weight: 600; color: var(--text-2); }
+.f-vorlage { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 9px 0 14px; border-radius: 14px; background: var(--surface); }
+.f-vorlage-name { flex: 1; min-width: 0; font-family: var(--f-disp); font-weight: 800; font-size: 23px; line-height: 1; text-transform: uppercase; letter-spacing: .03em; }
+.f-vorlage small { font-size: 12.5px; color: var(--text-3); }
+.f-play { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; }
+.f-play .f-i { width: 15px; height: 15px; margin-left: 2px; }
+.f-leerbtn { display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; border-radius: 14px; border: 1.5px dashed var(--surface-3); color: var(--text-2); font-weight: 600; font-size: 14px; }
+.f-leerbtn .f-i { width: 16px; height: 16px; }
+
+/* Pause in der Kopfleiste: jetzt minus Uhrzeit des letzten Hakens */
+.f-pz { display: grid; justify-items: center; gap: 3px; line-height: 1; }
+.f-pz-z { display: flex; align-items: baseline; gap: 6px; }
+.f-pz small { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); }
+.f-pz b { font-family: var(--f-disp); font-weight: 700; font-size: 23px; letter-spacing: .02em; }
+.f-pz i { display: block; width: 64px; height: 3px; border-radius: 2px; background: var(--surface-3); overflow: hidden; }
+.f-pz i u { display: block; height: 100%; background: var(--text-2); }
+.f-pz.um b, .f-pz.um small { color: var(--accent); }
+.f-pz.um i u { background: var(--accent); }
+.f-pz.still i { visibility: hidden; }
+
+.f-ex { background: var(--surface); border-radius: 14px; padding: 7px 8px 0 10px; display: flex; flex-direction: column; gap: 4px; }
+.f-ex-kopf { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+.f-ex-name { flex: 1; min-width: 0; font-family: var(--f-disp); font-weight: 700; font-size: 16px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.f-ex-ziel { font-size: 12px; font-weight: 600; color: var(--text-3); }
+.f-ex-mehr { color: var(--text-3); padding: 0 4px; }
+.f-ex-mehr .f-i { width: 18px; height: 18px; }
+.f-ex-notiz { margin: -4px 0 1px; font-size: 12.5px; color: var(--text-2); }
+.f-saetze { display: flex; flex-direction: column; gap: 4px; }
+.f-satz { display: grid; grid-template-columns: 16px 1fr 10px 1fr 32px; gap: 6px; align-items: center; }
+.f-nr { text-align: center; font-family: var(--f-disp); font-weight: 700; font-size: 15px; color: var(--text-3); }
+.f-pr { font-family: var(--f-disp); font-weight: 800; font-size: 12px; letter-spacing: .02em; color: var(--accent); }
+.f-mal { text-align: center; font-size: 13px; color: var(--text-3); }
+.f-z { height: 34px; border-radius: 9px; background: var(--surface-2); display: grid; place-items: center; font-family: var(--f-disp); font-weight: 700; font-size: 21px; }
+.f-z.ph { color: var(--text-3); }
+.f-z.fest { background: transparent; }
+.f-z.gut { color: var(--accent); }
+.f-z.aktiv { box-shadow: inset 0 0 0 2px var(--accent); }
+.f-haken { width: 28px; height: 28px; border-radius: 50%; justify-self: center; box-shadow: inset 0 0 0 2px var(--surface-3); display: grid; place-items: center; color: var(--on-accent); flex: none; }
+.f-haken.an { background: var(--text); box-shadow: none; }
+.f-haken .f-i { width: 15px; height: 15px; stroke-width: 3; }
+.f-plus-satz { display: flex; justify-content: center; align-items: center; gap: 4px; height: 28px; color: var(--text-3); font-size: 12.5px; font-weight: 600; }
+.f-plus-satz .f-i { width: 13px; height: 13px; }
+.f-ex-fertig { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border-radius: 12px; background: var(--surface); }
+.f-ex-fertig .f-haken { width: 20px; height: 20px; }
+.f-ex-fertig .f-haken .f-i { width: 11px; height: 11px; }
+.f-ex-fertig b { font-family: var(--f-disp); font-weight: 700; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.f-ex-fertig small { flex: 1; min-width: 0; font-size: 12.5px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.f-tag-pr { flex: none; padding: 1px 6px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); font-family: var(--f-disp); font-weight: 800; font-size: 12px; letter-spacing: .06em; }
+
+.scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .62); z-index: 5; }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--surface); border-radius: 22px 22px 0 0; padding: 7px 12px 30px; display: flex; flex-direction: column; gap: 10px; }
+.handle { width: 36px; height: 5px; border-radius: 3px; background: var(--surface-3); margin: 0 auto; }
+.sh-kopf { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 0 2px; }
+.sh-kopf b { display: block; font-family: var(--f-disp); font-weight: 700; font-size: 18px; letter-spacing: .06em; text-transform: uppercase; line-height: 1.1; }
+.sh-kopf small { display: block; font-size: 12.5px; color: var(--text-2); margin-top: 1px; }
+.sheet .f-gruppe, .sheet .f-rund { background: var(--surface-2); }
+.sheet .f-zeile { border-color: var(--surface-3); }
+.f-wahl { display: grid; grid-template-columns: 1fr 10px 1fr; gap: 6px; align-items: center; }
+.f-wahl-box { border-radius: 14px; background: var(--surface-2); padding: 6px 10px 8px; display: flex; flex-direction: column; align-items: center; }
+.f-wahl-box small { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); }
+.f-wahl-box b { font-family: var(--f-disp); font-weight: 700; font-size: 40px; line-height: 1; }
+.f-wahl-box b.ph { color: var(--text-3); }
+.f-wahl-box.an { box-shadow: inset 0 0 0 2px var(--accent); }
+.f-wahl-info { margin: -2px 0 0; text-align: center; font-size: 12.5px; color: var(--text-2); }
+.f-schnell { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.f-schnell span { height: 38px; border-radius: 10px; background: var(--surface-3); display: grid; place-items: center; font-family: var(--f-disp); font-weight: 700; font-size: 19px; }
+.f-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.f-pad span { height: 46px; border-radius: 12px; background: var(--surface-2); display: grid; place-items: center; font-family: var(--f-disp); font-weight: 600; font-size: 25px; }
+.f-pad span .f-i { width: 24px; height: 24px; }
+.f-stepper { display: flex; align-items: center; gap: 8px; color: var(--text); }
+.f-stepper b { font-family: var(--f-disp); font-weight: 700; font-size: 20px; min-width: 42px; text-align: center; }
+.f-stepper .f-rund { width: 28px; height: 28px; background: var(--surface-3); }
+.f-stepper .f-rund .f-i { width: 14px; height: 14px; }
+.f-suche { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border-radius: 10px; background: var(--surface); color: var(--text-3); font-size: 15px; }
+.f-suche .f-i { width: 16px; height: 16px; }
+.f-wahlzeile .f-haken { width: 22px; height: 22px; }
+.f-wahlzeile .f-haken .f-i { width: 12px; height: 12px; }
+
+.f-tr { display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 10px 0 14px; border-bottom: 1px solid var(--line); }
+.f-tr:last-child { border-bottom: 0; }
+.f-tr-tag { flex: none; width: 74px; font-size: 14px; color: var(--text-2); }
+.f-tr b { flex: 1; min-width: 0; font-family: var(--f-disp); font-weight: 700; font-size: 17px; letter-spacing: .06em; text-transform: uppercase; }
+.f-tr-r { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 13.5px; }
+.f-tr-r .f-i { width: 15px; height: 15px; color: var(--text-3); }
+.f-statzeile { margin: -2px 2px 0; font-size: 13.5px; color: var(--text-2); }
+.f-ex-blatt { background: var(--surface); border-radius: 12px; padding: 8px 10px 9px; display: flex; flex-direction: column; gap: 6px; }
+.f-ex-blatt .f-ex-name { font-size: 14.5px; }
+.f-sc-reihe { display: flex; flex-wrap: wrap; gap: 4px; }
+.f-sc { padding: 2px 8px; border-radius: 7px; background: var(--surface-2); font-family: var(--f-disp); font-weight: 700; font-size: 16px; line-height: 1.2; }
+.f-sc.pr { background: var(--accent-soft); color: var(--accent); }
+.f-rek { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+.f-rek:last-child { border-bottom: 0; }
+.f-rek b { display: block; font-size: 14.5px; font-weight: 600; }
+.f-rek small { display: block; font-size: 12px; color: var(--text-2); }
+.f-rek em { font-style: normal; font-family: var(--f-disp); font-weight: 700; font-size: 20px; color: var(--accent); white-space: nowrap; }
+.f-frage { margin: 0; font-size: 14.5px; color: var(--text); padding: 2px 4px 0; }
+.f-frage small { display: block; margin-top: 1px; font-size: 13px; color: var(--text-2); }
+.f-zwei { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.f-knopf { height: 38px; border-radius: 11px; background: var(--surface-2); display: grid; place-items: center; font-weight: 600; font-size: 14.5px; }
+.f-knopf.stark { background: var(--text); color: var(--on-accent); }
+.f-zwei-felder { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.f-seg-doppel { display: grid; grid-template-columns: 2fr 3fr; gap: 6px; }
+.f-sk { font-family: var(--f-disp); font-weight: 700; font-size: 17px; color: var(--text); }
+.f-sk.gut { color: var(--accent); }
+.f-vz { display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 10px; border-bottom: 1px solid var(--line); }
+.f-vz:last-child { border-bottom: 0; }
+.f-vz .f-i { width: 18px; height: 18px; color: var(--text-3); }
+.f-vz span { flex: 1; min-width: 0; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.f-vz em { font-style: normal; padding: 2px 8px; border-radius: 7px; background: var(--surface-2); font-family: var(--f-disp); font-weight: 700; font-size: 16px; }
+.f-plus-zeile { display: flex; align-items: center; gap: 6px; min-height: 42px; padding: 0 14px; color: var(--text-2); font-weight: 600; font-size: 14px; }
+.f-plus-zeile .f-i { width: 16px; height: 16px; }
+</style>
+
+<main class="pg">
+  <header class="pg-intro">
+    <div class="pg-brand">
+      <svg viewBox="0 0 180 180" role="img" aria-label="App-Symbol Form">
+        <rect width="180" height="180" fill="#FF6A00"/>
+        <path d="M40 44H140" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round" stroke-dasharray="11 12"/>
+        <path d="M40 136L66 110L89 121L117 86L134 70" fill="none" stroke="#FFFFFF" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="134" cy="70" r="17" fill="#0D0D0E" stroke="#FF6A00" stroke-width="7"/>
+      </svg>
+      <div>
+        <h1 class="pg-wm">Form<span>.</span></h1>
+        <p>Training – Mockups aller Ansichten</p>
+      </div>
+    </div>
+    <p class="pg-lede">Das Training wird der zweite Bereich in Form. Beispiel überall: <strong>Samstag, 10. Oktober 2026</strong>, das Training „Push“ läuft seit 17:40. Die Nummern in Klammern verweisen auf die Ansichten unten.</p>
+    <ul class="pg-dec">
+      <li><b>Umschalter oben</b> zwischen Werten und Training. Form öffnet den Bereich, in dem du zuletzt warst.</li>
+      <li><b>Läuft ein Training, gehört ihm der ganze Bildschirm.</b> Kein Umschalter, kein Zurück, Form öffnet direkt dort. Zu den Werten geht es dann nur über das Menü (8).</li>
+      <li><b>Grau im Feld steht das letzte Mal aus derselben Vorlage.</b> Trainierst du Push, ist das der letzte Push. Gab es die Übung in Push noch nie, steht dort das letzte Mal überhaupt. Der Haken übernimmt die Zahlen.</li>
+      <li><b>Die Pause wird berechnet, nicht gezählt.</b> Jeder Haken speichert seine Uhrzeit, die Pause ist jetzt minus letzter Haken. App schließen, Handy sperren: Beim Öffnen stimmt die Zeit.</li>
+      <li><b>Orange heißt Fortschritt.</b> Mehr als letztes Mal, Rekorde. Weniger steht einfach weiß da.</li>
+    </ul>
+    <nav class="pg-toc" id="toc" aria-label="Ansichten"></nav>
+  </header>
+
+  <section class="pg-sec" aria-labelledby="h-bs">
+    <h2 class="pg-h2" id="h-bs">Bausteine</h2>
+    <p class="pg-sub">Ein Satz und die Pause, in allen Zuständen.</p>
+    <div class="pg-bs-grid" id="bausteine"></div>
+  </section>
+
+  <div id="sections"></div>
+
+  <p class="pg-foot">Form · Mockups Training · Stand 10.10.2026 · Nur dunkel, Farben wie in src/Form.css.</p>
+</main>
+
+<script>
+(() => {
+  // ---------- Symbole (24er Raster, wie src/icons.tsx) ----------
+  const I = (d) => `<svg class="f-i" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const ic = {
+    left: I('<path d="M15 5l-7 7 7 7"/>'),
+    right: I('<path d="M9 5l7 7-7 7"/>'),
+    plus: I('<path d="M12 5v14M5 12h14"/>'),
+    minus: I('<path d="M5 12h14"/>'),
+    check: I('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
+    x: I('<path d="M6 6l12 12M18 6L6 18"/>'),
+    more: I('<circle cx="5" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.7" fill="currentColor" stroke="none"/>'),
+    play: I('<path d="M7.5 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>'),
+    search: I('<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/>'),
+    grip: I('<path d="M5 9h14M5 15h14"/>'),
+    del: I('<path d="M9 6h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5.5-6z"/><path d="M12 10l4 4M16 10l-4 4"/>'),
+  };
+
+  // ---------- Geraet ----------
+  const sb = (t) =>
+    `<div class="sb"><span>${t}</span><span class="ico">` +
+    '<svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>' +
+    '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.6l2.5-3a3.7 3.7 0 0 0-5 0z"/><path d="M3.3 6.2a7.2 7.2 0 0 1 9.4 0l1.4-1.7a9.4 9.4 0 0 0-12.2 0z"/><path d="M.3 2.6a11.8 11.8 0 0 1 15.4 0L16 2.2A12.4 12.4 0 0 0 0 2.2z" opacity=".9"/></svg>' +
+    '<svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2.5" y="2.5" width="15" height="8" rx="2"/><path d="M25 4.5v4c.8-.3 1.5-1.1 1.5-2s-.7-1.7-1.5-2z" opacity=".4"/></svg>' +
+    '</span></div>';
+  const dev = (inner, t = '18:14') =>
+    `<div class="device"><div class="screen"><div class="island"></div>${sb(t)}<div class="app">${inner}</div><div class="homebar"></div></div></div>`;
+  const bar = (l = '', m = '', r = '') =>
+    `<header class="f-bar"><div class="f-bar-l">${l}</div><div class="f-bar-mid">${m}</div><div class="f-bar-r">${r}</div></header>`;
+  const body = (x) => `<div class="f-body">${x}</div>`;
+  const unten = (x) => `<div class="f-unten">${x}</div>`;
+  const back = (l) => `<span class="f-back">${ic.left}${l}</span>`;
+  const txt = (l, stark) => `<span class="f-textbtn${stark ? ' stark' : ''}">${l}</span>`;
+  const rund = (i, cls = '') => `<span class="f-rund ${cls}">${i}</span>`;
+  const umschalter = (an) =>
+    `<div class="f-seg f-seg-bar"><span${an === 'w' ? ' class="an"' : ''}>Werte</span><span${an === 't' ? ' class="an"' : ''}>Training</span></div>`;
+  const zeile = (l, r = '', cls = '') =>
+    `<div class="f-zeile ${cls}"><span>${l}</span><span class="f-zeile-r">${r}</span></div>`;
+  const pfeil = ic.right;
+
+  // ---------- Satz und Pause ----------
+  // st: 'offen' (graue Zahlen = letztes Mal in dieser Vorlage), 'fertig', 'aktiv' (wird gerade getippt)
+  const satz = (n, kg, wdh, st, o = {}) => {
+    // Beim Tippen ist nur das kg-Feld dran, Wdh bleibt grau.
+    const zelle = (v, gut, erstes) => {
+      if (st === 'offen' || (st === 'aktiv' && !erstes)) return `<span class="f-z ph">${v}</span>`;
+      if (st === 'aktiv') return `<span class="f-z aktiv">${v}</span>`;
+      return `<span class="f-z fest${gut ? ' gut' : ''}">${v}</span>`;
+    };
+    return (
+      `<div class="f-satz"><span class="f-nr">${o.pr ? '<span class="f-pr">PR</span>' : n}</span>` +
+      zelle(kg, o.gutKg, true) + '<span class="f-mal">×</span>' + zelle(wdh, o.gutWdh) +
+      `<span class="f-haken${st === 'fertig' ? ' an' : ''}">${st === 'fertig' ? ic.check : ''}</span></div>`
+    );
+  };
+  const plusSatz = `<div class="f-plus-satz">${ic.plus}Satz</div>`;
+  const uebung = (name, ziel, saetze, notiz = '') =>
+    `<section class="f-ex"><div class="f-ex-kopf"><span class="f-ex-name">${name}</span>` +
+    `${ziel ? `<span class="f-ex-ziel">${ziel}</span>` : ''}<span class="f-ex-mehr">${ic.more}</span></div>` +
+    `${notiz ? `<p class="f-ex-notiz">${notiz}</p>` : ''}` +
+    `<div class="f-saetze">${saetze.join('')}</div>${plusSatz}</section>`;
+  const fertigeUebung = (name, kurz, pr) =>
+    `<div class="f-ex-fertig"><span class="f-haken an">${ic.check}</span><b>${name}</b><small>${kurz}</small>${pr ? '<span class="f-tag-pr">PR</span>' : ''}</div>`;
+  // Pause = jetzt minus Uhrzeit des letzten Hakens. anteil: wie weit bis zur Pause der Uebung.
+  const pause = (zeit, anteil, art = '') =>
+    `<div class="f-pz ${art}"><span class="f-pz-z"><small>${art === 'still' ? 'Training' : 'Pause'}</small><b>${zeit}</b></span><i><u style="width:${anteil}%"></u></i></div>`;
+
+  // ---------- Ansichten ----------
+  const linie = (ys) => {
+    const xs = ys.map((_, i) => 4 + (84 * i) / (ys.length - 1));
+    const d = ys.map((y, i) => `${i ? 'L' : 'M'}${xs[i].toFixed(1)} ${y}`).join(' ');
+    return `<svg viewBox="0 0 92 34" class="f-linie" aria-hidden="true"><path d="${d}" class="linie"/><circle cx="88" cy="${ys[ys.length - 1]}" r="3.6" class="letzter"/></svg>`;
+  };
+  const wertKarte = (name, wann, zahl, einheit, ys, diff, ziel) =>
+    `<div class="f-karte"><span class="f-karte-kopf"><span class="f-karte-name">${name}</span><span class="f-karte-wann">${wann}</span></span>` +
+    `<span class="f-karte-mitte"><span class="f-zahl"><b>${zahl}</b><small>${einheit}</small></span>${linie(ys)}</span>` +
+    `<span class="f-karte-info"><em class="f-diff gut">${diff}</em> seit 1. Sep${ziel ? `<span class="f-karte-ziel">${ziel}</span>` : ''}</span></div>`;
+
+  const V = {};
+
+  V.werte = () => dev(
+    bar(back('Apps'), umschalter('w'), rund(ic.plus)) +
+    body(
+      '<header class="f-kopf"><p class="f-kicker">Zuletzt gemessen vor 3 Tagen</p><h1 class="f-marke">Form<span>.</span></h1></header>' +
+      '<div class="f-karten">' +
+      wertKarte('Gewicht', 'vor 3 Tagen', '81,4', 'kg', [6, 9, 8, 12, 11, 15, 14, 19, 18, 22, 25, 28], '−2,6 kg', 'noch 1,4 kg') +
+      wertKarte('Bizeps', 'vor 3 Tagen', '38,5', 'cm', [28, 27, 24, 25, 21, 20, 17, 18, 13, 12, 9, 6], '+1,0 cm') +
+      wertKarte('Taille', 'vor 10 Tagen', '84', 'cm', [7, 7, 11, 10, 14, 14, 18, 17, 21, 22, 25, 27], '−2 cm', 'noch 2 cm') +
+      wertKarte('Brust', 'vor 10 Tagen', '104', 'cm', [20, 20, 18, 17, 17, 15, 14, 14, 12, 11, 11, 9], '+3 cm') +
+      '</div>',
+    ) +
+    unten('<span class="f-haupt">Messen</span>'),
+  );
+
+  const vorlage = (name, wann) =>
+    `<div class="f-vorlage"><span class="f-vorlage-name">${name}</span><small>${wann}</small><span class="f-play">${ic.play}</span></div>`;
+
+  V.trainingStart = () => dev(
+    bar(back('Apps'), umschalter('t')) +
+    body(
+      '<header class="f-kopf"><p class="f-kicker">Zuletzt trainiert vor 2 Tagen</p><h1 class="f-marke">Form<span>.</span></h1></header>' +
+      '<div class="f-h2-zeile"><h2 class="f-h2">Vorlagen</h2><span class="f-textlink">Bearbeiten</span></div>' +
+      vorlage('Push', 'vor 7 Tagen') + vorlage('Pull', 'vor 5 Tagen') + vorlage('Beine', 'vor 2 Tagen') + vorlage('Ganzkörper', 'vor 6 Wochen') +
+      `<div class="f-leerbtn">${ic.plus}Leeres Training</div>` +
+      `<div class="f-gruppe">${zeile('Verlauf', pfeil)}${zeile('Übungen', pfeil)}</div>`,
+    ),
+  );
+
+  V.erststart = () => dev(
+    bar(back('Apps'), umschalter('t')) +
+    body(
+      '<header class="f-kopf"><h1 class="f-marke">Form<span>.</span></h1></header>' +
+      '<div class="f-leer"><p class="f-leer-t">Erstes Training?</p><span class="f-haupt">Training starten</span></div>',
+    ),
+  );
+
+  // Das laufende Training - Grundlage fuer 4, 5, 7 und 8.
+  const training = (o = {}) =>
+    bar(rund(ic.more), pause('1:24', 70), txt('Beenden', true)) +
+    body(
+      fertigeUebung('Bankdrücken', '82,5 × 8 · 8 · 7', true) +
+      uebung('Schrägbank Kurzhantel', '8–12', [
+        satz(1, '30', '10', 'fertig'),
+        satz(2, '30', '9', 'fertig'),
+        o.aktiv ? satz(3, '32,5', '9', 'aktiv') : satz(3, '30', '9', 'offen'),
+      ]) +
+      uebung('Schulterdrücken Maschine', '8–12', [
+        satz(1, '45', '10', 'offen'),
+        satz(2, '45', '10', 'offen'),
+        satz(3, '45', '9', 'offen'),
+      ], 'Sitz Stufe 4') +
+      uebung('Seitheben', '12–15', [satz(1, '10', '14', 'offen'), satz(2, '10', '12', 'offen'), satz(3, '10', '12', 'offen')]) +
+      uebung('Trizepsdrücken Kabel', '10–15', [satz(1, '25', '12', 'offen'), satz(2, '25', '11', 'offen')]) +
+      uebung('Facepull', '12–15', [satz(1, '20', '15', 'offen'), satz(2, '20', '15', 'offen')]),
+    );
+
+  V.training = () => dev(training());
+
+  V.eingabe = () => dev(
+    training({ aktiv: true }) +
+    '<div class="scrim"></div><div class="sheet"><div class="handle"></div>' +
+    `<div class="sh-kopf"><div><b>Schrägbank Kurzhantel</b><small>Satz 3</small></div>${rund(ic.x, 'klein')}</div>` +
+    '<div class="f-wahl"><div class="f-wahl-box an"><small>kg</small><b>32,5</b></div><span class="f-mal">×</span><div class="f-wahl-box"><small>Wdh</small><b class="ph">9</b></div></div>' +
+    '<p class="f-wahl-info">Letzter Push: 30 × 9</p>' +
+    '<div class="f-schnell"><span>−2,5</span><span>+2,5</span></div>' +
+    `<div class="f-pad">${['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0'].map((k) => `<span>${k}</span>`).join('')}<span>${ic.del}</span></div>` +
+    '<span class="f-haupt">Abhaken</span></div>',
+  );
+
+  const wahl = (name, an) =>
+    `<div class="f-zeile f-wahlzeile"><span>${name}</span><span class="f-haken${an ? ' an' : ''}">${an ? ic.check : ''}</span></div>`;
+
+  V.hinzufuegen = () => dev(
+    bar(txt('Abbrechen'), 'Übungen', txt('Hinzufügen', true)) +
+    body(
+      `<div class="f-suche">${ic.search}Suchen</div>` +
+      '<h2 class="f-h2">Zuletzt</h2>' +
+      `<div class="f-gruppe">${wahl('Dips')}${wahl('Facepull', true)}${wahl('Bizepscurls Kurzhantel')}</div>` +
+      '<h2 class="f-h2">Alle</h2>' +
+      `<div class="f-gruppe">${['Beinpresse', 'Beinstrecker', 'Bizepscurls Kurzhantel', 'Dips', 'Facepull', 'Kniebeuge', 'Kreuzheben rumänisch', 'Latziehen', 'Rudern Kabel', 'Wadenheben'].map((n) => wahl(n, n === 'Facepull')).join('')}</div>`,
+    ),
+  );
+
+  const stepper = (w) => `<span class="f-stepper">${rund(ic.minus)}<b>${w}</b>${rund(ic.plus)}</span>`;
+
+  V.uebungSheet = () => dev(
+    training() +
+    '<div class="scrim"></div><div class="sheet"><div class="handle"></div>' +
+    `<div class="sh-kopf"><div><b>Schulterdrücken Maschine</b><small>Sitz Stufe 4</small></div>${rund(ic.x, 'klein')}</div>` +
+    `<div class="f-gruppe">${zeile('Pause', stepper('1:30'))}</div>` +
+    `<div class="f-gruppe">${zeile('Verlauf ansehen', pfeil)}${zeile('Übung tauschen', pfeil)}${zeile('Verschieben')}</div>` +
+    `<div class="f-gruppe">${zeile('Aus dem Training nehmen', '', 'gefahr')}</div>` +
+    '</div>',
+  );
+
+  V.menue = () => dev(
+    training() +
+    '<div class="scrim"></div><div class="sheet"><div class="handle"></div>' +
+    `<div class="f-gruppe">${zeile('Beginn', `17:40${pfeil}`)}${zeile('Werte ansehen', pfeil)}</div>` +
+    `<div class="f-gruppe">${zeile('Training verwerfen', '', 'gefahr')}</div>` +
+    '</div>',
+  );
+
+  const rekord = (name, was, satzText) =>
+    `<div class="f-rek"><div><b>${name}</b><small>${was}</small></div><em>${satzText}</em></div>`;
+
+  V.fertig = () => dev(
+    bar() +
+    body(
+      '<header class="f-kopf"><p class="f-kicker">Training beendet</p><h1 class="f-h1">Push</h1></header>' +
+      '<p class="f-statzeile">58 min · 16 Sätze · 5.590 kg</p>' +
+      '<h2 class="f-h2">Rekorde</h2>' +
+      `<div class="f-gruppe">${rekord('Bankdrücken', 'bestes 1RM · 104 kg', '82,5 × 8')}${rekord('Schulterdrücken Maschine', 'schwerster Satz', '50 × 8')}</div>` +
+      '<h2 class="f-h2">Vorlage</h2>' +
+      '<div class="f-karte-flach"><p class="f-frage">Push anpassen?<small>Dips fehlten, Facepull kam dazu.</small></p>' +
+      '<div class="f-zwei"><span class="f-knopf">So lassen</span><span class="f-knopf stark">Anpassen</span></div></div>',
+    ) +
+    unten('<span class="f-haupt">Fertig</span>'),
+    '18:38',
+  );
+
+  const tr = (tag, name, dauer, pr) =>
+    `<div class="f-tr"><span class="f-tr-tag">${tag}</span><b>${name}</b>` +
+    `<span class="f-tr-r">${pr ? '<span class="f-tag-pr">PR</span>' : ''}${dauer}${pfeil}</span></div>`;
+
+  V.verlauf = () => dev(
+    bar(back('Training'), 'Verlauf', rund(ic.plus)) +
+    body(
+      '<h2 class="f-h2">Oktober</h2>' +
+      `<div class="f-gruppe">${tr('Heute', 'Push', '58 min', true)}${tr('Do 8. Okt', 'Beine', '1:04 h')}${tr('Mo 5. Okt', 'Pull', '52 min')}${tr('Sa 3. Okt', 'Push', '55 min')}${tr('Do 1. Okt', 'Beine', '1:02 h')}</div>` +
+      '<h2 class="f-h2">September</h2>' +
+      `<div class="f-gruppe">${tr('Di 29. Sep', 'Pull', '49 min')}${tr('So 27. Sep', 'Push', '57 min', true)}${tr('Fr 25. Sep', 'Beine', '1:08 h')}${tr('Mi 23. Sep', 'Pull', '51 min')}${tr('Mo 21. Sep', 'Push', '54 min')}${tr('Sa 19. Sep', 'Beine', '1:01 h')}${tr('Do 17. Sep', 'Pull', '50 min', true)}</div>`,
+    ),
+    '18:40',
+  );
+
+  const blatt = (name, saetze) =>
+    `<div class="f-ex-blatt"><span class="f-ex-name">${name}</span><div class="f-sc-reihe">` +
+    saetze.map((s) => (s.startsWith('!') ? `<span class="f-sc pr">${s.slice(1)}</span>` : `<span class="f-sc">${s}</span>`)).join('') +
+    '</div></div>';
+
+  V.einTraining = () => dev(
+    bar(back('Verlauf'), '', txt('Bearbeiten')) +
+    body(
+      '<header class="f-kopf"><p class="f-kicker">Heute · 17:40 – 18:38</p><h1 class="f-h1">Push</h1></header>' +
+      '<p class="f-statzeile">58 min · 16 Sätze · 5.590 kg</p>' +
+      blatt('Bankdrücken', ['!82,5 × 8', '82,5 × 8', '82,5 × 7']) +
+      blatt('Schrägbank Kurzhantel', ['30 × 10', '30 × 9', '32,5 × 8']) +
+      blatt('Schulterdrücken Maschine', ['45 × 10', '45 × 10', '!50 × 8']) +
+      blatt('Seitheben', ['10 × 14', '10 × 12', '10 × 12']) +
+      blatt('Trizepsdrücken Kabel', ['25 × 12', '25 × 11']) +
+      blatt('Facepull', ['20 × 15', '20 × 15']),
+    ),
+    '18:40',
+  );
+
+  V.nachtragen = () => dev(
+    bar(txt('Abbrechen'), 'Nachtragen', txt('Weiter', true)) +
+    body(
+      `<div class="f-tag">${rund(ic.left)}<div class="f-tag-mitte"><b>Gestern</b><small>Freitag, 9. Oktober</small></div>${rund(ic.right)}</div>` +
+      '<div class="f-felder">' +
+      '<div class="f-feld"><span class="f-label">Vorlage</span><div class="f-chips"><span class="f-chip">Push</span><span class="f-chip an">Pull</span><span class="f-chip">Beine</span><span class="f-chip">Ganzkörper</span><span class="f-chip">Leer</span></div></div>' +
+      '<div class="f-zwei-felder"><div class="f-feld"><span class="f-label">Beginn</span><span class="f-in">18:00</span></div><div class="f-feld"><span class="f-label">Dauer</span><span class="f-in">60 min</span></div></div>' +
+      '</div>',
+    ),
+    '18:40',
+  );
+
+  V.uebungen = () => dev(
+    bar(back('Training'), 'Übungen', rund(ic.plus)) +
+    body(
+      `<div class="f-suche">${ic.search}Suchen</div>` +
+      `<div class="f-gruppe">${['Bankdrücken', 'Beinpresse', 'Beinstrecker', 'Bizepscurls Kurzhantel', 'Dips', 'Facepull', 'Kniebeuge', 'Kreuzheben rumänisch', 'Latziehen', 'Rudern Kabel', 'Schrägbank Kurzhantel', 'Schulterdrücken Maschine', 'Seitheben', 'Trizepsdrücken Kabel', 'Wadenheben'].map((n) => zeile(n, pfeil)).join('')}</div>`,
+    ),
+    '18:40',
+  );
+
+  // Verlauf Bankdruecken: schwerster Satz pro Training, 12. Maerz bis heute (Tage seit Start, kg)
+  const chart = () => {
+    const W = 340, H = 150, L = 40, R = 12, T = 10, B = 22;
+    const daten = [[0, 60], [14, 62.5], [28, 65], [42, 65], [56, 67.5], [70, 70], [84, 70], [98, 72.5], [112, 75], [126, 75], [140, 77.5], [154, 77.5], [168, 80], [184, 85], [198, 80], [205, 80], [212, 82.5]];
+    const x = (d) => L + ((W - L - R) * d) / 212;
+    const y = (v) => T + (H - T - B) * (1 - (v - 60) / 30);
+    const P = daten.map(([d, v]) => [x(d).toFixed(1), y(v).toFixed(1)]);
+    const pfad = P.map(([px, py], i) => `${i ? 'L' : 'M'}${px} ${py}`).join(' ');
+    const ende = P[P.length - 1];
+    return `<svg viewBox="0 0 ${W} ${H}" class="f-chart" role="img" aria-label="Verlauf Bankdrücken">` +
+      [90, 80, 70, 60].map((v) => `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" class="grid"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" class="lbl">${v}</text>`).join('') +
+      `<path d="${pfad}" class="linie"/>` +
+      P.slice(0, -1).map(([px, py]) => `<circle cx="${px}" cy="${py}" r="2.5" class="punkt"/>`).join('') +
+      `<circle cx="${ende[0]}" cy="${ende[1]}" r="5" class="letzter"/>` +
+      `<text x="${L}" y="${H - 5}" class="lbl">12. Mär</text><text x="${W - R}" y="${H - 5}" text-anchor="end" class="lbl">heute</text></svg>`;
+  };
+  const tz = (tag, kg, wdh, gut) =>
+    zeile(tag, `<span class="f-sk${gut ? ' gut' : ''}">${kg}</span><span>${wdh}</span>${pfeil}`);
+
+  V.eineUebung = () => dev(
+    bar(back('Übungen'), '', txt('Bearbeiten')) +
+    body(
+      '<header class="f-kopf"><h1 class="f-h1">Bankdrücken</h1></header>' +
+      '<p class="f-notiz">Ringfinger auf die Markierung</p>' +
+      '<div class="f-stand"><span class="f-zahl gross"><b>82,5</b><small>kg × 8</small></span><span class="f-stand-wann">heute</span></div>' +
+      '<div class="f-kacheln">' +
+      '<div class="f-kachel"><small>Seit Start</small><em class="f-diff gut">+22,5 kg</em><span>12. Mär</span></div>' +
+      '<div class="f-kachel"><small>Seit letztem</small><em class="f-diff gut">+2,5 kg</em><span>Sa 3. Okt</span></div>' +
+      '<div class="f-kachel"><small>Rekord</small><em class="f-diff">85 kg</em><span>× 5 · 12. Sep</span></div>' +
+      '</div>' +
+      '<section class="f-karte-flach"><div class="f-seg-doppel"><div class="f-seg"><span class="an">Gewicht</span><span>1RM</span></div><div class="f-seg"><span>3 M</span><span>1 J</span><span class="an">Alles</span></div></div>' +
+      chart() + '</section>' +
+      '<h2 class="f-h2">Trainings</h2>' +
+      `<div class="f-gruppe">${tz('Heute', '82,5 kg', '8 · 8 · 7', true)}${tz('Sa 3. Okt', '80 kg', '8 · 8 · 7')}${tz('So 27. Sep', '80 kg', '8 · 7 · 7')}${tz('Mo 21. Sep', '80 kg', '7 · 7 · 6')}${tz('Sa 12. Sep', '85 kg', '5 · 4 · 4')}</div>`,
+    ),
+    '18:40',
+  );
+
+  V.uebungForm = () => dev(
+    bar(txt('Abbrechen'), 'Übung', txt('Sichern', true)) +
+    body(
+      '<div class="f-felder">' +
+      '<div class="f-feld"><span class="f-label">Name</span><span class="f-in">Schulterdrücken Maschine</span></div>' +
+      '<div class="f-feld"><span class="f-label">Was trägst du ein?</span><div class="f-chips"><span class="f-chip an">Gewicht × Wdh</span><span class="f-chip">Nur Wdh</span><span class="f-chip">Zeit</span></div></div>' +
+      `<div class="f-feld quer"><span class="f-label">Pause</span>${stepper('1:30')}</div>` +
+      '<div class="f-feld"><span class="f-label">Notiz</span><span class="f-in">Sitz Stufe 4</span></div>' +
+      '</div>' +
+      '<span class="f-loeschen neutral">Archivieren</span>',
+    ),
+    '18:40',
+  );
+
+  const vz = (name, ziel) => `<div class="f-vz">${ic.grip}<span>${name}</span><em>${ziel}</em></div>`;
+
+  V.vorlageForm = () => dev(
+    bar(txt('Abbrechen'), 'Vorlage', txt('Sichern', true)) +
+    body(
+      '<div class="f-felder"><div class="f-feld"><span class="f-label">Name</span><span class="f-in">Push</span></div></div>' +
+      '<h2 class="f-h2">Übungen</h2>' +
+      '<div class="f-gruppe">' +
+      vz('Bankdrücken', '3 × 5–8') + vz('Schrägbank Kurzhantel', '3 × 8–12') + vz('Schulterdrücken Maschine', '3 × 8–12') +
+      vz('Seitheben', '3 × 12–15') + vz('Trizepsdrücken Kabel', '2 × 10–15') + vz('Facepull', '2 × 12–15') +
+      `<div class="f-plus-zeile">${ic.plus}Übung</div></div>` +
+      '<span class="f-loeschen">Vorlage löschen</span>',
+    ),
+    '18:40',
+  );
+
+  // ---------- Bausteine ----------
+  const BAUSTEINE = [
+    [satz(3, '30', '9', 'offen'), 'Offen', 'Grau: das letzte Mal in dieser Vorlage. Gab es die Übung dort noch nie, das letzte Mal überhaupt: Facepull ist neu in Push und bekommt die Zahlen aus dem letzten Pull. War es heute genauso, reicht der Haken.'],
+    [satz(3, '32,5', '9', 'aktiv'), 'Wird getippt', 'Ein Tipp aufs Feld öffnet das Tastenfeld (5).'],
+    [satz(2, '30', '9', 'fertig'), 'Abgehakt', 'Die Zahlen stehen fest, der Haken speichert seine Uhrzeit.'],
+    [satz(1, '82,5', '8', 'fertig', { gutKg: true }), 'Mehr als letztes Mal', 'Orange ist, was über dem gleichen Satz vom letzten Mal liegt, verglichen wird mit derselben Vorlage.'],
+    [satz(1, '82,5', '8', 'fertig', { gutKg: true, pr: true }), 'Rekord', 'PR statt Satznummer: schwerster Satz oder bestes geschätztes 1RM bisher, egal in welcher Vorlage.'],
+    [pause('1:24', 70), 'Pause', 'Jetzt minus letzter Haken. Nichts läuft im Hintergrund, die Zeit wird bei jedem Blick neu berechnet. Deshalb stimmt sie auch, wenn die App zwischendurch zu war. Der Strich füllt sich bis zur Pause der Übung (7).', 'mitte'],
+    [pause('2:40', 100, 'um'), 'Pause um', 'Ab der Pause der Übung wird die Zeit orange und zählt weiter. Kein Ton, keine Mitteilung.', 'mitte'],
+    [pause('4:12', 0, 'still'), 'Vor dem ersten Satz', 'Ohne Haken gibt es keine Pause, dann steht dort, wie lange das Training schon läuft.', 'mitte'],
+  ];
+  document.getElementById('bausteine').innerHTML = BAUSTEINE.map(([smp, b, s, art]) =>
+    `<div class="pg-bs"><div class="smp ${art || ''}">${smp}</div><div><b>${b}</b><small>${s}</small></div></div>`,
+  ).join('');
+
+  // ---------- Abschnitte ----------
+  const SECTIONS = [
+    ['Einstieg', 'Wie man ins Training kommt.', [
+      ['v1', '1', 'Werte', V.werte, [
+        'Neu ist der Umschalter oben. Die Werte bekommen dieselben, dichteren Größen wie das Training, damit beide Bereiche gleich aussehen.',
+        'Läuft ein Training, kommst du hierher nur über das Menü im Training (8).',
+      ]],
+      ['v2', '2', 'Training', V.trainingStart, [
+        'Ein Tipp auf eine Vorlage startet das Training sofort, ohne Vorschau.',
+        'Neue Vorlagen entstehen beim Beenden eines Trainings (9). „Bearbeiten“: umbenennen, sortieren, löschen (16).',
+        'Leeres Training: ohne Vorlage, die Übungen kommen unterwegs dazu.',
+      ]],
+      ['v3', '3', 'Erster Start', V.erststart, [
+        'Solange es noch kein Training gibt. Kein Katalog, keine Vorlagen: Die Übungen entstehen im ersten Training.',
+      ]],
+    ]],
+    ['Im Training', 'Der Bildschirm, der zwischen zwei Sätzen schnell gehen muss.', [
+      ['v4', '4', 'Training läuft', V.training, [
+        'Kein Umschalter, kein Zurück. Wer Form während eines Trainings öffnet, landet hier.',
+        'Oben die Pause seit dem letzten Haken. Sie zählt auch weiter, während die App zu ist.',
+        'Fertige Übungen schrumpfen auf eine Zeile, ein Tipp klappt sie auf. Am Ende der Liste: „+ Übung“ (6).',
+        '⋯ links: Menü (8). ⋯ an einer Übung: die Übung (7). Daneben der Wdh-Bereich aus der Vorlage.',
+      ]],
+      ['v5', '5', 'Satz eingeben', V.eingabe, [
+        'Eigenes Tastenfeld statt der iOS-Tastatur, mit ±2,5 kg auf einen Tipp. Im Wdh-Feld heißen die Knöpfe ±1.',
+        'Darunter, woher die grauen Zahlen kommen: „Letzter Push“, bei einer neuen Übung in der Vorlage die Vorlage, aus der sie stammen.',
+        '„Abhaken“ sichert den Satz. Was grau bleibt, wird wie letztes Mal übernommen.',
+      ]],
+      ['v6', '6', 'Übung hinzufügen', V.hinzufuegen, [
+        'Mehrere auf einmal. Oben die zuletzt genutzten, die noch nicht im Training sind.',
+        'Findet die Suche nichts, steht dort „‚Facepull‘ anlegen“. Die Übung entsteht mit Gewicht × Wdh, der Rest später (15).',
+      ]],
+      ['v7', '7', 'Übung im Training', V.uebungSheet, [
+        'Die Pause der Übung ist die Marke, ab der die Zeit oben orange wird. Sie gilt auch in späteren Trainings.',
+        'Tauschen ersetzt die Übung und behält die Satzzahl. Verschieben: Übungen in eine neue Reihenfolge ziehen.',
+      ]],
+      ['v8', '8', 'Menü im Training', V.menue, [
+        'Der einzige Weg zu den Werten, solange das Training läuft. Über den Werten steht dann eine Leiste mit der Pause, ein Tipp führt zurück.',
+        'Verwerfen fragt nach und löscht das ganze Training.',
+      ]],
+      ['v9', '9', 'Fertig', V.fertig, [
+        'Nach „Beenden“. Sind noch Sätze ohne Haken, fragt Form vorher: verwerfen oder abhaken.',
+        'Rekorde nur, wenn es welche gab.',
+        'Weicht das Training von der Vorlage ab, kommt die Frage nach dem Anpassen. Bei einem leeren Training steht hier „Als Vorlage speichern“.',
+      ]],
+    ]],
+    ['Rückblick', 'Was war, und was man vergessen hat einzutragen.', [
+      ['v10', '10', 'Verlauf', V.verlauf, [
+        'Alle Trainings, neueste oben, eine Zeile pro Training. „+“ trägt ein vergessenes Training nach (12).',
+        'PR: In diesem Training gab es einen Rekord.',
+      ]],
+      ['v11', '11', 'Ein Training', V.einTraining, [
+        'Alle Sätze kompakt, Rekorde orange. Ein Tipp auf eine Übung öffnet sie (14).',
+        '„Bearbeiten“ öffnet dieselbe Ansicht wie das laufende Training, ohne Pause, unten „Training löschen“.',
+      ]],
+      ['v12', '12', 'Nachtragen', V.nachtragen, [
+        'Tag wählen wie beim Messen, in die Zukunft geht es nicht. Die Vorlage füllt die Übungen vor, grau wie in 4.',
+        '„Weiter“ führt in die Ansicht von 4, ohne Pause.',
+      ]],
+    ]],
+    ['Übungen und Vorlagen', 'Selten gebraucht, deshalb eine Ebene tiefer.', [
+      ['v13', '13', 'Übungen', V.uebungen, [
+        'Alle Übungen alphabetisch. Archivierte ganz unten unter „Archiviert“.',
+      ]],
+      ['v14', '14', 'Eine Übung', V.eineUebung, [
+        'Groß der schwerste Satz aus dem letzten Training. Die Notiz steht unter dem Namen.',
+        'Verlauf wie bei den Werten, wahlweise schwerster Satz oder geschätztes 1RM, über alle Vorlagen.',
+        'Darunter jedes Training mit allen Sätzen. Ein Tipp öffnet das Training (11).',
+      ]],
+      ['v15', '15', 'Übung bearbeiten', V.uebungForm, [
+        'Die Erfassungsart lässt sich nur ändern, solange die Übung noch nie trainiert wurde.',
+        'Archivieren statt Löschen: Der Verlauf bleibt, in der Auswahl (6) taucht sie nicht mehr auf.',
+      ]],
+      ['v16', '16', 'Vorlage bearbeiten', V.vorlageForm, [
+        'Pro Übung Satzzahl und Wdh-Bereich. Ein Tipp auf „3 × 8–12“ ändert beides.',
+        'Am Griff ziehen zum Sortieren.',
+      ]],
+    ]],
+  ];
+
+  const alle = SECTIONS.flatMap(([, , s]) => s);
+  document.getElementById('toc').innerHTML = alle.map(([id, n, t]) => `<a href="#${id}"><b>${n}</b>${t}</a>`).join('');
+
+  document.getElementById('sections').innerHTML = SECTIONS.map(([titel, sub, screens], i) =>
+    `<section class="pg-sec" aria-labelledby="h-s${i}"><h2 class="pg-h2" id="h-s${i}">${titel}</h2><p class="pg-sub">${sub}</p>` +
+    '<div class="pg-screens">' +
+    screens.map(([id, n, t, fn, notes]) =>
+      `<figure class="pg-shot" id="${id}"><div class="pg-fit">${fn()}</div>` +
+      `<figcaption class="pg-cap"><h3><span>${n}</span>${t}</h3>` +
+      `<ul>${notes.map((x) => `<li>${x}</li>`).join('')}</ul></figcaption></figure>`,
+    ).join('') +
+    '</div></section>',
+  ).join('');
+
+  // Geraete auf schmalen Schirmen verkleinern (zoom statt transform: die Hoehe schrumpft mit)
+  function fit() {
+    document.querySelectorAll('.pg-fit').forEach((f) => {
+      f.firstElementChild.style.zoom = Math.min(1, f.clientWidth / 402);
+    });
+  }
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(document.body);
+  else window.addEventListener('resize', fit);
+})();
+</script>

@@ -5,12 +5,12 @@ import { skala } from './calc'
 import { diffDays, formatKurz, formatZahl } from './util'
 import type { Punkt, Wert } from './types'
 
-// ---------- Verlauf eines Werts ----------
+// ---------- Verlauf eines Werts oder einer Uebung ----------
 
 // Waagerecht nach Zeit, nicht nach Anzahl: zwei Messungen in einer Woche und
 // dann einen Monat Pause sehen auch so aus. Der juengste Punkt ist orange,
-// das Ziel eine gestrichelte Linie.
-export function Verlauf({ wert, punkte, heute }: { wert: Wert; punkte: Punkt[]; heute: string }) {
+// das Ziel eine gestrichelte Linie (Uebungen haben keins).
+export function Verlauf({ wert, punkte, heute }: { wert: Pick<Wert, 'name' | 'ziel'>; punkte: Punkt[]; heute: string }) {
   const W = 340
   const H = 196
   const L = 40

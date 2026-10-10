@@ -1,10 +1,11 @@
 // Bausteine, die auf mehreren Seiten gleich aussehen muessen.
 
-import type { ReactNode } from 'react'
-import { IconLeft } from './icons'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { IonModal } from '@ionic/react'
+import { IconLeft, IconMinus, IconPlus } from './icons'
 import { urteil } from './calc'
 import { formatDiff, mitEinheit } from './util'
-import type { Wert } from './types'
+import type { AppBereich, Wert } from './types'
 
 // Zurueck zum Launcher. Ohne shell.js (z. B. einzeln geoeffnet) eine Ebene ueber apps/.
 export function zumLauncher() {
@@ -105,4 +106,112 @@ export const RICHTUNG_TEXT: Record<Wert['richtung'], string> = {
   mehr: 'Mehr ist besser',
   weniger: 'Weniger ist besser',
   egal: 'Ohne Richtung',
+}
+
+/** Werte oder Training - in der Kopfleiste der beiden Startseiten. */
+export function Umschalter({ wert, onWahl }: { wert: AppBereich; onWahl: (b: AppBereich) => void }) {
+  return (
+    <div className="f-seg f-seg-bar" role="radiogroup" aria-label="Bereich">
+      {(['werte', 'training'] as const).map((b) => (
+        <button
+          key={b}
+          type="button"
+          role="radio"
+          aria-checked={b === wert}
+          className={b === wert ? 'an' : ''}
+          onClick={() => onWahl(b)}
+        >
+          {b === 'werte' ? 'Werte' : 'Training'}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/** Minus, Zahl, Plus - fuer Pause, Saetze und Wdh-Bereich. */
+export function Stepper({
+  text,
+  onMinus,
+  onPlus,
+  label,
+  minusAus,
+  plusAus,
+}: {
+  text: string
+  onMinus: () => void
+  onPlus: () => void
+  label: string
+  minusAus?: boolean
+  plusAus?: boolean
+}) {
+  return (
+    <span className="f-stepper">
+      <button type="button" className="f-rund" onClick={onMinus} disabled={minusAus} aria-label={`${label} weniger`}>
+        <IconMinus />
+      </button>
+      <b aria-live="polite">{text}</b>
+      <button type="button" className="f-rund" onClick={onPlus} disabled={plusAus} aria-label={`${label} mehr`}>
+        <IconPlus />
+      </button>
+    </span>
+  )
+}
+
+// Blatt von unten - Ionics Sheet-Modal wie in Kontor und Loci. Wegwischen,
+// Antippen des Grundes und die Animation bringt Ionic mit, die Hoehe richtet
+// sich nach dem Inhalt. onClose laeuft erst, wenn es ganz zu ist; als
+// Funktion bekommt der Inhalt "schliessen" mit, um es selbst zuzumachen.
+export function Blatt({
+  label,
+  onClose,
+  children,
+}: {
+  label: string
+  onClose: () => void
+  children: ReactNode | ((schliessen: () => void) => ReactNode)
+}) {
+  const [offen, setOffen] = useState(true)
+  const onCloseRef = useRef(onClose)
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
+  const schliessen = useCallback(() => setOffen(false), [])
+
+  return (
+    <IonModal
+      isOpen={offen}
+      className="f-sheet-modal"
+      breakpoints={[0, 1]}
+      initialBreakpoint={1}
+      aria-label={label}
+      onDidDismiss={() => onCloseRef.current()}
+    >
+      <div className="f-sheet ion-content-scroll-host">{typeof children === 'function' ? children(schliessen) : children}</div>
+    </IonModal>
+  )
+}
+
+// Ganze Seite von unten (Uebung hinzufuegen): eigene Kopfleiste, scrollt
+// selbst. Zu geht es ueber die Knoepfe in der Kopfleiste.
+export function Vollbild({
+  label,
+  onClose,
+  children,
+}: {
+  label: string
+  onClose: () => void
+  children: (schliessen: () => void) => ReactNode
+}) {
+  const [offen, setOffen] = useState(true)
+  const onCloseRef = useRef(onClose)
+  useEffect(() => {
+    onCloseRef.current = onClose
+  }, [onClose])
+  const schliessen = useCallback(() => setOffen(false), [])
+
+  return (
+    <IonModal isOpen={offen} className="f-voll-modal" aria-label={label} onDidDismiss={() => onCloseRef.current()}>
+      <div className="ion-page f-voll">{children(schliessen)}</div>
+    </IonModal>
+  )
 }

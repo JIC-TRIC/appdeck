@@ -13,7 +13,7 @@ export const APP_ID = 'form'
 export const NAME_MAX = 40
 export const EINHEIT_MAX = 8
 
-function lies(key: string): unknown {
+export function lies(key: string): unknown {
   try {
     const raw = localStorage.getItem(`${APP_ID}:${key}`)
     return raw === null ? null : JSON.parse(raw)
@@ -22,7 +22,7 @@ function lies(key: string): unknown {
   }
 }
 
-function schreibe(key: string, value: unknown) {
+export function schreibe(key: string, value: unknown) {
   try {
     localStorage.setItem(`${APP_ID}:${key}`, JSON.stringify(value))
   } catch {
@@ -30,8 +30,8 @@ function schreibe(key: string, value: unknown) {
   }
 }
 
-const obj = (x: unknown): Record<string, unknown> => (x && typeof x === 'object' && !Array.isArray(x) ? (x as Record<string, unknown>) : {})
-const zahl = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x)
+export const obj = (x: unknown): Record<string, unknown> => (x && typeof x === 'object' && !Array.isArray(x) ? (x as Record<string, unknown>) : {})
+export const zahl = (x: unknown): x is number => typeof x === 'number' && Number.isFinite(x)
 const RICHTUNGEN: Richtung[] = ['mehr', 'weniger', 'egal']
 
 /** Namen und Einheiten sind immer eine Zeile ohne doppelte Leerzeichen. */
@@ -65,7 +65,7 @@ export function normalisiereWerte(raw: unknown): Wert[] {
 
 export const getWerte = () => normalisiereWerte(lies('werte'))
 
-const neueId = (jetzt: number) =>
+export const neueId = (jetzt: number) =>
   globalThis.crypto?.randomUUID?.() ?? `${jetzt.toString(36)}-${Math.random().toString(36).slice(2, 10)}`
 
 export interface WertEingabe {

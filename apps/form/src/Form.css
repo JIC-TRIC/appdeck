@@ -32,7 +32,7 @@
   --f-disp: "Barlow Condensed", "Instrument Sans", system-ui, -apple-system, sans-serif;
   --f-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  --gutter: 16px;
+  --gutter: 12px;
 
   /* Was Ionic selbst zeichnet (Rueckfragen, Meldungen), soll nach Form aussehen. */
   --ion-font-family: var(--f-ui);
@@ -88,12 +88,18 @@ input {
 
 .form *,
 .form *::before,
-.form *::after {
+.form *::after,
+.f-sheet-modal *,
+.f-sheet-modal *::before,
+.f-sheet-modal *::after,
+.f-voll-modal *,
+.f-voll-modal *::before,
+.f-voll-modal *::after {
   box-sizing: border-box;
 }
 
 /* Reset ueber :where(), damit jede f-Klasse gewinnt (wie bei den anderen Apps). */
-:where(.form) :where(button) {
+:where(.form, .f-sheet-modal, .f-voll-modal) :where(button) {
   font: inherit;
   color: inherit;
   background: none;
@@ -106,26 +112,26 @@ input {
 }
 
 /* Ionic setzt fuer jeden button line-height: 1 - diese Zeile kommt spaeter. */
-:where(.form) button {
+:where(.form, .f-sheet-modal, .f-voll-modal) button {
   line-height: inherit;
 }
 
-:where(.form) :where(button:disabled) {
+:where(.form, .f-sheet-modal, .f-voll-modal) :where(button:disabled) {
   cursor: default;
 }
 
-:where(.form) :where(input) {
+:where(.form, .f-sheet-modal, .f-voll-modal) :where(input) {
   font: inherit;
   color: inherit;
   margin: 0;
 }
 
-:where(.form) :where(p, h1, h2) {
+:where(.form, .f-sheet-modal, .f-voll-modal) :where(p, h1, h2) {
   margin: 0;
   padding: 0;
 }
 
-:where(.form) :where(button:focus-visible, input:focus-visible) {
+:where(.form, .f-sheet-modal, .f-voll-modal) :where(button:focus-visible, input:focus-visible) {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
@@ -152,22 +158,23 @@ input {
 
 .f-bar {
   flex: none;
-  height: 52px;
+  height: 44px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 8px;
-  padding: 0 10px 0 6px;
+  padding: 0 8px 0 4px;
 }
 
 .f-bar-l {
   display: flex;
   justify-content: flex-start;
+  padding-left: 4px;
 }
 
 .f-bar-mid {
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   white-space: nowrap;
 }
 
@@ -185,8 +192,8 @@ input {
   touch-action: pan-y;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 0 var(--gutter) calc(28px + env(safe-area-inset-bottom));
+  gap: 8px;
+  padding: 0 var(--gutter) calc(24px + env(safe-area-inset-bottom));
 }
 
 /* Ohne das quetschen sich Karten zusammen, statt ueberzulaufen - dann scrollt
@@ -202,7 +209,7 @@ input {
 
 .f-unten {
   flex: none;
-  padding: 8px var(--gutter) max(14px, env(safe-area-inset-bottom));
+  padding: 6px var(--gutter) max(12px, env(safe-area-inset-bottom));
 }
 
 /* ---------- Knoepfe ---------- */
@@ -222,22 +229,22 @@ input {
 .f-back {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  min-height: 44px;
-  padding-right: 8px;
-  font-size: 17px;
+  gap: 1px;
+  min-height: 40px;
+  padding-right: 6px;
+  font-size: 16px;
   font-weight: 500;
 }
 
 .f-back .f-i {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 
 .f-textbtn {
-  min-height: 44px;
-  padding: 0 8px;
-  font-size: 17px;
+  min-height: 40px;
+  padding: 0 6px;
+  font-size: 16px;
   font-weight: 500;
 }
 
@@ -256,13 +263,28 @@ input {
 }
 
 .f-rund {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   background: var(--surface-2);
   transition: transform 0.12s;
+}
+
+.f-rund .f-i {
+  width: 18px;
+  height: 18px;
+}
+
+.f-rund.klein {
+  width: 28px;
+  height: 28px;
+}
+
+.f-rund.klein .f-i {
+  width: 14px;
+  height: 14px;
 }
 
 .f-rund:not(:disabled):active {
@@ -276,14 +298,14 @@ input {
 
 .f-haupt {
   width: 100%;
-  height: 56px;
-  border-radius: 16px;
+  height: 46px;
+  border-radius: 14px;
   background: var(--accent);
   color: var(--on-accent);
   text-align: center;
   font-family: var(--f-disp);
   font-weight: 800;
-  font-size: 22px;
+  font-size: 19px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   transition: transform 0.12s, background-color 0.12s;
@@ -299,22 +321,25 @@ input {
 .f-kopf {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 2px 2px 4px;
+  gap: 1px;
+  padding: 0 2px 2px;
 }
 
 .f-kicker {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-2);
 }
 
+/* margin hier statt im Reset: Ionics h1-Abstand (typography.css) ist
+   spezifischer als :where(). */
 .f-marke {
+  margin: 0;
   font-family: var(--f-disp);
   font-weight: 800;
-  font-size: 68px;
+  font-size: 48px;
   line-height: 0.9;
   letter-spacing: -0.01em;
   text-transform: uppercase;
@@ -325,20 +350,21 @@ input {
 }
 
 .f-h1 {
+  margin: 0;
   font-family: var(--f-disp);
   font-weight: 800;
-  font-size: 42px;
-  line-height: 0.95;
+  font-size: 30px;
+  line-height: 1;
   letter-spacing: 0;
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
 
 .f-h2 {
-  margin: 8px 4px -4px;
+  margin: 6px 4px -2px;
   font-family: var(--f-disp);
   font-weight: 700;
-  font-size: 17px;
+  font-size: 13.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-2);
@@ -368,13 +394,13 @@ input {
 .f-zahl b {
   font-family: var(--f-disp);
   font-weight: 700;
-  font-size: 50px;
+  font-size: 36px;
   line-height: 0.95;
   letter-spacing: 0;
 }
 
 .f-zahl small {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-2);
 }
@@ -384,11 +410,11 @@ input {
 }
 
 .f-zahl.gross b {
-  font-size: 88px;
+  font-size: 60px;
 }
 
 .f-zahl.gross small {
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .f-diff {
@@ -411,16 +437,16 @@ input {
 .f-karten {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .f-karte {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 16px 14px;
-  border-radius: 20px;
+  gap: 3px;
+  padding: 10px 14px;
+  border-radius: 16px;
   background: var(--surface);
   text-align: left;
   transition: transform 0.12s, background-color 0.12s;
@@ -445,14 +471,14 @@ input {
   white-space: nowrap;
   font-family: var(--f-disp);
   font-weight: 700;
-  font-size: 17px;
+  font-size: 15px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .f-karte-wann {
   flex: none;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--text-3);
 }
 
@@ -465,8 +491,8 @@ input {
 
 .f-linie {
   flex: none;
-  width: 92px;
-  height: 34px;
+  width: 80px;
+  height: 28px;
   overflow: visible;
 }
 
@@ -489,7 +515,7 @@ input {
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 6px;
-  font-size: 13.5px;
+  font-size: 12.5px;
   color: var(--text-2);
 }
 
@@ -498,10 +524,10 @@ input {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 9px;
-  border-radius: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
   background: var(--surface-2);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -526,23 +552,23 @@ input {
 .f-leer-t {
   font-family: var(--f-disp);
   font-weight: 800;
-  font-size: 34px;
+  font-size: 28px;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .f-leer .f-haupt {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 /* ---------- Messen ---------- */
 
 .f-tag {
   display: grid;
-  grid-template-columns: 40px 1fr 40px;
+  grid-template-columns: 32px 1fr 32px;
   align-items: center;
   gap: 8px;
-  padding: 2px 0 4px;
+  padding: 0 0 2px;
 }
 
 .f-tag-mitte {
@@ -555,7 +581,7 @@ input {
 .f-tag-mitte b {
   font-family: var(--f-disp);
   font-weight: 800;
-  font-size: 28px;
+  font-size: 22px;
   line-height: 1;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -567,7 +593,7 @@ input {
 }
 
 .f-gruppe {
-  border-radius: 18px;
+  border-radius: 14px;
   background: var(--surface);
   overflow: hidden;
 }
@@ -577,8 +603,8 @@ input {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 66px;
-  padding: 10px 14px 10px 16px;
+  min-height: 56px;
+  padding: 8px 12px 8px 14px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -623,12 +649,12 @@ input {
 }
 
 .f-mess-r input {
-  width: 104px;
-  padding: 9px 12px;
+  width: 96px;
+  padding: 7px 10px;
   text-align: right;
   font-family: var(--f-disp);
   font-weight: 700;
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1.1;
 }
 
@@ -664,21 +690,21 @@ input {
 .f-kacheln {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .f-kachel {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 12px;
-  border-radius: 16px;
+  gap: 1px;
+  padding: 8px 10px;
+  border-radius: 12px;
   background: var(--surface);
   min-width: 0;
 }
 
 .f-kachel small {
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -688,7 +714,7 @@ input {
 .f-kachel .f-diff {
   font-family: var(--f-disp);
   font-weight: 700;
-  font-size: 26px;
+  font-size: 21px;
   line-height: 1.1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -719,9 +745,9 @@ input {
 .f-karte-flach {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 16px;
   background: var(--surface);
 }
 
@@ -729,17 +755,17 @@ input {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  gap: 3px;
-  padding: 3px;
-  border-radius: 12px;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 10px;
   background: var(--surface-2);
 }
 
 .f-seg button {
-  height: 34px;
-  border-radius: 9px;
+  height: 28px;
+  border-radius: 8px;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-2);
   transition: background-color 0.15s, color 0.15s;
@@ -807,10 +833,11 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 50px;
-  padding: 12px 12px 12px 16px;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px 10px 8px 14px;
   border-bottom: 1px solid var(--line);
+  text-align: left;
 }
 
 .f-zeile:last-child {
@@ -838,7 +865,7 @@ input {
 .f-zeile-r b {
   font-family: var(--f-disp);
   font-weight: 700;
-  font-size: 20px;
+  font-size: 17px;
 }
 
 .f-zeile-r .f-i {
@@ -852,21 +879,21 @@ input {
 .f-felder {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-top: 4px;
+  gap: 8px;
+  padding-top: 2px;
 }
 
 .f-feld {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px 16px;
-  border-radius: 18px;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 14px;
   background: var(--surface);
 }
 
 .f-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -875,8 +902,11 @@ input {
 
 .f-feld input {
   width: 100%;
-  padding: 12px 14px;
-  font-size: 17px;
+  min-height: 38px;
+  padding: 8px 12px;
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .f-chips {
@@ -885,8 +915,8 @@ input {
 }
 
 .f-chip {
-  height: 32px;
-  padding: 0 14px;
+  height: 30px;
+  padding: 0 12px;
   border-radius: 16px;
   background: var(--surface-2);
   font-size: 14px;
@@ -907,9 +937,9 @@ input {
 
 .f-loeschen {
   width: 100%;
-  height: 50px;
-  margin-top: 6px;
-  border-radius: 16px;
+  height: 44px;
+  margin-top: 4px;
+  border-radius: 14px;
   background: var(--surface);
   color: var(--danger);
   text-align: center;
@@ -917,8 +947,1061 @@ input {
   font-weight: 600;
 }
 
+/* Archivieren: nichts geht verloren, darum nicht rot. */
+.f-loeschen.neutral {
+  color: var(--text);
+}
+
 .f-loeschen:active {
   background: var(--surface-2);
+}
+
+/* =========================
+   Training - zweiter Bereich (konzept.md, "Training"; Mockups in mockups.html).
+   Dichter als die Werte bisher: im laufenden Training sollen fuenf Uebungen
+   auf einmal zu sehen sein.
+   ========================= */
+
+.f-seg-bar {
+  width: 168px;
+}
+
+.f-seg-bar button {
+  height: 26px;
+}
+
+.f-h2-zeile {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 6px 4px -2px;
+  padding: 0;
+}
+
+.f-h2-zeile .f-h2 {
+  margin: 0;
+}
+
+.f-h2-knopf {
+  width: auto;
+  margin-top: 10px;
+}
+
+.f-textlink {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.f-kicker-zeile {
+  padding: 0 2px;
+}
+
+.f-leer-t.f-leer-klein {
+  padding: 14px 2px 4px;
+  font-size: 22px;
+  color: var(--text-2);
+}
+
+.f-abschnitt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------- Startseite ---------- */
+
+.f-vorlage {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 9px 0 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  text-align: left;
+  transition: transform 0.12s, background-color 0.12s;
+}
+
+.f-vorlage:active {
+  background: var(--surface-2);
+  transform: scale(0.985);
+}
+
+.f-vorlage-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 23px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.f-vorlage small {
+  flex: none;
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.f-play {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: grid;
+  place-items: center;
+}
+
+.f-play .f-i {
+  width: 15px;
+  height: 15px;
+  margin-left: 2px;
+}
+
+.f-leerbtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--surface-3) !important;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.f-leerbtn:active {
+  background: var(--surface);
+}
+
+.f-leerbtn .f-i {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Pause in der Kopfleiste ---------- */
+
+.f-pz {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  line-height: 1;
+}
+
+.f-pz-z {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.f-pz small {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.f-pz b {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 23px;
+  letter-spacing: 0.02em;
+}
+
+.f-pz i {
+  display: block;
+  width: 64px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.f-pz i u {
+  display: block;
+  height: 100%;
+  background: var(--text-2);
+}
+
+/* Pause um: orange - weiter geht's. */
+.f-pz.um b,
+.f-pz.um small {
+  color: var(--accent);
+}
+
+.f-pz.um i u {
+  background: var(--accent);
+}
+
+.f-pz.still i {
+  visibility: hidden;
+}
+
+/* ---------- Uebung im Training ---------- */
+
+.f-ex {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 7px 8px 0 10px;
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.f-ex-kopf {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+}
+
+.f-ex-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.f-ex-ziel {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.f-ex-mehr {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 26px;
+  color: var(--text-3);
+}
+
+.f-ex-mehr .f-i {
+  width: 18px;
+  height: 18px;
+}
+
+.f-ex-notiz {
+  margin: -4px 0 1px !important;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.f-saetze {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Nummer | kg x Wdh | Haken - bei nur Wdh oder Zeit ein Feld. */
+.f-satz {
+  display: grid;
+  grid-template-columns: 16px 1fr 10px 1fr 32px;
+  gap: 6px;
+  align-items: center;
+}
+
+.f-satz.einzeln {
+  grid-template-columns: 16px 1fr 32px;
+}
+
+.f-nr {
+  text-align: center;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-3);
+}
+
+.f-pr {
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+
+.f-mal {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+/* Keine Tabellenziffern (Kontors Lehre) - zentriert reicht. */
+.f-z {
+  height: 34px;
+  border-radius: 9px;
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 21px;
+  text-align: center;
+}
+
+/* Grau: das letzte Mal - der Haken uebernimmt es. */
+.f-z.ph {
+  color: var(--text-3);
+}
+
+.f-z.fest {
+  background: transparent;
+}
+
+/* Mehr als beim gleichen Satz vom letzten Mal. */
+.f-z.gut {
+  color: var(--accent);
+}
+
+.f-z.aktiv {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.f-z:active {
+  background: var(--surface-3);
+}
+
+.f-haken {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  justify-self: center;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--surface-3);
+  display: grid;
+  place-items: center;
+  color: var(--on-accent);
+  transition: transform 0.12s;
+}
+
+.f-haken.an {
+  background: var(--text);
+  box-shadow: none;
+}
+
+button.f-haken:active {
+  transform: scale(0.88);
+}
+
+.f-haken .f-i {
+  width: 15px;
+  height: 15px;
+  stroke-width: 3;
+}
+
+.f-plus-satz {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  color: var(--text-3);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.f-plus-satz .f-i {
+  width: 13px;
+  height: 13px;
+}
+
+.f-plus-satz:active {
+  color: var(--text);
+}
+
+/* Fertige Uebung: eine Zeile. */
+.f-ex-fertig {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+}
+
+.f-ex-fertig:active {
+  background: var(--surface-2);
+}
+
+.f-ex-fertig .f-haken {
+  width: 20px;
+  height: 20px;
+}
+
+.f-ex-fertig .f-haken .f-i {
+  width: 11px;
+  height: 11px;
+}
+
+.f-ex-fertig b {
+  flex: none;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.f-ex-fertig small {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.f-tag-pr {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--f-disp);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- Blaetter von unten (Ionics Sheet-Modal, wie Kontor und Loci) ---------- */
+
+ion-modal.f-sheet-modal {
+  --height: auto;
+  --width: 100%;
+  --max-width: 560px;
+  --background: var(--surface);
+  --border-radius: 22px;
+  --box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+  --backdrop-opacity: 0.62;
+  --ion-backdrop-color: #000;
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+ion-modal.f-sheet-modal::part(handle) {
+  width: 36px;
+  height: 5px;
+  background: var(--surface-3);
+}
+
+/* Ohne das nimmt Ionics Seitenhuelle die volle Hoehe ein, und --height: auto
+   haette nichts zu messen (wie Loci). */
+ion-modal.f-sheet-modal .ion-page {
+  position: relative;
+  display: block;
+  contain: none;
+}
+
+.f-sheet {
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 12px max(14px, env(safe-area-inset-bottom));
+}
+
+.f-sheet .f-gruppe,
+.f-sheet .f-rund {
+  background: var(--surface-2);
+}
+
+.f-sheet .f-zeile {
+  border-color: var(--surface-3);
+}
+
+.f-sheet .f-zeile:active {
+  background: var(--surface-3);
+}
+
+.f-sheet-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0 2px;
+}
+
+.f-sheet-kopf b {
+  display: block;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.f-sheet-kopf small {
+  display: block;
+  margin-top: 1px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.f-zeile.gefahr {
+  color: var(--danger);
+}
+
+.f-zeit {
+  min-width: 84px;
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-3);
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  text-align: center;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Tastenfeld */
+.f-wahl {
+  display: grid;
+  grid-template-columns: 1fr 10px 1fr;
+  gap: 6px;
+  align-items: center;
+}
+
+.f-wahl.einzeln {
+  grid-template-columns: 1fr;
+}
+
+.f-wahl-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px 8px;
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+
+.f-wahl-box small {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.f-wahl-box b {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.f-wahl-box b.ph {
+  color: var(--text-3);
+}
+
+.f-wahl-box.an {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.f-wahl-info {
+  margin: -2px 0 0 !important;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.f-schnell {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.f-schnell button {
+  height: 38px;
+  border-radius: 10px;
+  background: var(--surface-3);
+  text-align: center;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 19px;
+}
+
+.f-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.f-pad button {
+  height: 46px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  font-family: var(--f-disp);
+  font-weight: 600;
+  font-size: 25px;
+}
+
+.f-schnell button:active,
+.f-pad button:active {
+  background: var(--surface-3);
+  filter: brightness(1.2);
+}
+
+.f-pad button.aus {
+  visibility: hidden;
+}
+
+.f-pad .f-i {
+  width: 24px;
+  height: 24px;
+}
+
+.f-stepper {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.f-stepper b {
+  min-width: 42px;
+  text-align: center;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.f-stepper .f-rund {
+  width: 28px;
+  height: 28px;
+  background: var(--surface-3);
+}
+
+.f-stepper .f-rund .f-i {
+  width: 14px;
+  height: 14px;
+}
+
+.f-feld.quer {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.f-feld.quer .f-stepper .f-rund {
+  background: var(--surface-2);
+}
+
+/* Reihenfolge: Ionic bringt das Ziehen mit (wie Steady). */
+.f-griff {
+  width: 36px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+}
+
+.f-griff .f-i {
+  width: 18px;
+  height: 18px;
+}
+
+.f-ordnen .reorder-selected {
+  background: var(--surface-3);
+  border-radius: 12px;
+  box-shadow: 0 18px 30px -10px rgba(0, 0, 0, 0.8);
+}
+
+.f-zeile-griff {
+  padding-left: 4px;
+  gap: 4px;
+}
+
+.f-zeile-knopf {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 40px;
+  text-align: left;
+}
+
+.f-zeile-knopf .f-zeile-r {
+  font-size: 13px;
+}
+
+/* ---------- Ganze Seite von unten (Uebung hinzufuegen) ---------- */
+
+ion-modal.f-voll-modal {
+  --background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-ui);
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.f-voll {
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  background: var(--bg);
+}
+
+.f-voll-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 var(--gutter) calc(24px + env(safe-area-inset-bottom));
+}
+
+.f-voll-body > * {
+  flex-shrink: 0;
+}
+
+.f-suche {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-3);
+}
+
+.f-suche .f-i {
+  width: 16px;
+  height: 16px;
+}
+
+.f-suche input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.f-suche input::placeholder {
+  color: var(--text-3);
+}
+
+.f-wahlzeile .f-haken {
+  width: 22px;
+  height: 22px;
+}
+
+.f-wahlzeile .f-haken .f-i {
+  width: 12px;
+  height: 12px;
+}
+
+.f-anlegen {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.f-anlegen .f-zeile-r {
+  color: var(--accent);
+}
+
+/* ---------- Verlauf, ein Training, Fertig ---------- */
+
+.f-tr {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 10px 0 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.f-tr:last-child {
+  border-bottom: 0;
+}
+
+.f-tr:active {
+  background: var(--surface-2);
+}
+
+.f-tr-tag {
+  flex: none;
+  width: 74px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.f-tr b {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.f-tr-r {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-2);
+  font-size: 13.5px;
+}
+
+.f-tr-r .f-i {
+  width: 15px;
+  height: 15px;
+  color: var(--text-3);
+}
+
+.f-statzeile {
+  margin: -2px 2px 0 !important;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.f-ex-blatt {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px 9px;
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: left;
+}
+
+.f-ex-blatt:active {
+  background: var(--surface-2);
+}
+
+.f-ex-blatt .f-ex-name {
+  font-size: 14.5px;
+}
+
+.f-sc-reihe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.f-sc {
+  padding: 2px 8px;
+  border-radius: 7px;
+  background: var(--surface-2);
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.f-sc.pr {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.f-rek {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.f-rek:last-child {
+  border-bottom: 0;
+}
+
+.f-rek b {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.f-rek small {
+  display: block;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.f-rek em {
+  font-style: normal;
+  white-space: nowrap;
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.f-frage {
+  padding: 2px 4px 0 !important;
+  font-size: 14.5px;
+}
+
+.f-frage small {
+  display: block;
+  margin-top: 1px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.f-zwei {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.f-knopf {
+  width: 100%;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--surface-2);
+  text-align: center;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.f-knopf.stark {
+  background: var(--text);
+  color: var(--on-accent);
+}
+
+.f-knopf:active {
+  filter: brightness(0.85);
+}
+
+.f-zwei-felder {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* ---------- Eine Uebung ---------- */
+
+.f-notiz {
+  margin: -4px 2px 0 !important;
+  font-size: 13.5px;
+  color: var(--text-2);
+}
+
+.f-seg-doppel {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 6px;
+}
+
+.f-sk {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.f-sk.gut,
+.f-gut {
+  color: var(--accent);
+}
+
+/* ---------- Vorlage bearbeiten ---------- */
+
+.f-vz {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 10px 0 4px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.f-vz-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-height: 40px;
+  text-align: left;
+  font-size: 14.5px;
+}
+
+.f-vz-chip {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 7px;
+  background: var(--surface-2);
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.f-plus-zeile {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 14px;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.f-plus-zeile .f-i {
+  width: 16px;
+  height: 16px;
 }
 
 /* ---------- Ionic: Meldung und Rueckfrage ---------- */

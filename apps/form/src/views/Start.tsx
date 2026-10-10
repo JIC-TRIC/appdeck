@@ -1,15 +1,16 @@
 import { reihe, stand, zielStand } from '../calc'
 import { Linie } from '../charts'
 import { IconCheck, IconPlus } from '../icons'
-import { Diff, Seite, Zurueck, zumLauncher } from '../ui'
+import { Diff, Seite, Umschalter, Zurueck, zumLauncher } from '../ui'
 import { formatKurz, formatZahl, mitEinheit, wieLange } from '../util'
 import type { FormCtx, Wert } from '../types'
 
 // Uebersicht: pro Wert eine Karte mit dem juengsten Stand, dem Fortschritt
 // seit der ersten Messung und dem Mini-Verlauf. Unten der Hauptknopf zum
-// Messen. Ohne Werte steht hier nur, wie es losgeht.
-function Start({ ctx }: { ctx: FormCtx }) {
-  const { werte, log, heute, push } = ctx
+// Messen. Ohne Werte steht hier nur, wie es losgeht. Oben der Umschalter zum
+// Training - waehrend eines Trainings liegt die Seite darueber, mit Zurueck.
+function Start({ ctx, imTraining }: { ctx: FormCtx; imTraining?: boolean }) {
+  const { werte, log, heute, push, back, bereich, setzeBereich } = ctx
 
   // Juengste Messung ueber alle Werte - fuer die Zeile ueber der Wortmarke.
   let zuletzt = ''
@@ -25,7 +26,8 @@ function Start({ ctx }: { ctx: FormCtx }) {
 
   return (
     <Seite
-      links={<Zurueck label="Apps" onClick={zumLauncher} />}
+      links={imTraining ? <Zurueck label="Training" onClick={back} /> : <Zurueck label="Apps" onClick={zumLauncher} />}
+      titel={imTraining ? null : <Umschalter wert={bereich} onWahl={setzeBereich} />}
       rechts={werte.length ? neu : null}
       unten={
         werte.length ? (
