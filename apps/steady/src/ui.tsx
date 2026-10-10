@@ -137,11 +137,12 @@ export function Segmented<T extends string | number>({
 
 // Ein Tag im Raster: Punkt (erledigt), Ring (Ruhetag), Kreuz (nicht
 // geschafft), leerer Kasten (verpasst, aber nichts eingetragen - vielleicht
-// nur vergessen), winziger Punkt (noch nicht begonnen). Ein Ruhetag, der
-// ausdruecklich als nicht geschafft eingetragen ist, traegt ein kleines Kreuz
-// im Ring. Mit "menge" steht statt Punkt und Kreuz die eingetragene Zahl -
-// in der Farbe, wenn sie das Ziel erreicht. Verfehlt sie das Ziel an einem
-// Ruhetag, steht sie in einem Ring wie der Ruhetag: die Serie haelt.
+// nur vergessen), winziger Punkt (noch nicht begonnen). Ein Ruhetag bleibt
+// ein Ring, auch wenn er als nicht geschafft eingetragen ist: ein Kreuz gibt
+// es nur, wo die Serie bricht. Mit "menge" steht statt Punkt und Kreuz die
+// eingetragene Zahl - in der Farbe, wenn sie das Ziel erreicht. Verfehlt sie
+// das Ziel an einem Ruhetag, steht sie in einem Ring wie der Ruhetag: die
+// Serie haelt.
 const CELL: Record<DayState, string> = {
   done: 'd',
   rest: 'r',
@@ -177,7 +178,6 @@ export function Dot({
   const nein = eintrag === NICHT_GESCHAFFT
   let cls = CELL[state]
   if (state === 'miss' && eintrag === undefined) cls = 'l'
-  else if (state === 'rest' && nein) cls = 'r nein'
   else if (state === 'open' && nein) cls = 'x'
   return (
     <span className={`s-c ${cls}${pop ? ' pop' : ''}`}>
@@ -189,10 +189,10 @@ export function Dot({
 // Der breite Kasten rechts im Raster: heute (oder der juengste Tag im
 // Fenster) mit Haken bzw. Tageswert. Bei Mengen zeigt ein Balken am unteren
 // Rand, wie weit es noch zum Ziel ist. "frei": heute ist noch ein Ruhetag
-// uebrig - der Kasten traegt schon den Ring, solange nichts erledigt ist.
-// Heute faellig sieht aus wie jeder offene Tag: was keinen Ring traegt, ist
-// heute zu machen (der farbige Rand dafuer war leicht mit dem Ruhetag zu
-// verwechseln).
+// uebrig - der ganze Kasten bekommt einen Rand in der Farbe, solange nichts
+// erledigt ist (bis 10.10.2026 ein kleiner Ring darin). Ein vergangener
+// Ruhetag im zurueckgeblaetterten Fenster sieht genauso aus. Heute faellig
+// sieht aus wie jeder offene Tag: grauer Rand, heute zu machen.
 export function DayBox({
   habit,
   state,
@@ -220,29 +220,25 @@ export function DayBox({
       <span className={`s-t met${cls}`}>{formatValue(value ?? 0)}</span>
     )
   }
+  // Darf leer bleiben: heute frei oder ein vergangener Ruhetag.
+  const ruhe = state === 'rest' || frei ? ' ruhe' : ''
   if (value === undefined) {
-    // Nicht geschafft: Kreuz im Kasten. Ein Ruhetag (vergangener Tag im
-    // zurueckgeblaetterten Fenster oder heute frei) behaelt seinen Ring, mit
-    // Kreuz darin, wenn er so eingetragen ist. Nichts eingetragen: leerer Kasten.
-    // Eine Menge traegt ihre Einheit im Ring, sonst saehe sie aus wie ein Haken.
-    const nein = eintrag === NICHT_GESCHAFFT ? ' nein' : ''
-    if ((state === 'rest' || frei) && habit.kind === 'amount' && !nein) {
-      return (
-        <span className={`s-t rest${cls}`}>
-          <span className="u">{habit.unit || '–'}</span>
-        </span>
-      )
-    }
-    if (state === 'rest' || frei) return <span className={`s-t rest${nein}${cls}`}><i /></span>
-    if (nein) return <span className={`s-t nein${cls}`}><i /></span>
-    return <span className="s-t">{habit.kind === 'amount' ? <span className="u">{habit.unit || '–'}</span> : null}</span>
+    // Nicht geschafft: Kreuz im Kasten - aber nur heute. Am vergangenen
+    // Ruhetag gibt es kein Kreuz, ein Kreuz zeigt nur, wo die Serie bricht.
+    // Sonst leer, bei Mengen mit der Einheit.
+    const nein = eintrag === NICHT_GESCHAFFT && state !== 'rest'
+    return (
+      <span className={`s-t${ruhe}${nein ? ' nein' : ''}${ruhe || nein ? cls : ''}`}>
+        {nein ? <i /> : habit.kind === 'amount' ? <span className="u">{habit.unit || '–'}</span> : null}
+      </span>
+    )
   }
   // Menge eingetragen, Ziel (noch) nicht erreicht. Heute mit Balken, sonst
-  // - oder ueber "hoechstens" - still und grau. An einem Ruhetag (vergangener
-  // Tag im zurueckgeblaetterten Fenster) mit Rand in der Farbe: die Serie haelt.
+  // - oder ueber "hoechstens" - still und grau. Heute frei oder am Ruhetag
+  // (vergangener Tag im zurueckgeblaetterten Fenster) mit Rand in der Farbe:
+  // die Serie haelt.
   const p = progress(habit, value, day)
   const still = p.over || state !== 'open'
-  const ruhe = state === 'rest' ? ' ruhe' : ''
   return (
     <span className={`s-t${still ? ' over' : ''}${ruhe}${cls}`}>
       {formatValue(value)}
@@ -251,7 +247,7 @@ export function DayBox({
   )
 }
 
-// Serie unter dem Namen im Raster. Ohne Serie steht dort nichts.
+// Serie neben dem Namen im Raster. Ohne Serie steht dort nichts.
 export function Streak({ n, tick }: { n: number; tick?: boolean }) {
   if (!n) return null
   return (

@@ -46,7 +46,8 @@ export function MonthCalendar({
         const tappable = !!onDay && s !== 'off' && s !== 'future'
         const eintrag = values?.[d]
         const v = messwert(eintrag)
-        const nein = eintrag === NICHT_GESCHAFFT
+        // Am Ruhetag kein Kreuz, auch wenn "nicht geschafft" eingetragen ist.
+        const nein = eintrag === NICHT_GESCHAFFT && s !== 'rest'
         const extra = s === 'miss' && eintrag === undefined ? ' leer' : nein ? ' nein' : ''
         const n = parseKey(d).getDate()
         return (

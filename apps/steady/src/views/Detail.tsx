@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import {
   amountSeries,
+  hakenAm,
   isArchived,
   isWeekly,
   messwert,
-  naechsterHaken,
   progress,
   quoteIn,
   share,
@@ -107,7 +107,7 @@ function Detail({ ctx, view }: ViewProps) {
   const onDay = (day: string, state: DayState) => {
     if (state === 'off' || state === 'future') return
     if (habit.kind === 'amount') push({ name: 'amount', sheet: true, habitId: habit.id, day })
-    else enter(habit, day, naechsterHaken(hlog?.[day]))
+    else enter(habit, day, hakenAm(habit, hlog, day, today))
   }
 
   const heuteNein = hlog?.[today] === NICHT_GESCHAFFT

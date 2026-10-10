@@ -95,7 +95,6 @@ der Gewohnheit – oder eben keiner.
 | --- | --- | --- |
 | ● | **erledigt** – abgehakt bzw. Tageswert erfüllt das Ziel | gefüllter Kreis, 16 px, Gewohnheitsfarbe |
 | ◌ | **Ruhetag** – nur bei x-mal pro Woche und laufender Serie, automatisch gedeckt | Ring 2 px, Gewohnheitsfarbe, innen leer |
-| ⊗ | **Ruhetag, als nicht geschafft eingetragen** – gedeckt wie ◌ | Ring wie ◌, kleines graues Kreuz darin |
 | × | **nicht geschafft** – verpasst und so eingetragen | kleines graues Kreuz (Text still) |
 | ▢ | **nichts eingetragen** – verpasst, aber leer (vielleicht vergessen) | leerer Kasten 13 px, Rand Text still |
 | 152 | **Menge** – der eingetragene Tageswert statt Punkt bzw. Kreuz | Zahl 11 px (vierstellig 9,5 px, enger), Gewohnheitsfarbe wenn erfüllt, sonst Text leise |
@@ -109,16 +108,22 @@ Unterschied ist nur zu sehen: ▢ zeigt, wo man vielleicht nur vergessen hat
 einzutragen, × war wirklich nicht. Vor dem 06.10.2026 gab es nur leer, darum
 stehen ältere verpasste Tage als ▢ da.
 
+**Ein Kreuz nur, wo die Serie bricht** (seit 10.10.2026): Alle drei Zustände
+zählen heute. An vergangenen Tagen ist der Unterschied nur an Pflichttagen
+interessant (× oder ▢). Ein vergangener Ruhetag bleibt ◌, auch wenn er als
+„nicht geschafft“ eingetragen ist – bis dahin stand dort ⊗ (Ring mit Kreuz).
+Ein Tipp schaltet an vergangenen Ruhetagen darum nur zwischen ● und leer.
+
 Die **Heute-Spalte** ist breiter (Kasten 50 × 36 px) und zeigt mehr:
 
 | Zustand | Aussehen |
 | --- | --- |
 | offen (auch **heute fällig**: x-mal/Woche ohne übrige Ruhetage) | leerer Kasten, grauer Rand. Bis 08.10.2026 hatte „fällig“ einen Rand in der Gewohnheitsfarbe – zu leicht mit dem Ruhetag-Ring zu verwechseln |
-| **heute frei** (nur x-mal/Woche, Ruhetag übrig, Serie läuft; seit 08.10.2026) | grauer Rand, Ring in Gewohnheitsfarbe im Kasten wie ◌ – bleibt der Tag leer, wird er ein Ruhetag. Bei Mengen steht die Einheit im Ring |
+| **heute frei** (nur x-mal/Woche, Ruhetag übrig, Serie läuft; seit 08.10.2026) | Rand 2 px in Gewohnheitsfarbe um den ganzen Kasten – bleibt der Tag leer, wird er ein Ruhetag. Bei Mengen steht die Einheit darin. Bis 10.10.2026 grauer Rand mit kleinem Ring im Kasten |
 | erledigt (Abhaken) | Kasten gefüllt in Gewohnheitsfarbe, dunkler Haken |
-| nicht geschafft | grauer Rand, graues Kreuz im Kasten (heute frei: Ring mit Kreuz wie ⊗) |
+| nicht geschafft | grauer Rand, graues Kreuz im Kasten (heute frei: farbiger Rand mit Kreuz) |
 | Menge ohne Wert | leerer Kasten, Einheit in Text still („kcal“) |
-| Menge unter Ziel | Wert in weiß, Fortschrittsbalken am unteren Rand in Gewohnheitsfarbe |
+| Menge unter Ziel | Wert in weiß, Fortschrittsbalken am unteren Rand in Gewohnheitsfarbe; heute frei dazu der farbige Rand |
 | Menge erfüllt | Kasten gefüllt in Gewohnheitsfarbe, Wert dunkel |
 | Menge über „höchstens“ | Wert in Text still, grauer Rand – verfehlt |
 | Menge am Ruhetag (nur zurückgeblättert) | Wert in weiß, Rand 2 px in Gewohnheitsfarbe – verfehlt, aber gedeckt |
@@ -198,7 +203,8 @@ Beispiel Gym 3× pro Woche → jede Woche hat **7 − 3 = 4 Ruhetage**.
       täglichen Gewohnheit (kein Ring), und die Gewohnheit zählt im
       Tageszähler mit
 - [x] **Heute frei** (seit 08.10.2026): ist noch ein Ruhetag übrig und läuft
-      eine Serie, trägt die Heute-Zelle schon den Ring des Ruhetags – man sieht
+      eine Serie, trägt die Heute-Zelle schon einen Rand in der Farbe (seit
+      10.10.2026 um den ganzen Kasten, vorher ein kleiner Ring) – man sieht
       auch heute, was nicht sein muss. Ohne laufende Serie ist heute nicht frei
       (ein leerer Tag wäre verpasst), die Zelle bleibt grau
 - [x] Mehr als x Einträge sind erlaubt. Übrige Ruhetage **verfallen am
@@ -241,8 +247,8 @@ Nur Mi gelaufen:
       dabei, genau wie an Trainingstagen
 - [x] Beginnt frühestens am Beginn-Datum der Gewohnheit
 - [x] **Rekord** = längste Serie der ganzen Historie
-- [x] Anzeige in der Zeile: Flamme + Zahl unter dem Namen; bei 0 nichts
-      (bis 10.10.2026 eigene Spalte ganz rechts, bei 0 ein stilles „–“)
+- [x] Anzeige in der Zeile: Flamme + Zahl direkt hinter dem Namen; bei 0
+      nichts (bis 10.10.2026 eigene Spalte ganz rechts, bei 0 ein stilles „–“)
 
 ### Quoten und Tageszähler
 
@@ -380,23 +386,24 @@ Erststart                       (solange es keine Gewohnheit gibt)
       Kopf und alle Zeilen. Links davon die alte Kalenderwoche, rechts die
       laufende – so sieht man, welche Ruhetage zu welchem Wochenziel gehören
 - [x] Keine eigene Spalte für die Serie (seit 10.10.2026, vorher 34 px ganz
-      rechts): sie steht unter dem Namen, der Platz geht an Name und Regel
+      rechts): sie steht hinter dem Namen, der Platz geht an Name und Regel
 
 **Zeilen**
 
 - [x] Eine Zeile pro Gewohnheit, 56 px hoch, feine Trennlinie
 - [x] **Name in der Gewohnheitsfarbe**, einzeilig, lange Namen enden auf „…“
-      („Kein Handy im B…“). Darunter die Serie (Flamme + Zahl) und in Text
-      still die Regel, wenn sie nicht „täglich abhaken“ ist: „3×/Wo.“,
+      („Kein Han…“), dahinter die Serie. Darunter in Text still die
+      Regel, wenn sie nicht „täglich abhaken“ ist: „3×/Wo.“,
       „≥ 150 g“, „≤ 2500 kcal“. **Ziel vor Rhythmus** („≥ 5 km · 3×/Wo.“):
       wird es eng, fällt hinten der Rhythmus ab, nicht das Ziel. Bis
       10.10.2026 stand „3× pro Woche“ vorn und verdrängte das Ziel
-- [x] Sechs Punkte (●, ◌, ⊗, ×, ▢, ·) für die vergangenen Tage, bei Mengen
+- [x] Sechs Punkte (●, ◌, ×, ▢, ·) für die vergangenen Tage, bei Mengen
       stattdessen die eingetragene Zahl (ab 100 ohne Komma, ab 10 000 als
       „12k“). Verfehlt die Zahl das Ziel an einem Ruhetag, steht sie in einem
       Ring – sonst sähe sie aus wie ein verpasster Tag, obwohl die Serie hält
 - [x] Heute-Kasten (Zustände siehe Design), bei Mengen mit dem heutigen Wert
-- [x] Serie: kleine Flamme in Bernstein + Zahl, unter dem Namen vor der Regel
+- [x] Serie: kleine Flamme in Bernstein + Zahl, direkt hinter dem Namen.
+      Wird es eng, kürzt der Name, nicht die Serie
 - [x] Reihenfolge manuell (Menü → Reihenfolge ändern), neue Gewohnheiten unten
 - [x] Bei vielen Gewohnheiten scrollt nur der Zeilenbereich; Kopfzeile und
       Spaltenkopf bleiben stehen. Platz ist für ~12 Zeilen auf 844 px
@@ -405,7 +412,9 @@ Erststart                       (solange es keine Gewohnheit gibt)
 
 - [x] **Abhaken:** jeder Tipp auf eine Zelle schaltet weiter: leer →
       geschafft → nicht geschafft → leer. Ein Tipp auf ◌ oder ▢ macht daraus ●
-      (man war doch da). Vorher (bis 05.10.2026) nur erledigt ⇄ leer
+      (man war doch da). Vorher (bis 05.10.2026) nur erledigt ⇄ leer. An
+      vergangenen Ruhetagen (seit 10.10.2026) nur ● ⇄ leer – „nicht
+      geschafft“ wäre dort nicht zu sehen (`hakenAm` in `calc.ts`)
 - [x] **Menge:** Tipp auf eine Zelle öffnet das Ziffernfeld-Blatt für genau
       diesen Tag (Ansicht 2)
 - [x] Tage vor dem Beginn (·) reagieren nicht; wer früher anfangen will,
@@ -697,10 +706,18 @@ Ergänzt am 08.10.2026:
 
 Ergänzt am 10.10.2026:
 
-19. **Serie unter dem Namen, Regel knapp.** Die Serien-Spalte rechts kostete
+19. **Serie neben dem Namen, Regel knapp.** Die Serien-Spalte rechts kostete
     34 px, und unter dem Namen verdrängte „3× pro Woche“ das Mengenziel. Jetzt
-    steht die Serie klein vor der Regel, die Regel nennt erst das Ziel, dann
-    „3×/Wo.“ – das Raster hat mehr Platz, und das Ziel bleibt lesbar
+    steht die Serie direkt hinter dem Namen, die Regel nennt erst das Ziel,
+    dann „3×/Wo.“ – das Raster hat mehr Platz, und das Ziel bleibt lesbar.
+    (Kurz stand die Serie in der Zeile unter dem Namen, vor der Regel.)
+20. **Heute frei mit großem Rand.** Statt eines kleinen Rings im grauen
+    Kasten trägt der ganze Kasten den Rand in der Farbe – auf einen Blick
+    sichtbar, was heute nicht sein muss
+21. **Ein Kreuz nur, wo die Serie bricht.** Leer, geschafft, nicht geschafft
+    zählen heute. Vergangene Ruhetage bleiben ◌ ohne Kreuz und schalten beim
+    Tippen nur zwischen ● und leer. Nur an Pflichttagen ist interessant, ob
+    nicht geschafft (×) oder nicht eingetragen (▢)
 
 ---
 

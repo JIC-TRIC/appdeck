@@ -299,11 +299,7 @@ function HabitForm({ ctx, view }: ViewProps) {
           <div className="s-row" style={hue(f.color)}>
             <span className="s-nm">
               <b style={{ color: colorOf(f.color) }}>{name || 'Name'}</b>
-              {ruleShort(preview.h, today) ? (
-                <small>
-                  <span className="rl">{ruleShort(preview.h, today)}</span>
-                </small>
-              ) : null}
+              {ruleShort(preview.h, today) ? <small>{ruleShort(preview.h, today)}</small> : null}
             </span>
             {preview.days.slice(0, 6).map((d, i) => (
               <span key={d} className={`s-cell${weekdayIndex(d) === 0 ? ' mon' : ''}`}>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
-import { isArchived, isRestToday, messwert, naechsterHaken, statesBetween, streaks, todayToEnter } from '../calc'
+import { hakenAm, isArchived, isRestToday, messwert, statesBetween, streaks, todayToEnter } from '../calc'
 import { IconGrid, IconMore, IconPlus, IconRight, IconStats } from '../icons'
 import { DayBox, Dot, Streak, hue, ruleShort } from '../ui'
 import {
@@ -34,7 +34,8 @@ const SAGT: Record<DayState, string> = {
 
 // Fuer den Screenreader: was in der Zelle steht, nicht nur der Zustand.
 function sagt(h: Habit, state: DayState, eintrag: number | undefined, frei = false) {
-  if (eintrag === NICHT_GESCHAFFT) return state === 'rest' || frei ? 'Ruhetag, nicht geschafft' : 'nicht geschafft'
+  // Am vergangenen Ruhetag zaehlt "nicht geschafft" nicht - dort steht nur der Ring.
+  if (eintrag === NICHT_GESCHAFFT && state !== 'rest') return frei ? 'frei, nicht geschafft' : 'nicht geschafft'
   const wert = messwert(eintrag)
   if (h.kind === 'amount' && wert !== undefined) {
     const zusatz = state === 'done' ? ', Ziel erreicht' : state === 'rest' ? ', Ruhetag' : ''
@@ -191,8 +192,9 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
       push({ name: 'amount', sheet: true, habitId: h.id, day })
       return
     }
-    // Leer -> geschafft -> nicht geschafft -> leer.
-    enter(h, day, naechsterHaken(log[h.id]?.[day]))
+    // Leer -> geschafft -> nicht geschafft -> leer; vergangene Ruhetage nur
+    // geschafft <-> leer.
+    enter(h, day, hakenAm(h, log[h.id], day, today))
   }
 
   const openDetail = (h: Habit) => {
@@ -286,16 +288,14 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                     const pop = (d: string) => live && lastChange?.habitId === r.h.id && lastChange.day === d
                     return (
                       <div className="s-row" style={hue(r.h)} key={r.h.id}>
-                        {/* Die Serie steht unter dem Namen, nicht in einer eigenen
-                            Spalte - so bleibt fuer Name und Ziel mehr Platz. */}
+                        {/* Die Serie steht neben dem Namen, nicht in einer eigenen
+                            Spalte - so bleibt fuer Raster und Regel mehr Platz. */}
                         <button type="button" className="s-nm" onClick={() => openDetail(r.h)} tabIndex={live ? 0 : -1}>
-                          <b>{r.h.name}</b>
-                          {serie || rule ? (
-                            <small>
-                              <Streak n={serie} tick={live && lastChange?.habitId === r.h.id} />
-                              {rule ? <span className="rl">{rule}</span> : null}
-                            </small>
-                          ) : null}
+                          <span className="l1">
+                            <b>{r.h.name}</b>
+                            <Streak n={serie} tick={live && lastChange?.habitId === r.h.id} />
+                          </span>
+                          {rule ? <small>{rule}</small> : null}
                         </button>
                         {p.days.slice(0, 6).map((d, i) => (
                           <button

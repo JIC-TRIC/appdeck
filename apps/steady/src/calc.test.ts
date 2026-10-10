@@ -3,6 +3,7 @@ import {
   amountSeries,
   dayScores,
   evaluateWeek,
+  hakenAm,
   inLife,
   isRestToday,
   meets,
@@ -251,6 +252,25 @@ describe('Nicht geschafft', () => {
   it('laesst heute offen', () => {
     const st = statesBetween(habit(), { '2026-09-30': NICHT_GESCHAFFT }, '2026-09-30', '2026-09-30', '2026-09-30')
     expect(st['2026-09-30']).toBe('open')
+  })
+
+  it('gibt es an vergangenen Ruhetagen nicht: der Tipp schaltet nur zwischen geschafft und leer', () => {
+    const hlog = logOf(VORHER, '2026-09-03', '2026-09-05')
+    // Mo 31.8. ist ein Ruhetag.
+    expect(hakenAm(imTritt(), hlog, '2026-08-31', '2026-09-07')).toBe(1)
+    expect(hakenAm(imTritt(), { ...hlog, '2026-08-31': 1 }, '2026-08-31', '2026-09-07')).toBeNull()
+    // Ein altes "nicht geschafft" am Ruhetag ist nicht zu sehen - der Tipp hakt ab.
+    expect(hakenAm(imTritt(), { ...hlog, '2026-08-31': NICHT_GESCHAFFT }, '2026-08-31', '2026-09-07')).toBe(1)
+  })
+
+  it('bleibt an Pflichttagen und heute: geschafft, nicht geschafft, leer', () => {
+    const hlog = logOf(VORHER, '2026-09-03', '2026-09-05')
+    // So 6.9.: Kontingent aufgebraucht, also Pflicht.
+    expect(hakenAm(imTritt(), { ...hlog, '2026-09-06': 1 }, '2026-09-06', '2026-09-07')).toBe(NICHT_GESCHAFFT)
+    expect(hakenAm(imTritt(), { ...hlog, '2026-09-06': NICHT_GESCHAFFT }, '2026-09-06', '2026-09-07')).toBeNull()
+    // Heute frei: trotzdem alle drei Zustaende.
+    expect(hakenAm(imTritt(), { ...hlog, '2026-09-01': 1 }, '2026-09-01', '2026-09-01')).toBe(NICHT_GESCHAFFT)
+    expect(hakenAm(habit(), { '2026-09-29': 1 }, '2026-09-29', '2026-09-30')).toBe(NICHT_GESCHAFFT)
   })
 })
 

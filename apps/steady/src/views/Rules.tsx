@@ -9,12 +9,11 @@ const LEGENDE = [
   { smp: <span className="s-c r"><i /></span>, t: 'Ruhetag', s: 'automatisch gedeckt, zählt zur Serie' },
   { smp: <span className="s-c x"><i /></span>, t: 'Nicht geschafft', s: 'so eingetragen, die Serie beginnt neu' },
   { smp: <span className="s-c l"><i /></span>, t: 'Nichts eingetragen', s: 'zählt wie nicht geschafft – vielleicht vergessen?' },
-  { smp: <span className="s-c r nein"><i /></span>, t: 'Ruhetag, nicht geschafft', s: 'so eingetragen, vom Kontingent gedeckt' },
   { smp: <span className="s-c z ok"><b>152</b></span>, t: 'Menge', s: 'der Tageswert, farbig = Ziel erreicht' },
   { smp: <span className="s-c z ruhe"><b>90</b></span>, t: 'Menge am Ruhetag', s: 'Ziel verfehlt, aber vom Kontingent gedeckt – die Serie hält' },
   { smp: <span className="s-c n"><i /></span>, t: 'Noch nicht begonnen', s: 'vor dem Beginn-Datum' },
   { smp: <span className="s-t" />, t: 'Heute offen', s: 'noch einzutragen, bricht nichts' },
-  { smp: <span className="s-t rest"><i /></span>, t: 'Heute frei', s: 'Ruhetag übrig – bleibt es leer, wird es einer' },
+  { smp: <span className="s-t ruhe" />, t: 'Heute frei', s: 'Ruhetag übrig – bleibt es leer, wird es einer' },
   { smp: <span className="s-t done"><IconCheck /></span>, t: 'Heute erledigt', s: 'abgehakt' },
   { smp: <span className="s-t">148<i className="bar" style={{ width: '98%' }} /></span>, t: 'Menge unter Ziel', s: 'der Balken zeigt den Fortschritt' },
 ]
@@ -38,7 +37,8 @@ function Rules({ ctx }: ViewProps) {
         <Card title="Eintragen">
           <p className="s-txt">
             Ein Tipp auf einen Tag schaltet weiter: <b>geschafft</b>, <b>nicht geschafft</b>, wieder leer. Bei Mengen
-            öffnet sich das Ziffernfeld, „Nicht geschafft“ steht dort oben.
+            öffnet sich das Ziffernfeld, „Nicht geschafft“ steht dort oben. Ein vergangener Ruhetag kennt nur geschafft
+            oder leer – ein Kreuz steht nur, wo die Serie bricht.
           </p>
           <p className="s-txt">
             Ein leerer Tag zählt wie nicht geschafft – sonst wäre Vergessen besser als ehrlich Eintragen. Der Unterschied

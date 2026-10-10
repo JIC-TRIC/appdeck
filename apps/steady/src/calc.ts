@@ -229,6 +229,19 @@ export function stateOn(h: Habit, log: Log, day: string, today: string) {
   return weekOf(h, log, day, today).states[weekdayIndex(day)]
 }
 
+// Abhaken an einem bestimmten Tag. Ein vergangener Tag, der ohne Haken ein
+// Ruhetag waere, kennt kein "nicht geschafft": das Raster zeigt dort nur den
+// Ring, ein Kreuz gibt es nur, wo die Serie bricht. Ein Tipp schaltet dort
+// zwischen geschafft und leer. Heute und an Pflichttagen wie naechsterHaken.
+export function hakenAm(h: Habit, hlog: HabitLog | undefined, day: string, today: string): number | null {
+  const v = hlog?.[day]
+  if (day < today) {
+    const ohne = statesBetween(h, { ...hlog, [day]: NICHT_GESCHAFFT }, day, day, today)[day]
+    if (ohne === 'rest') return messwert(v) === undefined ? 1 : null
+  }
+  return naechsterHaken(v)
+}
+
 const counts = (s: DayState | undefined) => s === 'done' || s === 'rest'
 
 // ---------- Serie ----------
