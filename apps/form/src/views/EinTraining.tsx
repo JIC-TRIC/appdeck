@@ -1,12 +1,16 @@
 import { erledigt, formatDauer, formatSatz, formatTausend, formatUhr, rekordeIn, statistik } from '../trainingCalc'
 import { Seite, TextKnopf, Zurueck } from '../ui'
 import { dateKey, relativTag } from '../util'
+import { useAlsVorlage } from './alsVorlage'
 import type { FormCtx } from '../types'
 
 // Ein beendetes Training: alle Saetze kompakt, Rekorde orange. Ein Tipp auf
-// eine Uebung oeffnet sie, "Bearbeiten" dieselbe Ansicht wie im Training.
+// eine Uebung oeffnet sie, "Bearbeiten" dieselbe Ansicht wie im Training
+// (dort auch der Name). Unten laesst es sich nachtraeglich als Vorlage
+// speichern.
 function EinTraining({ ctx, id }: { ctx: FormCtx; id: string }) {
   const { trainings, uebungById, heute, push, back } = ctx
+  const alsVorlage = useAlsVorlage(ctx)
   const t = trainings.find((x) => x.id === id)
   // Gerade geloescht: die Seite gleitet noch hinaus.
   if (!t) return <Seite links={<Zurueck label="Verlauf" onClick={back} />}>{null}</Seite>
@@ -48,6 +52,10 @@ function EinTraining({ ctx, id }: { ctx: FormCtx; id: string }) {
           </button>
         )
       })}
+
+      <button type="button" className="f-loeschen neutral" onClick={() => alsVorlage(t)}>
+        Als Vorlage speichern
+      </button>
     </Seite>
   )
 }

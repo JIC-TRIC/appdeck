@@ -172,8 +172,9 @@ Vorlagen:
 
 - [x] Name und Übungen, pro Übung Satzzahl (1–20) und Wdh-Bereich (optional, steht im Training neben
   dem Namen). Reihenfolge auf der Startseite und in der Vorlage per Griff.
-- [x] Neu entweder unter Vorlagen oder beim Beenden eines leeren Trainings („Als Vorlage speichern“ –
-  das Training gehört danach zur Vorlage).
+- [x] Neu unter Vorlagen (Zeile auf der Startseite, beim ersten Start „Vorlage anlegen“) oder aus einem
+  beendeten Training: gleich auf „Fertig“ (bei einem leeren Training) oder später unter „Ein Training“
+  („Als Vorlage speichern“ – das Training gehört danach zur Vorlage und heißt wie sie).
 - [x] Weicht ein Training von seiner Vorlage ab (Übung fehlt oder kam dazu, andere Satzzahl oder
   Reihenfolge), fragt „Fertig“: anpassen oder so lassen. Anpassen übernimmt Übungen, Reihenfolge und
   Satzzahl, die Wdh-Bereiche bleiben.
@@ -192,7 +193,8 @@ Sätze:
 - [x] **Rekord** („PR“ statt Satznummer): schwerster Satz oder bestes geschätztes 1RM (Epley) bisher,
   über alle Vorlagen – bei nur Wdh die meisten, bei Zeit die längste. Zählt auch gegen frühere Sätze im
   selben Training. Im ersten Training einer Übung gibt es keinen.
-- [x] Fertige Übungen (alle Sätze abgehakt) schrumpfen auf eine Zeile, ein Tipp klappt sie auf.
+- [x] Fertige Übungen bleiben offen (in den Mockups noch zugeklappt, nach dem ersten Ausprobieren
+  geändert).
 
 Pause, Beenden, Nachtragen:
 
@@ -203,6 +205,8 @@ Pause, Beenden, Nachtragen:
   verwerfen. Übungen ohne Satz fallen weg.
 - [x] Beliebig viele Trainings am Tag. Nachtragen: Tag (nicht in die Zukunft), Vorlage, Beginn, Dauer –
   danach dieselbe Ansicht wie im Training, ohne Pause, erst „Sichern“ schreibt.
+- [x] Ein beendetes Training lässt sich unter „Bearbeiten“ umbenennen (Name oben, leer heißt
+  „Training“), die Sätze ändern oder löschen.
 
 ### Speicher
 
@@ -224,8 +228,10 @@ Nummern wie in den Mockups.
 
 - [x] **1 Werte:** wie bisher, neu der Umschalter in der Kopfleiste.
 - [x] **2 Training:** „Zuletzt trainiert vor 2 Tagen“, Wortmarke, Vorlagen (Name, wann zuletzt,
-  oranger Start), „Leeres Training“, darunter Verlauf und Übungen. „Bearbeiten“ führt zu den Vorlagen.
-- [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“ und ein Knopf.
+  oranger Start), „Leeres Training“, darunter Verlauf, Übungen und Vorlagen. „Bearbeiten“ neben der
+  Überschrift führt ebenfalls zu den Vorlagen.
+- [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“, ein Knopf
+  und darunter „Vorlage anlegen“.
 - [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden. Pro Übung Name, Wdh-Bereich, ⋯, Notiz, Sätze
   `Nr | kg × Wdh | Haken`, „+ Satz“. Unten „+ Übung“.
 - [x] **5 Satz eingeben:** Blatt mit beiden Feldern, Schnellknöpfen, Ziffern und „Abhaken“.
@@ -237,7 +243,8 @@ Nummern wie in den Mockups.
 - [x] **9 Fertig:** Dauer, Sätze, Volumen, Rekorde, Vorlage anpassen bzw. als Vorlage speichern.
 - [x] **10 Verlauf:** eine Zeile pro Training, nach Monaten, „PR“ wenn es einen Rekord gab, „+“
   trägt nach.
-- [x] **11 Ein Training:** alle Sätze kompakt, Rekorde orange, „Bearbeiten“, darin „Training löschen“.
+- [x] **11 Ein Training:** alle Sätze kompakt, Rekorde orange, unten „Als Vorlage speichern“.
+  „Bearbeiten“: Name, Sätze, „Training löschen“.
 - [x] **12 Nachtragen.**
 - [x] **13 Übungen:** alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
 - [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem,

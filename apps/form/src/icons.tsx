@@ -41,11 +41,6 @@ export const IconX = () => (
     <path d="M6 6l12 12M18 6L6 18" />
   </I>
 )
-export const IconUp = () => (
-  <I>
-    <path d="M5 15l7-7 7 7" />
-  </I>
-)
 export const IconSuche = () => (
   <I>
     <circle cx="11" cy="11" r="6.5" />

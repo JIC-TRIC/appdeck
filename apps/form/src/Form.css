@@ -994,6 +994,12 @@ input {
   color: var(--text-2);
 }
 
+.f-link-mitte {
+  align-self: center;
+  min-height: 40px;
+  padding: 0 12px;
+}
+
 .f-kicker-zeile {
   padding: 0 2px;
 }
@@ -1329,56 +1335,6 @@ button.f-haken:active {
 
 .f-plus-satz:active {
   color: var(--text);
-}
-
-/* Fertige Uebung: eine Zeile. */
-.f-ex-fertig {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 38px;
-  padding: 0 10px;
-  border-radius: 12px;
-  background: var(--surface);
-  text-align: left;
-}
-
-.f-ex-fertig:active {
-  background: var(--surface-2);
-}
-
-.f-ex-fertig .f-haken {
-  width: 20px;
-  height: 20px;
-}
-
-.f-ex-fertig .f-haken .f-i {
-  width: 11px;
-  height: 11px;
-}
-
-.f-ex-fertig b {
-  flex: none;
-  max-width: 55%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--f-disp);
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.f-ex-fertig small {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12.5px;
-  color: var(--text-2);
 }
 
 .f-tag-pr {

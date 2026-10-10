@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IonReorder, IonReorderGroup, useIonAlert } from '@ionic/react'
-import { IconCheck, IconGriff, IconMehr, IconPlus, IconRight, IconUp, IconX } from '../icons'
+import { IconCheck, IconGriff, IconMehr, IconPlus, IconRight, IconX } from '../icons'
 import {
   abschliessen,
   besser,
@@ -10,7 +10,6 @@ import {
   formatSatz,
   formatStoppuhr,
   formatUhr,
-  kurzSaetze,
   letzterHaken,
   nurNoetige,
   offeneSaetze,
@@ -32,6 +31,7 @@ import {
   setzeUebung,
   speichereTraining,
 } from '../trainingStore'
+import { NAME_MAX, sauber } from '../store'
 import { Blatt, Seite, Stepper, TextKnopf } from '../ui'
 import { dateKey, formatZahl, relativTag } from '../util'
 import { Hinzufuegen } from './Hinzufuegen'
@@ -40,7 +40,9 @@ import type { Erfassung, FormCtx, Satz, Training, TrainingsUebung, Uebung, Vorla
 
 // Ein Training. Laufend ist es die Startseite (kein Umschalter, kein Zurueck)
 // und jeder Tipp wird sofort gesichert. Als Entwurf aendert es ein beendetes
-// oder macht ein nachgetragenes fertig - erst "Sichern" schreibt.
+// oder macht ein nachgetragenes fertig - mit Namen, erst "Sichern" schreibt.
+// Fertige Uebungen bleiben offen (nicht zugeklappt, Wunsch nach dem ersten
+// Ausprobieren).
 //
 // Grau steht in jedem Feld das letzte Mal aus derselben Vorlage, sonst das
 // letzte Mal ueberhaupt (trainingCalc.ts, vorgabe). Der Haken uebernimmt es.
@@ -57,8 +59,6 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
   const [lokal, setLokal] = useState<Training | null>(entwurf ?? null)
   const t = istLaufend ? laufend : lokal
 
-  // Fertige Uebungen sind zugeklappt - ausser denen, die man aufgemacht hat.
-  const [offen, setOffen] = useState<ReadonlySet<number>>(() => new Set())
   const [eingabe, setEingabe] = useState<{ ui: number; si: number; feld: Feld } | null>(null)
   const [blatt, setBlatt] = useState<number | null>(null)
   const [menue, setMenue] = useState(false)
@@ -139,14 +139,10 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
 
   const tausche = (ui: number, id: string) => {
     aendereUebung(ui, (tu) => ({ uebung: id, saetze: tu.saetze.map(() => leererSatz()) }))
-    setOffen(new Set())
   }
 
   const nimmRaus = (ui: number) => {
-    const weg = () => {
-      aendere((x) => ({ ...x, uebungen: x.uebungen.filter((_, i) => i !== ui) }))
-      setOffen(new Set())
-    }
+    const weg = () => aendere((x) => ({ ...x, uebungen: x.uebungen.filter((_, i) => i !== ui) }))
     const n = t.uebungen[ui]?.saetze.filter(erledigt).length ?? 0
     if (!n) return weg()
     frage({
@@ -169,8 +165,9 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
   }
 
   const abschluss = (offene: 'verwerfen' | 'abhaken') => {
-    const aktuell = istLaufend ? getLaufend() : t
-    if (!aktuell) return
+    const roh = istLaufend ? getLaufend() : t
+    if (!roh) return
+    const aktuell = { ...roh, name: sauber(roh.name, NAME_MAX) || 'Training' }
     const fertig = abschliessen(aktuell, istLaufend ? Date.now() : (aktuell.ende ?? Date.now()), offene, uebungById, trainings)
     if (!fertig.uebungen.length) {
       melde('Kein Satz abgehakt')
@@ -262,7 +259,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
             <TextKnopf onClick={back}>Abbrechen</TextKnopf>
           )
         }
-        titel={istLaufend ? <PauseAnzeige t={t} uebungById={uebungById} /> : t.name}
+        titel={istLaufend ? <PauseAnzeige t={t} uebungById={uebungById} /> : neu ? 'Nachtragen' : 'Bearbeiten'}
         rechts={
           <TextKnopf stark onClick={fertigMachen}>
             {istLaufend ? 'Beenden' : 'Sichern'}
@@ -270,16 +267,30 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
         }
       >
         {!istLaufend ? (
-          <p className="f-kicker f-kicker-zeile">
-            {relativTag(tag, heute)} · {formatUhr(t.start)}
-            {t.ende !== null ? ` – ${formatUhr(t.ende)}` : ''}
-          </p>
+          <>
+            <label className="f-feld">
+              <span className="f-label">Name</span>
+              <input
+                type="text"
+                value={t.name}
+                maxLength={NAME_MAX}
+                autoComplete="off"
+                onChange={(e) => {
+                  const name = e.target.value
+                  setLokal((x) => (x ? { ...x, name } : x))
+                }}
+              />
+            </label>
+            <p className="f-kicker f-kicker-zeile">
+              {relativTag(tag, heute)} · {formatUhr(t.start)}
+              {t.ende !== null ? ` – ${formatUhr(t.ende)}` : ''}
+            </p>
+          </>
         ) : null}
 
         {t.uebungen.map((tu, ui) => {
           const u = uebungById[tu.uebung]
           if (!u) return null
-          const fertig = tu.saetze.length > 0 && tu.saetze.every(erledigt)
           return (
             <UebungBlock
               key={schluessel[ui]}
@@ -289,16 +300,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
               ref_={vorgaben[ui]?.saetze ?? null}
               vu={vorlage?.uebungen.find((v) => v.uebung === tu.uebung)}
               rekorde={rekorde}
-              zu={fertig && !offen.has(ui)}
               aktiv={eingabe && eingabe.ui === ui ? eingabe : null}
-              onKlappen={() =>
-                setOffen((o) => {
-                  const n = new Set(o)
-                  if (n.has(ui)) n.delete(ui)
-                  else n.add(ui)
-                  return n
-                })
-              }
               onFeld={(si, feld) => setEingabe({ ui, si, feld })}
               onHaken={(si) => haken(ui, si)}
               onPlus={() => plusSatz(ui)}
@@ -525,7 +527,6 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                 onIonReorderEnd={(e) => {
                   const liste = e.detail.complete(t.uebungen) as TrainingsUebung[]
                   aendere((x) => ({ ...x, uebungen: liste }))
-                  setOffen(new Set())
                 }}
               >
                 {t.uebungen.map((tu, ui) => (
@@ -606,9 +607,7 @@ function UebungBlock({
   ref_,
   vu,
   rekorde,
-  zu,
   aktiv,
-  onKlappen,
   onFeld,
   onHaken,
   onPlus,
@@ -621,30 +620,12 @@ function UebungBlock({
   ref_: Satz[] | null
   vu: VorlagenUebung | undefined
   rekorde: Set<string>
-  zu: boolean
   aktiv: { si: number; feld: Feld } | null
-  onKlappen: () => void
   onFeld: (si: number, feld: Feld) => void
   onHaken: (si: number) => void
   onPlus: () => void
   onMehr: () => void
 }) {
-  const fertig = tu.saetze.length > 0 && tu.saetze.every(erledigt)
-  const pr = tu.saetze.some((_, si) => rekorde.has(`${ui}:${si}`))
-
-  if (zu) {
-    return (
-      <button type="button" className="f-ex-fertig" onClick={onKlappen} aria-expanded={false}>
-        <span className="f-haken an">
-          <IconCheck />
-        </span>
-        <b>{u.name}</b>
-        <small>{kurzSaetze(tu.saetze, u.erfassung)}</small>
-        {pr ? <span className="f-tag-pr">PR</span> : null}
-      </button>
-    )
-  }
-
   const bereich = vu ? formatBereich(vu) : ''
   return (
     <section className="f-ex">
@@ -653,11 +634,6 @@ function UebungBlock({
           {u.name}
         </button>
         {bereich ? <span className="f-ex-ziel">{bereich}</span> : null}
-        {fertig ? (
-          <button type="button" className="f-ex-mehr" onClick={onKlappen} aria-label="Zuklappen">
-            <IconUp />
-          </button>
-        ) : null}
         <button type="button" className="f-ex-mehr" onClick={onMehr} aria-label={`${u.name}: mehr`}>
           <IconMehr />
         </button>

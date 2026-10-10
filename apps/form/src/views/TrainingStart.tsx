@@ -5,8 +5,9 @@ import { dateKey, wieLange } from '../util'
 import type { FormCtx, Vorlage } from '../types'
 
 // Startseite des Trainings: die Vorlagen - ein Tipp startet sofort, ohne
-// Vorschau -, ein leeres Training, darunter Verlauf und Uebungen. Solange es
-// weder Training noch Vorlage gibt, nur der Knopf fuers erste Training.
+// Vorschau -, ein leeres Training, darunter Verlauf, Uebungen und Vorlagen.
+// Solange es weder Training noch Vorlage gibt, nur der Knopf fuers erste
+// Training und darunter "Vorlage anlegen".
 function TrainingStart({ ctx }: { ctx: FormCtx }) {
   const { vorlagen, trainings, heute, push, refresh, bereich, setzeBereich } = ctx
   const tagVon = (ms: number) => dateKey(new Date(ms))
@@ -38,6 +39,9 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
           <p className="f-leer-t">Erstes Training?</p>
           <button type="button" className="f-haupt" onClick={() => starte(null)}>
             Training starten
+          </button>
+          <button type="button" className="f-textlink f-link-mitte" onClick={() => push({ name: 'vorlageForm' })}>
+            Vorlage anlegen
           </button>
         </div>
       ) : (
@@ -76,6 +80,12 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
             </button>
             <button type="button" className="f-zeile" onClick={() => push({ name: 'uebungen' })}>
               <span>Übungen</span>
+              <span className="f-zeile-r">
+                <IconRight />
+              </span>
+            </button>
+            <button type="button" className="f-zeile" onClick={() => push({ name: 'vorlagen' })}>
+              <span>Vorlagen</span>
               <span className="f-zeile-r">
                 <IconRight />
               </span>

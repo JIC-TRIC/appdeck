@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useIonAlert } from '@ionic/react'
 import { abweichung, formatDauer, formatSatz, formatTausend, rekordeIn, statistik, vorlageAus, type RekordArt } from '../trainingCalc'
-import { speichereTraining, speichereVorlage } from '../trainingStore'
+import { speichereVorlage } from '../trainingStore'
 import { Seite } from '../ui'
+import { useAlsVorlage } from './alsVorlage'
 import type { FormCtx } from '../types'
 
 const ART: Record<RekordArt, string> = {
@@ -18,7 +18,7 @@ const ART: Record<RekordArt, string> = {
 function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
   const { trainings, vorlagen, uebungById, refresh, back, melde } = ctx
   const [erledigt, setErledigt] = useState(false)
-  const [frage] = useIonAlert()
+  const alsVorlage = useAlsVorlage(ctx)
   const t = trainings.find((x) => x.id === id)
   if (!t) return <Seite>{null}</Seite>
 
@@ -46,30 +46,6 @@ function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
     setErledigt(true)
     melde(`${vorlage.name} angepasst`)
   }
-
-  const alsVorlage = () =>
-    frage({
-      header: 'Als Vorlage speichern',
-      cssClass: 'f-alert',
-      inputs: [{ name: 'name', type: 'text', placeholder: 'Name, z. B. Push', attributes: { maxlength: 40, autocapitalize: 'words' } }],
-      buttons: [
-        { text: 'Abbrechen', role: 'cancel' },
-        {
-          text: 'Speichern',
-          handler: (d: { name?: string }) => {
-            const v = speichereVorlage({ name: d.name ?? '', uebungen: vorlageAus(t) })
-            if (!v) return false
-            // Ab jetzt gehoert das Training zur Vorlage - beim naechsten Mal
-            // steht grau, was heute war.
-            speichereTraining({ ...t, vorlage: v.id, name: v.name })
-            refresh()
-            setErledigt(true)
-            melde(`${v.name} gespeichert`)
-            return true
-          },
-        },
-      ],
-    })
 
   return (
     <Seite
@@ -133,7 +109,7 @@ function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
                   Beim nächsten Mal genauso?
                   <small>Als Vorlage startet es mit diesen Übungen und Sätzen.</small>
                 </p>
-                <button type="button" className="f-knopf stark" onClick={alsVorlage}>
+                <button type="button" className="f-knopf stark" onClick={() => alsVorlage(t, () => setErledigt(true))}>
                   Als Vorlage speichern
                 </button>
               </>
