@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { imBereich } from '../calc'
 import { Verlauf } from '../charts'
 import { IconRight } from '../icons'
-import { alleRekorde, besterSatz, bestesE1rm, einheiten, kennzahl, kurzSaetze } from '../trainingCalc'
+import { alleRekorde, besterSatz, bestesE1rm, bestwerteJeWdh, einheiten, formatSek, kennzahl, kurzSaetze } from '../trainingCalc'
 import { Segment, Seite, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatDiff, formatKurz, formatZahl, relativTag, wieLange } from '../util'
 import type { Bereich, Erfassung, FormCtx, Punkt, Satz } from '../types'
@@ -22,7 +22,8 @@ const EINHEIT: Record<Erfassung, string> = { gewicht: 'kg', wdh: 'Wdh', zeit: 's
 
 // Eine Uebung ueber alle Vorlagen: gross der staerkste Satz aus dem letzten
 // Training, Kacheln (seit Start, seit dem letzten Mal, Rekord), der Verlauf
-// (schwerster Satz oder geschaetztes 1RM) und darunter jedes Training.
+// (schwerster Satz oder geschaetztes 1RM), die Bestwerte je Wdh-Zahl und
+// darunter jedes Training. Aufwaermsaetze zaehlen nirgends mit.
 function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const { uebungById, trainings, heute, push, back } = ctx
   const [bereich, setBereich] = useState<Bereich>('alles')
@@ -39,6 +40,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const best = bestJe[bestJe.length - 1]
   const rekord = besterSatz(ein.flatMap((e) => e.saetze), erf)
   const prIn = alleRekorde(trainings, uebungById)
+  const bestwerte = bestwerteJeWdh(ein.flatMap((e) => e.saetze))
 
   const punkte: Punkt[] = ein.map((e, i) => ({
     tag: tagVon(e.training.start),
@@ -72,8 +74,8 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
                 </>
               ) : (
                 <>
-                  <b>{erf === 'wdh' ? best.wdh : best.sek}</b>
-                  <small>{EINHEIT[erf]}</small>
+                  <b>{erf === 'wdh' ? best.wdh : formatSek(best.sek ?? 0).replace(' s', '')}</b>
+                  <small>{erf === 'wdh' ? 'Wdh' : (best.sek ?? 0) < 60 ? 's' : 'min'}</small>
                 </>
               )}
             </span>
@@ -94,7 +96,9 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
             {rekord ? (
               <div className="f-kachel">
                 <small>Rekord</small>
-                <em className="f-diff">{`${erf === 'gewicht' ? formatZahl(rekord.kg ?? 0) : erf === 'wdh' ? rekord.wdh : rekord.sek} ${EINHEIT[erf]}`}</em>
+                <em className="f-diff">
+                  {erf === 'gewicht' ? `${formatZahl(rekord.kg ?? 0)} kg` : erf === 'wdh' ? `${rekord.wdh} Wdh` : formatSek(rekord.sek ?? 0)}
+                </em>
                 <span>
                   {erf === 'gewicht' ? `× ${rekord.wdh} · ` : ''}
                   {formatKurz(tagVon(ein.find((e) => e.saetze.includes(rekord))?.training.start ?? 0), heute)}
@@ -114,6 +118,20 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
               <p className="f-note f-chart-leer">In diesem Zeitraum nicht trainiert.</p>
             )}
           </section>
+
+          {erf === 'gewicht' && bestwerte.length > 1 ? (
+            <>
+              <h2 className="f-h2">Bestwerte</h2>
+              <div className="f-bestwerte">
+                {bestwerte.map((b) => (
+                  <div key={b.wdh} className="f-bestwert">
+                    <small>{b.wdh === 1 ? '1 Wdh' : `${b.wdh}+ Wdh`}</small>
+                    <b>{formatZahl(b.kg)}</b>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
 
           <h2 className="f-h2">Trainings</h2>
           <div className="f-gruppe">

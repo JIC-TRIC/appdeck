@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { IconLeft, IconRight } from '../icons'
 import { neueId } from '../store'
-import { leererSatz } from '../trainingStore'
+import { saetzeFuer } from '../trainingStore'
 import { Seite, TextKnopf } from '../ui'
 import { addDays, formatTagLang, parseKey, relativTag } from '../util'
 import type { FormCtx, Training } from '../types'
@@ -33,7 +33,8 @@ function Nachtragen({ ctx }: { ctx: FormCtx }) {
       name: v?.name ?? 'Training',
       start,
       ende: start + dauer * 60000,
-      uebungen: (v?.uebungen ?? []).map((x) => ({ uebung: x.uebung, saetze: Array.from({ length: x.saetze }, leererSatz) })),
+      uebungen: (v?.uebungen ?? []).map((x) => ({ uebung: x.uebung, saetze: saetzeFuer(x) })),
+      notiz: '',
     }
     replace({ name: 'neu', training: t })
   }

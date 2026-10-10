@@ -1,17 +1,20 @@
 import { IconPlay, IconPlus, IconRight } from '../icons'
+import { naechsteVorlage } from '../trainingCalc'
 import { starteTraining } from '../trainingStore'
 import { Seite, Umschalter, Zurueck, zumLauncher } from '../ui'
 import { dateKey, wieLange } from '../util'
 import type { FormCtx, Vorlage } from '../types'
 
 // Startseite des Trainings: die Vorlagen - ein Tipp startet sofort, ohne
-// Vorschau -, ein leeres Training, darunter Verlauf, Uebungen und Vorlagen.
+// Vorschau; die, die in der Reihenfolge dran ist, steht mit "als Nächstes"
+// da -, ein leeres Training, darunter Verlauf, Uebungen und Vorlagen.
 // Solange es weder Training noch Vorlage gibt, nur der Knopf fuers erste
 // Training und darunter "Vorlage anlegen".
 function TrainingStart({ ctx }: { ctx: FormCtx }) {
   const { vorlagen, trainings, heute, push, refresh, bereich, setzeBereich } = ctx
   const tagVon = (ms: number) => dateKey(new Date(ms))
   const letztes = trainings[trainings.length - 1]
+  const dran = naechsteVorlage(vorlagen, trainings)
 
   const starte = (v: Vorlage | null) => {
     starteTraining(v)
@@ -57,7 +60,7 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
               {vorlagen.map((v) => (
                 <button key={v.id} type="button" className="f-vorlage" onClick={() => starte(v)} aria-label={`${v.name} starten`}>
                   <span className="f-vorlage-name">{v.name}</span>
-                  <small>{wann(v)}</small>
+                  {v.id === dran ? <small className="f-dran">als Nächstes</small> : <small>{wann(v)}</small>}
                   <span className="f-play">
                     <IconPlay />
                   </span>

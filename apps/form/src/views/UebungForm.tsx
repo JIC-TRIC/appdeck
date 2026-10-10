@@ -2,11 +2,15 @@ import { useState } from 'react'
 import { useIonAlert } from '@ionic/react'
 import { NAME_MAX, sauber } from '../store'
 import { formatStoppuhr } from '../trainingCalc'
+import { formatZahl } from '../util'
 import {
   NOTIZ_MAX,
   PAUSE_MAX,
   PAUSE_MIN,
   PAUSE_STANDARD,
+  SCHRITTE,
+  SCHRITT_STANDARD,
+  STANGEN,
   loescheUebung,
   pauseSauber,
   setzeUebung,
@@ -22,7 +26,9 @@ const ERFASSUNGEN: { id: Erfassung; label: string }[] = [
   { id: 'zeit', label: 'Zeit' },
 ]
 
-// Uebung anlegen oder bearbeiten: Name, was eingetragen wird, Pause, Notiz.
+// Uebung anlegen oder bearbeiten: Name, was eingetragen wird, Pause, Notiz -
+// bei Gewicht x Wdh auch der Gewichtsschritt (+/- im Tastenfeld, Vorschlag
+// fuers naechste Gewicht) und die Stange fuer den Scheibenrechner.
 // Die Erfassung laesst sich nur aendern, solange die Uebung nie trainiert
 // wurde. Trainierte Uebungen werden archiviert statt geloescht - ihr Verlauf
 // bleibt.
@@ -33,12 +39,14 @@ function UebungForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
   const [erfassung, setErfassung] = useState<Erfassung>(alt?.erfassung ?? 'gewicht')
   const [pause, setPause] = useState(alt?.pause ?? PAUSE_STANDARD)
   const [notiz, setNotiz] = useState(alt?.notiz ?? '')
+  const [schritt, setSchritt] = useState(alt?.schritt ?? SCHRITT_STANDARD)
+  const [stange, setStange] = useState<number | null>(alt?.stange ?? null)
   const [benutzt] = useState(() => (alt ? wirdBenutzt(alt.id) : false))
   const [frage] = useIonAlert()
   const kannSichern = sauber(name, NAME_MAX) !== ''
 
   const sichern = () => {
-    const u = speichereUebung({ name, erfassung, pause, notiz }, alt?.id)
+    const u = speichereUebung({ name, erfassung, pause, notiz, schritt, stange }, alt?.id)
     if (!u) return
     refresh()
     back()
@@ -108,6 +116,46 @@ function UebungForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
             ))}
           </div>
         </div>
+
+        {erfassung === 'gewicht' ? (
+          <>
+            <div className="f-feld">
+              <span className="f-label">Gewichtsschritt</span>
+              <div className="f-chips">
+                {SCHRITTE.map((x) => (
+                  <button
+                    key={x}
+                    type="button"
+                    className={`f-chip${schritt === x ? ' an' : ''}`}
+                    aria-pressed={schritt === x}
+                    onClick={() => setSchritt(x)}
+                  >
+                    {formatZahl(x)} kg
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="f-feld">
+              <span className="f-label">Langhantel (Scheibenrechner)</span>
+              <div className="f-chips">
+                <button type="button" className={`f-chip${stange === null ? ' an' : ''}`} aria-pressed={stange === null} onClick={() => setStange(null)}>
+                  Nein
+                </button>
+                {STANGEN.map((x) => (
+                  <button
+                    key={x}
+                    type="button"
+                    className={`f-chip${stange === x ? ' an' : ''}`}
+                    aria-pressed={stange === x}
+                    onClick={() => setStange(x)}
+                  >
+                    {x} kg
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
 
         <div className="f-feld quer">
           <span className="f-label">Pause</span>

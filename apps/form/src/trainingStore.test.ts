@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
+  getEinstellungen,
   getLaufend,
   getTrainings,
   getUebungen,
@@ -10,6 +11,7 @@ import {
   normalisiereVorlagen,
   ordneVorlagen,
   pauseSauber,
+  setzeEinstellungen,
   setzeLaufend,
   speichereTraining,
   speichereUebung,
@@ -47,7 +49,23 @@ describe('normalisiereUebungen', () => {
       'Quatsch',
     ])
     expect(u).toHaveLength(1)
-    expect(u[0]).toMatchObject({ name: 'Bank drücken', erfassung: 'gewicht', pause: 90, notiz: '', archiviert: false })
+    expect(u[0]).toMatchObject({
+      name: 'Bank drücken',
+      erfassung: 'gewicht',
+      pause: 90,
+      notiz: '',
+      schritt: 2.5,
+      stange: null,
+      archiviert: false,
+    })
+  })
+})
+
+describe('Einstellungen', () => {
+  it('sind ohne Eintrag aus', () => {
+    expect(getEinstellungen()).toEqual({ ton: false, wach: false })
+    setzeEinstellungen({ ton: true, wach: false })
+    expect(getEinstellungen()).toEqual({ ton: true, wach: false })
   })
 })
 
@@ -66,8 +84,8 @@ describe('Vorlagen', () => {
       { id: 'l', name: 'Pull', rang: 0, uebungen: [{ uebung: 'b' }] },
     ])
     expect(v.map((x) => x.id)).toEqual(['l', 'p'])
-    expect(v[1].uebungen).toEqual([{ uebung: 'a', saetze: 20, von: 8, bis: 12 }])
-    expect(v[0].uebungen[0]).toEqual({ uebung: 'b', saetze: 3, von: null, bis: null })
+    expect(v[1].uebungen).toEqual([{ uebung: 'a', saetze: 20, aufwaermen: 0, von: 8, bis: 12 }])
+    expect(v[0].uebungen[0]).toEqual({ uebung: 'b', saetze: 3, aufwaermen: 0, von: null, bis: null })
   })
 
   it('neue Vorlagen kommen ans Ende, die Reihenfolge laesst sich aendern', () => {
@@ -90,23 +108,24 @@ describe('Trainings', () => {
     expect(t.map((x) => x.id)).toEqual(['a', 'b'])
     expect(t[1].name).toBe('Training')
     expect(t[1].uebungen[0].saetze).toEqual([
-      { kg: 80, wdh: 8, sek: null, fertig: 250 },
-      { kg: null, wdh: null, sek: null, fertig: null },
+      { kg: 80, wdh: 8, sek: null, fertig: 250, aufwaermen: false },
+      { kg: null, wdh: null, sek: null, fertig: null, aufwaermen: false },
     ])
+    expect(t[0].notiz).toBe('')
   })
 
-  it('starteTraining legt Saetze aus der Vorlage an und sichert sofort', () => {
-    const v = speichereVorlage({ name: 'Push', uebungen: [{ uebung: 'a', saetze: 3, von: 8, bis: 12 }] })!
+  it('starteTraining legt Saetze aus der Vorlage an (Aufwaermen zuerst) und sichert sofort', () => {
+    const v = speichereVorlage({ name: 'Push', uebungen: [{ uebung: 'a', saetze: 3, aufwaermen: 1, von: 8, bis: 12 }] })!
     const t = starteTraining(v, 1000)
-    expect(t.uebungen[0].saetze).toHaveLength(3)
+    expect(t.uebungen[0].saetze.map((s) => s.aufwaermen)).toEqual([true, false, false, false])
     expect(getLaufend()).toEqual(t)
     setzeLaufend(null)
     expect(getLaufend()).toBeNull()
   })
 
   it('speichereTraining ersetzt dieselbe id', () => {
-    speichereTraining({ id: 't', vorlage: null, name: 'A', start: 10, ende: 20, uebungen: [] })
-    speichereTraining({ id: 't', vorlage: null, name: 'B', start: 10, ende: 20, uebungen: [] })
+    speichereTraining({ id: 't', vorlage: null, name: 'A', start: 10, ende: 20, uebungen: [], notiz: '' })
+    speichereTraining({ id: 't', vorlage: null, name: 'B', start: 10, ende: 20, uebungen: [], notiz: '' })
     expect(getTrainings().map((t) => t.name)).toEqual(['B'])
   })
 })
@@ -115,14 +134,15 @@ describe('loescheUebung', () => {
   it('nur nie trainierte, auch aus den Vorlagen', () => {
     const a = speichereUebung({ name: 'A', erfassung: 'gewicht', pause: 120, notiz: '' })!
     const b = speichereUebung({ name: 'B', erfassung: 'wdh', pause: 60, notiz: '' })!
-    speichereVorlage({ name: 'V', uebungen: [{ uebung: a.id, saetze: 3, von: null, bis: null }] })
+    speichereVorlage({ name: 'V', uebungen: [{ uebung: a.id, saetze: 3, aufwaermen: 0, von: null, bis: null }] })
     speichereTraining({
       id: 't',
       vorlage: null,
       name: 'T',
       start: 10,
       ende: 20,
-      uebungen: [{ uebung: b.id, saetze: [{ kg: null, wdh: 10, sek: null, fertig: 15 }] }],
+      uebungen: [{ uebung: b.id, saetze: [{ kg: null, wdh: 10, sek: null, fertig: 15, aufwaermen: false }] }],
+      notiz: '',
     })
     expect(loescheUebung(b.id)).toBe(false)
     expect(loescheUebung(a.id)).toBe(true)

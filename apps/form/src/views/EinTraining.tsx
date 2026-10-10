@@ -33,6 +33,7 @@ function EinTraining({ ctx, id }: { ctx: FormCtx; id: string }) {
         {formatDauer(st.dauer)} · {st.saetze} {st.saetze === 1 ? 'Satz' : 'Sätze'}
         {st.volumen > 0 ? ` · ${formatTausend(st.volumen)} kg` : ''}
       </p>
+      {t.notiz ? <p className="f-notiz-text">{t.notiz}</p> : null}
 
       {t.uebungen.map((tu, ui) => {
         const u = uebungById[tu.uebung]
@@ -43,7 +44,7 @@ function EinTraining({ ctx, id }: { ctx: FormCtx; id: string }) {
             <span className="f-sc-reihe">
               {tu.saetze.map((s, si) =>
                 erledigt(s) ? (
-                  <span key={si} className={`f-sc${pr.has(`${ui}:${si}`) ? ' pr' : ''}`}>
+                  <span key={si} className={`f-sc${pr.has(`${ui}:${si}`) ? ' pr' : ''}${s.aufwaermen ? ' auf' : ''}`}>
                     {formatSatz(s, u.erfassung)}
                   </span>
                 ) : null,

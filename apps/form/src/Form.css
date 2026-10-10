@@ -919,6 +919,7 @@ input {
   padding: 0 12px;
   border-radius: 16px;
   background: var(--surface-2);
+  white-space: nowrap;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-2);
@@ -1958,6 +1959,206 @@ ion-modal.f-voll-modal {
 .f-plus-zeile .f-i {
   width: 16px;
   height: 16px;
+}
+
+/* ---------- Training, zweite Runde: Aufwaermen, Vorschlag, Schalter, Rueckblick ---------- */
+
+/* Satznummer ist ein Knopf: Aufwaermsatz oder entfernen. */
+button.f-nr {
+  height: 34px;
+  border-radius: 8px;
+}
+
+button.f-nr:active {
+  background: var(--surface-2);
+}
+
+/* Aufwaermsatz: "A" statt Nummer, Zahlen leiser. */
+.f-satz.auf .f-nr {
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.f-satz.auf .f-z {
+  font-size: 18px;
+}
+
+.f-satz.auf .f-z.fest {
+  color: var(--text-2);
+}
+
+/* Vorschlag fuers naechste Gewicht - Fortschritt, darum orange. */
+.f-ex-plus {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.f-notiz-training {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 13.5px;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.f-notiz-text {
+  margin: 0 2px !important;
+  font-size: 13.5px;
+  color: var(--text-2);
+  white-space: pre-wrap;
+}
+
+.f-feld textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.4;
+  resize: none;
+  outline: none;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.f-feld textarea:focus {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.f-zeile-kurz {
+  max-width: 60%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.f-scheiben {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Schalter wie in den iOS-Einstellungen. */
+.f-schalter {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--surface-3);
+  transition: background-color 0.18s;
+}
+
+.f-schalter::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.18s;
+}
+
+.f-schalter.an {
+  background: var(--accent);
+}
+
+.f-schalter.an::after {
+  transform: translateX(18px);
+}
+
+/* Startseite: welche Vorlage dran ist. */
+.f-vorlage small.f-dran {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Verlauf: Trainings pro Woche. */
+.f-wochen-kopf {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 2px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.f-wochen-kopf b {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.f-wochen {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.f-wochen .woche {
+  fill: var(--text-3);
+}
+
+.f-wochen .leer {
+  fill: var(--surface-3);
+}
+
+.f-wochen .jetzt {
+  fill: var(--text);
+}
+
+/* Eine Uebung: Bestwerte je Wdh-Zahl. */
+.f-bestwerte {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  gap: 6px;
+}
+
+.f-bestwert {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.f-bestwert small {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.f-bestwert b {
+  font-family: var(--f-disp);
+  font-weight: 700;
+  font-size: 21px;
+  line-height: 1.1;
+}
+
+/* Ein Training: Aufwaermsaetze leiser. */
+.f-sc.auf {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--surface-3);
+  color: var(--text-3);
 }
 
 /* ---------- Ionic: Meldung und Rueckfrage ---------- */

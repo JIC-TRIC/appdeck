@@ -128,6 +128,11 @@ export function Umschalter({ wert, onWahl }: { wert: AppBereich; onWahl: (b: App
   )
 }
 
+/** Ein- und Ausschalter wie in den iOS-Einstellungen - steht rechts in einer Zeile. */
+export function Schalter({ an }: { an: boolean }) {
+  return <span className={`f-schalter${an ? ' an' : ''}`} aria-hidden="true" />
+}
+
 /** Minus, Zahl, Plus - fuer Pause, Saetze und Wdh-Bereich. */
 export function Stepper({
   text,

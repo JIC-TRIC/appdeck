@@ -1,12 +1,13 @@
 import { Fragment, useState } from 'react'
 import { IconLoeschTaste, IconX } from '../icons'
-import { vollstaendig, type Zahlen } from '../trainingCalc'
+import { scheiben, vollstaendig, type Zahlen } from '../trainingCalc'
 import { Blatt } from '../ui'
 import { formatZahl, parseZahl, rund } from '../util'
 import type { Erfassung } from '../types'
 
 // Eigenes Tastenfeld statt der iOS-Tastatur: groessere Tasten und
-// +-2,5 kg (bzw. +-1 Wdh, +-5 s) auf einen Tipp. Jeder Tastendruck wird sofort
+// +- der Gewichtsschritt der Uebung (bzw. +-1 Wdh, +-5 s) auf einen Tipp. Bei
+// Langhantel-Uebungen steht darunter, welche Scheiben pro Seite drauf muessen. Jeder Tastendruck wird sofort
 // gesichert - wer das Blatt wegwischt, verliert nichts. "Abhaken" nimmt fuer
 // leere Felder das Graue (das letzte Mal).
 
@@ -14,7 +15,7 @@ export type Feld = 'kg' | 'wdh' | 'sek'
 
 export const FELDER: Record<Erfassung, Feld[]> = { gewicht: ['kg', 'wdh'], wdh: ['wdh'], zeit: ['sek'] }
 export const FELDNAME: Record<Feld, string> = { kg: 'kg', wdh: 'Wdh', sek: 'Sek' }
-const SCHRITT: Record<Feld, number> = { kg: 2.5, wdh: 1, sek: 5 }
+const SCHRITT: Record<Exclude<Feld, 'kg'>, number> = { wdh: 1, sek: 5 }
 const TASTEN = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0']
 
 const alsText = (f: Feld, v: number | null) => (v === null ? '' : f === 'kg' ? formatZahl(v) : String(v))
@@ -39,6 +40,8 @@ export function Tastenfeld({
   werte,
   platzhalter,
   info,
+  schritt: kgSchritt,
+  stange,
   erledigt,
   melde,
   onFeld,
@@ -54,6 +57,10 @@ export function Tastenfeld({
   platzhalter: Zahlen | null
   /** "Zuletzt bei Push: 30 × 9" */
   info: string | null
+  /** Gewichtsschritt der Uebung (kg) */
+  schritt: number
+  /** Stange fuer den Scheibenrechner, null = keine Langhantel */
+  stange: number | null
   erledigt: boolean
   melde: (text: string) => void
   onFeld: (f: Feld) => void
@@ -89,9 +96,11 @@ export function Tastenfeld({
     setze(neu)
   }
 
+  const s = feld === 'kg' ? kgSchritt : SCHRITT[feld]
+
   const schritt = (vz: 1 | -1) => {
     const basis = alsZahl(feld, texte[feld]) ?? platzhalter?.[feld] ?? 0
-    setze(alsText(feld, Math.max(0, rund(basis + vz * SCHRITT[feld]))), true)
+    setze(alsText(feld, Math.max(0, rund(basis + vz * s))), true)
   }
 
   const wechsle = (f: Feld) => {
@@ -117,8 +126,22 @@ export function Tastenfeld({
     schliessen()
   }
 
-  const s = SCHRITT[feld]
   const schrittText = feld === 'sek' ? `${s} s` : formatZahl(s)
+
+  // Scheiben pro Seite fuer das Gewicht, das gerade gilt (getippt oder grau).
+  const kg = alsZahl('kg', texte.kg) ?? platzhalter?.kg ?? null
+  let scheibenText = ''
+  if (stange !== null && erf === 'gewicht' && kg !== null) {
+    const pro = scheiben(kg, stange)
+    scheibenText =
+      pro === null
+        ? kg < stange
+          ? `Leichter als die Stange (${formatZahl(stange)} kg)`
+          : 'Geht mit den Scheiben nicht genau auf'
+        : pro.length
+          ? `Je Seite ${pro.map(formatZahl).join(' · ')}`
+          : 'Nur die Stange'
+  }
 
   return (
     <Blatt label={`${titel}, ${untertitel}`} onClose={onClose}>
@@ -153,7 +176,13 @@ export function Tastenfeld({
               )
             })}
           </div>
-          {info ? <p className="f-wahl-info">{info}</p> : null}
+          {info || scheibenText ? (
+            <p className="f-wahl-info">
+              {info}
+              {info && scheibenText ? <br /> : null}
+              {scheibenText ? <span className="f-scheiben">{scheibenText}</span> : null}
+            </p>
+          ) : null}
 
           <div className="f-schnell">
             <button type="button" onClick={() => schritt(-1)}>

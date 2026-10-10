@@ -114,14 +114,15 @@ Messtag, Verlauf pro Wert. Nicht im MVP (siehe `apps/form/konzept.md`):
 Gebaut am 10.10.2026 nach Feature-Liste und Mockups (`apps/form/mockups.html`), Regeln in
 `apps/form/konzept.md` („Training“): Vorlagen, laufendes Training mit eigenem Tastenfeld, grau das
 letzte Mal aus derselben Vorlage, Pause aus dem letzten Haken berechnet, Rekorde, Verlauf, Nachtragen,
-Übungen mit Kurve. Noch offen aus der Feature-Liste:
+Übungen mit Kurve. Nach dem Abgleich mit Strong und Hevy (ebenfalls 10.10.2026) dazu: Aufwärmsätze,
+Vorschlag fürs nächste Gewicht, Gewichtsschritt pro Übung, Scheibenrechner, Ton am Pausenende,
+Bildschirm an, Notiz pro Training, Wochenbalken, Bestwerte je Wdh-Zahl, Export als CSV, „als Nächstes“.
+Noch offen:
 
-- Satzarten (Aufwärmen, Drop-Satz), RPE/RIR, Supersätze, Notiz pro Training.
-- Rotation („Als Nächstes: Pull“) und Progressionsvorschlag (+2,5 kg, wenn alle Sätze oben im Bereich).
-- Rekordtabelle (bestes Gewicht für 1/3/5/8/10 Wdh), Monatskalender, Wochenstatistik pro Muskelgruppe.
-- Scheiben- und Aufwärmrechner, Gewichtsschritte pro Gerät.
 - **Verbindung zu Steady**: ein beendetes Training hakt eine gewählte Gewohnheit ab (z. B. „Gym“).
-- Körpergewicht aus den Werten für Körpergewichtsübungen, Export als CSV.
+- Körpergewicht aus den Werten für Körpergewichtsübungen (Klimmzug = Körpergewicht + Zusatz).
+- Monatskalender mit Trainingstagen.
+- Bewusst weggelassen: Drop-Sätze, RPE/RIR, Supersätze, Muskelgruppen – bei Bedarf neu entscheiden.
 - Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
   bleibt vorerst in localStorage, zusammen mit Kontor ein Grund für den IndexedDB-Umzug (siehe oben).
 

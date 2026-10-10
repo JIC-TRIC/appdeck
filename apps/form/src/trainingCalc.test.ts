@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import {
   abschliessen,
+  alsCsv,
+  bestwerteJeWdh,
+  endeFuer,
+  formatSek,
+  gleicherSatz,
+  naechsteVorlage,
+  scheiben,
+  steigerung,
+  voriges,
+  wochen,
   abweichung,
   alleRekorde,
   besser,
@@ -20,7 +30,14 @@ import {
 } from './trainingCalc'
 import type { Satz, Training, Uebung } from './types'
 
-const s = (kg: number | null, wdh: number | null, fertig: number | null = 1): Satz => ({ kg, wdh, sek: null, fertig })
+const s = (kg: number | null, wdh: number | null, fertig: number | null = 1): Satz => ({
+  kg,
+  wdh,
+  sek: null,
+  fertig,
+  aufwaermen: false,
+})
+const auf = (kg: number | null, wdh: number | null, fertig: number | null = 1): Satz => ({ ...s(kg, wdh, fertig), aufwaermen: true })
 const leer = (): Satz => s(null, null, null)
 
 const uebung = (id: string, erfassung: Uebung['erfassung'] = 'gewicht'): Uebung => ({
@@ -29,6 +46,8 @@ const uebung = (id: string, erfassung: Uebung['erfassung'] = 'gewicht'): Uebung 
   erfassung,
   pause: 120,
   notiz: '',
+  schritt: 2.5,
+  stange: null,
   archiviert: false,
   erstellt: 0,
 })
@@ -41,6 +60,7 @@ const tr = (id: string, vorlage: string | null, start: number, uebungen: Trainin
   start,
   ende: start + 10,
   uebungen,
+  notiz: '',
 })
 
 describe('vorgabe', () => {
@@ -137,7 +157,7 @@ describe('Training', () => {
     const weg = abschliessen(t, 300, 'verwerfen', byId, vorher)
     expect(weg.uebungen.map((u) => u.saetze.length)).toEqual([1])
     const ab = abschliessen(t, 300, 'abhaken', byId, vorher)
-    expect(ab.uebungen[0].saetze[1]).toEqual({ kg: 80, wdh: 7, sek: null, fertig: 300 })
+    expect(ab.uebungen[0].saetze[1]).toEqual({ kg: 80, wdh: 7, sek: null, fertig: 300, aufwaermen: false })
     expect(ab.uebungen).toHaveLength(1)
     expect(ab.ende).toBe(300)
   })
@@ -149,8 +169,8 @@ describe('Vorlage', () => {
     name: 'Push',
     rang: 0,
     uebungen: [
-      { uebung: 'bank', saetze: 2, von: 5, bis: 8 },
-      { uebung: 'dips', saetze: 3, von: null, bis: null },
+      { uebung: 'bank', saetze: 2, aufwaermen: 0, von: 5, bis: 8 },
+      { uebung: 'dips', saetze: 3, aufwaermen: 0, von: null, bis: null },
     ],
   }
 
@@ -173,8 +193,8 @@ describe('Vorlage', () => {
       { uebung: 'bank', saetze: [s(80, 8), s(80, 8), s(80, 6)] },
     ])
     expect(vorlageAus(t, v.uebungen)).toEqual([
-      { uebung: 'face', saetze: 1, von: null, bis: null },
-      { uebung: 'bank', saetze: 3, von: 5, bis: 8 },
+      { uebung: 'face', saetze: 1, aufwaermen: 0, von: null, bis: null },
+      { uebung: 'bank', saetze: 3, aufwaermen: 0, von: 5, bis: 8 },
     ])
   })
 })
@@ -196,5 +216,103 @@ describe('Text', () => {
 
   it('besterSatz', () => {
     expect(besterSatz([s(80, 8), s(85, 5), s(85, 6)], 'gewicht')).toEqual(s(85, 6))
+  })
+})
+
+describe('Aufwaermsaetze', () => {
+  it('grau kommt vom passenden Satz gleicher Art', () => {
+    const ref = [auf(40, 10), s(80, 8), s(80, 7)]
+    const heute = [auf(null, null, null), leer(), leer()]
+    expect(platzhalter(ref, heute, 0)).toEqual({ kg: 40, wdh: 10, sek: null })
+    expect(platzhalter(ref, heute, 2)).toEqual({ kg: 80, wdh: 7, sek: null })
+    expect(gleicherSatz(ref, heute, 1)).toEqual(s(80, 8))
+  })
+
+  it('zaehlen nicht fuer Rekorde und Volumen', () => {
+    const vorher = [tr('a', 'push', 100, [{ uebung: 'bank', saetze: [s(80, 8)] }])]
+    const heute = tr('b', 'push', 200, [{ uebung: 'bank', saetze: [auf(100, 5), s(80, 8)] }])
+    expect(rekordeIn(heute, vorher, byId)).toEqual([])
+    expect(statistik(heute, byId)).toMatchObject({ saetze: 1, volumen: 640 })
+  })
+
+  it('kommen als eigene Zahl in die Vorlage', () => {
+    const t = tr('t', 'push', 0, [{ uebung: 'bank', saetze: [auf(40, 10), s(80, 8), s(80, 8)] }])
+    expect(vorlageAus(t)[0]).toMatchObject({ saetze: 2, aufwaermen: 1 })
+  })
+})
+
+describe('steigerung', () => {
+  it('alle Arbeitssaetze oben im Bereich: naechstes Gewicht, Wdh vom unteren Ende', () => {
+    const ref = [auf(40, 10), s(80, 8), s(80, 8)]
+    const plus = steigerung(ref, { von: 5, bis: 8 }, 'gewicht', 2.5)
+    expect(plus).toEqual({ kg: 2.5, wdh: 5 })
+    expect(platzhalter(ref, [auf(null, null, null), leer()], 1, plus)).toEqual({ kg: 82.5, wdh: 5, sek: null })
+    expect(platzhalter(ref, [auf(null, null, null), leer()], 0, plus)).toEqual({ kg: 40, wdh: 10, sek: null })
+  })
+
+  it('sonst kein Vorschlag', () => {
+    expect(steigerung([s(80, 8), s(80, 7)], { von: 5, bis: 8 }, 'gewicht', 2.5)).toBeNull()
+    expect(steigerung([s(80, 8)], { von: 5, bis: null }, 'gewicht', 2.5)).toBeNull()
+    expect(steigerung([s(null, 12)], { von: 8, bis: 12 }, 'wdh', 2.5)).toBeNull()
+  })
+})
+
+describe('Hilfen', () => {
+  it('scheiben pro Seite', () => {
+    expect(scheiben(87.5, 20)).toEqual([25, 5, 2.5, 1.25])
+    expect(scheiben(20, 20)).toEqual([])
+    expect(scheiben(21, 20)).toBeNull()
+    expect(scheiben(15, 20)).toBeNull()
+  })
+
+  it('wochen zaehlt Trainings von Montag bis Sonntag', () => {
+    // Sa 10.10.2026: diese Woche beginnt Mo 5.10.
+    const am = (tag: string) => tr(tag, null, new Date(`${tag}T18:00:00`).getTime(), [])
+    const w = wochen([am('2026-09-28'), am('2026-10-04'), am('2026-10-05'), am('2026-10-10')], '2026-10-10', 3)
+    expect(w).toEqual([
+      { montag: '2026-09-21', anzahl: 0 },
+      { montag: '2026-09-28', anzahl: 2 },
+      { montag: '2026-10-05', anzahl: 2 },
+    ])
+  })
+
+  it('bestwerteJeWdh laesst Abgedecktes weg', () => {
+    expect(bestwerteJeWdh([s(90, 1), s(85, 5), s(82.5, 8), s(82.5, 6), auf(100, 10)])).toEqual([
+      { wdh: 1, kg: 90 },
+      { wdh: 5, kg: 85 },
+      { wdh: 8, kg: 82.5 },
+    ])
+  })
+
+  it('naechsteVorlage: die am laengsten nicht trainierte, erst ab zweien', () => {
+    const v = (id: string) => ({ id, name: id, uebungen: [], rang: 0 })
+    const ts = [tr('1', 'push', 100, []), tr('2', 'pull', 200, []), tr('3', 'push', 300, [])]
+    expect(naechsteVorlage([v('push'), v('pull'), v('neu')], ts)).toBe('pull')
+    expect(naechsteVorlage([v('push'), v('neu')], ts)).toBeNull()
+  })
+
+  it('endeFuer: vergessenes Training endet beim letzten Haken', () => {
+    const t: Training = { ...tr('t', null, 0, [{ uebung: 'bank', saetze: [s(80, 8, 600000)] }]), ende: null }
+    expect(endeFuer(t, 900000)).toBe(900000)
+    expect(endeFuer(t, 600000 + 7200000)).toBe(600000)
+  })
+
+  it('voriges Training derselben Vorlage', () => {
+    const ts = [tr('a', 'push', 100, []), tr('b', 'pull', 200, []), tr('c', 'push', 300, [])]
+    expect(voriges(ts, ts[2])?.id).toBe('a')
+    expect(voriges(ts, ts[1])).toBeNull()
+  })
+
+  it('formatSek und CSV', () => {
+    expect(formatSek(45)).toBe('45 s')
+    expect(formatSek(90)).toBe('1:30')
+    const start = new Date('2026-10-10T17:40:00').getTime()
+    const t = tr('t', 'push', start, [{ uebung: 'bank', saetze: [auf(40, 10), s(82.5, 8), s(82.5, null, null)] }])
+    expect(alsCsv([{ ...t, name: 'Push; schwer' }], byId).split('\r\n')).toEqual([
+      'Datum;Beginn;Training;Übung;Satz;kg;Wdh;Sekunden',
+      '2026-10-10;17:40;"Push; schwer";bank;A;40;10;',
+      '2026-10-10;17:40;"Push; schwer";bank;1;82,5;8;',
+      '',
+    ])
   })
 })

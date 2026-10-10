@@ -8,10 +8,11 @@
  *   form:trainings  Training[]      beendete, aelteste zuerst
  *   form:laufend    Training|null   das laufende - nach jedem Tipp gesichert
  *   form:bereich    'werte'|'training'   wo Form zuletzt war
+ *   form:einstellungen  { ton, wach }   Schalter im Menue des Trainings
  */
 import { NAME_MAX, lies, neueId, obj, sauber, schreibe, zahl } from './store'
 import { rund } from './util'
-import type { AppBereich, Erfassung, Satz, Training, TrainingsUebung, Uebung, Vorlage, VorlagenUebung } from './types'
+import type { AppBereich, Einstellungen, Erfassung, Satz, Training, TrainingsUebung, Uebung, Vorlage, VorlagenUebung } from './types'
 
 export const NOTIZ_MAX = 80
 export const PAUSE_STANDARD = 120
@@ -19,6 +20,13 @@ export const PAUSE_MIN = 15
 export const PAUSE_MAX = 600
 export const SAETZE_MAX = 20
 export const WDH_MAX = 100
+export const AUFWAERMEN_MAX = 5
+export const NOTIZ_TRAINING_MAX = 300
+/** Gewichtsschritte, die man pro Uebung waehlen kann (kg). */
+export const SCHRITTE = [1, 1.25, 2, 2.5, 5]
+export const SCHRITT_STANDARD = 2.5
+/** Stangen fuer den Scheibenrechner (kg). */
+export const STANGEN = [10, 15, 20]
 const ERFASSUNGEN: Erfassung[] = ['gewicht', 'wdh', 'zeit']
 
 /** Pausen in 15-Sekunden-Schritten zwischen 0:15 und 10:00. */
@@ -49,6 +57,8 @@ export function normalisiereUebungen(raw: unknown): Uebung[] {
       erfassung: ERFASSUNGEN.includes(u.erfassung as Erfassung) ? (u.erfassung as Erfassung) : 'gewicht',
       pause: zahl(u.pause) ? pauseSauber(u.pause) : PAUSE_STANDARD,
       notiz: typeof u.notiz === 'string' ? sauber(u.notiz, NOTIZ_MAX) : '',
+      schritt: zahl(u.schritt) && SCHRITTE.includes(u.schritt) ? u.schritt : SCHRITT_STANDARD,
+      stange: zahl(u.stange) && STANGEN.includes(u.stange) ? u.stange : null,
       archiviert: u.archiviert === true,
       erstellt: zahl(u.erstellt) && u.erstellt > 0 ? u.erstellt : 0,
     })
@@ -63,6 +73,8 @@ export interface UebungEingabe {
   erfassung: Erfassung
   pause: number
   notiz: string
+  schritt?: number
+  stange?: number | null
 }
 
 /** Legt eine Uebung an (ohne id) oder aendert sie. null, wenn der Name fehlt. */
@@ -77,6 +89,8 @@ export function speichereUebung(e: UebungEingabe, id?: string, jetzt = Date.now(
     erfassung: e.erfassung,
     pause: pauseSauber(e.pause),
     notiz: sauber(e.notiz, NOTIZ_MAX),
+    schritt: e.schritt !== undefined && SCHRITTE.includes(e.schritt) ? e.schritt : (alt?.schritt ?? SCHRITT_STANDARD),
+    stange: e.stange !== undefined ? (e.stange !== null && STANGEN.includes(e.stange) ? e.stange : null) : (alt?.stange ?? null),
     archiviert: alt?.archiviert ?? false,
     erstellt: alt?.erstellt ?? jetzt,
   }
@@ -129,7 +143,13 @@ function normalisiereVorlagenUebung(x: unknown): VorlagenUebung | null {
   let von = ganz(u.von, 1, WDH_MAX)
   let bis = ganz(u.bis, 1, WDH_MAX)
   if (von !== null && bis !== null && von > bis) [von, bis] = [bis, von]
-  return { uebung: u.uebung, saetze: ganz(u.saetze, 1, SAETZE_MAX) ?? 3, von, bis }
+  return {
+    uebung: u.uebung,
+    saetze: ganz(u.saetze, 1, SAETZE_MAX) ?? 3,
+    aufwaermen: ganz(u.aufwaermen, 0, AUFWAERMEN_MAX) ?? 0,
+    von,
+    bis,
+  }
 }
 
 export function normalisiereVorlagen(raw: unknown): Vorlage[] {
@@ -191,7 +211,13 @@ export function ordneVorlagen(ids: string[]) {
 
 // ---------- Trainings ----------
 
-export const leererSatz = (): Satz => ({ kg: null, wdh: null, sek: null, fertig: null })
+export const leererSatz = (aufwaermen = false): Satz => ({ kg: null, wdh: null, sek: null, fertig: null, aufwaermen })
+
+/** Die Saetze einer Uebung beim Start: erst die Aufwaermsaetze, dann die Arbeitssaetze. */
+export const saetzeFuer = (v: Pick<VorlagenUebung, 'saetze' | 'aufwaermen'>): Satz[] => [
+  ...Array.from({ length: v.aufwaermen }, () => leererSatz(true)),
+  ...Array.from({ length: v.saetze }, () => leererSatz()),
+]
 
 function normalisiereSatz(x: unknown): Satz {
   const s = obj(x)
@@ -200,6 +226,7 @@ function normalisiereSatz(x: unknown): Satz {
     wdh: ganz(s.wdh, 0, 9999),
     sek: ganz(s.sek, 0, 86400),
     fertig: zahl(s.fertig) && s.fertig > 0 ? s.fertig : null,
+    aufwaermen: s.aufwaermen === true,
   }
 }
 
@@ -222,6 +249,7 @@ export function normalisiereTraining(x: unknown): Training | null {
     start: t.start,
     ende: zahl(t.ende) && t.ende >= t.start ? t.ende : null,
     uebungen,
+    notiz: typeof t.notiz === 'string' ? t.notiz.trim().slice(0, NOTIZ_TRAINING_MAX) : '',
   }
 }
 
@@ -270,10 +298,8 @@ export function starteTraining(vorlage: Vorlage | null, jetzt = Date.now()): Tra
     name: vorlage?.name ?? 'Training',
     start: jetzt,
     ende: null,
-    uebungen: (vorlage?.uebungen ?? []).map((v) => ({
-      uebung: v.uebung,
-      saetze: Array.from({ length: v.saetze }, leererSatz),
-    })),
+    uebungen: (vorlage?.uebungen ?? []).map((v) => ({ uebung: v.uebung, saetze: saetzeFuer(v) })),
+    notiz: '',
   }
   setzeLaufend(t)
   return t
@@ -285,4 +311,15 @@ export const getBereich = (): AppBereich => (lies('bereich') === 'training' ? 't
 
 export function setzeBereich(b: AppBereich) {
   schreibe('bereich', b)
+}
+
+// ---------- Schalter ----------
+
+export function getEinstellungen(): Einstellungen {
+  const e = obj(lies('einstellungen'))
+  return { ton: e.ton === true, wach: e.wach === true }
+}
+
+export function setzeEinstellungen(e: Einstellungen) {
+  schreibe('einstellungen', e)
 }

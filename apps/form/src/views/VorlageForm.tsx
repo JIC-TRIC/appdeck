@@ -3,18 +3,20 @@ import { IonReorder, IonReorderGroup, useIonAlert } from '@ionic/react'
 import { IconGriff, IconPlus, IconX } from '../icons'
 import { NAME_MAX, sauber } from '../store'
 import { formatBereich } from '../trainingCalc'
-import { SAETZE_MAX, WDH_MAX, loescheVorlage, speichereVorlage } from '../trainingStore'
+import { AUFWAERMEN_MAX, SAETZE_MAX, WDH_MAX, loescheVorlage, speichereVorlage } from '../trainingStore'
 import { Blatt, Seite, Stepper, TextKnopf } from '../ui'
 import { Hinzufuegen } from './Hinzufuegen'
 import type { FormCtx, VorlagenUebung } from '../types'
 
 const chipText = (v: VorlagenUebung) => {
   const b = formatBereich(v)
-  return b ? `${v.saetze} × ${b}` : `${v.saetze} ${v.saetze === 1 ? 'Satz' : 'Sätze'}`
+  const arbeit = b ? `${v.saetze} × ${b}` : `${v.saetze} ${v.saetze === 1 ? 'Satz' : 'Sätze'}`
+  return v.aufwaermen ? `${v.aufwaermen}A + ${arbeit}` : arbeit
 }
 
-// Vorlage anlegen oder bearbeiten: Name und Uebungen, pro Uebung Satzzahl
-// und Wdh-Bereich (ein Tipp auf "3 × 8–12"). Am Griff ziehen zum Sortieren.
+// Vorlage anlegen oder bearbeiten: Name und Uebungen, pro Uebung Satzzahl,
+// Aufwaermsaetze und Wdh-Bereich (ein Tipp auf "3 × 8–12", "1A" = ein
+// Aufwaermsatz). Am Griff ziehen zum Sortieren.
 // Erst "Sichern" schreibt.
 function VorlageForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
   const { vorlagen, uebungById, back, refresh, melde } = ctx
@@ -146,6 +148,17 @@ function VorlageForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
                     />
                   </div>
                   <div className="f-zeile">
+                    <span>Aufwärmsätze</span>
+                    <Stepper
+                      label="Aufwärmsätze"
+                      text={String(v.aufwaermen)}
+                      onMinus={() => aendere(i, { aufwaermen: Math.max(0, v.aufwaermen - 1) })}
+                      onPlus={() => aendere(i, { aufwaermen: Math.min(AUFWAERMEN_MAX, v.aufwaermen + 1) })}
+                      minusAus={v.aufwaermen <= 0}
+                      plusAus={v.aufwaermen >= AUFWAERMEN_MAX}
+                    />
+                  </div>
+                  <div className="f-zeile">
                     <span>Wdh von</span>
                     <Stepper
                       label="Wdh von"
@@ -195,7 +208,7 @@ function VorlageForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
           ctx={ctx}
           mehrfach
           ohne={liste.map((v) => v.uebung)}
-          onWahl={(ids) => setListe((l) => [...l, ...ids.map((u) => ({ uebung: u, saetze: 3, von: null, bis: null }))])}
+          onWahl={(ids) => setListe((l) => [...l, ...ids.map((u) => ({ uebung: u, saetze: 3, aufwaermen: 0, von: null, bis: null }))])}
           onClose={() => setHinzu(false)}
         />
       ) : null}

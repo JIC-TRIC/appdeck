@@ -1,5 +1,15 @@
 import { useState } from 'react'
-import { abweichung, formatDauer, formatSatz, formatTausend, rekordeIn, statistik, vorlageAus, type RekordArt } from '../trainingCalc'
+import {
+  abweichung,
+  formatDauer,
+  formatSatz,
+  formatTausend,
+  rekordeIn,
+  statistik,
+  voriges,
+  vorlageAus,
+  type RekordArt,
+} from '../trainingCalc'
 import { speichereVorlage } from '../trainingStore'
 import { Seite } from '../ui'
 import { useAlsVorlage } from './alsVorlage'
@@ -12,7 +22,8 @@ const ART: Record<RekordArt, string> = {
   zeit: 'längste Zeit',
 }
 
-// Nach "Beenden": Dauer, Saetze, Volumen, die Rekorde - und wenn das Training
+// Nach "Beenden": Dauer, Saetze, Volumen (verglichen mit dem letzten Mal
+// derselben Vorlage), die Rekorde - und wenn das Training
 // von seiner Vorlage abwich, die Frage, ob sie mitgehen soll. Ein leeres
 // Training laesst sich hier als Vorlage speichern.
 function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
@@ -23,6 +34,9 @@ function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
   if (!t) return <Seite>{null}</Seite>
 
   const st = statistik(t, uebungById)
+  const davor = voriges(trainings, t)
+  const volDavor = davor ? statistik(davor, uebungById).volumen : 0
+  const prozent = volDavor > 0 && st.volumen > 0 ? Math.round(((st.volumen - volDavor) / volDavor) * 100) : null
   const rekorde = rekordeIn(t, trainings, uebungById)
   const vorlage = t.vorlage ? vorlagen.find((v) => v.id === t.vorlage) : undefined
   const abw = vorlage ? abweichung(t, vorlage) : null
@@ -63,6 +77,12 @@ function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
         {formatDauer(st.dauer)} · {st.saetze} {st.saetze === 1 ? 'Satz' : 'Sätze'}
         {st.volumen > 0 ? ` · ${formatTausend(st.volumen)} kg` : ''}
       </p>
+      {prozent !== null ? (
+        <p className="f-statzeile">
+          <em className={`f-diff${prozent > 0 ? ' gut' : ''}`}>{prozent > 0 ? `+${prozent}` : prozent === 0 ? '±0' : `−${-prozent}`} %</em>{' '}
+          Volumen zum letzten {t.name}
+        </p>
+      ) : null}
 
       {rekorde.length ? (
         <>

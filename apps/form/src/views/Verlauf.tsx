@@ -1,5 +1,6 @@
+import { Wochen } from '../charts'
 import { IconPlus, IconRight } from '../icons'
-import { alleRekorde, formatDauer } from '../trainingCalc'
+import { alleRekorde, alsCsv, formatDauer, wochen } from '../trainingCalc'
 import { Seite, Zurueck } from '../ui'
 import { dateKey, relativTag } from '../util'
 import type { FormCtx, Training } from '../types'
@@ -9,11 +10,35 @@ const MONATE = [
   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember',
 ]
 
-// Alle Trainings, neueste oben, eine Zeile pro Training, nach Monaten.
-// "PR": In diesem Training gab es einen Rekord. "+" traegt eins nach.
+// Oben die Trainings pro Woche (12 Wochen), darunter alle Trainings, neueste
+// oben, eine Zeile pro Training, nach Monaten. "PR": In diesem Training gab es
+// einen Rekord. "+" traegt eins nach, ganz unten der Export als CSV.
 function Verlauf({ ctx }: { ctx: FormCtx }) {
-  const { trainings, uebungById, heute, push, back } = ctx
+  const { trainings, uebungById, heute, push, back, melde } = ctx
   const rekorde = alleRekorde(trainings, uebungById)
+  const w = wochen(trainings, heute)
+  const schnitt = w.slice(0, -1).reduce((n, x) => n + x.anzahl, 0) / (w.length - 1)
+
+  // Teilen-Blatt, wo es geht (iPhone: "In Dateien sichern"), sonst Download.
+  // Mit BOM, damit Excel die Umlaute erkennt.
+  const exportieren = async () => {
+    const datei = new File([`\uFEFF${alsCsv(trainings, uebungById)}`], `form-training-${heute}.csv`, { type: 'text/csv' })
+    try {
+      if (navigator.canShare?.({ files: [datei] })) {
+        await navigator.share({ files: [datei], title: 'Form – Training' })
+        return
+      }
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return
+    }
+    const url = URL.createObjectURL(datei)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = datei.name
+    a.click()
+    window.setTimeout(() => URL.revokeObjectURL(url), 2000)
+    melde('Export gesichert')
+  }
 
   const monate: { key: string; titel: string; liste: Training[] }[] = []
   for (let i = trainings.length - 1; i >= 0; i -= 1) {
@@ -40,6 +65,19 @@ function Verlauf({ ctx }: { ctx: FormCtx }) {
       }
     >
       {!trainings.length ? <p className="f-leer-t f-leer-klein">Noch kein Training.</p> : null}
+      {trainings.length ? (
+        <section className="f-karte-flach">
+          <div className="f-wochen-kopf">
+            <span>
+              Diese Woche <b>{w[w.length - 1].anzahl}</b>
+            </span>
+            <span>
+              Schnitt <b>{schnitt.toFixed(1).replace('.', ',')}</b> pro Woche
+            </span>
+          </div>
+          <Wochen wochen={w} />
+        </section>
+      ) : null}
       {monate.map((m) => (
         <section key={m.key} className="f-abschnitt">
           <h2 className="f-h2">{m.titel}</h2>
@@ -58,6 +96,11 @@ function Verlauf({ ctx }: { ctx: FormCtx }) {
           </div>
         </section>
       ))}
+      {trainings.length ? (
+        <button type="button" className="f-loeschen neutral" onClick={() => void exportieren()}>
+          Als CSV exportieren
+        </button>
+      ) : null}
     </Seite>
   )
 }

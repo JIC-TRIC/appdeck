@@ -162,6 +162,9 @@ Wert.
 
 - [x] Name (40 Zeichen), Erfassung **Gewicht × Wdh**, **nur Wdh** oder **Zeit** (Sekunden), Pause
   (0:15–10:00 in 15-s-Schritten, Standard 2:00), Notiz (80 Zeichen, steht im Training unter dem Namen).
+- [x] Bei Gewicht × Wdh: **Gewichtsschritt** (1 / 1,25 / 2 / 2,5 / 5 kg, Standard 2,5) für ± im
+  Tastenfeld und den Vorschlag, und auf Wunsch **Langhantel** (Stange 10 / 15 / 20 kg) für den
+  Scheibenrechner.
 - [x] Kein Startkatalog: Übungen entstehen beim Hinzufügen über die Suche („‚Facepull‘ anlegen“, mit
   Gewicht × Wdh) oder unter Übungen.
 - [x] Die Erfassung lässt sich nur ändern, solange die Übung nie trainiert wurde. Trainierte werden
@@ -170,24 +173,35 @@ Wert.
 
 Vorlagen:
 
-- [x] Name und Übungen, pro Übung Satzzahl (1–20) und Wdh-Bereich (optional, steht im Training neben
-  dem Namen). Reihenfolge auf der Startseite und in der Vorlage per Griff.
+- [x] Name und Übungen, pro Übung Satzzahl (1–20), Aufwärmsätze (0–5, im Chip „1A + 3 × 8–12“) und
+  Wdh-Bereich (optional, steht im Training neben dem Namen). Reihenfolge auf der Startseite und in der Vorlage per Griff.
 - [x] Neu unter Vorlagen (Zeile auf der Startseite, beim ersten Start „Vorlage anlegen“) oder aus einem
   beendeten Training: gleich auf „Fertig“ (bei einem leeren Training) oder später unter „Ein Training“
   („Als Vorlage speichern“ – das Training gehört danach zur Vorlage und heißt wie sie).
 - [x] Weicht ein Training von seiner Vorlage ab (Übung fehlt oder kam dazu, andere Satzzahl oder
   Reihenfolge), fragt „Fertig“: anpassen oder so lassen. Anpassen übernimmt Übungen, Reihenfolge und
-  Satzzahl, die Wdh-Bereiche bleiben.
+  Satzzahl (Aufwärm- und Arbeitssätze), die Wdh-Bereiche bleiben.
+- [x] **Als Nächstes:** Die Vorlage, die am längsten nicht dran war, steht auf der Startseite mit „als
+  Nächstes“ statt „vor 5 Tagen“ – erst ab zwei trainierten Vorlagen, nie trainierte drängeln sich nicht
+  vor.
 
 Sätze:
 
-- [x] **Grau:** derselbe Satz aus dem letzten Training mit derselben Vorlage. Gab es die Übung dort noch
-  nie (oder ist es ein leeres Training): das letzte Mal überhaupt. Hat das letzte Mal weniger Sätze,
-  gilt der Satz davor in diesem Training.
+- [x] **Grau:** der passende Satz aus dem letzten Training mit derselben Vorlage (gleiche Art und
+  Stelle – der zweite Arbeitssatz zum zweiten). Gab es die Übung dort noch nie (oder ist es ein leeres
+  Training): das letzte Mal überhaupt. Hat das letzte Mal weniger Sätze dieser Art, gilt der Satz davor
+  in diesem Training.
+- [x] **Vorschlag (doppelte Progression):** Lagen beim letzten Mal alle Arbeitssätze am oberen Ende des
+  Wdh-Bereichs, steht diesmal grau das Gewicht plus Gewichtsschritt, mit den Wdh vom unteren Ende. Im
+  Kopf der Übung steht dann orange „+2,5 kg“.
+- [x] **Aufwärmsätze:** „A“ statt Nummer, Zahlen leiser. Zählen nicht für Rekorde, Volumen, Satzzahl,
+  Orange und Vorschlag, stehen immer vor den Arbeitssätzen. Ein Tipp auf die Satznummer: Aufwärmsatz an
+  oder aus, Satz entfernen. „Aufwärmsatz hinzufügen“ im Blatt der Übung.
 - [x] **Haken:** füllt leere Felder mit dem Grauen und speichert die Uhrzeit. Fehlt eine Zahl, geht das
   Tastenfeld auf. Ein zweiter Tipp nimmt den Haken wieder weg.
-- [x] **Tastenfeld** statt iOS-Tastatur: der erste Tastendruck ersetzt, ±2,5 kg / ±1 Wdh / ±5 s, jeder
-  Tastendruck wird sofort gesichert. Darunter „Zuletzt bei Push: 30 × 9“.
+- [x] **Tastenfeld** statt iOS-Tastatur: der erste Tastendruck ersetzt, ± Gewichtsschritt / ±1 Wdh /
+  ±5 s, jeder Tastendruck wird sofort gesichert. Darunter „Zuletzt bei Push: 30 × 9“ und bei Langhantel
+  die Scheiben pro Seite („Je Seite 25 · 5 · 1,25“, aus 25 bis 1,25 kg).
 - [x] **Orange** am abgehakten Satz: mehr Gewicht als der gleiche Satz vom letzten Mal, oder mehr Wdh
   bei mindestens gleichem Gewicht.
 - [x] **Rekord** („PR“ statt Satznummer): schwerster Satz oder bestes geschätztes 1RM (Epley) bisher,
@@ -199,23 +213,41 @@ Sätze:
 Pause, Beenden, Nachtragen:
 
 - [x] Oben in der Kopfleiste: jetzt minus letzter Haken, der Strich füllt sich bis zur Pause der
-  Übung des letzten Hakens, danach orange. Vor dem ersten Haken die Trainingsdauer. Kein Ton, keine
-  Mitteilung (geht als Web-App im Hintergrund nicht).
+  Übung des letzten Hakens, danach orange. Vor dem ersten Haken die Trainingsdauer.
+- [x] Im Menü zwei Schalter: **Ton am Pausenende** (zwei kurze Töne beim Übergang, nicht beim späteren
+  Öffnen) und **Bildschirm bleibt an** (Wake Lock, nur wo das Gerät es kann). Beides wirkt nur bei
+  offener App – eine Mitteilung im Hintergrund geht als Web-App nicht.
+- [x] **Notiz** pro Training (300 Zeichen): im Menü, beim Bearbeiten, steht in „Ein Training“.
+- [x] Ein leeres Training öffnet gleich die Auswahl der Übungen.
 - [x] Beenden mit offenen Sätzen: verwerfen oder abhaken (mit dem Grauen). Ohne abgehakten Satz:
   verwerfen. Übungen ohne Satz fallen weg.
+- [x] Liegt der letzte Haken über eine Stunde zurück (vergessen zu beenden), endet das Training beim
+  letzten Haken statt jetzt.
+- [x] „Fertig“ vergleicht das Volumen mit dem letzten Training derselben Vorlage („+2 % Volumen zum
+  letzten Push“, mehr in Orange).
 - [x] Beliebig viele Trainings am Tag. Nachtragen: Tag (nicht in die Zukunft), Vorlage, Beginn, Dauer –
   danach dieselbe Ansicht wie im Training, ohne Pause, erst „Sichern“ schreibt.
 - [x] Ein beendetes Training lässt sich unter „Bearbeiten“ umbenennen (Name oben, leer heißt
-  „Training“), die Sätze ändern oder löschen.
+  „Training“), Beginn und Dauer ändern, Sätze und Notiz ändern oder es löschen.
+
+Rückblick:
+
+- [x] **Verlauf:** oben Trainings pro Woche als Balken (12 Wochen, die laufende in Kreide), dazu „Diese
+  Woche“ und der Schnitt der Wochen davor. Ganz unten **Export als CSV** (Semikolon, Komma, mit BOM für
+  Excel) über das Teilen-Blatt bzw. als Download.
+- [x] **Eine Übung:** Bestwerte je Wdh-Zahl – schwerstes Gewicht für mindestens 1, 3, 5, 8, 10, 12 Wdh,
+  was ein höherer Eintrag schon abdeckt, fällt weg. Zeiten ab einer Minute als „1:30“.
 
 ### Speicher
 
 ```
-form:uebungen   [{ id, name, erfassung, pause, notiz, archiviert, erstellt }]
-form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, von, bis }] }]
-form:trainings  [{ id, vorlage, name, start, ende, uebungen: [{ uebung, saetze: [{ kg, wdh, sek, fertig }] }] }]
+form:uebungen   [{ id, name, erfassung, pause, notiz, schritt, stange, archiviert, erstellt }]
+form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, aufwaermen, von, bis }] }]
+form:trainings  [{ id, vorlage, name, start, ende, notiz,
+                   uebungen: [{ uebung, saetze: [{ kg, wdh, sek, fertig, aufwaermen }] }] }]
 form:laufend    das laufende Training (gleiche Form, ende null) – nach jedem Tipp gesichert
 form:bereich    'werte' | 'training' – wo Form zuletzt war
+form:einstellungen  { ton, wach } – die Schalter im Menü des Trainings
 ```
 
 Gelesenes wird geprüft (`normalisiere*` in `trainingStore.ts`, getestet). Die Rechnungen stehen in
@@ -232,29 +264,37 @@ Nummern wie in den Mockups.
   Überschrift führt ebenfalls zu den Vorlagen.
 - [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“, ein Knopf
   und darunter „Vorlage anlegen“.
-- [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden. Pro Übung Name, Wdh-Bereich, ⋯, Notiz, Sätze
-  `Nr | kg × Wdh | Haken`, „+ Satz“. Unten „+ Übung“.
+- [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden. Pro Übung Name, Vorschlag, Wdh-Bereich, ⋯,
+  Notiz, Sätze `Nr | kg × Wdh | Haken`, „+ Satz“. Unten „+ Übung“ und die Notiz des Trainings.
 - [x] **5 Satz eingeben:** Blatt mit beiden Feldern, Schnellknöpfen, Ziffern und „Abhaken“.
 - [x] **6 Übung hinzufügen:** ganze Seite, Suche, „Zuletzt“ (bis 5, nicht schon dabei), „Alle“.
   Mehrere auf einmal; beim Tauschen genügt ein Tipp.
-- [x] **7 Übung im Training:** Pause der Übung, Verlauf ansehen, tauschen (Satzzahl bleibt),
-  verschieben, letzten Satz entfernen, herausnehmen.
-- [x] **8 Menü im Training:** Beginn ändern, Werte ansehen, Training verwerfen.
-- [x] **9 Fertig:** Dauer, Sätze, Volumen, Rekorde, Vorlage anpassen bzw. als Vorlage speichern.
-- [x] **10 Verlauf:** eine Zeile pro Training, nach Monaten, „PR“ wenn es einen Rekord gab, „+“
-  trägt nach.
+- [x] **7 Übung im Training:** Pause der Übung, Aufwärmsatz hinzufügen, Verlauf ansehen, tauschen
+  (Satzzahl bleibt), verschieben, herausnehmen. Neu daneben: **Satz-Blatt** über die Satznummer
+  (Aufwärmsatz, Satz entfernen).
+- [x] **8 Menü im Training:** Beginn (mit Dauer) ändern, Notiz, Ton am Pausenende, Bildschirm bleibt an,
+  Werte ansehen, Training verwerfen.
+- [x] **9 Fertig:** Dauer, Sätze, Volumen und Vergleich zum letzten Mal, Rekorde, Vorlage anpassen bzw.
+  als Vorlage speichern.
+- [x] **10 Verlauf:** Wochenbalken, eine Zeile pro Training, nach Monaten, „PR“ wenn es einen Rekord gab,
+  „+“ trägt nach, unten Export als CSV.
 - [x] **11 Ein Training:** alle Sätze kompakt, Rekorde orange, unten „Als Vorlage speichern“.
   „Bearbeiten“: Name, Sätze, „Training löschen“.
 - [x] **12 Nachtragen.**
 - [x] **13 Übungen:** alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
 - [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem,
-  Rekord), Verlauf (Gewicht oder 1RM, 3 M / 1 J / Alles), jedes Training mit allen Sätzen.
+  Rekord), Verlauf (Gewicht oder 1RM, 3 M / 1 J / Alles), Bestwerte je Wdh-Zahl, jedes Training mit allen
+  Sätzen.
 - [x] **15 Übung bearbeiten.**
 - [x] **16 Vorlage bearbeiten** und die Liste der Vorlagen (sortieren, neu).
 
 ### Noch nicht gebaut
 
-Aus der Feature-Liste zurückgestellt (ROADMAP, „Training“): Satzarten (Aufwärmen, Drop-Satz), RPE/RIR,
-Supersätze, Notiz pro Training, Rotation und Progressionsvorschlag, Rekordtabelle, Monatskalender,
-Wochenstatistik, Muskelgruppen, Geräteart und Gewichtsschritte, Scheiben- und Aufwärmrechner, Ton und
-Bildschirm-an, Verbindung zu Steady, Körpergewicht in Körpergewichtsübungen, Export als CSV.
+Nach dem Abgleich mit gängigen Trackern (Strong, Hevy) am 10.10.2026 nachgezogen: Aufwärmsätze, einzelne
+Sätze entfernen, Vorschlag fürs nächste Gewicht, Gewichtsschritt, Scheibenrechner, Ton und Bildschirm an,
+Notiz pro Training, Beginn und Dauer ändern, vergessenes Training, Vergleich auf „Fertig“, Wochenbalken,
+Bestwerte, CSV-Export, „als Nächstes“.
+
+Bewusst weggelassen, weil es die Oberfläche voller macht als nötig: Drop-Sätze und Satz bis zum Versagen,
+RPE/RIR, Supersätze, Muskelgruppen und Statistik je Muskel, Aufwärmrechner. Offen (ROADMAP): Verbindung
+zu Steady, Körpergewicht in Körpergewichtsübungen, Monatskalender.

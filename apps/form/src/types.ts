@@ -47,13 +47,20 @@ export interface Uebung {
   pause: number
   /** Steht im Training unter dem Namen ("Sitz Stufe 4"). */
   notiz: string
+  /** Gewichtsschritt in kg - fuer +/- im Tastenfeld und den Vorschlag. */
+  schritt: number
+  /** Gewicht der Stange (kg) fuer den Scheibenrechner, null = keine Langhantel. */
+  stange: number | null
   archiviert: boolean
   erstellt: number
 }
 
 export interface VorlagenUebung {
   uebung: string
+  /** Arbeitssaetze */
   saetze: number
+  /** Aufwaermsaetze davor */
+  aufwaermen: number
   /** Wdh-Bereich, steht im Training neben dem Namen. null = keiner. */
   von: number | null
   bis: number | null
@@ -78,6 +85,8 @@ export interface Satz {
   /** Bei Erfassung 'zeit' (Sekunden). */
   sek: number | null
   fertig: number | null
+  /** Aufwaermsatz: zaehlt nicht fuer Rekorde, Volumen und Vorschlag. */
+  aufwaermen: boolean
 }
 
 export interface TrainingsUebung {
@@ -95,6 +104,15 @@ export interface Training {
   /** null = laeuft noch */
   ende: number | null
   uebungen: TrainingsUebung[]
+  notiz: string
+}
+
+/** Schalter im Menue des Trainings. */
+export interface Einstellungen {
+  /** Kurzer Ton, wenn die Pause der Uebung um ist (nur bei offener App). */
+  ton: boolean
+  /** Bildschirm bleibt an, solange ein Training laeuft. */
+  wach: boolean
 }
 
 export type AppBereich = 'werte' | 'training'

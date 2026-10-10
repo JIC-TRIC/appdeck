@@ -95,3 +95,34 @@ export function Linie({ punkte }: { punkte: Punkt[] }) {
     </svg>
   )
 }
+
+// ---------- Trainings pro Woche ----------
+
+// Ein Balken pro Woche, die laufende rechts und in Kreide. Leere Wochen sind
+// ein flacher Strich - Luecken sieht man, ohne dass sie schreien.
+export function Wochen({ wochen }: { wochen: { montag: string; anzahl: number }[] }) {
+  const W = 340
+  const H = 52
+  const GAP = 6
+  const n = wochen.length
+  const bw = (W - GAP * (n - 1)) / n
+  const hoch = Math.max(3, ...wochen.map((w) => w.anzahl))
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="f-wochen" role="img" aria-label={`Trainings pro Woche, letzte ${n} Wochen`}>
+      {wochen.map((w, i) => {
+        const h = w.anzahl ? Math.max(4, (H * w.anzahl) / hoch) : 2
+        return (
+          <rect
+            key={w.montag}
+            x={i * (bw + GAP)}
+            y={H - h}
+            width={bw}
+            height={h}
+            rx={Math.min(4, bw / 2)}
+            className={i === n - 1 ? 'jetzt' : w.anzahl ? 'woche' : 'leer'}
+          />
+        )
+      })}
+    </svg>
+  )
+}
