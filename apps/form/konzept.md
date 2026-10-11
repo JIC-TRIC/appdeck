@@ -343,7 +343,11 @@ Nummern wie in den Mockups.
 - [x] **12 Nachtragen.**
 - [x] **13 Übungen** (Tab): alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
 - [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem,
-  Rekord), Verlauf (Gewicht, 1RM oder Volumen, 3 M / 1 J / Alles), Bestwerte je Wdh-Zahl, jedes Training mit allen
+  Rekord), Verlauf (Gewicht, 1RM oder Volumen, 3 M / 1 J / Alles) – darüber die Zahl selbst (seit
+  11.10.2026): die jüngste oder die eines angetippten Trainings (Finger über den Verlauf ziehen geht
+  auch, ein zweiter Tipp hebt die Auswahl auf), beim 1RM mit dem Satz, aus dem es geschätzt ist
+  („98,7 kg – geschätzt aus 80 × 7“, eine Nachkommastelle), sonst mit den Sätzen des Trainings; rechts das
+  Beste im Zeitraum und die Veränderung seit seinem Anfang, Bestwerte je Wdh-Zahl, jedes Training mit allen
   Sätzen.
 - [x] **15 Übung bearbeiten.**
 - [x] **16 Vorlage bearbeiten** und die Liste der Vorlagen (sortieren, neu).

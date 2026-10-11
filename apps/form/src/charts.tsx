@@ -1,6 +1,7 @@
 // Selbst gezeichnet, keine Chart-Library (wie Kontor und Steady). Farben
 // kommen ueber CSS-Klassen, damit die Tokens aus Form.css gelten.
 
+import { useRef, type PointerEvent } from 'react'
 import { skala } from './calc'
 import { diffDays, formatKurz, formatZahl } from './util'
 import type { Punkt, Wert } from './types'
@@ -10,7 +11,27 @@ import type { Punkt, Wert } from './types'
 // Waagerecht nach Zeit, nicht nach Anzahl: zwei Messungen in einer Woche und
 // dann einen Monat Pause sehen auch so aus. Der juengste Punkt ist orange,
 // das Ziel eine gestrichelte Linie (Uebungen haben keins).
-export function Verlauf({ wert, punkte, heute }: { wert: Pick<Wert, 'name' | 'ziel'>; punkte: Punkt[]; heute: string }) {
+//
+// Mit onAuswahl laesst sich ein Punkt antippen oder mit dem Finger ueber den
+// Verlauf ziehen - gewaehlt ist der naechste Punkt, mit einer senkrechten
+// Linie. Die Zahl dazu zeigt die Seite. Ein zweiter Tipp auf denselben Punkt
+// hebt die Auswahl auf.
+export function Verlauf({
+  wert,
+  punkte,
+  heute,
+  auswahl = null,
+  onAuswahl,
+}: {
+  wert: Pick<Wert, 'name' | 'ziel'>
+  punkte: Punkt[]
+  heute: string
+  /** Index des gewaehlten Punkts in `punkte` */
+  auswahl?: number | null
+  onAuswahl?: (i: number | null) => void
+}) {
+  const svgRef = useRef<SVGSVGElement>(null)
+  const druck = useRef<{ vorher: number | null; erster: number; bewegt: boolean } | null>(null)
   const W = 340
   const H = 196
   const L = 40
@@ -31,9 +52,56 @@ export function Verlauf({ wert, punkte, heute }: { wert: Pick<Wert, 'name' | 'zi
   const pfad = punkte.map((p, i) => `${i ? 'L' : 'M'}${x(p.tag).toFixed(1)} ${y(p.zahl).toFixed(1)}`).join(' ')
   const ende = punkte[punkte.length - 1]
   const zielY = wert.ziel === null ? null : y(wert.ziel)
+  const gewaehlt = auswahl !== null ? punkte[auswahl] : undefined
+
+  // Der Punkt, der dem Finger waagerecht am naechsten liegt.
+  const naechster = (clientX: number) => {
+    const r = svgRef.current?.getBoundingClientRect()
+    if (!r || !r.width) return 0
+    const vx = ((clientX - r.left) / r.width) * W
+    let best = 0
+    punkte.forEach((p, i) => {
+      if (Math.abs(x(p.tag) - vx) < Math.abs(x(punkte[best].tag) - vx)) best = i
+    })
+    return best
+  }
+
+  const fingerProps = onAuswahl
+    ? {
+        onPointerDown: (e: PointerEvent<SVGSVGElement>) => {
+          if (!punkte.length) return
+          const i = naechster(e.clientX)
+          druck.current = { vorher: auswahl, erster: i, bewegt: false }
+          e.currentTarget.setPointerCapture(e.pointerId)
+          onAuswahl(i)
+        },
+        onPointerMove: (e: PointerEvent<SVGSVGElement>) => {
+          const d = druck.current
+          if (!d) return
+          const i = naechster(e.clientX)
+          if (i !== d.erster) d.bewegt = true
+          onAuswahl(i)
+        },
+        onPointerUp: () => {
+          const d = druck.current
+          druck.current = null
+          if (d && !d.bewegt && d.vorher === d.erster) onAuswahl(null)
+        },
+        onPointerCancel: () => {
+          druck.current = null
+        },
+      }
+    : {}
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="f-chart" role="img" aria-label={`Verlauf ${wert.name}, ${punkte.length} Messungen`}>
+    <svg
+      ref={svgRef}
+      viewBox={`0 0 ${W} ${H}`}
+      className={`f-chart${onAuswahl ? ' waehlbar' : ''}`}
+      role="img"
+      aria-label={`Verlauf ${wert.name}, ${punkte.length} Messungen`}
+      {...fingerProps}
+    >
       {s.ticks.map((t) => (
         <g key={t}>
           <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} className="grid" />
@@ -57,6 +125,12 @@ export function Verlauf({ wert, punkte, heute }: { wert: Pick<Wert, 'name' | 'zi
         ? punkte.slice(0, -1).map((p) => <circle key={p.tag} cx={x(p.tag)} cy={y(p.zahl)} r={2.8} className="punkt" />)
         : null}
       {ende ? <circle cx={x(ende.tag)} cy={y(ende.zahl)} r={5.5} className="letzter" /> : null}
+      {gewaehlt ? (
+        <g>
+          <line x1={x(gewaehlt.tag)} x2={x(gewaehlt.tag)} y1={T - 6} y2={H - B} className="auswahl" />
+          <circle cx={x(gewaehlt.tag)} cy={y(gewaehlt.zahl)} r={6} className="gewaehlt" />
+        </g>
+      ) : null}
       {erster ? (
         <text x={spanne ? L : L + pw / 2} y={H - 6} textAnchor={spanne ? 'start' : 'middle'} className="lbl">
           {formatKurz(erster, heute)}

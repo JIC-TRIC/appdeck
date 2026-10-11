@@ -26,7 +26,9 @@ import {
   abweichung,
   alleRekorde,
   besser,
+  besterE1rmSatz,
   besterSatz,
+  bestesE1rm,
   effektiv,
   epley,
   formatDauer,
@@ -224,6 +226,14 @@ describe('Text', () => {
     expect(kurzSaetze([s(82.5, 8), s(82.5, 8), s(82.5, 7)], 'gewicht')).toBe('82,5 × 8 · 8 · 7')
     expect(kurzSaetze([s(80, 8), s(82.5, 6)], 'gewicht')).toBe('80 × 8 · 82,5 × 6')
     expect(kurzSaetze([s(null, 12), s(null, 10)], 'wdh')).toBe('12 · 10')
+  })
+
+  it('besterE1rmSatz und bestesE1rm: der Satz mit dem hoechsten geschaetzten 1RM', () => {
+    // 80 x 10 -> 106,67, 90 x 5 -> 105, 100 x 1 -> 100
+    expect(besterE1rmSatz([s(90, 5), s(80, 10), s(100, 1), s(null, 12)])).toEqual(s(80, 10))
+    expect(bestesE1rm([s(90, 5), s(80, 10)])).toBe(106.67)
+    expect(besterE1rmSatz([s(null, 12)])).toBeNull()
+    expect(bestesE1rm([])).toBe(0)
   })
 
   it('besterSatz', () => {

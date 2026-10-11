@@ -2,7 +2,20 @@ import { useState } from 'react'
 import { imBereich } from '../calc'
 import { Verlauf } from '../charts'
 import { IconRight } from '../icons'
-import { alleRekorde, besterSatz, bestesE1rm, bestwerteJeWdh, einheiten, formatSek, kennzahl, kurzSaetze, leistung } from '../trainingCalc'
+import {
+  alleRekorde,
+  besterE1rmSatz,
+  besterSatz,
+  bestesE1rm,
+  bestwerteJeWdh,
+  einheiten,
+  formatSatz,
+  formatSek,
+  formatTausend,
+  kennzahl,
+  kurzSaetze,
+  leistung,
+} from '../trainingCalc'
 import { Segment, Seite, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatDiff, formatKurz, formatZahl, relativTag, wieLange } from '../util'
 import type { Bereich, Erfassung, FormCtx, Punkt, Satz } from '../types'
@@ -23,14 +36,24 @@ const ARTEN: { id: Kennzahl; label: string }[] = [
 
 const EINHEIT: Record<Erfassung, string> = { gewicht: 'kg', wdh: 'Wdh', zeit: 's' }
 
+/** Wie die Zahl ueber dem Verlauf heisst. */
+const KENNZAHL_TEXT: Record<Kennzahl, string> = { gewicht: 'Schwerster Satz', '1rm': 'Geschätztes 1RM', volumen: 'Volumen' }
+
 // Eine Uebung ueber alle Vorlagen: gross der staerkste Satz aus dem letzten
 // Training, Kacheln (seit Start, seit dem letzten Mal, Rekord), der Verlauf
 // (schwerster Satz, geschaetztes 1RM oder Volumen), die Bestwerte je Wdh-Zahl und
 // darunter jedes Training. Aufwaermsaetze zaehlen nirgends mit.
+//
+// Ueber dem Verlauf steht die Zahl selbst - die juengste, oder die eines
+// angetippten Trainings (Finger ueber den Verlauf ziehen geht auch) -, beim
+// 1RM mit dem Satz, aus dem es geschaetzt ist. Rechts das Beste im Zeitraum
+// und die Veraenderung seit seinem Anfang.
 function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const { uebungById, trainings, heute, push, back } = ctx
   const [bereich, setBereich] = useState<Bereich>('alles')
   const [art, setArt] = useState<Kennzahl>('gewicht')
+  // Angetippter Punkt im Verlauf (Index in den sichtbaren) - null = der juengste.
+  const [auswahl, setAuswahl] = useState<number | null>(null)
   const u = uebungById[id]
   if (!u) return <Seite links={<Zurueck label="Übungen" onClick={back} />}>{null}</Seite>
 
@@ -45,11 +68,36 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const prIn = alleRekorde(trainings, uebungById)
   const bestwerte = bestwerteJeWdh(ein.flatMap((e) => e.saetze))
 
+  const kenn: Kennzahl = erf === 'gewicht' ? art : 'gewicht'
   const punkte: Punkt[] = ein.map((e, i) => ({
     tag: tagVon(e.training.start),
-    zahl: erf !== 'gewicht' || art === 'gewicht' ? zahl(bestJe[i]) : art === '1rm' ? bestesE1rm(e.saetze) : leistung(e.saetze, erf),
+    zahl: kenn === 'gewicht' ? zahl(bestJe[i]) : kenn === '1rm' ? bestesE1rm(e.saetze) : leistung(e.saetze, erf),
   }))
   const sichtbar = imBereich(punkte, bereich, heute)
+  // imBereich laesst nur die aeltesten weg - die sichtbaren sind das Ende der Reihe.
+  const versatz = punkte.length - sichtbar.length
+  const iZeige = auswahl !== null && auswahl < sichtbar.length ? auswahl : sichtbar.length - 1
+  const zeigeP = sichtbar[iZeige]
+  const zeigeE = ein[versatz + iZeige]
+  const bestP = sichtbar.reduce<Punkt | null>((b, p) => (!b || p.zahl > b.zahl ? p : b), null)
+
+  // Zahl und Einheit getrennt, damit die Zahl gross stehen kann.
+  const teile = (v: number): [string, string] => {
+    if (erf === 'zeit') return v < 60 ? [String(v), 's'] : [formatSek(v), 'min']
+    if (erf === 'wdh') return [String(v), 'Wdh']
+    // Das 1RM ist geschaetzt - eine Nachkommastelle genuegt.
+    return [kenn === 'volumen' ? formatTausend(v) : formatZahl(kenn === '1rm' ? Math.round(v * 10) / 10 : v), 'kg']
+  }
+  const mitEinheit = (v: number) => teile(v).join(' ')
+  const herkunft = () => {
+    if (!zeigeE) return ''
+    if (kenn === '1rm') {
+      const s = besterE1rmSatz(zeigeE.saetze)
+      return s ? `geschätzt aus ${formatSatz(s, erf)}` : ''
+    }
+    return kurzSaetze(zeigeE.saetze, erf)
+  }
+  const veraenderung = zeigeP && sichtbar.length > 1 ? zeigeP.zahl - sichtbar[0].zahl : null
 
   const diff = (a: number, b: number) => {
     const d = a - b
@@ -112,11 +160,63 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
 
           <section className="f-karte-flach">
             <div className={erf === 'gewicht' ? 'f-seg-doppel' : ''}>
-              {erf === 'gewicht' ? <Segment label="Kennzahl" optionen={ARTEN} wert={art} onWahl={setArt} /> : null}
-              <Segment label="Zeitraum" optionen={BEREICHE} wert={bereich} onWahl={setBereich} />
+              {erf === 'gewicht' ? (
+                <Segment
+                  label="Kennzahl"
+                  optionen={ARTEN}
+                  wert={art}
+                  onWahl={(a) => {
+                    setArt(a)
+                    setAuswahl(null)
+                  }}
+                />
+              ) : null}
+              <Segment
+                label="Zeitraum"
+                optionen={BEREICHE}
+                wert={bereich}
+                onWahl={(b) => {
+                  setBereich(b)
+                  setAuswahl(null)
+                }}
+              />
             </div>
+            {zeigeP ? (
+              <div className="f-verlauf-kopf" aria-live="polite">
+                <span className="f-verlauf-wert">
+                  <small>
+                    {erf === 'gewicht' ? KENNZAHL_TEXT[kenn] : erf === 'wdh' ? 'Meiste Wdh' : 'Längste Zeit'} ·{' '}
+                    {relativTag(zeigeP.tag, heute)}
+                  </small>
+                  <b>
+                    {teile(zeigeP.zahl)[0]}
+                    <em> {teile(zeigeP.zahl)[1]}</em>
+                  </b>
+                  <small>{herkunft()}</small>
+                </span>
+                <span className="f-verlauf-neben">
+                  {bestP ? (
+                    <span>
+                      <small>Bestes</small>
+                      <b className={bestP === zeigeP ? 'f-gut' : ''}>{mitEinheit(bestP.zahl)}</b>
+                    </span>
+                  ) : null}
+                  {veraenderung !== null ? (
+                    <span>
+                      <small>seit {formatKurz(sichtbar[0].tag, heute)}</small>
+                      <b className={veraenderung > 0 ? 'f-gut' : ''}>
+                        {veraenderung === 0 ? '±0' : `${veraenderung > 0 ? '+' : '−'}${mitEinheit(Math.abs(veraenderung))}`}
+                      </b>
+                    </span>
+                  ) : null}
+                </span>
+              </div>
+            ) : null}
             {sichtbar.length ? (
-              <Verlauf wert={{ name: u.name, ziel: null }} punkte={sichtbar} heute={heute} />
+              <>
+                <Verlauf wert={{ name: u.name, ziel: null }} punkte={sichtbar} heute={heute} auswahl={auswahl} onAuswahl={setAuswahl} />
+                {sichtbar.length > 1 ? <p className="f-chart-hinweis">Antippen oder ziehen für einzelne Trainings</p> : null}
+              </>
             ) : (
               <p className="f-note f-chart-leer">In diesem Zeitraum nicht trainiert.</p>
             )}

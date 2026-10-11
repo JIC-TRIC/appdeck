@@ -461,9 +461,25 @@ export function bestwerteJeWdh(saetze: Satz[]): { wdh: number; kg: number }[] {
   return roh.filter((x, i) => !roh.slice(i + 1).some((y) => y.kg >= x.kg))
 }
 
+/** Der Satz mit dem besten geschaetzten 1RM - aus ihm ist die Zahl im Verlauf "1RM" geschaetzt. */
+export function besterE1rmSatz(saetze: Satz[]): Satz | null {
+  let best: Satz | null = null
+  let bestWert = 0
+  for (const s of saetze) {
+    if (s.kg === null || s.wdh === null || s.wdh <= 0) continue
+    const w = epley(s.kg, s.wdh)
+    if (w > bestWert) {
+      best = s
+      bestWert = w
+    }
+  }
+  return best
+}
+
 /** Bestes 1RM in einer Reihe Saetze (fuer den Verlauf "1RM"). */
 export function bestesE1rm(saetze: Satz[]): number {
-  return saetze.reduce((m, s) => (s.kg !== null && s.wdh !== null && s.wdh > 0 ? Math.max(m, epley(s.kg, s.wdh)) : m), 0)
+  const s = besterE1rmSatz(saetze)
+  return s ? epley(s.kg!, s.wdh!) : 0
 }
 
 // ---------- Vorlage ----------
