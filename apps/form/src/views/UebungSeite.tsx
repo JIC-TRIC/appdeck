@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { imBereich } from '../calc'
 import { Verlauf } from '../charts'
 import { IconRight } from '../icons'
-import { alleRekorde, besterSatz, bestesE1rm, bestwerteJeWdh, einheiten, formatSek, kennzahl, kurzSaetze } from '../trainingCalc'
+import { alleRekorde, besterSatz, bestesE1rm, bestwerteJeWdh, einheiten, formatSek, kennzahl, kurzSaetze, leistung } from '../trainingCalc'
 import { Segment, Seite, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatDiff, formatKurz, formatZahl, relativTag, wieLange } from '../util'
 import type { Bereich, Erfassung, FormCtx, Punkt, Satz } from '../types'
@@ -13,21 +13,24 @@ const BEREICHE: { id: Bereich; label: string }[] = [
   { id: 'alles', label: 'Alles' },
 ]
 
-const ARTEN: { id: 'gewicht' | '1rm'; label: string }[] = [
+type Kennzahl = 'gewicht' | '1rm' | 'volumen'
+
+const ARTEN: { id: Kennzahl; label: string }[] = [
   { id: 'gewicht', label: 'Gewicht' },
   { id: '1rm', label: '1RM' },
+  { id: 'volumen', label: 'Volumen' },
 ]
 
 const EINHEIT: Record<Erfassung, string> = { gewicht: 'kg', wdh: 'Wdh', zeit: 's' }
 
 // Eine Uebung ueber alle Vorlagen: gross der staerkste Satz aus dem letzten
 // Training, Kacheln (seit Start, seit dem letzten Mal, Rekord), der Verlauf
-// (schwerster Satz oder geschaetztes 1RM), die Bestwerte je Wdh-Zahl und
+// (schwerster Satz, geschaetztes 1RM oder Volumen), die Bestwerte je Wdh-Zahl und
 // darunter jedes Training. Aufwaermsaetze zaehlen nirgends mit.
 function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const { uebungById, trainings, heute, push, back } = ctx
   const [bereich, setBereich] = useState<Bereich>('alles')
-  const [art, setArt] = useState<'gewicht' | '1rm'>('gewicht')
+  const [art, setArt] = useState<Kennzahl>('gewicht')
   const u = uebungById[id]
   if (!u) return <Seite links={<Zurueck label="Übungen" onClick={back} />}>{null}</Seite>
 
@@ -44,7 +47,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
 
   const punkte: Punkt[] = ein.map((e, i) => ({
     tag: tagVon(e.training.start),
-    zahl: erf === 'gewicht' && art === '1rm' ? bestesE1rm(e.saetze) : zahl(bestJe[i]),
+    zahl: erf !== 'gewicht' || art === 'gewicht' ? zahl(bestJe[i]) : art === '1rm' ? bestesE1rm(e.saetze) : leistung(e.saetze, erf),
   }))
   const sichtbar = imBereich(punkte, bereich, heute)
 

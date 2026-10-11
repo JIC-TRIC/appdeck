@@ -1,18 +1,23 @@
+import { useState } from 'react'
 import { IconPlay, IconPlus } from '../icons'
 import { naechsteVorlage } from '../trainingCalc'
 import { starteTraining } from '../trainingStore'
-import { Seite, Umschalter, Zurueck, zumLauncher } from '../ui'
+import { Seite, Zurueck, zumLauncher } from '../ui'
 import { dateKey, wieLange } from '../util'
+import { WocheKarte, ZielBlatt } from './Woche'
 import type { FormCtx, Vorlage } from '../types'
 
-// Startseite des Trainings (Tab "Vorlagen"): die Vorlagen - ein Tipp startet
-// sofort, ohne Vorschau; die, die in der Reihenfolge dran ist, steht mit "als
-// Nächstes" da - und ein leeres Training. "+" legt eine Vorlage an,
-// "Bearbeiten" sortiert und aendert sie. Kalender, Statistik und Uebungen
-// liegen in der Tab-Leiste. Solange es weder Training noch Vorlage gibt, nur
-// der Knopf fuers erste Training und darunter "Vorlage anlegen".
+// Startseite des Trainings (Tab "Training"): oben die laufende Woche mit
+// Wochenziel und Serie, darunter die Vorlagen - ein Tipp startet sofort, ohne
+// Vorschau; unter dem Namen stehen ihre Uebungen, die, die in der Reihenfolge
+// dran ist, steht mit "als Nächstes" da - und ein leeres Training. "+" legt
+// eine Vorlage an, "Bearbeiten" sortiert und aendert sie. Solange es weder
+// Training noch Vorlage gibt, nur der Knopf fuers erste Training und darunter
+// "Vorlage anlegen". Laeuft ein Training, steht hier stattdessen das Training
+// (Form.tsx).
 function TrainingStart({ ctx }: { ctx: FormCtx }) {
-  const { vorlagen, trainings, heute, push, refresh, bereich, setzeBereich } = ctx
+  const { vorlagen, trainings, uebungById, heute, push, refresh } = ctx
+  const [zielOffen, setZielOffen] = useState(false)
   const tagVon = (ms: number) => dateKey(new Date(ms))
   const letztes = trainings[trainings.length - 1]
   const dran = naechsteVorlage(vorlagen, trainings)
@@ -34,7 +39,6 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
   return (
     <Seite
       links={<Zurueck label="Apps" onClick={zumLauncher} />}
-      titel={<Umschalter wert={bereich} onWahl={setzeBereich} />}
       rechts={
         ersterStart ? null : (
           <button type="button" className="f-rund" onClick={() => push({ name: 'vorlageForm' })} aria-label="Neue Vorlage">
@@ -62,6 +66,8 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
         </div>
       ) : (
         <>
+          <WocheKarte ctx={ctx} onClick={() => setZielOffen(true)} />
+
           {vorlagen.length ? (
             <>
               <div className="f-h2-zeile">
@@ -70,15 +76,27 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
                   Bearbeiten
                 </button>
               </div>
-              {vorlagen.map((v) => (
-                <button key={v.id} type="button" className="f-vorlage" onClick={() => starte(v)} aria-label={`${v.name} starten`}>
-                  <span className="f-vorlage-name">{v.name}</span>
-                  {v.id === dran ? <small className="f-dran">als Nächstes</small> : <small>{wann(v)}</small>}
-                  <span className="f-play">
-                    <IconPlay />
-                  </span>
-                </button>
-              ))}
+              {vorlagen.map((v) => {
+                const namen = v.uebungen.map((x) => uebungById[x.uebung]?.name).filter(Boolean)
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    className={`f-vorlage${v.id === dran ? ' dran' : ''}`}
+                    onClick={() => starte(v)}
+                    aria-label={`${v.name} starten`}
+                  >
+                    <span className="f-vorlage-text">
+                      <span className="f-vorlage-name">{v.name}</span>
+                      {namen.length ? <small className="f-vorlage-uebungen">{namen.join(' · ')}</small> : null}
+                    </span>
+                    {v.id === dran ? <small className="f-dran">als Nächstes</small> : <small>{wann(v)}</small>}
+                    <span className="f-play">
+                      <IconPlay />
+                    </span>
+                  </button>
+                )
+              })}
             </>
           ) : null}
 
@@ -88,6 +106,8 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
           </button>
         </>
       )}
+
+      {zielOffen ? <ZielBlatt ctx={ctx} onClose={() => setZielOffen(false)} /> : null}
     </Seite>
   )
 }

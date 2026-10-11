@@ -8,7 +8,7 @@ Projekt-ID `form`, Ordner `apps/form/`, Speicher unter `form:*`. Gebaut in TypeS
 Kontor, Steady, Piano, Loci und Stash.
 
 `[ ]` = offen, `[x]` = gebaut. **Stand: Werte gebaut (08.10.2026), Training gebaut (10.10.2026),
-Tab-Leiste im Training (11.10.2026).**
+Tab-Leiste für ganz Form und dritte Runde im Training (11.10.2026).**
 Die Werte nach einer kurzen Fragerunde direkt gebaut, ohne Mockups. Gewählt wurde: Name **Form**, Look **Kreide (dunkel) mit grellem Orange**, dazu
 **Richtung pro Wert** und **Zielwert pro Wert**. Nicht gewählt: Startvorlagen, Notiz pro Messtag.
 
@@ -25,10 +25,10 @@ Die Werte nach einer kurzen Fragerunde direkt gebaut, ohne Mockups. Gewählt wur
 - **Fortschritt wird gefeiert, Rückschritt nicht bestraft.** Was in die gewünschte Richtung geht, ist
   orange. Was in die andere Richtung geht, steht einfach weiß da – kein Rot.
 - **Nur dunkel.** Kein heller Modus.
-- **Tab-Leiste nur im Training.** Die Werte haben keine: Übersicht, darunter Seiten mit Zurückwischen
-  wie Kontor, Piano und Stash. Das Training hat seit 11.10.2026 unten **Vorlagen · Kalender · Statistik ·
-  Übungen** (siehe „Training“). Zwischen Werten und Training wechselt ein Umschalter in der Kopfleiste
-  der Startseiten (bei den Werten und in jedem Tab); Form öffnet den Bereich, in dem man zuletzt war.
+- **Eine Tab-Leiste für ganz Form** (seit 11.10.2026, wie Strong mit „Measure“): **Training · Kalender ·
+  Statistik · Übungen · Werte**. Darunter Seiten mit Zurückwischen wie Kontor, Piano und Stash. Der
+  Umschalter Werte/Training in der Kopfleiste ist damit weg. Form öffnet beim laufenden Training, sonst
+  bei den Werten oder beim Training – je nachdem, wo man zuletzt war (`form:bereich`).
 - Lokal im Browser (`localStorage`), kein Account, kein Server, offline nutzbar.
 
 ## Design (Richtung „Kreide“)
@@ -140,7 +140,8 @@ Launcher-Backup erfasst alles automatisch.
 
 Der zweite Bereich. **Stand: gebaut (10.10.2026)** nach einer Feature-Liste und Mockups aller
 Ansichten ([mockups.html](mockups.html), Beispieltag Sa 10. Okt 2026, 18:14, „Push“ läuft). Entschieden
-in der Runde: Umschalter statt Tab-Leiste, während eines Trainings sind die Werte schwer zu erreichen,
+in der Runde (inzwischen teils überholt, siehe Prinzipien): Umschalter statt Tab-Leiste, während eines
+Trainings sind die Werte schwer zu erreichen,
 erst `localStorage` (IndexedDB später), grau steht das letzte Mal aus derselben Vorlage, die Pause wird
 aus dem letzten Haken berechnet, alles dichter als die Werte bisher. Körpergewicht bleibt ein normaler
 Wert.
@@ -148,19 +149,21 @@ Wert.
 ### Prinzipien
 
 - **Unten eine Tab-Leiste** (seit 11.10.2026, vorher Zeilen „Verlauf“, „Übungen“, „Vorlagen“ auf der
-  Startseite): **Vorlagen** (Startseite, hier startet man), **Kalender**, **Statistik**, **Übungen**. Im
-  Seitenfluss unter der Bühne wie bei Piano, aktiv in Kreide statt Orange. Ein Tipp auf den aktiven Tab
-  führt zu seiner Startseite zurück, Form öffnet immer bei den Vorlagen. Sie steht auch unter „Ein
-  Training“, „Eine Übung“ und der Liste der Vorlagen, aber **nicht** im laufenden Training, nicht über
-  Formularen (Vorlage, Übung, Nachtragen), dem Bearbeiten eines Trainings und „Fertig“ – dort würde
-  ein Tipp die Eingabe verwerfen.
-- **Läuft ein Training, gehört ihm der ganze Bildschirm.** Kein Umschalter, keine Tab-Leiste, kein
-  Zurück, Form öffnet direkt dort. Zu den Werten geht es nur über ⋯ → „Werte ansehen“ (darüber
-  „‹ Training“ zurück).
+  Startseite): **Training** (Startseite, hier startet man – läuft eins, steht hier das laufende Training),
+  **Kalender**, **Statistik**, **Übungen**, **Werte**. Im Seitenfluss unter der Bühne wie bei Piano, aktiv
+  in Kreide statt Orange. Ein Tipp auf den aktiven Tab führt zu seiner Startseite zurück. Sie steht auch
+  unter „Ein Training“, „Eine Übung“, „Ein Wert“ und der Liste der Vorlagen, aber **nicht** über
+  Formularen (Vorlage, Übung, Wert, Messen, Nachtragen), dem Bearbeiten eines Trainings und „Fertig“ –
+  dort würde ein Tipp die Eingabe verwerfen.
+- **Das laufende Training ist der Tab „Training“** (seit 11.10.2026, vorher gehörte ihm der ganze
+  Bildschirm ohne Tab-Leiste). Sein Tab hat dann einen orangen Punkt. Steht man woanders, zeigt eine
+  Leiste über den Tabs Name, Dauer, Sätze und die Pause (wie der Mini-Player bei Strong und Hevy); ein
+  Tipp führt zurück. Ton am Pausenende und „Bildschirm bleibt an“ gelten auf jedem Tab.
 - **Grau steht das letzte Mal.** Ein Haken übernimmt es – wer dasselbe schafft wie letztes Mal, tippt
   nur Haken. Kein eigenes „Zuletzt“-Feld.
 - **Die Pause wird berechnet, nicht gezählt.** Jeder Haken speichert seine Uhrzeit, die Pause ist jetzt
-  minus letzter Haken. App zu, Handy gesperrt – beim Öffnen stimmt sie trotzdem.
+  minus letzter Haken. App zu, Handy gesperrt – beim Öffnen stimmt sie trotzdem. Angezeigt wird sie
+  (seit 11.10.2026) als Countdown, danach orange „Los +0:12“.
 - **Gespeichert wird nur, was du einträgst:** Zahlen und die Uhrzeit des Hakens. Rekorde, Volumen,
   Dauer, Fortschritt werden berechnet (`trainingCalc.ts`).
 - **Orange heißt Fortschritt** – mehr als letztes Mal, Rekorde, „Pause um“. Weniger steht weiß da.
@@ -208,7 +211,16 @@ Sätze:
   Orange und Vorschlag, stehen immer vor den Arbeitssätzen. Ein Tipp auf die Satznummer: Aufwärmsatz an
   oder aus, Satz entfernen. „Aufwärmsatz hinzufügen“ im Blatt der Übung.
 - [x] **Haken:** füllt leere Felder mit dem Grauen und speichert die Uhrzeit. Fehlt eine Zahl, geht das
-  Tastenfeld auf. Ein zweiter Tipp nimmt den Haken wieder weg.
+  Tastenfeld auf. Ein zweiter Tipp nimmt den Haken wieder weg. Seit 11.10.2026 größer (32 px) und mit
+  Rückmeldung: er springt auf, die Zahlen leuchten kurz, ein Haptik-Tick (Android über Vibration, iPhone
+  ab iOS 18 über den Schalter-Trick – nur ein Zusatz, ohne ihn bleibt die Animation).
+- [x] **Der nächste Satz** (der erste offene in der Reihenfolge der Übungen) hat einen orangen Ring am
+  Haken. Liegt er nach einem Haken unter dem Rand, scrollt die Seite ihn ins Bild – nie nach oben.
+- [x] **Rekord beim Abhaken:** orange Meldung oben („Neuer Rekord · Schulterdrücken 55 × 9“), der Satz
+  leuchtet orange auf, doppelter Tick.
+- [x] **Übung fertig** (alle Sätze abgehakt): Haken vor dem Namen und daneben der Vergleich mit dem
+  letzten Mal – Volumen, bei nur Wdh die Summe der Wdh, bei Zeit die Summe der Sekunden („+6 %“, mehr
+  in Orange; wie Strongs „Focus Metric“).
 - [x] **Tastenfeld** statt iOS-Tastatur: der erste Tastendruck ersetzt, ± Gewichtsschritt / ±1 Wdh /
   ±5 s, jeder Tastendruck wird sofort gesichert. Darunter „Zuletzt bei Push: 30 × 9“ und bei Langhantel
   die Scheiben pro Seite („Je Seite 25 · 5 · 1,25“, aus 25 bis 1,25 kg).
@@ -222,23 +234,45 @@ Sätze:
 
 Pause, Beenden, Nachtragen:
 
-- [x] Oben in der Kopfleiste: jetzt minus letzter Haken, der Strich füllt sich bis zur Pause der
-  Übung des letzten Hakens, danach orange. Vor dem ersten Haken die Trainingsdauer.
+- [x] Oben in der Kopfleiste die Pause als **Countdown** (noch 0:49), der Strich füllt sich bis zur Pause
+  der Übung des letzten Hakens; danach orange „Los“ und wie weit sie drüber ist (+0:12), einmal kurz
+  aufleuchtend. Vor dem ersten Haken die Trainingsdauer.
+- [x] **Pausen-Blatt** (Tipp auf die Pause, wie Strong und Hevy): die Zeit groß, **−15 s**,
+  **Überspringen**, **+15 s**. Das gilt nur für die Pause nach diesem einen Haken (`form:pause` merkt sich
+  die Uhrzeit des Hakens, mit dem nächsten Haken ist es vergessen); die Pause der Übung bleibt.
+- [x] **Live-Zahlen** unter der Kopfleiste: Dauer, Volumen (wächst mit jedem Haken) und Sätze (2/15),
+  darunter ein oranger Strich, wie viel geschafft ist.
 - [x] Im Menü zwei Schalter: **Ton am Pausenende** (zwei kurze Töne beim Übergang, nicht beim späteren
-  Öffnen) und **Bildschirm bleibt an** (Wake Lock, nur wo das Gerät es kann). Beides wirkt nur bei
-  offener App – eine Mitteilung im Hintergrund geht als Web-App nicht.
+  Öffnen) und **Bildschirm bleibt an** (Wake Lock, nur wo das Gerät es kann; seit 11.10.2026 ohne
+  Eintrag eingeschaltet). Beides wirkt nur bei offener App – eine Mitteilung im Hintergrund geht als
+  Web-App nicht. Die Werte sind ein Tab, „Werte ansehen“ im Menü ist weg.
 - [x] **Notiz** pro Training (300 Zeichen): im Menü, beim Bearbeiten, steht in „Ein Training“.
 - [x] Ein leeres Training öffnet gleich die Auswahl der Übungen.
 - [x] Beenden mit offenen Sätzen: verwerfen oder abhaken (mit dem Grauen). Ohne abgehakten Satz:
   verwerfen. Übungen ohne Satz fallen weg.
 - [x] Liegt der letzte Haken über eine Stunde zurück (vergessen zu beenden), endet das Training beim
   letzten Haken statt jetzt.
-- [x] „Fertig“ vergleicht das Volumen mit dem letzten Training derselben Vorlage („+2 % Volumen zum
-  letzten Push“, mehr in Orange).
+- [x] „Fertig“ vergleicht das Volumen mit dem letzten Training derselben Vorlage („+2 % zum letzten
+  Mal“, mehr in Orange).
+- [x] **„Fertig“ feiert** (seit 11.10.2026, nach Hevy): „26. Training · geschafft“, drei Kacheln (Dauer,
+  Volumen mit Vergleich, Sätze mit Zahl der Rekorde), „Heute bewegt: mehr als ein Elefant“ (Klavier
+  250 kg bis Blauwal 150 t), **Meilensteine** (10., 25., 50. … Training; 10, 25, 50, 100 … t bewegt
+  insgesamt), „Wochenziel erreicht“ genau mit dem Training, das es erreicht, die Woche, die Rekorde.
+  Konfetti in Kreide und Orange (mehr bei Rekord, Meilenstein oder Ziel; aus bei „Bewegung
+  reduzieren“). Links neben „Fertig“ **Teilen**: das Training als Text (Kopfzeile, jede Übung mit ihren
+  Sätzen, Rekorde) übers Teilen-Blatt, sonst in die Zwischenablage.
 - [x] Beliebig viele Trainings am Tag. Nachtragen: Tag (nicht in die Zukunft), Vorlage, Beginn, Dauer –
   danach dieselbe Ansicht wie im Training, ohne Pause, erst „Sichern“ schreibt.
 - [x] Ein beendetes Training lässt sich unter „Bearbeiten“ umbenennen (Name oben, leer heißt
   „Training“), Beginn und Dauer ändern, Sätze und Notiz ändern oder es löschen.
+
+Woche und Ziel:
+
+- [x] **Wochenziel** (seit 11.10.2026): aus oder 1–7 Trainings pro Woche (`form:einstellungen`).
+- [x] Auf der Startseite des Trainings oben **die laufende Woche**: Mo–So als Punkte (Trainingstage in
+  Kreide, heute umrandet), rechts die Zahl – mit Ziel „2/3“, erreicht in Orange samt Punkten –, darüber
+  die Serie („9 Wochen in Folge“, ab zwei). Ein Tipp öffnet das Wochenziel. Dieselbe Karte steht auf
+  „Fertig“.
 
 Rückblick:
 
@@ -248,8 +282,10 @@ Rückblick:
   zeigt nur dessen Trainings (mit Uhrzeit), an einem Tag ohne Training „Training nachtragen“ für genau
   diesen Tag. „+“ trägt für den gewählten Tag nach, sonst für gestern. Monat und Tag bleiben stehen, wenn
   man ein Training öffnet und zurückkommt (am selben Tag).
-- [x] **Statistik** (Tab): oben Trainings pro Woche als Balken (12 Wochen, die laufende in Kreide), dazu
-  „Diese Woche“ und der Schnitt der Wochen davor. Drei Kacheln: Trainings insgesamt (und im laufenden
+- [x] **Statistik** (Tab): oben pro Woche als Balken – **Trainings, Volumen oder Dauer** (seit
+  11.10.2026, wie Hevy) –, 12 Wochen, die laufende in Kreide, dazu „Diese Woche“ und der Schnitt der Wochen
+  davor. Bei den Trainings mit Wochenziel als gestrichelter oranger Linie, Wochen, die es erreicht
+  haben, in Orange. Drei Kacheln: Trainings insgesamt (und im laufenden
   Jahr), **Serie** (Wochen in Folge mit Training – die laufende zählt, sobald darin trainiert wurde, und
   bricht sie vorher nicht; ab zwei Wochen orange), Dauer im Schnitt. Die **letzten Rekorde** (fünf, pro
   Training und Übung der letzte) und die **häufigsten Übungen** (in den meisten Trainings, fünf) – ein
@@ -266,8 +302,9 @@ form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, aufwaermen, von,
 form:trainings  [{ id, vorlage, name, start, ende, notiz,
                    uebungen: [{ uebung, saetze: [{ kg, wdh, sek, fertig, aufwaermen }] }] }]
 form:laufend    das laufende Training (gleiche Form, ende null) – nach jedem Tipp gesichert
-form:bereich    'werte' | 'training' – wo Form zuletzt war
-form:einstellungen  { ton, wach } – die Schalter im Menü des Trainings
+form:bereich    'werte' | 'training' – wo Form zuletzt war (Tab Werte oder Training beim Öffnen)
+form:einstellungen  { ton, wach, wochenziel } – die Schalter im Menü des Trainings, Ziel pro Woche
+form:pause      { haken, sek } – die Pause nach diesem Haken von Hand geändert (±15 s, Überspringen)
 ```
 
 Gelesenes wird geprüft (`normalisiere*` in `trainingStore.ts`, getestet). Die Rechnungen stehen in
@@ -279,21 +316,24 @@ Gelesenes wird geprüft (`normalisiere*` in `trainingStore.ts`, getestet). Die R
 Nummern wie in den Mockups.
 
 - [x] **1 Werte:** wie bisher, neu der Umschalter in der Kopfleiste.
-- [x] **2 Training** (Tab „Vorlagen“): „Zuletzt trainiert vor 2 Tagen“, Wortmarke, Vorlagen (Name, wann
-  zuletzt, oranger Start), „Leeres Training“. „+“ oben rechts legt eine Vorlage an, „Bearbeiten“ neben der
-  Überschrift führt zur Liste der Vorlagen. Kalender, Statistik und Übungen liegen in der Tab-Leiste.
+- [x] **2 Training** (Tab „Training“): „Zuletzt trainiert vor 2 Tagen“, Wortmarke, die Woche mit Ziel,
+  Vorlagen (Name, darunter ihre Übungen in einer Zeile, wann zuletzt, oranger Start; die, die dran ist,
+  mit Rand), „Leeres Training“. „+“ oben rechts legt eine Vorlage an, „Bearbeiten“ neben der Überschrift
+  führt zur Liste der Vorlagen.
 - [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“, ein Knopf
   und darunter „Vorlage anlegen“.
-- [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden. Pro Übung Name, Vorschlag, Wdh-Bereich, ⋯,
-  Notiz, Sätze `Nr | kg × Wdh | Haken`, „+ Satz“. Unten „+ Übung“ und die Notiz des Trainings.
+- [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden, darunter die Live-Zahlen. Pro Übung Name,
+  Vorschlag (fertig: Vergleich), Wdh-Bereich, ⋯, Notiz, Sätze `Nr | kg × Wdh | Haken`, „+ Satz“. Unten
+  „+ Übung“ und die Notiz des Trainings. Darunter die Tab-Leiste.
 - [x] **5 Satz eingeben:** Blatt mit beiden Feldern, Schnellknöpfen, Ziffern und „Abhaken“.
 - [x] **6 Übung hinzufügen:** ganze Seite, Suche, „Zuletzt“ (bis 5, nicht schon dabei), „Alle“.
   Mehrere auf einmal; beim Tauschen genügt ein Tipp.
-- [x] **7 Übung im Training:** Pause der Übung, Aufwärmsatz hinzufügen, Verlauf ansehen, tauschen
+- [x] **7 Übung im Training:** die letzten drei Male und der Rekord bisher (ohne das Training zu
+  verlassen), Pause der Übung, Aufwärmsatz hinzufügen, Verlauf ansehen, tauschen
   (Satzzahl bleibt), verschieben, herausnehmen. Neu daneben: **Satz-Blatt** über die Satznummer
   (Aufwärmsatz, Satz entfernen).
 - [x] **8 Menü im Training:** Beginn (mit Dauer) ändern, Notiz, Ton am Pausenende, Bildschirm bleibt an,
-  Werte ansehen, Training verwerfen.
+  Training verwerfen.
 - [x] **9 Fertig:** Dauer, Sätze, Volumen und Vergleich zum letzten Mal, Rekorde, Vorlage anpassen bzw.
   als Vorlage speichern.
 - [x] **10 Kalender und Statistik** (Tabs, seit 11.10.2026; vorher eine Seite „Verlauf“ mit
@@ -303,7 +343,7 @@ Nummern wie in den Mockups.
 - [x] **12 Nachtragen.**
 - [x] **13 Übungen** (Tab): alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
 - [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem,
-  Rekord), Verlauf (Gewicht oder 1RM, 3 M / 1 J / Alles), Bestwerte je Wdh-Zahl, jedes Training mit allen
+  Rekord), Verlauf (Gewicht, 1RM oder Volumen, 3 M / 1 J / Alles), Bestwerte je Wdh-Zahl, jedes Training mit allen
   Sätzen.
 - [x] **15 Übung bearbeiten.**
 - [x] **16 Vorlage bearbeiten** und die Liste der Vorlagen (sortieren, neu).
@@ -315,7 +355,15 @@ Sätze entfernen, Vorschlag fürs nächste Gewicht, Gewichtsschritt, Scheibenrec
 Notiz pro Training, Beginn und Dauer ändern, vergessenes Training, Vergleich auf „Fertig“, Wochenbalken,
 Bestwerte, CSV-Export, „als Nächstes“.
 
+Dritte Runde nach einer Recherche zu Strong, Hevy, Fitbod, Boostcamp und StrongLifts (11.10.2026): eine
+Tab-Leiste für ganz Form, das laufende Training über den Tabs, Pause als Countdown mit ±15 s und
+Überspringen, Live-Zahlen, der nächste Satz, Rückmeldung und Rekord beim Haken, Vergleich pro Übung,
+die letzten Male im Blatt der Übung, Wochenziel, „Fertig“ mit Nummer, Meilensteinen, Konfetti und
+Teilen, Statistik nach Volumen und Dauer, Verlauf einer Übung nach Volumen.
+
 Bewusst weggelassen, weil es die Oberfläche voller macht als nötig: Drop-Sätze und Satz bis zum Versagen,
-RPE/RIR, Supersätze, Muskelgruppen und Statistik je Muskel, Aufwärmrechner. Offen (ROADMAP): Verbindung
+RPE/RIR, Supersätze, Muskelgruppen und Statistik je Muskel, Aufwärmrechner, Wischen zum Löschen eines
+Satzes (geht über die Satznummer). Als Web-App nicht möglich: Live-Activity bzw. Dynamic Island und eine
+Mitteilung am Pausenende bei gesperrtem Handy. Offen (ROADMAP): Verbindung
 zu Steady, Körpergewicht in Körpergewichtsübungen. Der Monatskalender kam am 11.10.2026 mit der
 Tab-Leiste.

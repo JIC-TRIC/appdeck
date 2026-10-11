@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import {
   abschliessen,
+  dieseWoche,
+  leistung,
+  meilensteine,
+  naechsterSatz,
+  nummerVon,
+  pauseStand,
+  soSchwerWie,
+  vergleichMitLetztem,
+  wochenWerte,
+  zumTeilen,
   alsCsv,
   bestwerteJeWdh,
   endeFuer,
@@ -13,7 +23,6 @@ import {
   serie,
   steigerung,
   voriges,
-  wochen,
   abweichung,
   alleRekorde,
   besser,
@@ -268,14 +277,14 @@ describe('Hilfen', () => {
     expect(scheiben(15, 20)).toBeNull()
   })
 
-  it('wochen zaehlt Trainings von Montag bis Sonntag', () => {
+  it('wochenWerte zaehlt Trainings von Montag bis Sonntag', () => {
     // Sa 10.10.2026: diese Woche beginnt Mo 5.10.
     const am = (tag: string) => tr(tag, null, new Date(`${tag}T18:00:00`).getTime(), [])
-    const w = wochen([am('2026-09-28'), am('2026-10-04'), am('2026-10-05'), am('2026-10-10')], '2026-10-10', 3)
+    const w = wochenWerte([am('2026-09-14'), am('2026-09-28'), am('2026-10-04'), am('2026-10-05'), am('2026-10-10')], '2026-10-10', 'anzahl', byId, 3)
     expect(w).toEqual([
-      { montag: '2026-09-21', anzahl: 0 },
-      { montag: '2026-09-28', anzahl: 2 },
-      { montag: '2026-10-05', anzahl: 2 },
+      { montag: '2026-09-21', wert: 0 },
+      { montag: '2026-09-28', wert: 2 },
+      { montag: '2026-10-05', wert: 2 },
     ])
   })
 
@@ -357,5 +366,83 @@ describe('Statistik', () => {
       { uebung: 'face', anzahl: 1 },
     ])
     expect(haeufigste(ts, 1)).toEqual([{ uebung: 'bank', anzahl: 2 }])
+  })
+})
+
+describe('Im laufenden Training', () => {
+  it('pauseStand: gegen die Pause der Uebung des letzten Hakens, Korrektur nur fuer diesen Haken', () => {
+    const t = tr('t', null, 0, [{ uebung: 'bank', saetze: [s(80, 8, 10_000), s(80, 8, null)] }])
+    expect(pauseStand(t, byId, 70_000)).toMatchObject({ sek: 60, marke: 120, rest: 60, um: false, ende: 130_000, uebung: 'bank' })
+    expect(pauseStand(t, byId, 140_000)?.um).toBe(true)
+    expect(pauseStand(t, byId, 70_000, 120, { haken: 10_000, sek: 45 })).toMatchObject({ rest: 0, um: true })
+    expect(pauseStand(t, byId, 70_000, 120, { haken: 9_000, sek: 45 })?.marke).toBe(120)
+    expect(pauseStand(tr('x', null, 0, [{ uebung: 'bank', saetze: [leer()] }]), byId, 1)).toBeNull()
+  })
+
+  it('naechsterSatz: der erste offene in der Reihenfolge der Uebungen', () => {
+    const t = tr('t', null, 0, [
+      { uebung: 'bank', saetze: [s(80, 8), s(80, 8)] },
+      { uebung: 'face', saetze: [s(20, 12), leer(), leer()] },
+    ])
+    expect(naechsterSatz(t)).toEqual({ ui: 1, si: 1 })
+    expect(naechsterSatz(tr('t', null, 0, [{ uebung: 'bank', saetze: [s(80, 8)] }]))).toBeNull()
+  })
+
+  it('vergleichMitLetztem: erst wenn alles abgehakt ist, ohne Aufwaermsaetze', () => {
+    const ref = [auf(40, 10), s(80, 8), s(80, 8)]
+    expect(vergleichMitLetztem([auf(40, 10), s(82.5, 8), s(82.5, 8)], ref, 'gewicht')).toBe(3)
+    expect(vergleichMitLetztem([s(82.5, 8), leer()], ref, 'gewicht')).toBeNull()
+    expect(vergleichMitLetztem([s(80, 8)], null, 'gewicht')).toBeNull()
+    expect(vergleichMitLetztem([s(null, 12)], [s(null, 10)], 'wdh')).toBe(20)
+    expect(leistung([s(80, 8), auf(40, 10), s(80, 8, null)], 'gewicht')).toBe(640)
+  })
+})
+
+describe('Woche und Fertig', () => {
+  const am = (tag: string, uebungen: Training['uebungen'] = [], min = 60) => {
+    const start = new Date(`${tag}T18:00:00`).getTime()
+    return { ...tr(tag, null, start, uebungen), ende: start + min * 60000 }
+  }
+
+  it('wochenWerte: Anzahl, Volumen oder Minuten je Woche', () => {
+    const ts = [
+      am('2026-09-29', [{ uebung: 'bank', saetze: [s(100, 5)] }], 50),
+      am('2026-10-06', [{ uebung: 'bank', saetze: [s(80, 10)] }], 40),
+      am('2026-10-08', [{ uebung: 'bank', saetze: [s(80, 5)] }], 30),
+    ]
+    expect(wochenWerte(ts, '2026-10-10', 'anzahl', byId, 2)).toEqual([
+      { montag: '2026-09-28', wert: 1 },
+      { montag: '2026-10-05', wert: 2 },
+    ])
+    expect(wochenWerte(ts, '2026-10-10', 'volumen', byId, 2).map((w) => w.wert)).toEqual([500, 1200])
+    expect(wochenWerte(ts, '2026-10-10', 'dauer', byId, 2).map((w) => w.wert)).toEqual([50, 70])
+  })
+
+  it('dieseWoche: Montag bis Sonntag mit Trainings pro Tag', () => {
+    const w = dieseWoche([am('2026-10-04'), am('2026-10-06'), am('2026-10-06'), am('2026-10-09')], '2026-10-10')
+    expect(w.map((x) => x.tag)).toEqual(['2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09', '2026-10-10', '2026-10-11'])
+    expect(w.map((x) => x.anzahl)).toEqual([0, 2, 0, 0, 1, 0, 0])
+  })
+
+  it('meilensteine: runde Nummer und Volumenmarke, nur wenn dieses Training sie erreicht', () => {
+    const ts = Array.from({ length: 10 }, (_, i) =>
+      am(`2026-09-${String(10 + i).padStart(2, '0')}`, [{ uebung: 'bank', saetze: [s(100, 10)] }]),
+    )
+    expect(nummerVon(ts, ts[9])).toBe(10)
+    expect(meilensteine(ts, ts[9], byId)).toEqual(['10. Training', '10 t bewegt'])
+    expect(meilensteine(ts, ts[8], byId)).toEqual([])
+  })
+
+  it('soSchwerWie: das Schwerste, das das Volumen noch uebertrifft', () => {
+    expect(soSchwerWie(100)).toBeNull()
+    expect(soSchwerWie(5200)).toBe('ein Elefant')
+    expect(soSchwerWie(9450)).toBe('ein T-Rex')
+  })
+
+  it('zumTeilen: Kopfzeile, Uebungen ohne Aufwaermen, Rekorde', () => {
+    const t = am('2026-10-10', [{ uebung: 'bank', saetze: [auf(40, 10), s(80, 8), s(80, 7)] }], 58)
+    const text = zumTeilen(t, byId, [{ uebung: 'bank', ui: 0, si: 1, art: 'gewicht', satz: s(80, 8) }], '2026-10-10')
+    // Der Name des Trainings ist hier sein Tag (tr setzt name = id).
+    expect(text).toBe('2026-10-10 – heute\n58 min · 2 Sätze · 1.200 kg\n\nbank: 80 × 8 · 7\n\nRekorde: bank 80 × 8')
   })
 })

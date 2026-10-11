@@ -1,19 +1,43 @@
+import { useState } from 'react'
 import { Wochen } from '../charts'
 import { IconRight } from '../icons'
-import { alsCsv, formatDauer, formatSatz, haeufigste, letzteRekorde, serie, wochen } from '../trainingCalc'
-import { REKORD_TEXT, Seite, Umschalter, Zurueck, zumLauncher } from '../ui'
+import {
+  alsCsv,
+  formatDauer,
+  formatSatz,
+  formatTausend,
+  haeufigste,
+  letzteRekorde,
+  serie,
+  wochenWerte,
+  type WochenArt,
+} from '../trainingCalc'
+import { REKORD_TEXT, Segment, Seite, Zurueck, zumLauncher } from '../ui'
 import { dateKey, relativTag } from '../util'
 import type { FormCtx } from '../types'
 
-// Tab "Statistik": oben die Trainings pro Woche (12 Wochen), dazu "Diese
-// Woche" und der Schnitt der Wochen davor. Darunter Trainings insgesamt, die
+const ARTEN: { id: WochenArt; label: string }[] = [
+  { id: 'anzahl', label: 'Trainings' },
+  { id: 'volumen', label: 'Volumen' },
+  { id: 'dauer', label: 'Dauer' },
+]
+
+// Wie eine Wochenzahl dasteht: '3', '12.450 kg', '2:10 h'.
+const zeige = (art: WochenArt, v: number) =>
+  art === 'anzahl' ? v.toFixed(v % 1 ? 1 : 0).replace('.', ',') : art === 'volumen' ? `${formatTausend(v)} kg` : formatDauer(v * 60000)
+
+// Tab "Statistik": oben die letzten 12 Wochen als Balken - Trainings,
+// Volumen oder Dauer -, dazu "Diese Woche" und der Schnitt der Wochen davor;
+// bei den Trainings mit dem Wochenziel. Darunter Trainings insgesamt, die
 // Serie (Wochen in Folge mit Training) und die Dauer, die juengsten Rekorde
 // und die haeufigsten Uebungen - ein Tipp oeffnet die Uebung. Ganz unten der
 // Export als CSV.
 function Statistik({ ctx }: { ctx: FormCtx }) {
-  const { trainings, uebungById, heute, push, melde, bereich, setzeBereich } = ctx
-  const w = wochen(trainings, heute)
-  const schnitt = w.slice(0, -1).reduce((n, x) => n + x.anzahl, 0) / (w.length - 1)
+  const { trainings, uebungById, heute, push, melde, einstellungen } = ctx
+  const [art, setArt] = useState<WochenArt>('anzahl')
+  const w = wochenWerte(trainings, heute, art, uebungById)
+  const schnitt = w.slice(0, -1).reduce((n, x) => n + x.wert, 0) / (w.length - 1)
+  const ziel = art === 'anzahl' ? einstellungen.wochenziel : null
   const inFolge = serie(trainings, heute)
   const diesesJahr = trainings.filter((t) => dateKey(new Date(t.start)).startsWith(heute.slice(0, 4))).length
   const dauer = trainings.reduce((n, t) => n + ((t.ende ?? t.start) - t.start), 0)
@@ -42,7 +66,7 @@ function Statistik({ ctx }: { ctx: FormCtx }) {
   }
 
   return (
-    <Seite links={<Zurueck label="Apps" onClick={zumLauncher} />} titel={<Umschalter wert={bereich} onWahl={setzeBereich} />}>
+    <Seite links={<Zurueck label="Apps" onClick={zumLauncher} />}>
       <header className="f-kopf tab">
         <h1 className="f-marke">Statistik</h1>
       </header>
@@ -52,15 +76,17 @@ function Statistik({ ctx }: { ctx: FormCtx }) {
       ) : (
         <>
           <section className="f-karte-flach">
+            <Segment label="Pro Woche" optionen={ARTEN} wert={art} onWahl={setArt} />
             <div className="f-wochen-kopf">
               <span>
-                Diese Woche <b>{w[w.length - 1].anzahl}</b>
+                Diese Woche <b>{zeige(art, w[w.length - 1].wert)}</b>
+                {ziel !== null ? <em> von {ziel}</em> : null}
               </span>
               <span>
-                Schnitt <b>{schnitt.toFixed(1).replace('.', ',')}</b> pro Woche
+                Schnitt <b>{zeige(art, art === 'anzahl' ? Math.round(schnitt * 10) / 10 : Math.round(schnitt))}</b>
               </span>
             </div>
-            <Wochen wochen={w} />
+            <Wochen wochen={w} ziel={ziel} label={`${ARTEN.find((a) => a.id === art)!.label} pro Woche`} />
           </section>
 
           <div className="f-kacheln">

@@ -18,28 +18,41 @@ import UebungSeite from './views/UebungSeite'
 import UebungForm from './views/UebungForm'
 import Vorlagen from './views/Vorlagen'
 import VorlageForm from './views/VorlageForm'
-import { IconHantel, IconKalender, IconStatistik, IconVorlagen } from './icons'
+import { LaufLeiste, usePausenTon } from './views/Pause'
+import { useWach } from './geraet'
+import { IconHantel, IconKalender, IconListe, IconStatistik, IconWerte } from './icons'
 import { getLog, getWerte } from './store'
-import { getBereich, getLaufend, getTrainings, getUebungen, getVorlagen, setzeBereich as speichereBereich } from './trainingStore'
+import {
+  getBereich,
+  getEinstellungen,
+  getLaufend,
+  getPausenKorrektur,
+  getTrainings,
+  getUebungen,
+  getVorlagen,
+  setzeBereich as speichereBereich,
+} from './trainingStore'
 import { dateKey } from './util'
-import type { AppBereich, FormCtx, TrainingTab, Uebung, View, Wert } from './types'
+import type { FormCtx, Tab, Uebung, View, Wert } from './types'
 
 // Seitenwechsel mit Zurueckwischen wie Kontor, Piano und Stash
 // (lib/PageStage.tsx, lib/useHistoryStack.ts). Messen und Bearbeiten sind
 // ganze Seiten, damit die Tastatur genug Platz hat; Blaetter von unten gibt es
 // nur im Training (Tastenfeld, Uebung, Menue).
 
-// Das Training hat unten eine Tab-Leiste wie Piano - nicht waehrend eines
-// laufenden Trainings, und nicht ueber Formularen, dem Bearbeiten eines
-// Trainings und "Fertig": Dort wuerde ein Tipp auf einen Tab die Eingabe
-// verwerfen. Die Werte bleiben ohne Leiste.
-const TABS: { id: TrainingTab; label: string; Icon: ComponentType; Seite: ComponentType<{ ctx: FormCtx }> }[] = [
-  { id: 'vorlagen', label: 'Vorlagen', Icon: IconVorlagen, Seite: TrainingStart },
-  { id: 'kalender', label: 'Kalender', Icon: IconKalender, Seite: Kalender },
-  { id: 'statistik', label: 'Statistik', Icon: IconStatistik, Seite: Statistik },
-  { id: 'uebungen', label: 'Übungen', Icon: IconHantel, Seite: Uebungen },
+// Unten eine Tab-Leiste fuer ganz Form (wie Strong: Training, Verlauf,
+// Uebungen, Koerperwerte) - auch waehrend eines laufenden Trainings. Nur ueber
+// Formularen, dem Bearbeiten eines Trainings und "Fertig" nicht: Dort wuerde
+// ein Tipp auf einen Tab die Eingabe verwerfen. Laeuft ein Training und man
+// steht woanders, zeigt eine Leiste darueber das Training mit seiner Pause.
+const TABS: { id: Tab; label: string; Icon: ComponentType }[] = [
+  { id: 'training', label: 'Training', Icon: IconHantel },
+  { id: 'kalender', label: 'Kalender', Icon: IconKalender },
+  { id: 'statistik', label: 'Statistik', Icon: IconStatistik },
+  { id: 'uebungen', label: 'Übungen', Icon: IconListe },
+  { id: 'werte', label: 'Werte', Icon: IconWerte },
 ]
-const MIT_LEISTE: View['name'][] = ['training', 'uebung', 'vorlagen']
+const MIT_LEISTE: View['name'][] = ['training', 'uebung', 'vorlagen', 'wert']
 
 const seitenKey = (v: View, i: number) => {
   const zusatz = 'id' in v ? (v.id ?? '') : v.name === 'messen' ? v.tag : v.name === 'neu' ? v.training.id : ''
@@ -67,16 +80,11 @@ function Form() {
       vorlagen: getVorlagen(),
       trainings: getTrainings(),
       laufend: getLaufend(),
+      pausenKorrektur: getPausenKorrektur(),
+      einstellungen: getEinstellungen(),
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick])
-
-  // Werte oder Training - Form oeffnet den Bereich, in dem man zuletzt war.
-  const [bereich, setBereich] = useState<AppBereich>(getBereich)
-  const setzeBereich = useCallback((b: AppBereich) => {
-    speichereBereich(b)
-    setBereich(b)
-  }, [])
 
   // Bleibt die App ueber Mitternacht offen oder kommt am naechsten Morgen aus
   // dem Hintergrund, muss "heute" nachziehen.
@@ -92,10 +100,16 @@ function Form() {
   }, [])
   const heute = dateKey(new Date(jetzt))
 
+  // Bildschirm an und Ton am Pausenende gelten fuers ganze laufende Training,
+  // auch wenn man gerade im Kalender oder bei den Werten ist.
+  useWach(!!daten.laufend && daten.einstellungen.wach)
+  usePausenTon(daten.laufend, daten.uebungById, daten.pausenKorrektur, daten.einstellungen.ton)
+
   const { stack, push, replace, back, toRoot } = useHistoryStack<View>(() => [])
 
-  // Form oeffnet das Training immer bei den Vorlagen - dort startet man.
-  const [tab, setTab] = useState<TrainingTab>('vorlagen')
+  // Form oeffnet beim laufenden Training, sonst bei den Werten oder beim
+  // Training - je nachdem, wo man zuletzt war (form:bereich).
+  const [tab, setTab] = useState<Tab>(() => (getLaufend() || getBereich() === 'training' ? 'training' : 'werte'))
   // Die Startseite des neuen Tabs erscheint ohne Fahrt - nur fuer diesen einen
   // Wechsel, danach faehrt zurueck zur Startseite wieder (wie Piano).
   const [ohneFahrt, setOhneFahrt] = useState<string | undefined>()
@@ -103,39 +117,58 @@ function Form() {
     if (ohneFahrt) setOhneFahrt(undefined)
   }, [ohneFahrt])
   // Aktiver Tab nochmal: zurueck zu seiner Startseite. Anderer Tab: ohne Fahrt wechseln.
-  const waehleTab = (t: TrainingTab) => {
-    if (t === tab) {
-      if (stack.length) toRoot()
-      return
-    }
-    setOhneFahrt(`start:${t}`)
-    toRoot()
-    setTab(t)
-  }
+  const zeigeTab = useCallback(
+    (t: Tab) => {
+      if (t === tab) {
+        if (stack.length) toRoot()
+        return
+      }
+      setOhneFahrt(`start:${t}`)
+      toRoot()
+      setTab(t)
+      speichereBereich(t === 'werte' ? 'werte' : 'training')
+    },
+    [tab, stack.length, toRoot],
+  )
   const oben = stack[stack.length - 1]
-  const leiste = bereich === 'training' && !daten.laufend && (!oben || MIT_LEISTE.includes(oben.name))
+  const leiste = !oben || MIT_LEISTE.includes(oben.name)
+  // Das laufende Training ist die Startseite des Trainings-Tabs - steht man
+  // dort, braucht es keine Leiste, die dorthin fuehrt.
+  const lauf = daten.laufend && leiste && (tab !== 'training' || !!oben) ? daten.laufend : null
 
   // Es gibt immer nur eine Meldung - eine neue ersetzt die alte. Oben, weil
   // unten der Hauptknopf steht.
   const [zeigeToast, schliesseToast] = useIonToast()
   const melde = useCallback(
-    (message: string) => {
+    (message: string, art?: 'rekord') => {
       schliesseToast().catch(() => {})
-      zeigeToast({ message, duration: 2200, position: 'top', cssClass: 'f-toast', swipeGesture: 'vertical' })
+      zeigeToast({
+        message,
+        duration: art ? 2800 : 2200,
+        position: 'top',
+        cssClass: art ? 'f-toast f-toast-rekord' : 'f-toast',
+        swipeGesture: 'vertical',
+      })
     },
     [zeigeToast, schliesseToast],
   )
 
-  const ctx: FormCtx = { ...daten, bereich, setzeBereich, heute, push, replace, back, toRoot, refresh, melde }
+  const ctx: FormCtx = { ...daten, tab, zeigeTab, heute, push, replace, back, toRoot, refresh, melde }
 
   const seite = (view: View | null) => {
-    // Laeuft ein Training, gehoert ihm die Startseite: kein Umschalter, Form
-    // oeffnet direkt dort. Zu den Werten geht es nur ueber sein Menue.
     if (!view) {
-      if (daten.laufend) return <TrainingSeite ctx={ctx} />
-      if (bereich === 'werte') return <Start ctx={ctx} />
-      const Tab = TABS.find((x) => x.id === tab)!.Seite
-      return <Tab ctx={ctx} />
+      switch (tab) {
+        case 'training':
+          return daten.laufend ? <TrainingSeite ctx={ctx} /> : <TrainingStart ctx={ctx} />
+        case 'kalender':
+          return <Kalender ctx={ctx} />
+        case 'statistik':
+          return <Statistik ctx={ctx} />
+        case 'uebungen':
+          return <Uebungen ctx={ctx} />
+        case 'werte':
+          return <Start ctx={ctx} />
+      }
     }
     switch (view.name) {
       case 'wert':
@@ -144,8 +177,6 @@ function Form() {
         return <Messen ctx={ctx} start={view.tag} />
       case 'wertForm':
         return <WertForm ctx={ctx} id={view.id} />
-      case 'werte':
-        return <Start ctx={ctx} imTraining />
       case 'fertig':
         return <Fertig ctx={ctx} id={view.id} />
       case 'training':
@@ -180,15 +211,18 @@ function Form() {
         onBack={back}
         instantFor={ohneFahrt}
       />
+      {lauf ? (
+        <LaufLeiste t={lauf} uebungById={daten.uebungById} korrektur={daten.pausenKorrektur} onClick={() => zeigeTab('training')} />
+      ) : null}
       {leiste ? (
-        <nav className="f-tabs" aria-label="Training">
+        <nav className="f-tabs" aria-label="Bereiche">
           {TABS.map(({ id, label, Icon }) => (
             <button
               key={id}
               type="button"
-              className={`f-tab${tab === id ? ' an' : ''}`}
+              className={`f-tab${tab === id ? ' an' : ''}${id === 'training' && daten.laufend ? ' laeuft' : ''}`}
               aria-current={tab === id ? 'page' : undefined}
-              onClick={() => waehleTab(id)}
+              onClick={() => zeigeTab(id)}
             >
               <Icon />
               {label}

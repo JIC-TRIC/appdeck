@@ -1,12 +1,12 @@
 // Bausteine, die auf mehreren Seiten gleich aussehen muessen.
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode, type Ref } from 'react'
 import { IonModal } from '@ionic/react'
 import { IconLeft, IconMinus, IconPlus } from './icons'
 import { urteil } from './calc'
 import type { RekordArt } from './trainingCalc'
 import { formatDiff, mitEinheit } from './util'
-import type { AppBereich, Wert } from './types'
+import type { Wert } from './types'
 
 // Zurueck zum Launcher. Ohne shell.js (z. B. einzeln geoeffnet) eine Ebene ueber apps/.
 export function zumLauncher() {
@@ -19,23 +19,29 @@ export function Seite({
   links,
   titel,
   rechts,
+  unterKopf,
   unten,
+  seiteRef,
   children,
 }: {
   links?: ReactNode
   titel?: ReactNode
   rechts?: ReactNode
+  /** Steht fest unter der Kopfleiste (die Zahlen im laufenden Training). */
+  unterKopf?: ReactNode
   /** Steht fest unter dem Inhalt (z. B. der Hauptknopf). */
   unten?: ReactNode
+  seiteRef?: Ref<HTMLDivElement>
   children: ReactNode
 }) {
   return (
-    <div className="f-screen">
+    <div className="f-screen" ref={seiteRef}>
       <header className="f-bar">
         <div className="f-bar-l">{links}</div>
         <div className="f-bar-mid">{titel}</div>
         <div className="f-bar-r">{rechts}</div>
       </header>
+      {unterKopf}
       <div className="f-body">{children}</div>
       {unten ? <div className="f-unten">{unten}</div> : null}
     </div>
@@ -114,26 +120,6 @@ export const REKORD_TEXT: Record<RekordArt, string> = {
   '1rm': 'bestes 1RM',
   wdh: 'meiste Wdh',
   zeit: 'längste Zeit',
-}
-
-/** Werte oder Training - in der Kopfleiste der Startseiten. */
-export function Umschalter({ wert, onWahl }: { wert: AppBereich; onWahl: (b: AppBereich) => void }) {
-  return (
-    <div className="f-seg f-seg-bar" role="radiogroup" aria-label="Bereich">
-      {(['werte', 'training'] as const).map((b) => (
-        <button
-          key={b}
-          type="button"
-          role="radio"
-          aria-checked={b === wert}
-          className={b === wert ? 'an' : ''}
-          onClick={() => onWahl(b)}
-        >
-          {b === 'werte' ? 'Werte' : 'Training'}
-        </button>
-      ))}
-    </div>
-  )
 }
 
 /** Ein- und Ausschalter wie in den iOS-Einstellungen - steht rechts in einer Zeile. */

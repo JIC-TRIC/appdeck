@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IonReorder, IonReorderGroup, useIonAlert } from '@ionic/react'
 import { IconCheck, IconGriff, IconMehr, IconPlus, IconRight, IconX } from '../icons'
-import { kannWach, piep, tonBereit, useWach } from '../geraet'
+import { kannWach, tick, tonBereit } from '../geraet'
 import {
   abschliessen,
   besser,
+  besterSatz,
   effektiv,
+  einheiten,
   endeFuer,
   erledigt,
   formatBereich,
@@ -15,12 +17,14 @@ import {
   formatStoppuhr,
   formatUhr,
   gleicherSatz,
-  letzterHaken,
+  kurzSaetze,
+  naechsterSatz,
   nurNoetige,
   offeneSaetze,
   platzhalter,
   rekordeIn,
   steigerung,
+  vergleichMitLetztem,
   vollstaendig,
   vorgabe,
   type Steigerung,
@@ -30,15 +34,14 @@ import {
   NOTIZ_TRAINING_MAX,
   PAUSE_MAX,
   PAUSE_MIN,
-  PAUSE_STANDARD,
   SAETZE_MAX,
-  getEinstellungen,
   getLaufend,
   leererSatz,
   loescheTraining,
   saetzeFuer,
   setzeEinstellungen,
   setzeLaufend,
+  setzePausenKorrektur,
   setzeUebung,
   speichereTraining,
 } from '../trainingStore'
@@ -46,11 +49,12 @@ import { NAME_MAX, sauber } from '../store'
 import { Blatt, Schalter, Seite, Stepper, TextKnopf } from '../ui'
 import { dateKey, formatZahl, relativTag } from '../util'
 import { Hinzufuegen } from './Hinzufuegen'
+import { LiveZahlen, PauseAnzeige, PauseBlatt } from './Pause'
 import { FELDNAME, Tastenfeld, type Feld } from './Tastenfeld'
 import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung, Uebung, VorlagenUebung } from '../types'
 
-// Ein Training. Laufend ist es die Startseite (kein Umschalter, kein Zurueck)
-// und jeder Tipp wird sofort gesichert. Als Entwurf aendert es ein beendetes
+// Ein Training. Laufend ist es die Startseite des Tabs "Training" (kein
+// Zurueck) und jeder Tipp wird sofort gesichert. Als Entwurf aendert es ein beendetes
 // oder macht ein nachgetragenes fertig - mit Name, Zeit und Notiz, erst
 // "Sichern" schreibt. Fertige Uebungen bleiben offen.
 //
@@ -61,7 +65,10 @@ import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung
 // einen Aufwaermsatz daraus oder entfernt den Satz.
 //
 // Oben die Pause: jetzt minus Uhrzeit des letzten Hakens - nichts zaehlt im
-// Hintergrund, darum stimmt sie auch, wenn die App zwischendurch zu war.
+// Hintergrund, darum stimmt sie auch, wenn die App zwischendurch zu war
+// (Pause.tsx). Darunter Dauer, Volumen und Saetze. Der naechste offene Satz
+// ist markiert; ein Haken tickt (Haptik), springt kurz auf, holt den
+// naechsten Satz ins Bild und meldet einen neuen Rekord.
 
 const NEIN = { kg: false, wdh: false, sek: false }
 
@@ -74,7 +81,7 @@ const sortiert = (saetze: Satz[]) => [...saetze.filter((s) => s.aufwaermen), ...
 const nummer = (saetze: Satz[], si: number) => saetze.slice(0, si + 1).filter((s) => !s.aufwaermen).length
 
 function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training; neu?: boolean }) {
-  const { laufend, trainings, uebungById, vorlagen, heute, refresh, melde, push, back, toRoot } = ctx
+  const { laufend, trainings, uebungById, vorlagen, heute, refresh, melde, push, back, toRoot, einstellungen: einst } = ctx
   const istLaufend = !entwurf
   const [lokal, setLokal] = useState<Training | null>(entwurf ?? null)
   const t = istLaufend ? laufend : lokal
@@ -83,12 +90,15 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
   const [blatt, setBlatt] = useState<number | null>(null)
   const [satzBlatt, setSatzBlatt] = useState<{ ui: number; si: number } | null>(null)
   const [menue, setMenue] = useState(false)
+  const [pauseOffen, setPauseOffen] = useState(false)
+  // Der gerade abgehakte Satz ('ui:si') - springt kurz auf, und ist er ein
+  // Rekord, kommt die Meldung.
+  const [frisch, setFrisch] = useState<string | null>(null)
   // Ein leeres Training beginnt mit der Auswahl der Uebungen.
   const [hinzu, setHinzu] = useState<{ tauschen?: number } | null>(() =>
     istLaufend && laufend && !laufend.uebungen.length ? {} : null,
   )
   const [ordnen, setOrdnen] = useState(false)
-  const [einst, setEinst] = useState<Einstellungen>(getEinstellungen)
   // Was nach dem Schliessen eines Blatts kommt - zwei Blaetter gleichzeitig
   // vertraegt Ionic schlecht.
   const danach = useRef<(() => void) | null>(null)
@@ -98,8 +108,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
     f?.()
   }
   const [frage] = useIonAlert()
-
-  useWach(istLaufend && einst.wach && t !== null)
+  const seiteRef = useRef<HTMLDivElement>(null)
 
   const vorlage = t?.vorlage ? vorlagen.find((v) => v.id === t.vorlage) : undefined
   const vorgaben = useMemo(
@@ -122,6 +131,36 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
     if (t) for (const x of rekordeIn(t, trainings, uebungById)) r.add(`${x.ui}:${x.si}`)
     return r
   }, [t, trainings, uebungById])
+  const dran = istLaufend && t ? naechsterSatz(t) : null
+
+  // Nach einem Haken: ist der Satz ein neuer Rekord, eine Meldung und ein
+  // doppelter Tick. Dann den naechsten Satz ins Bild holen, falls er unter dem
+  // Rand liegt - nach oben wird nie gesprungen.
+  const warRekord = useRef(rekorde)
+  useEffect(() => {
+    const vorher = warRekord.current
+    warRekord.current = rekorde
+    if (!frisch || !t) return
+    if (rekorde.has(frisch) && !vorher.has(frisch)) {
+      const [ui, si] = frisch.split(':').map(Number)
+      const tu = t.uebungen[ui]
+      const u = tu ? uebungById[tu.uebung] : undefined
+      const s = tu?.saetze[si]
+      if (u && s) {
+        tick(true)
+        melde(`Neuer Rekord · ${u.name} ${formatSatz(s, u.erfassung)}`, 'rekord')
+      }
+    }
+    const body = seiteRef.current?.querySelector<HTMLElement>('.f-body')
+    const ziel = body?.querySelector<HTMLElement>('.f-satz.dran')
+    if (body && ziel) {
+      const unten = ziel.getBoundingClientRect().bottom - body.getBoundingClientRect().bottom + 72
+      if (unten > 0) body.scrollBy({ top: unten, behavior: 'smooth' })
+    }
+    const id = window.setTimeout(() => setFrisch(null), 700)
+    return () => window.clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frisch, rekorde])
 
   // Gerade beendet oder verworfen - die Seite gleitet noch hinaus.
   if (!t) return <Seite>{null}</Seite>
@@ -162,7 +201,13 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
       setEingabe({ ui, si, feld })
       return
     }
+    abgehakt(ui, si, z, erf)
+  }
+
+  const abgehakt = (ui: number, si: number, z: Zahlen, erf: Erfassung) => {
+    tick()
     setzeSatz(ui, si, (x) => ({ ...nurNoetige(z, erf), fertig: hakenZeit(), aufwaermen: x.aufwaermen }))
+    setFrisch(`${ui}:${si}`)
   }
 
   const plusSatz = (ui: number, aufwaermen = false) =>
@@ -208,10 +253,10 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
     })
   }
 
-  const schalte = (k: keyof Einstellungen) => {
-    const neuE = { ...einst, [k]: !einst[k] }
+  const schalte = (k: 'ton' | 'wach') => {
+    const neuE: Einstellungen = { ...einst, [k]: !einst[k] }
     setzeEinstellungen(neuE)
-    setEinst(neuE)
+    refresh()
     if (k === 'ton' && neuE.ton) tonBereit()
   }
 
@@ -328,6 +373,8 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
     return `${tu.uebung}:${gezaehlt[tu.uebung]}`
   })
 
+  const [fUi, fSi] = frisch ? frisch.split(':').map(Number) : [-1, -1]
+
   const tag = dateKey(new Date(t.start))
   const dauerMin = t.ende !== null ? Math.round((t.ende - t.start) / 60000) : 0
 
@@ -343,12 +390,22 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
             <TextKnopf onClick={back}>Abbrechen</TextKnopf>
           )
         }
-        titel={istLaufend ? <PauseAnzeige t={t} uebungById={uebungById} ton={einst.ton} /> : neu ? 'Nachtragen' : 'Bearbeiten'}
+        titel={
+          istLaufend ? (
+            <PauseAnzeige t={t} uebungById={uebungById} korrektur={ctx.pausenKorrektur} onClick={() => setPauseOffen(true)} />
+          ) : neu ? (
+            'Nachtragen'
+          ) : (
+            'Bearbeiten'
+          )
+        }
         rechts={
           <TextKnopf stark onClick={fertigMachen}>
             {istLaufend ? 'Beenden' : 'Sichern'}
           </TextKnopf>
         }
+        unterKopf={istLaufend ? <LiveZahlen t={t} uebungById={uebungById} /> : null}
+        seiteRef={seiteRef}
       >
         {!istLaufend ? (
           <div className="f-felder">
@@ -390,16 +447,20 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
         {t.uebungen.map((tu, ui) => {
           const u = uebungById[tu.uebung]
           if (!u) return null
+          const ref = vorgaben[ui]?.saetze ?? null
           return (
             <UebungBlock
               key={schluessel[ui]}
               tu={tu}
               ui={ui}
               u={u}
-              ref_={vorgaben[ui]?.saetze ?? null}
+              ref_={ref}
               plus={plusse[ui]}
               vu={vorlage?.uebungen.find((v) => v.uebung === tu.uebung)}
               rekorde={rekorde}
+              prozent={vergleichMitLetztem(tu.saetze, ref, u.erfassung)}
+              dranSi={dran && dran.ui === ui ? dran.si : null}
+              frischSi={fUi === ui ? fSi : null}
               aktiv={eingabe && eingabe.ui === ui ? eingabe : null}
               onFeld={(si, feld) => setEingabe({ ui, si, feld })}
               onHaken={(si) => haken(ui, si)}
@@ -470,7 +531,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                 onAendern={(z) => setzeSatz(ui, si, (x) => ({ ...x, ...z }))}
                 onAbhaken={(z) => {
                   tonBereit()
-                  setzeSatz(ui, si, (x) => ({ ...nurNoetige(z, u.erfassung), fertig: hakenZeit(), aufwaermen: x.aufwaermen }))
+                  abgehakt(ui, si, z, u.erfassung)
                 }}
                 onClose={() => setEingabe(null)}
               />
@@ -562,6 +623,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                           <IconX />
                         </button>
                       </div>
+                      <LetzteMale trainings={trainings} u={u} ohne={t.id} heute={heute} />
                       <div className="f-gruppe">
                         <div className="f-zeile">
                           <span>Pause</span>
@@ -672,19 +734,6 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
               <div className="f-gruppe">
                 <button
                   type="button"
-                  className="f-zeile"
-                  onClick={() => {
-                    danach.current = () => push({ name: 'werte' })
-                    schliessen()
-                  }}
-                >
-                  <span>Werte ansehen</span>
-                  <span className="f-zeile-r">
-                    <IconRight />
-                  </span>
-                </button>
-                <button
-                  type="button"
                   className="f-zeile gefahr"
                   onClick={() => {
                     danach.current = () =>
@@ -706,6 +755,19 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
             </>
           )}
         </Blatt>
+      ) : null}
+
+      {pauseOffen && istLaufend ? (
+        <PauseBlatt
+          t={t}
+          uebungById={uebungById}
+          korrektur={ctx.pausenKorrektur}
+          onKorrektur={(k) => {
+            setzePausenKorrektur(k)
+            refresh()
+          }}
+          onClose={() => setPauseOffen(false)}
+        />
       ) : null}
 
       {ordnen ? (
@@ -757,54 +819,29 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
   )
 }
 
-// Pause seit dem letzten Haken, gegen die Pause der Uebung - ab da orange
-// (und mit Ton, wenn eingeschaltet). Vor dem ersten Haken steht dort, wie
-// lange das Training schon laeuft.
-function PauseAnzeige({ t, uebungById, ton }: { t: Training; uebungById: Record<string, Uebung>; ton: boolean }) {
-  const [jetzt, setJetzt] = useState(() => Date.now())
-  useEffect(() => {
-    const tick = () => setJetzt(Date.now())
-    const id = window.setInterval(tick, 1000)
-    document.addEventListener('visibilitychange', tick)
-    return () => {
-      window.clearInterval(id)
-      document.removeEventListener('visibilitychange', tick)
-    }
-  }, [])
-
-  const h = letzterHaken(t)
-  const sek = h ? Math.max(0, (jetzt - h.zeit) / 1000) : 0
-  const marke = h ? (uebungById[h.uebung]?.pause ?? PAUSE_STANDARD) : 0
-  const um = h !== null && sek >= marke
-
-  // Ton nur beim Uebergang - nicht, wenn die App erst nach der Pause wieder
-  // aufgemacht wird.
-  const vorher = useRef<boolean | null>(null)
-  useEffect(() => {
-    if (vorher.current === false && um && ton && document.visibilityState === 'visible') piep()
-    vorher.current = um
-  }, [um, ton])
-
-  if (!h) {
-    return (
-      <div className="f-pz still" role="timer">
-        <span className="f-pz-z">
-          <small>Training</small>
-          <b>{formatStoppuhr((jetzt - t.start) / 1000)}</b>
-        </span>
-        <i />
-      </div>
-    )
-  }
+// Die letzten drei Male dieser Uebung und ihr Rekord - im Blatt der Uebung,
+// damit man dafuer das Training nicht verlassen muss.
+function LetzteMale({ trainings, u, ohne, heute }: { trainings: Training[]; u: Uebung; ohne: string; heute: string }) {
+  const ein = einheiten(trainings.filter((x) => x.id !== ohne), u.id)
+  if (!ein.length) return null
+  const rekord = besterSatz(ein.flatMap((e) => e.saetze), u.erfassung)
   return (
-    <div className={`f-pz${um ? ' um' : ''}`} role="timer">
-      <span className="f-pz-z">
-        <small>Pause</small>
-        <b>{formatStoppuhr(sek)}</b>
-      </span>
-      <i>
-        <u style={{ width: `${Math.min(100, (sek / marke) * 100)}%` }} />
-      </i>
+    <div className="f-gruppe">
+      {ein
+        .slice(-3)
+        .reverse()
+        .map((e) => (
+          <div key={e.training.id} className="f-zeile f-zeile-info">
+            <span>{relativTag(dateKey(new Date(e.training.start)), heute)}</span>
+            <span className="f-zeile-r">{kurzSaetze(e.saetze, u.erfassung)}</span>
+          </div>
+        ))}
+      {rekord ? (
+        <div className="f-zeile f-zeile-info">
+          <span>Rekord bisher</span>
+          <span className="f-zeile-r f-gut">{formatSatz(rekord, u.erfassung)}</span>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -817,6 +854,9 @@ function UebungBlock({
   plus,
   vu,
   rekorde,
+  prozent,
+  dranSi,
+  frischSi,
   aktiv,
   onFeld,
   onHaken,
@@ -832,6 +872,12 @@ function UebungBlock({
   plus: Steigerung | null
   vu: VorlagenUebung | undefined
   rekorde: Set<string>
+  /** Alles abgehakt: so viel Prozent mehr als beim letzten Mal (null = noch offen oder nichts zu vergleichen) */
+  prozent: number | null
+  /** Der Satz, der als Naechstes dran ist */
+  dranSi: number | null
+  /** Der gerade abgehakte Satz */
+  frischSi: number | null
   aktiv: { si: number; feld: Feld } | null
   onFeld: (si: number, feld: Feld) => void
   onHaken: (si: number) => void
@@ -840,14 +886,26 @@ function UebungBlock({
   onMehr: () => void
 }) {
   const bereich = vu ? formatBereich(vu) : ''
+  const fertig = tu.saetze.length > 0 && tu.saetze.every(erledigt)
   return (
     <section className="f-ex">
       <div className="f-ex-kopf">
+        {fertig ? (
+          <span className="f-ex-fertig" aria-label="Alle Sätze abgehakt">
+            <IconCheck />
+          </span>
+        ) : null}
         <button type="button" className="f-ex-name" onClick={onMehr}>
           {u.name}
         </button>
-        {plus ? <span className="f-ex-plus">+{formatZahl(plus.kg)} kg</span> : null}
-        {bereich ? <span className="f-ex-ziel">{bereich}</span> : null}
+        {prozent !== null ? (
+          <span className={`f-ex-vgl${prozent > 0 ? ' gut' : ''}`} title="Verglichen mit dem letzten Mal">
+            {prozent > 0 ? `+${prozent}` : prozent === 0 ? '±0' : `−${-prozent}`} %
+          </span>
+        ) : plus ? (
+          <span className="f-ex-plus">+{formatZahl(plus.kg)} kg</span>
+        ) : null}
+        {bereich && !fertig ? <span className="f-ex-ziel">{bereich}</span> : null}
         <button type="button" className="f-ex-mehr" onClick={onMehr} aria-label={`${u.name}: mehr`}>
           <IconMehr />
         </button>
@@ -863,6 +921,8 @@ function UebungBlock({
             ph={platzhalter(ref_, tu.saetze, si, plus)}
             refSatz={gleicherSatz(ref_, tu.saetze, si)}
             pr={rekorde.has(`${ui}:${si}`)}
+            dran={dranSi === si}
+            frisch={frischSi === si}
             aktivFeld={aktiv && aktiv.si === si ? aktiv.feld : null}
             onFeld={(feld) => onFeld(si, feld)}
             onHaken={() => onHaken(si)}
@@ -885,6 +945,8 @@ function SatzZeile({
   ph,
   refSatz,
   pr,
+  dran,
+  frisch,
   aktivFeld,
   onFeld,
   onHaken,
@@ -896,6 +958,8 @@ function SatzZeile({
   ph: Zahlen | null
   refSatz: Satz | undefined
   pr: boolean
+  dran: boolean
+  frisch: boolean
   aktivFeld: Feld | null
   onFeld: (f: Feld) => void
   onHaken: () => void
@@ -923,7 +987,11 @@ function SatzZeile({
   }
 
   return (
-    <div className={`f-satz${erf === 'gewicht' ? '' : ' einzeln'}${s.aufwaermen ? ' auf' : ''}`}>
+    <div
+      className={`f-satz${erf === 'gewicht' ? '' : ' einzeln'}${s.aufwaermen ? ' auf' : ''}${dran ? ' dran' : ''}${frisch ? ' frisch' : ''}${
+        frisch && pr ? ' rekord' : ''
+      }`}
+    >
       <button type="button" className="f-nr" onClick={onNummer} aria-label={`${name}: Aufwärmsatz oder entfernen`}>
         {pr ? <span className="f-pr">PR</span> : s.aufwaermen ? 'A' : nr}
       </button>

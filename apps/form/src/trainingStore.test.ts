@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   getEinstellungen,
   getLaufend,
+  getPausenKorrektur,
   getTrainings,
   getUebungen,
   getVorlagen,
@@ -13,6 +14,7 @@ import {
   pauseSauber,
   setzeEinstellungen,
   setzeLaufend,
+  setzePausenKorrektur,
   speichereTraining,
   speichereUebung,
   speichereVorlage,
@@ -62,10 +64,27 @@ describe('normalisiereUebungen', () => {
 })
 
 describe('Einstellungen', () => {
-  it('sind ohne Eintrag aus', () => {
-    expect(getEinstellungen()).toEqual({ ton: false, wach: false })
-    setzeEinstellungen({ ton: true, wach: false })
-    expect(getEinstellungen()).toEqual({ ton: true, wach: false })
+  it('ohne Eintrag: Ton aus, Bildschirm an, kein Wochenziel', () => {
+    expect(getEinstellungen()).toEqual({ ton: false, wach: true, wochenziel: null })
+    setzeEinstellungen({ ton: true, wach: false, wochenziel: 3 })
+    expect(getEinstellungen()).toEqual({ ton: true, wach: false, wochenziel: 3 })
+  })
+
+  it('Pause von Hand: nur mit Haken und Sekunden', () => {
+    expect(getPausenKorrektur()).toBeNull()
+    setzePausenKorrektur({ haken: 1000, sek: 135 })
+    expect(getPausenKorrektur()).toEqual({ haken: 1000, sek: 135 })
+    localStorage.setItem('form:pause', JSON.stringify({ sek: 30 }))
+    expect(getPausenKorrektur()).toBeNull()
+  })
+
+  it('nehmen als Wochenziel nur 1 bis 7', () => {
+    localStorage.setItem('form:einstellungen', JSON.stringify({ wochenziel: 12 }))
+    expect(getEinstellungen().wochenziel).toBe(7)
+    localStorage.setItem('form:einstellungen', JSON.stringify({ wochenziel: 0 }))
+    expect(getEinstellungen().wochenziel).toBeNull()
+    localStorage.setItem('form:einstellungen', JSON.stringify({ wochenziel: 'drei' }))
+    expect(getEinstellungen().wochenziel).toBeNull()
   })
 })
 

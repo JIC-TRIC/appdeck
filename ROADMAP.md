@@ -117,12 +117,17 @@ letzte Mal aus derselben Vorlage, Pause aus dem letzten Haken berechnet, Rekorde
 Übungen mit Kurve. Nach dem Abgleich mit Strong und Hevy (ebenfalls 10.10.2026) dazu: Aufwärmsätze,
 Vorschlag fürs nächste Gewicht, Gewichtsschritt pro Übung, Scheibenrechner, Ton am Pausenende,
 Bildschirm an, Notiz pro Training, Wochenbalken, Bestwerte je Wdh-Zahl, Export als CSV, „als Nächstes“.
-Am 11.10.2026 kam unten eine Tab-Leiste dazu: Vorlagen, Kalender (Monatsblatt mit Trainingstagen),
-Statistik, Übungen. Noch offen:
+Am 11.10.2026 kam unten eine Tab-Leiste dazu, noch am selben Tag für ganz Form: Training, Kalender
+(Monatsblatt mit Trainingstagen), Statistik, Übungen, Werte – auch während eines Trainings, das dann als
+Leiste über den Tabs mitläuft. Dazu nach einer Recherche zu Strong, Hevy und Co.: Pause als Countdown mit
+±15 s und Überspringen, Live-Zahlen, der nächste Satz markiert, Haptik und Rekord-Meldung beim Haken,
+Wochenziel, „Fertig“ mit Meilensteinen, Konfetti und Teilen. Noch offen:
 
 - **Verbindung zu Steady**: ein beendetes Training hakt eine gewählte Gewohnheit ab (z. B. „Gym“).
 - Körpergewicht aus den Werten für Körpergewichtsübungen (Klimmzug = Körpergewicht + Zusatz).
 - Bewusst weggelassen: Drop-Sätze, RPE/RIR, Supersätze, Muskelgruppen – bei Bedarf neu entscheiden.
+  Muskelgruppen wären der größte Schritt (jede Übung bräuchte eine Zuordnung), Hevy zeigt damit eine
+  Körperkarte und Sätze pro Muskel und Woche.
 - Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
   bleibt vorerst in localStorage, zusammen mit Kontor ein Grund für den IndexedDB-Umzug (siehe oben).
 

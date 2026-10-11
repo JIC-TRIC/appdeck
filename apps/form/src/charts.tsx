@@ -99,30 +99,34 @@ export function Linie({ punkte }: { punkte: Punkt[] }) {
 // ---------- Trainings pro Woche ----------
 
 // Ein Balken pro Woche, die laufende rechts und in Kreide. Leere Wochen sind
-// ein flacher Strich - Luecken sieht man, ohne dass sie schreien.
-export function Wochen({ wochen }: { wochen: { montag: string; anzahl: number }[] }) {
+// ein flacher Strich - Luecken sieht man, ohne dass sie schreien. Mit
+// Wochenziel steht es als gestrichelte orange Linie darueber (wie das Ziel
+// eines Werts), und jede Woche, die es erreicht hat, ist orange.
+export function Wochen({
+  wochen,
+  ziel = null,
+  label,
+}: {
+  wochen: { montag: string; wert: number }[]
+  ziel?: number | null
+  label: string
+}) {
   const W = 340
-  const H = 52
+  const H = 64
+  const T = 6
   const GAP = 6
   const n = wochen.length
   const bw = (W - GAP * (n - 1)) / n
-  const hoch = Math.max(3, ...wochen.map((w) => w.anzahl))
+  const hoch = Math.max(ziel ?? 0, ...wochen.map((w) => w.wert)) || 1
+  const y = (v: number) => H - ((H - T) * v) / hoch
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="f-wochen" role="img" aria-label={`Trainings pro Woche, letzte ${n} Wochen`}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="f-wochen" role="img" aria-label={`${label}, letzte ${n} Wochen`}>
       {wochen.map((w, i) => {
-        const h = w.anzahl ? Math.max(4, (H * w.anzahl) / hoch) : 2
-        return (
-          <rect
-            key={w.montag}
-            x={i * (bw + GAP)}
-            y={H - h}
-            width={bw}
-            height={h}
-            rx={Math.min(4, bw / 2)}
-            className={i === n - 1 ? 'jetzt' : w.anzahl ? 'woche' : 'leer'}
-          />
-        )
+        const h = w.wert ? Math.max(4, H - y(w.wert)) : 2
+        const art = ziel !== null && w.wert >= ziel ? 'erreicht' : i === n - 1 ? 'jetzt' : w.wert ? 'woche' : 'leer'
+        return <rect key={w.montag} x={i * (bw + GAP)} y={H - h} width={bw} height={h} rx={Math.min(4, bw / 2)} className={art} />
       })}
+      {ziel !== null ? <line x1={0} x2={W} y1={y(ziel)} y2={y(ziel)} className="ziel" /> : null}
     </svg>
   )
 }

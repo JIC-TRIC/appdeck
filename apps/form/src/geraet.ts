@@ -47,6 +47,43 @@ export function piep() {
   }
 }
 
+// ---------- Haptik ----------
+
+/** iPhone: Safari kennt navigator.vibrate nicht. */
+const ios = typeof navigator !== 'undefined' && /iP(hone|ad|od)/.test(navigator.userAgent)
+
+function schalterTick() {
+  // Ab iOS 18 gibt ein umgelegter Schalter (<input type="checkbox" switch>)
+  // einen kurzen Haptik-Tick - auch in Web-Apps, aber nur aus einem Tipp
+  // heraus. Ein Zusatz: geht es nicht (aelteres iOS, spaeter abgeschaltet),
+  // bleiben Animation und Farbe als Rueckmeldung.
+  try {
+    const label = document.createElement('label')
+    label.ariaHidden = 'true'
+    label.style.display = 'none'
+    const input = document.createElement('input')
+    input.type = 'checkbox'
+    input.setAttribute('switch', '')
+    label.appendChild(input)
+    document.head.appendChild(label)
+    label.click()
+    label.remove()
+  } catch {
+    /* ohne Haptik */
+  }
+}
+
+/** Kurzer Tick beim Abhaken - doppelt bei einem Rekord. */
+export function tick(stark = false) {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate(stark ? [18, 70, 28] : 12)
+    return
+  }
+  if (!ios) return
+  schalterTick()
+  if (stark) window.setTimeout(schalterTick, 110)
+}
+
 // ---------- Bildschirm an ----------
 
 export const kannWach = typeof navigator !== 'undefined' && 'wakeLock' in navigator

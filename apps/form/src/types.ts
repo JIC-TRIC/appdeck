@@ -1,5 +1,7 @@
 // Datenmodell von Form. Regeln und Gruende: konzept.md.
 
+import type { PausenKorrektur } from './trainingCalc'
+
 /** Was bei einem Wert besser ist - danach faerbt sich jede Veraenderung. */
 export type Richtung = 'mehr' | 'weniger' | 'egal'
 
@@ -107,26 +109,27 @@ export interface Training {
   notiz: string
 }
 
-/** Schalter im Menue des Trainings. */
+/** Schalter im Menue des Trainings und das Wochenziel. */
 export interface Einstellungen {
   /** Kurzer Ton, wenn die Pause der Uebung um ist (nur bei offener App). */
   ton: boolean
   /** Bildschirm bleibt an, solange ein Training laeuft. */
   wach: boolean
+  /** Trainings pro Woche (1-7), null = kein Ziel. */
+  wochenziel: number | null
 }
 
+/** Wo Form zuletzt war - danach oeffnet es den Tab Werte oder Training. */
 export type AppBereich = 'werte' | 'training'
 
-/** Die Tab-Leiste im Training (nicht waehrend eines laufenden). */
-export type TrainingTab = 'vorlagen' | 'kalender' | 'statistik' | 'uebungen'
+/** Die Tab-Leiste unten - immer da, auch waehrend eines Trainings. */
+export type Tab = 'training' | 'kalender' | 'statistik' | 'uebungen' | 'werte'
 
 /** Seiten ueber der Uebersicht. */
 export type View =
   | { name: 'wert'; id: string }
   | { name: 'messen'; tag: string }
   | { name: 'wertForm'; id?: string }
-  /** Die Werte waehrend eines laufenden Trainings (ueber das Menue). */
-  | { name: 'werte' }
   | { name: 'fertig'; id: string }
   | { name: 'training'; id: string }
   /** Ein beendetes Training aendern oder ein nachgetragenes fertig machen. */
@@ -149,8 +152,12 @@ export interface FormCtx {
   /** Beendete Trainings, aelteste zuerst. */
   trainings: Training[]
   laufend: Training | null
-  bereich: AppBereich
-  setzeBereich: (b: AppBereich) => void
+  /** Die Pause nach dem letzten Haken, von Hand geaendert (+-15 s, Ueberspringen). */
+  pausenKorrektur: PausenKorrektur | null
+  einstellungen: Einstellungen
+  /** Der aktive Tab und der Wechsel dorthin (zur Startseite des Tabs). */
+  tab: Tab
+  zeigeTab: (t: Tab) => void
   heute: string
   push: (view: View) => void
   /** Oberste Seite ersetzen (Nachtragen -> Training), zurueck geht dann eine weiter. */
@@ -159,6 +166,6 @@ export interface FormCtx {
   toRoot: () => void
   /** Nach jeder Aenderung alles neu aus dem Speicher lesen. */
   refresh: () => void
-  /** Kurze Meldung oben. */
-  melde: (text: string) => void
+  /** Kurze Meldung oben - 'rekord' in Orange und etwas laenger. */
+  melde: (text: string, art?: 'rekord') => void
 }

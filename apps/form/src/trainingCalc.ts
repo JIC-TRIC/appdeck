@@ -251,6 +251,80 @@ export function letzterHaken(t: Training): { zeit: number; uebung: string } | nu
   return treffer
 }
 
+/**
+ * Die Pause gerade: seit dem letzten Haken, gegen die Pause der Uebung dieses
+ * Hakens - oder gegen die Korrektur (+-15 s, Ueberspringen), wenn sie zu genau
+ * diesem Haken gehoert. Mit dem naechsten Haken ist sie damit von selbst
+ * vergessen. null vor dem ersten Haken. `ende` ist der Zeitpunkt, an dem sie um ist.
+ */
+export function pauseStand(
+  t: Training,
+  byId: Record<string, Uebung>,
+  jetzt: number,
+  standard = 120,
+  korrektur: PausenKorrektur | null = null,
+): { sek: number; marke: number; rest: number; um: boolean; ende: number; uebung: string; haken: number } | null {
+  const h = letzterHaken(t)
+  if (!h) return null
+  const marke = korrektur && korrektur.haken === h.zeit ? korrektur.sek : (byId[h.uebung]?.pause ?? standard)
+  const sek = Math.max(0, (jetzt - h.zeit) / 1000)
+  return {
+    sek,
+    marke,
+    rest: Math.max(0, marke - sek),
+    um: sek >= marke,
+    ende: h.zeit + marke * 1000,
+    uebung: h.uebung,
+    haken: h.zeit,
+  }
+}
+
+/** Die Pause nach einem bestimmten Haken, von Hand verlaengert, verkuerzt oder uebersprungen. */
+export interface PausenKorrektur {
+  /** Uhrzeit des Hakens, zu dem sie gehoert */
+  haken: number
+  /** Pause in Sekunden statt der Pause der Uebung */
+  sek: number
+}
+
+/** Der naechste offene Satz im Training (in der Reihenfolge der Uebungen) - er ist dran. */
+export function naechsterSatz(t: Training): { ui: number; si: number } | null {
+  for (let ui = 0; ui < t.uebungen.length; ui += 1) {
+    const si = t.uebungen[ui].saetze.findIndex((s) => !erledigt(s))
+    if (si >= 0) return { ui, si }
+  }
+  return null
+}
+
+/**
+ * Was eine Uebung in einem Training geschafft hat, als eine Zahl: Volumen
+ * (kg x Wdh), bei nur Wdh die Summe der Wdh, bei Zeit die Summe der Sekunden.
+ * Nur erledigte Arbeitssaetze.
+ */
+export function leistung(saetze: Satz[], erf: Erfassung): number {
+  let n = 0
+  for (const s of saetze) {
+    if (!erledigt(s) || s.aufwaermen) continue
+    if (erf === 'gewicht') n += (s.kg ?? 0) * (s.wdh ?? 0)
+    else if (erf === 'wdh') n += s.wdh ?? 0
+    else n += s.sek ?? 0
+  }
+  return rund(n)
+}
+
+/**
+ * Sind alle Saetze einer Uebung abgehakt: wie viel Prozent mehr (oder
+ * weniger) sie geschafft hat als beim letzten Mal. null, solange noch etwas
+ * offen ist, ohne letztes Mal oder wenn es dort nichts zu vergleichen gibt.
+ */
+export function vergleichMitLetztem(saetze: Satz[], ref: Satz[] | null, erf: Erfassung): number | null {
+  if (!ref || !saetze.length || !saetze.every(erledigt)) return null
+  const vorher = leistung(ref, erf)
+  const jetzt = leistung(saetze, erf)
+  if (vorher <= 0 || jetzt <= 0) return null
+  return Math.round(((jetzt - vorher) / vorher) * 100)
+}
+
 export interface Statistik {
   dauer: number
   saetze: number
@@ -511,26 +585,116 @@ export function scheiben(kg: number, stange: number): number[] | null {
   return rest > 1e-9 ? null : out
 }
 
-/** Trainings pro Woche (Montag bis Sonntag) fuer die letzten n Wochen bis heute, aelteste zuerst. */
-export function wochen(trainings: Training[], heute: string, n = 12): { montag: string; anzahl: number }[] {
-  const dieser = addDays(heute, -((parseKey(heute).getDay() + 6) % 7))
-  const out = Array.from({ length: n }, (_, i) => ({ montag: addDays(dieser, -7 * (n - 1 - i)), anzahl: 0 }))
+export type WochenArt = 'anzahl' | 'volumen' | 'dauer'
+
+/**
+ * Pro Woche (Montag bis Sonntag) fuer die letzten n Wochen bis heute,
+ * aelteste zuerst: die Zahl der Trainings, ihr Volumen (kg) oder ihre Dauer
+ * (Minuten).
+ */
+export function wochenWerte(
+  trainings: Training[],
+  heute: string,
+  art: WochenArt,
+  byId: Record<string, Uebung>,
+  n = 12,
+): { montag: string; wert: number }[] {
+  const dieser = montagVon(heute)
+  const out = Array.from({ length: n }, (_, i) => ({ montag: addDays(dieser, -7 * (n - 1 - i)), wert: 0 }))
   for (const t of trainings) {
     const tag = dateKey(new Date(t.start))
-    for (let i = n - 1; i >= 0; i -= 1) {
-      if (tag >= out[i].montag) {
-        out[i].anzahl += 1
-        break
-      }
-    }
+    const i = out.findLastIndex((w) => tag >= w.montag)
+    if (i < 0) continue
+    if (art === 'anzahl') out[i].wert += 1
+    else if (art === 'volumen') out[i].wert += statistik(t, byId).volumen
+    else out[i].wert += Math.round(((t.ende ?? t.start) - t.start) / 60000)
   }
+  return out.map((w) => ({ ...w, wert: rund(w.wert) }))
+}
+
+/** Die Tage der laufenden Woche (Montag bis Sonntag) mit der Zahl ihrer Trainings. */
+export function dieseWoche(trainings: Training[], heute: string): { tag: string; anzahl: number }[] {
+  const montag = montagVon(heute)
+  const tage = Array.from({ length: 7 }, (_, i) => ({ tag: addDays(montag, i), anzahl: 0 }))
+  for (const t of trainings) {
+    const tag = tage.find((x) => x.tag === dateKey(new Date(t.start)))
+    if (tag) tag.anzahl += 1
+  }
+  return tage
+}
+
+// ---------- Fertig: Nummer, Meilensteine, Vergleich ----------
+
+/** Das wievielte Training das ist (nach Beginn, Nachgetragenes zaehlt mit). */
+export const nummerVon = (trainings: Training[], t: Training) =>
+  trainings.filter((x) => x.id !== t.id && x.start <= t.start).length + 1
+
+const MEILENSTEINE_ANZAHL = [10, 25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 750, 1000]
+const MEILENSTEINE_KG = [10_000, 25_000, 50_000, 100_000, 250_000, 500_000, 1_000_000, 2_500_000, 5_000_000]
+
+/**
+ * Was dieses Training erreicht hat: eine runde Nummer ("25. Training") oder
+ * eine Marke im Volumen aller Trainings bis hierhin ("100 t bewegt").
+ */
+export function meilensteine(trainings: Training[], t: Training, byId: Record<string, Uebung>): string[] {
+  const out: string[] = []
+  const nr = nummerVon(trainings, t)
+  if (MEILENSTEINE_ANZAHL.includes(nr)) out.push(`${nr}. Training`)
+  const dieses = statistik(t, byId).volumen
+  let bisher = dieses
+  for (const x of trainings) if (x.id !== t.id && x.start <= t.start) bisher += statistik(x, byId).volumen
+  const marke = MEILENSTEINE_KG.filter((kg) => bisher - dieses < kg && bisher >= kg).pop()
+  if (marke) out.push(`${formatTausend(marke / 1000)} t bewegt`)
   return out
+}
+
+// Schwer wie ... - grob, zum Schmunzeln auf "Fertig".
+const SO_SCHWER: [number, string][] = [
+  [250, 'ein Klavier'],
+  [500, 'ein Pferd'],
+  [1000, 'ein Kleinwagen'],
+  [2300, 'ein Nashorn'],
+  [5000, 'ein Elefant'],
+  [8000, 'ein T-Rex'],
+  [12000, 'ein Linienbus'],
+  [40000, 'ein Sattelzug'],
+  [150000, 'ein Blauwal'],
+]
+
+/** Das Schwerste aus der Liste, das das Volumen noch uebertrifft - null unter 250 kg. */
+export function soSchwerWie(kg: number): string | null {
+  let treffer: string | null = null
+  for (const [grenze, was] of SO_SCHWER) if (kg >= grenze) treffer = was
+  return treffer
+}
+
+/** Das Training als Text zum Teilen: Kopfzeile, jede Uebung mit ihren Saetzen, die Rekorde. */
+export function zumTeilen(t: Training, byId: Record<string, Uebung>, rekorde: Rekord[], heute: string): string {
+  const st = statistik(t, byId)
+  const tag = dateKey(new Date(t.start))
+  const kopf = [`${t.name} – ${tag === heute ? 'heute' : tag.split('-').reverse().join('.')}`]
+  kopf.push(
+    [formatDauer(st.dauer), `${st.saetze} ${st.saetze === 1 ? 'Satz' : 'Sätze'}`, st.volumen > 0 ? `${formatTausend(st.volumen)} kg` : '']
+      .filter(Boolean)
+      .join(' · '),
+  )
+  const zeilen = t.uebungen
+    .map((tu) => {
+      const u = byId[tu.uebung]
+      const saetze = tu.saetze.filter((s) => erledigt(s) && !s.aufwaermen)
+      return u && saetze.length ? `${u.name}: ${kurzSaetze(saetze, u.erfassung)}` : ''
+    })
+    .filter(Boolean)
+  const pr = rekorde.map((r) => `${byId[r.uebung]?.name ?? 'Übung'} ${formatSatz(r.satz, byId[r.uebung]?.erfassung ?? 'gewicht')}`)
+  return [...kopf, '', ...zeilen, ...(pr.length ? ['', `Rekorde: ${pr.join(', ')}`] : [])].join('\n')
 }
 
 // ---------- Statistik ----------
 
 /** Montag der Woche, in der der Tag liegt. */
-const montagVon = (tag: string) => addDays(tag, -((parseKey(tag).getDay() + 6) % 7))
+function montagVon(tag: string) {
+  return addDays(tag, -((parseKey(tag).getDay() + 6) % 7))
+}
 
 /**
  * Wochen in Folge mit mindestens einem Training, bis heute. Die laufende

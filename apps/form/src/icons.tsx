@@ -72,9 +72,9 @@ export const IconPlay = () => (
   </I>
 )
 
-// ---------- Tab-Leiste im Training ----------
+// ---------- Tab-Leiste ----------
 
-export const IconVorlagen = () => (
+export const IconListe = () => (
   <I>
     <path d="M9.5 6.5H20M9.5 12H20M9.5 17.5H20" />
     <circle cx="5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
@@ -96,5 +96,24 @@ export const IconStatistik = () => (
 export const IconHantel = () => (
   <I>
     <path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11" />
+  </I>
+)
+// Verlauf mit Ziellinie - wie das Symbol von Form.
+export const IconWerte = () => (
+  <I>
+    <path d="M4 8.5h16" strokeDasharray="2 3" />
+    <path d="M4 18l5-5 4 3 7-7" />
+  </I>
+)
+export const IconPokal = () => (
+  <I>
+    <path d="M7.5 4.5h9v5a4.5 4.5 0 0 1-9 0z" />
+    <path d="M7.5 6.5H4.5a3 3 0 0 0 3 4M16.5 6.5h3a3 3 0 0 1-3 4M12 14v4M8.5 20h7" />
+  </I>
+)
+export const IconTeilen = () => (
+  <I>
+    <path d="M12 15V4M8 7.5L12 3.5l4 4" />
+    <path d="M8 11H6.5a1.5 1.5 0 0 0-1.5 1.5v6A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-6a1.5 1.5 0 0 0-1.5-1.5H16" />
   </I>
 )

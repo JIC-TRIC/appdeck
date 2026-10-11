@@ -8,10 +8,12 @@
  *   form:trainings  Training[]      beendete, aelteste zuerst
  *   form:laufend    Training|null   das laufende - nach jedem Tipp gesichert
  *   form:bereich    'werte'|'training'   wo Form zuletzt war
- *   form:einstellungen  { ton, wach }   Schalter im Menue des Trainings
+ *   form:einstellungen  { ton, wach, wochenziel }   Schalter im Menue des Trainings, Ziel pro Woche
+ *   form:pause      { haken, sek }  Pause nach diesem Haken von Hand geaendert
  */
 import { NAME_MAX, lies, neueId, obj, sauber, schreibe, zahl } from './store'
 import { rund } from './util'
+import type { PausenKorrektur } from './trainingCalc'
 import type { AppBereich, Einstellungen, Erfassung, Satz, Training, TrainingsUebung, Uebung, Vorlage, VorlagenUebung } from './types'
 
 export const NOTIZ_MAX = 80
@@ -313,11 +315,24 @@ export function setzeBereich(b: AppBereich) {
   schreibe('bereich', b)
 }
 
+// ---------- Pause von Hand ----------
+
+/** +-15 s oder Ueberspringen fuer die Pause nach einem Haken (trainingCalc.ts, pauseStand). */
+export function getPausenKorrektur(): PausenKorrektur | null {
+  const k = obj(lies('pause'))
+  return zahl(k.haken) && zahl(k.sek) && k.sek >= 0 ? { haken: k.haken, sek: Math.min(PAUSE_MAX * 2, Math.round(k.sek)) } : null
+}
+
+export function setzePausenKorrektur(k: PausenKorrektur | null) {
+  schreibe('pause', k)
+}
+
 // ---------- Schalter ----------
 
+/** Bildschirm an ist ohne Eintrag eingeschaltet - im Studio soll er nicht ausgehen. */
 export function getEinstellungen(): Einstellungen {
   const e = obj(lies('einstellungen'))
-  return { ton: e.ton === true, wach: e.wach === true }
+  return { ton: e.ton === true, wach: e.wach !== false, wochenziel: ganz(e.wochenziel, 1, 7) }
 }
 
 export function setzeEinstellungen(e: Einstellungen) {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { IconLeft, IconPlus, IconRight } from '../icons'
 import { alleRekorde, formatDauer, formatUhr } from '../trainingCalc'
-import { Seite, Umschalter, Zurueck, zumLauncher } from '../ui'
+import { Seite, Zurueck, zumLauncher } from '../ui'
 import { addMonths, dateKey, formatMonat, formatTagLang, monatsBlatt, relativTag } from '../util'
 import type { FormCtx, Training } from '../types'
 
@@ -18,7 +18,7 @@ let gemerkt: { heute: string; monat: string; tag: string | null } | null = null
 // Training laesst sich dort nachtragen. "+" traegt fuer den gewaehlten Tag
 // nach, sonst fuer gestern. Blaettern vom ersten Monat mit Training bis heute.
 function Kalender({ ctx }: { ctx: FormCtx }) {
-  const { trainings, uebungById, heute, push, bereich, setzeBereich } = ctx
+  const { trainings, uebungById, heute, push } = ctx
   const dieser = `${heute.slice(0, 7)}-01`
   const erster = trainings.length ? `${dateKey(new Date(trainings[0].start)).slice(0, 7)}-01` : dieser
   const frisch = gemerkt?.heute === heute ? gemerkt : null
@@ -50,7 +50,6 @@ function Kalender({ ctx }: { ctx: FormCtx }) {
   return (
     <Seite
       links={<Zurueck label="Apps" onClick={zumLauncher} />}
-      titel={<Umschalter wert={bereich} onWahl={setzeBereich} />}
       rechts={
         <button
           type="button"
