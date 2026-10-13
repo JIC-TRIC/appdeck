@@ -4,7 +4,8 @@ import { dateKey, relativTag } from '../util'
 import { useAlsVorlage } from './alsVorlage'
 import type { FormCtx } from '../types'
 
-// Ein beendetes Training: alle Saetze kompakt, Rekorde orange. Ein Tipp auf
+// Ein beendetes Training: alle Saetze kompakt, Rekorde orange, Uebungen
+// "nicht als Vorgabe" leise markiert. Ein Tipp auf
 // eine Uebung oeffnet sie, "Bearbeiten" dieselbe Ansicht wie im Training
 // (dort auch der Name). Unten laesst es sich nachtraeglich als Vorlage
 // speichern.
@@ -41,6 +42,7 @@ function EinTraining({ ctx, id }: { ctx: FormCtx; id: string }) {
         return (
           <button key={`${ui}:${tu.uebung}`} type="button" className="f-ex-blatt" onClick={() => push({ name: 'uebung', id: u.id })}>
             <span className="f-ex-name">{u.name}</span>
+            {tu.keineVorgabe ? <span className="f-ex-aus f-aus">Nicht als Vorgabe</span> : null}
             <span className="f-sc-reihe">
               {tu.saetze.map((s, si) =>
                 erledigt(s) ? (

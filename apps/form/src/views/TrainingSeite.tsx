@@ -47,7 +47,7 @@ import {
 } from '../trainingStore'
 import { NAME_MAX, sauber } from '../store'
 import { Blatt, Schalter, Seite, Stepper, TextKnopf } from '../ui'
-import { dateKey, formatZahl, relativTag } from '../util'
+import { dateKey, formatZahl, relativTag, wieLange } from '../util'
 import { Hinzufuegen } from './Hinzufuegen'
 import { LiveZahlen, PauseAnzeige, PauseBlatt } from './Pause'
 import { FELDNAME, Tastenfeld, type Feld } from './Tastenfeld'
@@ -62,7 +62,9 @@ import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung
 // letzte Mal ueberhaupt (trainingCalc.ts, vorgabe) - samt Vorschlag fuers
 // naechste Gewicht, wenn beim letzten Mal alles oben im Bereich lag
 // (steigerung). Der Haken uebernimmt es. Ein Tipp auf die Satznummer macht
-// einen Aufwaermsatz daraus oder entfernt den Satz.
+// einen Aufwaermsatz daraus oder entfernt den Satz. Im Blatt der Uebung
+// laesst sich ein schwacher Tag "nicht als Vorgabe" markieren - beim
+// naechsten Mal steht dann grau das Mal davor.
 //
 // Oben die Pause: jetzt minus Uhrzeit des letzten Hakens - nichts zaehlt im
 // Hintergrund, darum stimmt sie auch, wenn die App zwischendurch zu war
@@ -217,6 +219,10 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
 
   const entferneSatz = (ui: number, si: number) =>
     aendereUebung(ui, (tu) => ({ ...tu, saetze: tu.saetze.filter((_, j) => j !== si) }))
+
+  // Nur gespeichert, wenn an.
+  const vorgabeUmschalten = (ui: number) =>
+    aendereUebung(ui, ({ keineVorgabe, ...tu }) => (keineVorgabe ? tu : { ...tu, keineVorgabe: true }))
 
   const aufwaermenUmschalten = (ui: number, si: number) =>
     aendereUebung(ui, (tu) => ({
@@ -524,7 +530,15 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                 start={eingabe.feld}
                 werte={s}
                 platzhalter={platzhalter(ref?.saetze ?? null, tu.saetze, si, plusse[ui])}
-                info={ref && refSatz ? `Zuletzt bei ${ref.training.name}: ${formatSatz(refSatz, u.erfassung)}` : null}
+                info={
+                  ref && refSatz
+                    ? `${
+                        ref.ausgelassen
+                          ? `Vorgabe von ${ref.training.name} (${wieLange(dateKey(new Date(ref.training.start)), heute)})`
+                          : `Zuletzt bei ${ref.training.name}`
+                      }: ${formatSatz(refSatz, u.erfassung)}`
+                    : null
+                }
                 erledigt={erledigt(s)}
                 melde={melde}
                 onFeld={(feld) => setEingabe((e) => (e ? { ...e, feld } : e))}
@@ -595,6 +609,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
         ? (() => {
             const ui = blatt
             const u = uebungById[t.uebungen[ui].uebung]
+            const keineVorgabe = t.uebungen[ui].keineVorgabe === true
             const pause = (s: number) => {
               setzeUebung(u.id, { pause: s })
               refresh()
@@ -636,6 +651,15 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                             plusAus={u.pause >= PAUSE_MAX}
                           />
                         </div>
+                      </div>
+                      <div className="f-gruppe">
+                        <button type="button" className="f-zeile" aria-pressed={keineVorgabe} onClick={() => vorgabeUmschalten(ui)}>
+                          <span className="f-zeile-text">
+                            Nicht als Vorgabe
+                            <small>Beim nächsten Mal steht grau das Mal davor – etwa nach einem schwachen Tag.</small>
+                          </span>
+                          <Schalter an={keineVorgabe} />
+                        </button>
                       </div>
                       <div className="f-gruppe">
                         <button
@@ -820,7 +844,8 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
 }
 
 // Die letzten drei Male dieser Uebung und ihr Rekord - im Blatt der Uebung,
-// damit man dafuer das Training nicht verlassen muss.
+// damit man dafuer das Training nicht verlassen muss. Ausgelassene Male
+// ("nicht als Vorgabe") stehen mit dabei, leiser markiert.
 function LetzteMale({ trainings, u, ohne, heute }: { trainings: Training[]; u: Uebung; ohne: string; heute: string }) {
   const ein = einheiten(trainings.filter((x) => x.id !== ohne), u.id)
   if (!ein.length) return null
@@ -832,7 +857,12 @@ function LetzteMale({ trainings, u, ohne, heute }: { trainings: Training[]; u: U
         .reverse()
         .map((e) => (
           <div key={e.training.id} className="f-zeile f-zeile-info">
-            <span>{relativTag(dateKey(new Date(e.training.start)), heute)}</span>
+            <span>
+              {relativTag(dateKey(new Date(e.training.start)), heute)}
+              {e.training.uebungen.some((tu) => tu.uebung === u.id && tu.keineVorgabe) ? (
+                <span className="f-aus"> · nicht als Vorgabe</span>
+              ) : null}
+            </span>
             <span className="f-zeile-r">{kurzSaetze(e.saetze, u.erfassung)}</span>
           </div>
         ))}
@@ -911,6 +941,7 @@ function UebungBlock({
         </button>
       </div>
       {u.notiz ? <p className="f-ex-notiz">{u.notiz}</p> : null}
+      {tu.keineVorgabe ? <p className="f-ex-notiz f-aus">Nicht als Vorgabe</p> : null}
       <div className="f-saetze">
         {tu.saetze.map((s, si) => (
           <SatzZeile

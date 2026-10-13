@@ -133,6 +133,24 @@ describe('Trainings', () => {
     expect(t[0].notiz).toBe('')
   })
 
+  it('"nicht als Vorgabe" bleibt nur, wenn es an ist', () => {
+    const [t] = normalisiereTrainings([
+      {
+        id: 'a',
+        start: 100,
+        ende: 200,
+        uebungen: [
+          { uebung: 'x', saetze: [], keineVorgabe: true },
+          { uebung: 'y', saetze: [], keineVorgabe: 'ja' },
+          { uebung: 'z', saetze: [], keineVorgabe: false },
+        ],
+      },
+    ])
+    expect(t.uebungen[0].keineVorgabe).toBe(true)
+    expect('keineVorgabe' in t.uebungen[1]).toBe(false)
+    expect('keineVorgabe' in t.uebungen[2]).toBe(false)
+  })
+
   it('starteTraining legt Saetze aus der Vorlage an (Aufwaermen zuerst) und sichert sofort', () => {
     const v = speichereVorlage({ name: 'Push', uebungen: [{ uebung: 'a', saetze: 3, aufwaermen: 1, von: 8, bis: 12 }] })!
     const t = starteTraining(v, 1000)

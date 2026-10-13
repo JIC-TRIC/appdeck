@@ -96,6 +96,21 @@ describe('vorgabe', () => {
     expect(vorgabe(trainings, 'bank', 'push', 100)).toBeNull()
     expect(vorgabe(trainings, 'bank', 'pull', 300, 'pull1')?.training.id).toBe('push1')
   })
+
+  it('ueberspringt ein Mal "nicht als Vorgabe" und sagt es dazu', () => {
+    const schwach = tr('push2', 'push', 300, [{ uebung: 'bank', saetze: [s(70, 5)], keineVorgabe: true }])
+    const v = vorgabe([...trainings, schwach], 'bank', 'push', 400)
+    expect(v?.training.id).toBe('push1')
+    expect(v?.ausgelassen).toBe(true)
+    expect(vorgabe(trainings, 'bank', 'push', 400)?.ausgelassen).toBe(false)
+  })
+
+  it('ist die Vorlage nur ausgelassen, gilt das letzte Mal ueberhaupt - sonst gar nichts', () => {
+    const schwach = tr('push1', 'push', 100, [{ uebung: 'bank', saetze: [s(80, 8)], keineVorgabe: true }])
+    const pull = tr('pull1', 'pull', 200, [{ uebung: 'bank', saetze: [s(60, 12)] }])
+    expect(vorgabe([schwach, pull], 'bank', 'push', 300)?.training.id).toBe('pull1')
+    expect(vorgabe([schwach], 'bank', 'push', 300)).toBeNull()
+  })
 })
 
 describe('platzhalter', () => {

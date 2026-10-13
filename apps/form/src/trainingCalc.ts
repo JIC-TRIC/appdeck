@@ -31,13 +31,16 @@ export const erledigt = (s: Satz) => s.fertig !== null
 export interface Vorgabe {
   saetze: Satz[]
   training: Training
+  /** Ein spaeteres Mal ist "nicht als Vorgabe" markiert - grau steht ein frueheres. */
+  ausgelassen: boolean
 }
 
 /**
  * Das letzte Mal, an dem eine Uebung dran war - fuer die grauen Zahlen. Zuerst
  * in derselben Vorlage (wer Push trainiert, sieht den letzten Push). Gab es
  * die Uebung dort noch nie oder ist es ein leeres Training, das letzte Mal
- * ueberhaupt. Nur Trainings, die vor `vor` begonnen haben.
+ * ueberhaupt. Nur Trainings, die vor `vor` begonnen haben. Ein Mal, das als
+ * "nicht als Vorgabe" markiert ist (schwacher Tag), wird uebersprungen.
  */
 export function vorgabe(
   trainings: Training[],
@@ -46,27 +49,37 @@ export function vorgabe(
   vor: number,
   ohne?: string,
 ): Vorgabe | null {
-  let gleich: Vorgabe | null = null
-  let irgendein: Vorgabe | null = null
+  let gleich: Omit<Vorgabe, 'ausgelassen'> | null = null
+  let irgendein: Omit<Vorgabe, 'ausgelassen'> | null = null
   let gleichStart = -1
   let irgendStart = -1
+  // Das juengste ausgelassene Mal - liegt es nach dem gewaehlten, sagt das Tastenfeld es dazu.
+  let gleichAus = -1
+  let irgendAus = -1
   for (const t of trainings) {
     if (t.id === ohne || t.start >= vor) continue
     for (const tu of t.uebungen) {
       if (tu.uebung !== uebung) continue
       const saetze = tu.saetze.filter(erledigt)
       if (!saetze.length) continue
+      const gleicheVorlage = vorlage !== null && t.vorlage === vorlage
+      if (tu.keineVorgabe) {
+        irgendAus = Math.max(irgendAus, t.start)
+        if (gleicheVorlage) gleichAus = Math.max(gleichAus, t.start)
+        continue
+      }
       if (t.start >= irgendStart) {
         irgendein = { saetze, training: t }
         irgendStart = t.start
       }
-      if (vorlage !== null && t.vorlage === vorlage && t.start >= gleichStart) {
+      if (gleicheVorlage && t.start >= gleichStart) {
         gleich = { saetze, training: t }
         gleichStart = t.start
       }
     }
   }
-  return gleich ?? irgendein
+  if (gleich) return { ...gleich, ausgelassen: gleichAus > gleichStart }
+  return irgendein ? { ...irgendein, ausgelassen: irgendAus > irgendStart } : null
 }
 
 /** Vorschlag fuers naechste Gewicht (siehe steigerung). */

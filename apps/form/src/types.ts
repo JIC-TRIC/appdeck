@@ -94,6 +94,8 @@ export interface Satz {
 export interface TrainingsUebung {
   uebung: string
   saetze: Satz[]
+  /** Schwacher Tag: beim naechsten Mal nicht als Vorgabe (grau) nehmen. Gespeichert nur, wenn an. */
+  keineVorgabe?: boolean
 }
 
 export interface Training {

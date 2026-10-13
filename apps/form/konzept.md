@@ -204,6 +204,14 @@ Sätze:
   Stelle – der zweite Arbeitssatz zum zweiten). Gab es die Übung dort noch nie (oder ist es ein leeres
   Training): das letzte Mal überhaupt. Hat das letzte Mal weniger Sätze dieser Art, gilt der Satz davor
   in diesem Training.
+- [x] **Nicht als Vorgabe** (seit 13.10.2026): Nach einem schwachen Tag (angeschlagen, müde) lässt sich
+  eine Übung im Blatt der Übung als „Nicht als Vorgabe“ markieren, im Training oder später beim
+  Bearbeiten. Beim nächsten Mal steht grau das Mal davor, und Vorschlag, Orange und der Vergleich in
+  Prozent richten sich auch danach. Das Tastenfeld sagt dann „Vorgabe von Push (vor 9 Tagen)“ statt
+  „Zuletzt bei Push“. Rekorde und Verlauf zählen das Mal weiter mit. Pro Übung statt pro Training, weil
+  oft nur eine Übung schwach war. Bewusst nicht automatisch (etwa das stärkere der letzten zwei Male):
+  absichtlich leichtere Tage würden sonst übergangen. Ist jedes Mal in der Vorlage ausgelassen, gilt das
+  letzte Mal überhaupt, sonst steht nichts grau.
 - [x] **Vorschlag (doppelte Progression):** Lagen beim letzten Mal alle Arbeitssätze am oberen Ende des
   Wdh-Bereichs, steht diesmal grau das Gewicht plus Gewichtsschritt, mit den Wdh vom unteren Ende. Im
   Kopf der Übung steht dann orange „+2,5 kg“.
@@ -300,7 +308,8 @@ Rückblick:
 form:uebungen   [{ id, name, erfassung, pause, notiz, schritt, stange, archiviert, erstellt }]
 form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, aufwaermen, von, bis }] }]
 form:trainings  [{ id, vorlage, name, start, ende, notiz,
-                   uebungen: [{ uebung, saetze: [{ kg, wdh, sek, fertig, aufwaermen }] }] }]
+                   uebungen: [{ uebung, keineVorgabe?, saetze: [{ kg, wdh, sek, fertig, aufwaermen }] }] }]
+                keineVorgabe nur gespeichert, wenn an (true)
 form:laufend    das laufende Training (gleiche Form, ende null) – nach jedem Tipp gesichert
 form:bereich    'werte' | 'training' – wo Form zuletzt war (Tab Werte oder Training beim Öffnen)
 form:einstellungen  { ton, wach, wochenziel } – die Schalter im Menü des Trainings, Ziel pro Woche
@@ -329,9 +338,10 @@ Nummern wie in den Mockups.
 - [x] **6 Übung hinzufügen:** ganze Seite, Suche, „Zuletzt“ (bis 5, nicht schon dabei), „Alle“.
   Mehrere auf einmal; beim Tauschen genügt ein Tipp.
 - [x] **7 Übung im Training:** die letzten drei Male und der Rekord bisher (ohne das Training zu
-  verlassen), Pause der Übung, Aufwärmsatz hinzufügen, Verlauf ansehen, tauschen
-  (Satzzahl bleibt), verschieben, herausnehmen. Neu daneben: **Satz-Blatt** über die Satznummer
-  (Aufwärmsatz, Satz entfernen).
+  verlassen), Pause der Übung, „Nicht als Vorgabe“ (Schalter, seit 13.10.2026; im Training steht es dann
+  leise unter dem Namen, ebenso in „Ein Training“ und bei den letzten Malen), Aufwärmsatz hinzufügen,
+  Verlauf ansehen, tauschen (Satzzahl bleibt), verschieben, herausnehmen. Neu daneben: **Satz-Blatt** über
+  die Satznummer (Aufwärmsatz, Satz entfernen).
 - [x] **8 Menü im Training:** Beginn (mit Dauer) ändern, Notiz, Ton am Pausenende, Bildschirm bleibt an,
   Training verwerfen.
 - [x] **9 Fertig:** Dauer, Sätze, Volumen und Vergleich zum letzten Mal, Rekorde, Vorlage anpassen bzw.

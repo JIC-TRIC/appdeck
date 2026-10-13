@@ -242,6 +242,7 @@ export function normalisiereTraining(x: unknown): Training | null {
         .map((u) => ({
           uebung: u.uebung as string,
           saetze: Array.isArray(u.saetze) ? u.saetze.slice(0, SAETZE_MAX * 3).map(normalisiereSatz) : [],
+          ...(u.keineVorgabe === true ? { keineVorgabe: true } : {}),
         }))
     : []
   return {
