@@ -301,6 +301,10 @@ Rückblick:
   Teilen-Blatt bzw. als Download.
 - [x] **Eine Übung:** Bestwerte je Wdh-Zahl – schwerstes Gewicht für mindestens 1, 3, 5, 8, 10, 12 Wdh,
   was ein höherer Eintrag schon abdeckt, fällt weg. Zeiten ab einer Minute als „1:30“.
+- [x] **Gewicht je Wdh** (seit 14.10.2026, unter den Bestwerten, nur bei Gewicht × Wdh): welches Gewicht
+  für 1, 3, 5, 8, 10 und 12 Wdh passt – das geschätzte 1RM (Epley) rückwärts gerechnet, abgerundet auf den
+  Gewichtsschritt der Übung. Grundlage ist der beste 1RM-Satz des letzten Trainings, das als Vorgabe zählt
+  (ein Mal „Nicht als Vorgabe“ wird übersprungen); darunter steht, aus welchem Satz und von wann.
 
 ### Speicher
 
@@ -357,8 +361,8 @@ Nummern wie in den Mockups.
   11.10.2026): die jüngste oder die eines angetippten Trainings (Finger über den Verlauf ziehen geht
   auch, ein zweiter Tipp hebt die Auswahl auf), beim 1RM mit dem Satz, aus dem es geschätzt ist
   („98,7 kg – geschätzt aus 80 × 7“, eine Nachkommastelle), sonst mit den Sätzen des Trainings; rechts das
-  Beste im Zeitraum und die Veränderung seit seinem Anfang, Bestwerte je Wdh-Zahl, jedes Training mit allen
-  Sätzen.
+  Beste im Zeitraum und die Veränderung seit seinem Anfang, Bestwerte je Wdh-Zahl, Gewicht je Wdh (seit
+  14.10.2026), jedes Training mit allen Sätzen.
 - [x] **15 Übung bearbeiten.**
 - [x] **16 Vorlage bearbeiten** und die Liste der Vorlagen (sortieren, neu).
 

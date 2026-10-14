@@ -10,6 +10,7 @@ import {
   bestwerteJeWdh,
   einheiten,
   formatSatz,
+  gewichtJeWdh,
   formatSek,
   formatTausend,
   kennzahl,
@@ -41,8 +42,10 @@ const KENNZAHL_TEXT: Record<Kennzahl, string> = { gewicht: 'Schwerster Satz', '1
 
 // Eine Uebung ueber alle Vorlagen: gross der staerkste Satz aus dem letzten
 // Training, Kacheln (seit Start, seit dem letzten Mal, Rekord), der Verlauf
-// (schwerster Satz, geschaetztes 1RM oder Volumen), die Bestwerte je Wdh-Zahl und
-// darunter jedes Training. Aufwaermsaetze zaehlen nirgends mit.
+// (schwerster Satz, geschaetztes 1RM oder Volumen), die Bestwerte je Wdh-Zahl,
+// welches Gewicht fuer wie viele Wdh passt (aus dem 1RM des letzten Trainings,
+// das als Vorgabe zaehlt) und darunter jedes Training. Aufwaermsaetze zaehlen
+// nirgends mit.
 //
 // Ueber dem Verlauf steht die Zahl selbst - die juengste, oder die eines
 // angetippten Trainings (Finger ueber den Verlauf ziehen geht auch) -, beim
@@ -67,6 +70,10 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const rekord = besterSatz(ein.flatMap((e) => e.saetze), erf)
   const prIn = alleRekorde(trainings, uebungById)
   const bestwerte = bestwerteJeWdh(ein.flatMap((e) => e.saetze))
+  // Gewicht je Wdh aus dem besten 1RM-Satz des letzten Trainings - ein Mal
+  // "nicht als Vorgabe" (schwacher Tag) zaehlt auch hier nicht.
+  const basisE = [...ein].reverse().find((e) => !e.training.uebungen.some((tu) => tu.uebung === id && tu.keineVorgabe))
+  const basis = erf === 'gewicht' && basisE ? besterE1rmSatz(basisE.saetze) : null
 
   const kenn: Kennzahl = erf === 'gewicht' ? art : 'gewicht'
   const punkte: Punkt[] = ein.map((e, i) => ({
@@ -233,6 +240,24 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
                   </div>
                 ))}
               </div>
+            </>
+          ) : null}
+
+          {basis && basisE ? (
+            <>
+              <h2 className="f-h2">Gewicht je Wdh</h2>
+              <div className="f-bestwerte">
+                {gewichtJeWdh(basis, u.schritt).map((g) => (
+                  <div key={g.wdh} className="f-bestwert">
+                    <small>{g.wdh} Wdh</small>
+                    <b>{formatZahl(g.kg)}</b>
+                  </div>
+                ))}
+              </div>
+              <p className="f-note f-herkunft">
+                Geschätzt aus {formatSatz(basis, erf)} ({relativTag(tagVon(basisE.training.start), heute)}), abgerundet auf{' '}
+                {formatZahl(u.schritt)} kg.
+              </p>
             </>
           ) : null}
 

@@ -13,6 +13,7 @@ import {
   zumTeilen,
   alsCsv,
   bestwerteJeWdh,
+  gewichtJeWdh,
   endeFuer,
   formatSek,
   gleicherSatz,
@@ -318,6 +319,16 @@ describe('Hilfen', () => {
       { wdh: 1, kg: 90 },
       { wdh: 5, kg: 85 },
       { wdh: 8, kg: 82.5 },
+    ])
+  })
+
+  it('gewichtJeWdh: Epley rueckwaerts, abgerundet auf den Gewichtsschritt', () => {
+    // 80 x 8 = 1RM 101,33 - fuer 8 Wdh wieder genau 80, nicht 77,5
+    expect(gewichtJeWdh(s(80, 8), 2.5).map((x) => x.kg)).toEqual([100, 90, 85, 80, 75, 70])
+    expect(gewichtJeWdh(s(100, 1), 5).map((x) => x.kg)).toEqual([100, 90, 85, 75, 75, 70])
+    expect(gewichtJeWdh(s(80, 8), 1.25, [1, 12])).toEqual([
+      { wdh: 1, kg: 101.25 },
+      { wdh: 12, kg: 71.25 },
     ])
   })
 

@@ -2258,6 +2258,12 @@ button.f-nr:active {
   line-height: 1.1;
 }
 
+/* Unter "Gewicht je Wdh": woraus geschaetzt. */
+.f-herkunft {
+  margin: -2px 4px 0;
+  font-size: 12.5px;
+}
+
 /* Ein Training: Aufwaermsaetze leiser. */
 .f-sc.auf {
   background: transparent;

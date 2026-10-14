@@ -474,6 +474,20 @@ export function bestwerteJeWdh(saetze: Satz[]): { wdh: number; kg: number }[] {
   return roh.filter((x, i) => !roh.slice(i + 1).some((y) => y.kg >= x.kg))
 }
 
+/** Wdh-Zahlen fuer "Gewicht je Wdh" - dieselben wie bei den Bestwerten. */
+export const WDH_TABELLE = [1, 3, 5, 8, 10, 12]
+
+/**
+ * Welches Gewicht fuer wie viele Wdh passt: das geschaetzte 1RM eines Satzes
+ * nach Epley rueckwaerts, abgerundet auf den Gewichtsschritt. Gerechnet mit
+ * dem ungerundeten 1RM - sonst kaeme aus 80 x 8 fuer 8 Wdh 77,5 heraus.
+ */
+export function gewichtJeWdh(s: Satz, schritt: number, wdhListe = WDH_TABELLE): { wdh: number; kg: number }[] {
+  const faktor = (wdh: number) => (wdh <= 1 ? 1 : 1 + wdh / 30)
+  const e1rm = (s.kg ?? 0) * faktor(s.wdh ?? 0)
+  return wdhListe.map((wdh) => ({ wdh, kg: rund(Math.floor(e1rm / faktor(wdh) / schritt + 1e-6) * schritt) }))
+}
+
 /** Der Satz mit dem besten geschaetzten 1RM - aus ihm ist die Zahl im Verlauf "1RM" geschaetzt. */
 export function besterE1rmSatz(saetze: Satz[]): Satz | null {
   let best: Satz | null = null
