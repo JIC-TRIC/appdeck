@@ -7,12 +7,12 @@ import Karten from './views/Karten'
 import Konstanten from './views/Konstanten'
 import type { Einstellungen, Reiter } from './types'
 
-// Erst die Kopfrechen-Uebungen, dann die Gedaechtnis-Uebungen.
+// Wochentag vorn, dann die Gedaechtnis-Uebungen, Rechnen ganz rechts.
 const REITER: { id: Reiter; label: string; Icon: ComponentType<{ className?: string }> }[] = [
   { id: 'wochentag', label: 'Wochentag', Icon: IconKalender },
-  { id: 'rechnen', label: 'Rechnen', Icon: IconMal },
   { id: 'karten', label: 'Karten', Icon: IconKarten },
   { id: 'konstanten', label: 'Konstanten', Icon: IconPi },
+  { id: 'rechnen', label: 'Rechnen', Icon: IconMal },
 ]
 
 // Alle Reiter bleiben eingehaengt: offene Aufgaben und Runden ueberstehen den
@@ -27,7 +27,7 @@ function Loci() {
         <Wochentag aktiv={einst.reiter === 'wochentag'} einst={einst} aendere={aendere} />
         <Rechnen aktiv={einst.reiter === 'rechnen'} einst={einst} aendere={aendere} />
         <Karten aktiv={einst.reiter === 'karten'} einst={einst} aendere={aendere} />
-        <Konstanten aktiv={einst.reiter === 'konstanten'} einst={einst} />
+        <Konstanten aktiv={einst.reiter === 'konstanten'} einst={einst} aendere={aendere} />
       </div>
 
       <nav className="l-tabs" aria-label="Übungen">

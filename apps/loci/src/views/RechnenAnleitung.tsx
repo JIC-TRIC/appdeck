@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Blatt, BlattKopf, Rechenweg } from '../ui'
-import { rechenweg, ueberkreuz, zerlegen } from '../rechnen'
+import { TRACHTENBERG, rechenweg, trachtenberg, ueberkreuz, zerlegen } from '../rechnen'
 import type { Methode } from '../types'
 
-// Spickzettel hinter "?": beide Rechenwege an einem Beispiel, plus Ausprobieren.
+// Spickzettel hinter "?": beide Rechenwege an einem Beispiel, Trachtenbergs
+// Regeln fuer 3 bis 12 mit Beispiel zum Durchschalten, plus Ausprobieren.
 
 const BEISPIEL_ZERLEGEN = zerlegen(47, 86)
 const BEISPIEL_KREUZ = ueberkreuz(47, 86)
@@ -21,6 +22,7 @@ export default function RechnenAnleitung({ methode, onClose }: { methode: Method
   const [x, setX] = useState('347')
   const [y, setY] = useState('86')
   const [weg, setWeg] = useState<Methode>(methode)
+  const [faktor, setFaktor] = useState(6)
   const nx = Number(x)
   const ny = Number(y)
   const ok = Number.isInteger(nx) && Number.isInteger(ny) && nx >= 2 && ny >= 2 && nx <= 999 && ny <= 999
@@ -34,6 +36,7 @@ export default function RechnenAnleitung({ methode, onClose }: { methode: Method
           <BlattKopf titel="So rechnest du" onClose={zu} gross />
           <p className="l-text2">
             Zwei Wege zum selben Ergebnis. Unter dem Stufen-Knopf wählst du, welcher in Tipps und Rechenweg erscheint.
+            Weiter unten stehen Trachtenbergs Abkürzungen für 3 bis 12.
           </p>
 
           <h2>Zerlegen</h2>
@@ -76,6 +79,43 @@ export default function RechnenAnleitung({ methode, onClose }: { methode: Method
             ))}
           </div>
           <p className="l-text2">1, 2, 3, 2, 1 Paare – die mittlere Spalte ist die schwerste.</p>
+
+          <h2>Trachtenberg</h2>
+          <p>
+            Jakow Trachtenberg (1888–1953) hat ein Kopfrechnen ganz ohne Einmaleins entwickelt. Für jeden Faktor von 3 bis
+            12 gibt es eine Regel, die nur mit zwei Ziffern arbeitet: der Ziffer selbst und ihrem Nachbarn.
+          </p>
+          <ul className="l-schritte punkte">
+            <li>Vor die Zahl kommt eine Null: aus 347 wird 0347.</li>
+            <li>Von rechts nach links, Ziffer für Ziffer. Der Nachbar ist die Ziffer rechts daneben, die Einer haben keinen.</li>
+            <li>Halber Nachbar heißt halbieren und abrunden: die halbe 7 ist 3. „Ungerade“ meint die Ziffer selbst.</li>
+            <li>Übertrag wie gewohnt: eine Stelle schreiben, den Rest merken und beim nächsten Schritt dazuzählen.</li>
+          </ul>
+          <div className="l-rechenweg">
+            {TRACHTENBERG.map(({ m, regel }) => (
+              <div className="l-zeile l-regel" key={m}>
+                <b>× {m}</b>
+                <div>
+                  {regel.map((r) => (
+                    <span key={r}>{r}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <h3 className="l-blatt-h3">Beispiel: 347 × {faktor}</h3>
+          <div className="l-seg faktoren" role="radiogroup" aria-label="Faktor">
+            {TRACHTENBERG.map(({ m }) => (
+              <button key={m} type="button" role="radio" aria-checked={faktor === m} className={faktor === m ? 'an' : ''} onClick={() => setFaktor(m)}>
+                {m}
+              </button>
+            ))}
+          </div>
+          <Rechenweg l={trachtenberg(347, faktor)} />
+          <p className="l-text2">
+            Für zwei- und dreistellige Faktoren rechnet Trachtenberg Spalte für Spalte von rechts, genau wie der
+            Überkreuz-Weg oben.
+          </p>
 
           <h2>Im Kopf behalten</h2>
           <ul className="l-schritte punkte">

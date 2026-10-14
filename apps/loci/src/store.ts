@@ -21,6 +21,7 @@ import type {
   Einstellungen,
   Ergebnis,
   Gesamt,
+  KModus,
   KVersuch,
   Methode,
   RechenAufgabe,
@@ -41,6 +42,7 @@ export const STANDARD: Einstellungen = {
   zeitraum: { id: '1900', von: 1900, bis: 2099 },
   deck: { anzahl: 52, taktAn: false, takt: 3 },
   rechnen: { stufe: '2x2', methode: 'zerlegen' },
+  konstanten: { modus: 'frei' },
   anleitungGesehen: false,
   anleitungRechnen: false,
 }
@@ -72,12 +74,14 @@ const jahr = (x: unknown) => ganz(x, FRUEHESTES_JAHR, SPAETESTES_JAHR)
 const REITER: Reiter[] = ['wochentag', 'rechnen', 'karten', 'konstanten']
 const ZEITRAUM_IDS: ZeitraumId[] = ['jahr', '1900', '1600', 'eigen']
 const METHODEN: Methode[] = ['zerlegen', 'ueberkreuz']
+const K_MODI: KModus[] = ['frei', 'streng']
 
 export function normalisiereEinstellungen(raw: unknown): Einstellungen {
   const r = obj(raw)
   const z = obj(r.zeitraum)
   const d = obj(r.deck)
   const re = obj(r.rechnen)
+  const ko = obj(r.konstanten)
   const zeitraum =
     ZEITRAUM_IDS.includes(z.id as ZeitraumId) && jahr(z.von) && jahr(z.bis) && (z.von as number) <= (z.bis as number)
       ? { id: z.id as ZeitraumId, von: z.von as number, bis: z.bis as number }
@@ -97,6 +101,7 @@ export function normalisiereEinstellungen(raw: unknown): Einstellungen {
       stufe: STUFEN.some((s) => s.id === re.stufe) ? (re.stufe as Stufe) : STANDARD.rechnen.stufe,
       methode: METHODEN.includes(re.methode as Methode) ? (re.methode as Methode) : STANDARD.rechnen.methode,
     },
+    konstanten: { modus: K_MODI.includes(ko.modus as KModus) ? (ko.modus as KModus) : STANDARD.konstanten.modus },
     anleitungGesehen: r.anleitungGesehen === true,
     anleitungRechnen: r.anleitungRechnen === true,
   }

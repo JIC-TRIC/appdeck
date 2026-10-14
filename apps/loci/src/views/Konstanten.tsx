@@ -4,11 +4,25 @@ import { KONSTANTE, KONSTANTEN, istLang, rekorde } from '../konstanten'
 import { getKVersuche, konstantenZuruecksetzen, speichereKVersuch } from '../store'
 import { AppsKnopf, Bestaetigen, Vollbild } from '../ui'
 import { wann } from '../util'
-import type { Einstellungen, KVersuch } from '../types'
+import type { Einstellungen, KModus, KVersuch } from '../types'
 import Aufsagen from './Aufsagen'
 
-// Reiter Konstanten: Liste mit Rekorden, Aufsagen als Vollbild darueber.
-export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Einstellungen }) {
+// Reiter Konstanten: Modus (frei oder streng), Liste mit Rekorden, Aufsagen als
+// Vollbild darueber.
+const MODI: { id: KModus; name: string; info: string }[] = [
+  { id: 'frei', name: 'Frei', info: 'Weitertippen bis „Fertig“, ausgewertet wird am Ende.' },
+  { id: 'streng', name: 'Streng', info: 'Ein Fehler, den du nicht sofort mit ⌫ korrigierst, beendet den Durchgang.' },
+]
+
+export default function Konstanten({
+  aktiv,
+  einst,
+  aendere,
+}: {
+  aktiv: boolean
+  einst: Einstellungen
+  aendere: (patch: Partial<Einstellungen>) => void
+}) {
   const [versuche, setVersuche] = useState(getKVersuche)
   const [offen, setOffen] = useState<string | null>(null)
   // Waehrend das Vollbild zugeht, bleibt die Konstante stehen.
@@ -59,6 +73,23 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
         <div>
           <h1 className="l-h1">Konstanten</h1>
         </div>
+        <div>
+          <div className="l-seg" role="radiogroup" aria-label="Modus">
+            {MODI.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="radio"
+                aria-checked={einst.konstanten.modus === m.id}
+                className={einst.konstanten.modus === m.id ? 'an' : ''}
+                onClick={() => aendere({ konstanten: { modus: m.id } })}
+              >
+                {m.name}
+              </button>
+            ))}
+          </div>
+          <p className="l-text2">{MODI.find((m) => m.id === einst.konstanten.modus)!.info}</p>
+        </div>
         <section className="l-sec">
           <h2 className="l-h2">Mathematik</h2>
           <div className="l-card l-konst-liste">{gruppe('mathe')}</div>
@@ -83,6 +114,7 @@ export default function Konstanten({ aktiv, einst }: { aktiv: boolean; einst: Ei
             k={k}
             rekord={rekord[k.id] ?? 0}
             uhrAn={einst.uhr}
+            streng={einst.konstanten.modus === 'streng'}
             onSpeichern={(v: KVersuch) => setVersuche(speichereKVersuch(v))}
             onSchliessen={() => setOffen(null)}
           />

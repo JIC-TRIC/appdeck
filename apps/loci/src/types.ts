@@ -19,6 +19,10 @@ export type Stufe = '2x1' | '3x1' | '2x2' | '3x2' | '3x3'
 /** Zerlegen: von links nach rechts in Teilprodukte. Ueberkreuz: Spalte fuer Spalte von rechts. */
 export type Methode = 'zerlegen' | 'ueberkreuz'
 
+/** Konstanten aufsagen. Frei: weitertippen bis "Fertig", gewertet am Ende.
+ *  Streng: ein Fehler, der nicht sofort mit ⌫ korrigiert wird, beendet den Durchgang. */
+export type KModus = 'frei' | 'streng'
+
 export interface Einstellungen {
   reiter: Reiter
   /** Uhr anzeigen - gemessen wird immer. Gilt fuer alle Uebungen. */
@@ -27,6 +31,7 @@ export interface Einstellungen {
   /** takt in Sekunden; bleibt stehen, wenn der Taktgeber aus ist. */
   deck: { anzahl: Deckgroesse; taktAn: boolean; takt: number }
   rechnen: { stufe: Stufe; methode: Methode }
+  konstanten: { modus: KModus }
   /** Anleitung Wochentag schon einmal gesehen (oeffnet sich beim ersten Start) */
   anleitungGesehen: boolean
   /** Anleitung Rechnen schon einmal gesehen */

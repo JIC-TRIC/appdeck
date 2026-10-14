@@ -1,6 +1,7 @@
 // Multiplizieren im Kopf. Zwei Rechenwege fuer dieselbe Aufgabe:
 //   Zerlegen    47 × 86 = 47 × 80 + 47 × 6 = 3760 + 282 = 4042
 //   Ueberkreuz  Spalte fuer Spalte von rechts: 7·6, dann 4·6 + 7·8, dann 4·8
+// Dazu Trachtenbergs Regeln fuer 3 bis 12 (nur in der Anleitung erklaert).
 // Reine Rechnung ohne Oberflaeche, getestet in rechnen.test.ts.
 
 import type { Hinweis, Zeile } from './wochentag'
@@ -113,6 +114,146 @@ export function ueberkreuz(x: number, y: number): Rechenweg {
 }
 
 export const rechenweg = (x: number, y: number, methode: Methode) => (methode === 'zerlegen' ? zerlegen(x, y) : ueberkreuz(x, y))
+
+// ---------- Trachtenberg (nur in der Anleitung) ----------
+
+/**
+ * Trachtenbergs Regeln fuer 3 bis 12 ohne Einmaleins: vor die Zahl eine Null,
+ * dann von rechts jede Ziffer mit ihrem Nachbarn (der Ziffer rechts daneben).
+ * "Halber Nachbar" heisst halbieren und abrunden, "ungerade" meint die Ziffer.
+ * Einer = die Ziffer ganz rechts, Vorn = die vorgesetzte Null.
+ */
+export const TRACHTENBERG: { m: number; regel: string[] }[] = [
+  {
+    m: 3,
+    regel: [
+      'Einer: (10 − Ziffer) · 2, + 5 wenn ungerade',
+      'Weitere: (9 − Ziffer) · 2 + halber Nachbar, + 5 wenn ungerade',
+      'Vorn: halber Nachbar − 2',
+    ],
+  },
+  {
+    m: 4,
+    regel: [
+      'Einer: 10 − Ziffer, + 5 wenn ungerade',
+      'Weitere: 9 − Ziffer + halber Nachbar, + 5 wenn ungerade',
+      'Vorn: halber Nachbar − 1',
+    ],
+  },
+  { m: 5, regel: ['Halber Nachbar, + 5 wenn ungerade'] },
+  { m: 6, regel: ['Ziffer + halber Nachbar, + 5 wenn ungerade'] },
+  { m: 7, regel: ['Ziffer · 2 + halber Nachbar, + 5 wenn ungerade'] },
+  { m: 8, regel: ['Einer: (10 − Ziffer) · 2', 'Weitere: (9 − Ziffer) · 2 + Nachbar', 'Vorn: Nachbar − 2'] },
+  { m: 9, regel: ['Einer: 10 − Ziffer', 'Weitere: 9 − Ziffer + Nachbar', 'Vorn: Nachbar − 1'] },
+  { m: 11, regel: ['Ziffer + Nachbar'] },
+  { m: 12, regel: ['Ziffer · 2 + Nachbar'] },
+]
+
+const mitMinus = (n: number) => (n < 0 ? `−${-n}` : String(n))
+
+/** Trachtenberg: x mal einen Faktor aus TRACHTENBERG, Ziffer fuer Ziffer von rechts, mit Uebertrag. */
+export function trachtenberg(x: number, m: number): Rechenweg {
+  // Einer zuerst, zuletzt die vorgesetzte Null.
+  const z = [...`0${x}`].reverse().map(Number)
+  const schritte: Zeile[] = []
+  let uebertrag = 0
+  z.forEach((d, k) => {
+    const einer = k === 0
+    const vorn = k === z.length - 1
+    const nb = einer ? 0 : z[k - 1]
+    const h = Math.floor(nb / 2)
+    const teile: [string, number][] = []
+    const plus = (text: string, wert: number) => {
+      teile.push([text, wert])
+    }
+    const ziffer = (mal: 1 | 2) => plus(mal === 1 ? String(d) : `${d}·2`, d * mal)
+    // Die Ziffer ganz rechts hat keinen Nachbarn.
+    const nachbar = () => {
+      if (!einer) plus(String(nb), nb)
+    }
+    const halb = () => {
+      if (!einer) plus(`${h} (halbe ${nb})`, h)
+    }
+    const fuenf = () => {
+      if (d % 2 === 1) plus('5 (ungerade)', 5)
+    }
+    // Bei 3, 4, 8, 9: die Einer von 10 abziehen, weitere Ziffern von 9 (bei 3 und 8 verdoppelt) ...
+    const ab = (doppelt: boolean) => {
+      const von = einer ? 10 : 9
+      plus(doppelt ? `(${von} − ${d})·2` : `${von} − ${d}`, (von - d) * (doppelt ? 2 : 1))
+    }
+    // ... und vorn der (halbe) Nachbar minus 1 oder 2.
+    const vornMinus = (minus: number, halbiert: boolean) =>
+      plus(`${halbiert ? `${h} (halbe ${nb})` : nb} − ${minus}`, (halbiert ? h : nb) - minus)
+
+    switch (m) {
+      case 11:
+        ziffer(1)
+        nachbar()
+        break
+      case 12:
+        ziffer(2)
+        nachbar()
+        break
+      case 6:
+        ziffer(1)
+        halb()
+        fuenf()
+        break
+      case 7:
+        ziffer(2)
+        halb()
+        fuenf()
+        break
+      case 5:
+        halb()
+        fuenf()
+        break
+      case 9:
+      case 8:
+        if (vorn) vornMinus(m === 9 ? 1 : 2, false)
+        else {
+          ab(m === 8)
+          nachbar()
+        }
+        break
+      case 4:
+      case 3:
+        if (vorn) vornMinus(m === 4 ? 1 : 2, true)
+        else {
+          ab(m === 3)
+          halb()
+          fuenf()
+        }
+        break
+      default:
+        throw new Error(`Keine Trachtenberg-Regel fuer ${m}`)
+    }
+    if (!teile.length) plus('0', 0)
+
+    const roh = teile.reduce((s, [, w]) => s + w, 0)
+    const ausdruck = teile.map(([t]) => t).join(' + ')
+    const gesamt = roh + uebertrag
+    const info: string[] = []
+    if (uebertrag) info.push(`+ ${uebertrag} = ${gesamt}`)
+    let wert: string
+    if (vorn) {
+      wert = gesamt ? String(gesamt) : ''
+      info.push(gesamt ? `schreibe ${gesamt}` : 'die Null vorn fällt weg')
+    } else {
+      const stelle = gesamt % 10
+      uebertrag = Math.floor(gesamt / 10)
+      wert = String(stelle)
+      info.push(uebertrag ? `schreibe ${stelle}, merke ${uebertrag}` : `schreibe ${stelle}`)
+    }
+    schritte.push({
+      text: `${vorn ? 'Vorn' : SPALTE[k]} ${d}: ${ausdruck}${ausdruck === String(roh) ? '' : ` = ${mitMinus(roh)}`}`,
+      klein: info.join(' → '),
+      wert,
+    })
+  })
+  return { schritte, summe: { text: 'Von unten nach oben gelesen', wert: String(x * m) } }
+}
 
 /** Nur fuer falsche Antworten: steckt ein typischer Fehler dahinter? */
 export function hinweisRechnen(richtig: number, eingabe: number): Hinweis | null {

@@ -21,6 +21,7 @@ describe('Einstellungen lesen', () => {
       zeitraum: { id: 'eigen', von: 1750, bis: 1850 },
       deck: { anzahl: 20, taktAn: true, takt: 2.5 },
       rechnen: { stufe: '3x2', methode: 'ueberkreuz' },
+      konstanten: { modus: 'streng' },
       anleitungGesehen: true,
       anleitungRechnen: true,
     }
@@ -34,6 +35,7 @@ describe('Einstellungen lesen', () => {
       zeitraum: { id: 'eigen', von: 1900, bis: 1800 },
       deck: { anzahl: 30, taktAn: 'ja', takt: 0.2 },
       rechnen: { stufe: '4x4', methode: 'schriftlich' },
+      konstanten: { modus: 'locker' },
     })
     expect(e).toEqual(STANDARD)
   })
@@ -41,6 +43,7 @@ describe('Einstellungen lesen', () => {
   it('aeltere Einstellungen ohne Rechnen bekommen den Standard dazu', () => {
     const e = normalisiereEinstellungen({ reiter: 'karten', anleitungGesehen: true })
     expect(e.rechnen).toEqual({ stufe: '2x2', methode: 'zerlegen' })
+    expect(e.konstanten).toEqual({ modus: 'frei' })
     expect(e.anleitungGesehen).toBe(true)
     expect(e.anleitungRechnen).toBe(false)
   })

@@ -2166,6 +2166,29 @@ ion-alert.l-alert .alert-button-role-destructive {
   list-style: disc;
 }
 
+/* Trachtenberg: Faktor links, Regel daneben; darunter die Faktoren zum Durchschalten */
+.l-regel {
+  justify-content: flex-start;
+}
+
+.l-regel b {
+  flex: none;
+  width: 44px;
+}
+
+.l-regel span {
+  display: block;
+}
+
+.l-seg.faktoren {
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+}
+
+.l-seg.faktoren button {
+  padding: 0;
+  font-family: var(--f-mono);
+}
+
 .l-anleitung > p:not([class]) {
   margin-top: 4px;
 }

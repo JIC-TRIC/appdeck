@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { KONSTANTE, KONSTANTEN, istLang, mitKomma, pruefe, rekorde, weiter } from './konstanten'
+import { KONSTANTE, KONSTANTEN, istLang, mitKomma, pruefe, rekorde, unkorrigiert, weiter } from './konstanten'
 import { ZIFFERN } from './konstanten-ziffern'
 
 // Die 1000 Nachkommastellen stammen aus einem Skript (mpmath). Hier rechnet
@@ -149,5 +149,19 @@ describe('Pruefen: nach einem Fehler wird weitergetippt', () => {
 
   it('lang sind nur die mathematischen', () => {
     expect(KONSTANTEN.filter(istLang).map((k) => k.gruppe)).toEqual(['mathe', 'mathe', 'mathe', 'mathe', 'mathe', 'mathe'])
+  })
+})
+
+describe('Modus streng: ein Fehler muss sofort mit ⌫ weg', () => {
+  const pi = KONSTANTE.pi
+
+  it('steht die letzte Ziffer falsch, beendet die naechste den Durchgang', () => {
+    expect(unkorrigiert(pi, '1414')).toBe(true)
+    expect(unkorrigiert(KONSTANTE.c, '3')).toBe(true)
+  })
+
+  it('richtig oder noch nichts getippt: weiter', () => {
+    expect(unkorrigiert(pi, '')).toBe(false)
+    expect(unkorrigiert(pi, '1415')).toBe(false)
   })
 })

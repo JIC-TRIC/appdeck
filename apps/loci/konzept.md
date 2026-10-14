@@ -48,7 +48,8 @@ appdeck liegt auf GitHub Pages, jeder kann den Code lesen. Deshalb gilt:
   nicht nur richtig oder falsch.
 - **Gemessen wird immer.** Die Uhr lässt sich ausblenden, die Statistik bleibt
   trotzdem vollständig.
-- **Ein Reiter pro Übung**, erst Kopfrechnen, dann Gedächtnis. Die Tab-Leiste
+- **Ein Reiter pro Übung**: Wochentag vorn, dann Karten und Konstanten, Rechnen
+  ganz rechts (seit 14.10.2026, vorher Rechnen an zweiter Stelle). Die Tab-Leiste
   verträgt noch einen fünften; danach bräuchte Loci eine Skill-Auswahl.
 
 ## Design (Richtung „Tafel“)
@@ -194,6 +195,12 @@ Karten, 4 px Tasten).
   „Fertig“ (z. B. wenn man nicht weiterweiß) oder wenn alle Stellen getippt
   sind. ✕ bricht ab, nach der ersten Ziffer mit Rückfrage, und speichert
   nichts.
+- [x] **Modus** (seit 14.10.2026, über der Liste, bleibt gespeichert): **Frei**
+  (Standard) wie oben. **Streng:** Ein Fehler muss sofort mit ⌫ weg. Wer nach
+  einer falschen Ziffer weitertippt, beendet den Durchgang; die neue Ziffer zählt
+  nicht mehr. Beim Tippen ist auch hier nichts markiert, man merkt den Fehler
+  selbst oder gar nicht. Im Aufsagen steht „Kreiszahl · streng“. Rekorde zählen in
+  beiden Modi gleich (Stellen bis zum ersten Fehler) und stehen zusammen.
 - [x] Lange Konstanten erscheinen in Zeilen zu 10 (als 5 + 5) mit
   Stellennummer, kurze in einer Zeile mit Platzhaltern.
 - [x] **Ende:** Stellen bis zum ersten Fehler (zählen für den Rekord), „Neuer
@@ -266,7 +273,7 @@ Karten, 4 px Tasten).
 
 | Schlüssel | Inhalt |
 |---|---|
-| `loci:einstellungen` | `{ reiter, uhr, zeitraum: { id, von, bis }, deck: { anzahl, taktAn, takt }, rechnen: { stufe, methode }, anleitungGesehen, anleitungRechnen }` |
+| `loci:einstellungen` | `{ reiter, uhr, zeitraum: { id, von, bis }, deck: { anzahl, taktAn, takt }, rechnen: { stufe, methode }, konstanten: { modus }, anleitungGesehen, anleitungRechnen }` |
 | `loci:wochentag` | `{ gesamt: { anzahl, richtig, mitTipp, zeitRichtig, best }, letzte: Aufgabe[] }` |
 | `loci:rechnen` | `{ gesamt: { … wie oben }, letzte: RechenAufgabe[] }` |
 | `loci:karten` | `Versuch[]` (die letzten 100) |
@@ -278,6 +285,8 @@ Karten, 4 px Tasten).
 - `deck.takt`: Sekunden (bleibt stehen, wenn der Taktgeber aus ist).
 - `rechnen.stufe`: `2x1` · `3x1` · `2x2` · `3x2` · `3x3`; `rechnen.methode`:
   `zerlegen` · `ueberkreuz`.
+- `konstanten.modus`: `frei` · `streng`. Ältere Einstellungen ohne Modus bekommen
+  `frei`.
 - `Aufgabe` (Wochentag): `{ d: 'YYYY-MM-DD', a: 0–6 (gewählt), r: Antwort
   stimmt, z: ms, t: Tipps }`. `RechenAufgabe`: `{ x, y, a: Antwort, r, z, t }`.
   Je die letzten 200 (für Schwächen). `gesamt` zählt über alles, auch über die
@@ -295,7 +304,7 @@ Karten, 4 px Tasten).
 
 ## Navigation
 
-- [x] Tab-Leiste **Wochentag · Rechnen · Karten · Konstanten** im Seitenfluss
+- [x] Tab-Leiste **Wochentag · Karten · Konstanten · Rechnen** im Seitenfluss
   unter der Bühne (wie Piano). Start im zuletzt benutzten Reiter. Alle Reiter
   bleiben eingehängt: offene Aufgaben und Runden überstehen den Wechsel; die Uhr
   eines Reiters steht, solange ein anderer gezeigt wird.
@@ -374,6 +383,12 @@ Karten, 4 px Tasten).
 - [x] Zerlegen an 47 × 86 (Formel, Rechenweg, „mal einen Zehner“), Überkreuz an
   47 × 86 (Schema, Rechenweg, Eingabe von rechts), welche Paare bei 3 × 3 in
   welche Spalte gehören, drei Tipps zum Im-Kopf-Behalten.
+- [x] **Trachtenberg** (seit 14.10.2026, zwischen Überkreuz und „Im Kopf
+  behalten“): wer er war, die vier Grundregeln (Null vorn, von rechts, Nachbar
+  und halber Nachbar, Übertrag), die Regel je Faktor 3–9, 11, 12 und ein Beispiel
+  347 × Faktor zum Durchschalten (Standard × 6), Zeile für Zeile mit Übertrag wie
+  beim Überkreuz. Dazu der Satz, dass Trachtenberg mehrstellige Faktoren genau wie
+  Überkreuz rechnet. Nur erklärt, kein eigener Rechenweg in den Aufgaben.
 - [x] **Ausprobieren:** zwei Zahlen (2–999), Umschalter Zerlegen | Überkreuz,
   darunter Ergebnis und Rechenweg.
 
@@ -405,12 +420,14 @@ Karten, 4 px Tasten).
   Einstellungen.
 
 ### 16 – Konstanten
+- [x] Umschalter **Frei | Streng** mit einem Satz dazu (seit 14.10.2026).
 - [x] Titel, ein Satz, Karten **Mathematik** und **Physik** mit Symbol, Name und
   Rekord bzw. Stellenzahl und Erklärung. Hinweis „Exponent und Einheit stehen
   da“. Statistik zurücksetzen.
 
 ### 17 – Aufsagen (Vollbild)
-- [x] ✕, „π · 23 Stellen“ mit Uhr, Fertig. Name, „π = 3,“, die getippten
+- [x] ✕, „π · 23 Stellen“ mit Uhr, Fertig. Name (im Modus streng mit
+  „· streng“), „π = 3,“, die getippten
   Ziffern in Zehnerzeilen mit Cursor; Physik in einer Zeile mit Platzhaltern,
   Exponent und Einheit.
 - [x] Ziffernblock mit ⌫ (ohne OK). Nach dem Ende statt Ziffernblock: Stellen groß
@@ -442,12 +459,14 @@ Karten, 4 px Tasten).
     Zufallsdatum, Tipp-Bausteine ergeben zusammen den Wochentag
   - Rechnen: Aufgaben je Stufe (Stellen, keine Null am Ende), Zerlegen und
     Überkreuz ergeben für viele Zufallsaufgaben das Ergebnis, Texte wie in der
-    Anleitung, Hinweise
+    Anleitung, Hinweise; Trachtenberg ergibt für jeden Faktor und 1–3000 (plus
+    Stichproben bis 99 999) das Ergebnis
   - Statistik: Tipp zählt nicht als richtig, Schwächen (ab 20, Mindestanzahl,
     nur über Schnitt, höchstens 3, nur die letzten 200) für beide Übungen
   - Karten: Mischen, Wertung, nächste freie Stelle, ⌫ in allen drei Fällen
   - Konstanten: alle Stellen, physikalische Werte, Komma, Rekorde, Prüfen
-    nach dem Weitertippen (Stellen bis zum ersten Fehler, alle Fehler)
+    nach dem Weitertippen (Stellen bis zum ersten Fehler, alle Fehler), Modus
+    streng (unkorrigierter Fehler)
   - Gespeichertes lesen: gültige Werte bleiben, kaputte fallen auf den Standard
 
 ## Dateien
@@ -527,11 +546,21 @@ Erweiterung (04.10.2026):
 18. **Keine „1000 Stellen“** in der Liste der mathematischen Konstanten –
     relevant ist, wie viele man schon geschafft hat.
 
+Änderung (14.10.2026):
+
+19. **Konstanten zusätzlich streng:** Neben „weitertippen bis Fertig“ ein Modus,
+    in dem ein nicht sofort korrigierter Fehler den Durchgang beendet. Beide
+    bleiben wählbar.
+20. **Rechnen ganz rechts** in der Tab-Leiste.
+21. **Trachtenberg in der Anleitung Rechnen** erklärt, mit Beispiel.
+
 ## Nicht drin
 
 - **Wurzeln mit Nachkommastellen** (√40 ≈ 6,3245 über nächste Quadratzahl und
   Verfeinern, ebenso ∛) – besprochen, vorerst zurückgestellt
 - Quadrieren als eigener Skill, Kubikwurzel aus Kubikzahlen
+- Trachtenberg als eigener Rechenweg oder eigene Stufe (× 11, × 12 …) in den
+  Aufgaben – bisher nur in der Anleitung
 - Konstanten ab einer bestimmten Stelle üben (heute immer von vorn)
 - Bausteine einzeln üben (nur Monats-, Jahres- oder Jahrhundertzahl abfragen)
 - Verlauf als Kurve, Fehlerkarten (welche Karten oft falsch liegen)

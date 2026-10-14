@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { STUFEN, hinweisRechnen, maxStellen, ueberkreuz, zerlegen, zufallsaufgabe } from './rechnen'
+import { STUFEN, TRACHTENBERG, hinweisRechnen, maxStellen, trachtenberg, ueberkreuz, zerlegen, zufallsaufgabe } from './rechnen'
 
 describe('Aufgaben', () => {
   it('jede Stufe liefert Zahlen mit den richtigen Stellen, ohne Null am Ende', () => {
@@ -81,6 +81,43 @@ describe('Ueberkreuz', () => {
         const { x, y } = zufallsaufgabe(s.id)
         const w = ueberkreuz(x, y)
         expect(w.schritte.map((z) => z.wert).reverse().join('')).toBe(String(x * y))
+      }
+    }
+  })
+})
+
+describe('Trachtenberg', () => {
+  it('347 × 6 wie in der Anleitung', () => {
+    expect(trachtenberg(347, 6).schritte).toEqual([
+      { text: 'Einer 7: 7 + 5 (ungerade) = 12', klein: 'schreibe 2, merke 1', wert: '2' },
+      { text: 'Zehner 4: 4 + 3 (halbe 7) = 7', klein: '+ 1 = 8 → schreibe 8', wert: '8' },
+      { text: 'Hunderter 3: 3 + 2 (halbe 4) + 5 (ungerade) = 10', klein: 'schreibe 0, merke 1', wert: '0' },
+      { text: 'Vorn 0: 0 + 1 (halbe 3) = 1', klein: '+ 1 = 2 → schreibe 2', wert: '2' },
+    ])
+  })
+
+  it('347 × 9: Einer von 10, weitere von 9, vorn Nachbar minus 1', () => {
+    expect(trachtenberg(347, 9).schritte.map((s) => s.text)).toEqual([
+      'Einer 7: 10 − 7 = 3',
+      'Zehner 4: 9 − 4 + 7 = 12',
+      'Hunderter 3: 9 − 3 + 4 = 10',
+      'Vorn 0: 3 − 1 = 2',
+    ])
+  })
+
+  it('vorn darf es unter null gehen, der Uebertrag gleicht aus - eine Null vorn faellt weg', () => {
+    const w = trachtenberg(26, 3)
+    expect(w.schritte[2]).toEqual({ text: 'Vorn 0: 1 (halbe 2) − 2 = −1', klein: '+ 1 = 0 → die Null vorn fällt weg', wert: '' })
+    expect(w.summe.wert).toBe('78')
+  })
+
+  it('von unten nach oben gelesen ergibt sich fuer jeden Faktor das Ergebnis', () => {
+    const zahlen = [...Array.from({ length: 3000 }, (_, i) => i + 1), 9999, 10000, 90909, 99999]
+    for (const { m } of TRACHTENBERG) {
+      for (const x of zahlen) {
+        const w = trachtenberg(x, m)
+        expect(w.schritte.map((z) => z.wert).reverse().join('')).toBe(String(x * m))
+        expect(w.summe.wert).toBe(String(x * m))
       }
     }
   })

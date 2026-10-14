@@ -65,6 +65,13 @@ export function pruefe(k: Konstante, getippt: string) {
   return { bisFehler: fehler.length ? fehler[0].stelle : getippt.length, fehler }
 }
 
+/** Modus streng: Steht die zuletzt getippte Ziffer falsch, darf nur noch ⌫ kommen -
+ *  wer stattdessen weitertippt, beendet den Durchgang. */
+export function unkorrigiert(k: Konstante, getippt: string) {
+  const i = getippt.length - 1
+  return i >= 0 && getippt[i] !== k.ziffern[i]
+}
+
 /** Die naechsten Ziffern ab einer Stelle - nach dem Aufhoeren: "so geht es weiter". */
 export const weiter = (k: Konstante, ab: number, anzahl = 20) => k.ziffern.slice(ab, ab + anzahl)
 

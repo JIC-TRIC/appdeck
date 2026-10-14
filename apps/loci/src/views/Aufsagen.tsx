@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { useIonAlert } from '@ionic/react'
 import { IconClose } from '../icons'
-import { istLang, pruefe, weiter, type KFehler, type Konstante } from '../konstanten'
+import { istLang, pruefe, unkorrigiert, weiter, type KFehler, type Konstante } from '../konstanten'
 import { Laufuhr, Ziffernblock, useWegziehen } from '../ui'
 import { uhr } from '../util'
 import type { KVersuch } from '../types'
@@ -12,6 +12,8 @@ import type { KVersuch } from '../types'
 // bis "Fertig" oder bis alle Stellen getippt sind. Danach stehen die falschen
 // Stellen rot da, die richtige Ziffer klein darunter. Fuer den Rekord zaehlen
 // die Stellen bis zum ersten Fehler.
+// Im Modus streng muss ein Fehler sofort mit ⌫ weg: Wer nach einer falschen
+// Ziffer weitertippt, beendet den Durchgang (die neue Ziffer zaehlt nicht mehr).
 
 interface Ende {
   /** richtige Stellen bis zum ersten Fehler */
@@ -29,12 +31,14 @@ export default function Aufsagen({
   k,
   rekord,
   uhrAn,
+  streng,
   onSpeichern,
   onSchliessen,
 }: {
   k: Konstante
   rekord: number
   uhrAn: boolean
+  streng: boolean
   onSpeichern: (v: KVersuch) => void
   onSchliessen: () => void
 }) {
@@ -64,6 +68,7 @@ export default function Aufsagen({
 
   const tippe = (z: string) => {
     if (ende) return
+    if (streng && unkorrigiert(k, getippt)) return beende(getippt)
     const neu = getippt + z
     setGetippt(neu)
     if (neu.length === k.ziffern.length) beende(neu)
@@ -160,7 +165,10 @@ export default function Aufsagen({
       </header>
 
       <div className="l-aufsagen ion-content-scroll-host" ref={ziffernRef} aria-live="polite">
-        <p className="l-konst-vor">{k.name}</p>
+        <p className="l-konst-vor">
+          {k.name}
+          {streng ? ' · streng' : ''}
+        </p>
         {lang ? (
           <>
             <p className="l-konst-kopf">{k.vor}</p>
