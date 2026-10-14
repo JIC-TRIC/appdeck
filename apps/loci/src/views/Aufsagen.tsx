@@ -14,6 +14,8 @@ import type { KVersuch } from '../types'
 // die Stellen bis zum ersten Fehler.
 // Im Modus streng muss ein Fehler sofort mit ⌫ weg: Wer nach einer falschen
 // Ziffer weitertippt, beendet den Durchgang (die neue Ziffer zaehlt nicht mehr).
+// Beim Lernen (Lernen.tsx) geht es von vorn nur bis zum Ende des gelernten
+// Blocks (bis), und am Ende fuehrt ein Knopf zurueck ins Lernen.
 
 interface Ende {
   /** richtige Stellen bis zum ersten Fehler */
@@ -32,6 +34,8 @@ export default function Aufsagen({
   rekord,
   uhrAn,
   streng,
+  bis = k.ziffern.length,
+  lernen,
   onSpeichern,
   onSchliessen,
 }: {
@@ -39,6 +43,10 @@ export default function Aufsagen({
   rekord: number
   uhrAn: boolean
   streng: boolean
+  /** Beim Lernen: Schluss nach so vielen Stellen */
+  bis?: number
+  /** Beim Lernen: zurueck zum Block ab dieser Stelle (statt "Nochmal") */
+  lernen?: (ab: number) => void
   onSpeichern: (v: KVersuch) => void
   onSchliessen: () => void
 }) {
@@ -71,7 +79,7 @@ export default function Aufsagen({
     if (streng && unkorrigiert(k, getippt)) return beende(getippt)
     const neu = getippt + z
     setGetippt(neu)
-    if (neu.length === k.ziffern.length) beende(neu)
+    if (neu.length === bis) beende(neu)
   }
 
   const loesche = () => {
@@ -114,7 +122,7 @@ export default function Aufsagen({
     else el.scrollTop = el.scrollHeight
   }, [getippt, ende])
 
-  // Tasten am Rechner: Ziffern, ⌫, Enter = fertig bzw. nochmal, Esc = schliessen.
+  // Tasten am Rechner: Ziffern, ⌫, Enter = fertig bzw. nochmal (beim Lernen: weiter lernen), Esc = schliessen.
   useEffect(() => {
     const taste = (ev: KeyboardEvent) => {
       if (ev.ctrlKey || ev.metaKey || ev.altKey) return
@@ -122,8 +130,9 @@ export default function Aufsagen({
       if (/^\d$/.test(ev.key)) tippe(ev.key)
       else if (ev.key === 'Backspace') loesche()
       else if (ev.key === 'Enter') {
-        if (ende) nochmal()
-        else fertig()
+        if (!ende) fertig()
+        else if (!lernen) nochmal()
+        else if (lernAb < k.ziffern.length) lernen(lernBlock)
       } else if (ev.key === 'Escape') schliessen()
       else return
       ev.preventDefault()
@@ -142,6 +151,10 @@ export default function Aufsagen({
   const falsch = new Map((ende?.fehler ?? []).map((f) => [f.stelle, f.soll]))
   const erster = ende?.fehler[0]
   const weitere = ende ? ende.fehler.slice(1) : []
+  // Beim Lernen geht es nach dem Ende im Block weiter: nach einem Fehler oder
+  // Aufhoeren in dem Block, in dem es hakt, sonst im naechsten.
+  const lernAb = !ende ? 0 : erster ? erster.stelle : ende.getippt >= bis ? bis : ende.getippt
+  const lernBlock = Math.floor(lernAb / 10) * 10
 
   return (
     <div className="l-voll">
@@ -229,7 +242,9 @@ export default function Aufsagen({
             <p className="l-s2">
               {ende.getippt === k.ziffern.length
                 ? `Alle ${k.ziffern.length} Stellen richtig!`
-                : ende.getippt
+                : ende.getippt === bis
+                  ? `Bis Stelle ${bis} alles richtig.`
+                  : ende.getippt
                   ? 'Aufgehört, alles richtig.'
                   : 'Aufgehört.'}
             </p>
@@ -241,9 +256,15 @@ export default function Aufsagen({
             </p>
           ) : null}
           <div className="l-knoepfe">
-            <button type="button" className="l-btn" onClick={nochmal}>
-              Nochmal
-            </button>
+            {!lernen ? (
+              <button type="button" className="l-btn" onClick={nochmal}>
+                Nochmal
+              </button>
+            ) : lernAb < k.ziffern.length ? (
+              <button type="button" className="l-btn" onClick={() => lernen(lernBlock)}>
+                {erster || ende.getippt < bis ? `Ab Stelle ${lernBlock + 1} ansehen` : 'Nächste 10 lernen'}
+              </button>
+            ) : null}
             <button type="button" className="l-btn sek" onClick={onSchliessen}>
               Fertig
             </button>

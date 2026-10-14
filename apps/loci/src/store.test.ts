@@ -44,6 +44,7 @@ describe('Einstellungen lesen', () => {
     const e = normalisiereEinstellungen({ reiter: 'karten', anleitungGesehen: true })
     expect(e.rechnen).toEqual({ stufe: '2x2', methode: 'zerlegen' })
     expect(e.konstanten).toEqual({ modus: 'frei' })
+    expect(normalisiereEinstellungen({ konstanten: { modus: 'lernen' } }).konstanten.modus).toBe('lernen')
     expect(e.anleitungGesehen).toBe(true)
     expect(e.anleitungRechnen).toBe(false)
   })

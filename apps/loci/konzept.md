@@ -201,6 +201,17 @@ Karten, 4 px Tasten).
   nicht mehr. Beim Tippen ist auch hier nichts markiert, man merkt den Fehler
   selbst oder gar nicht. Im Aufsagen steht „Kreiszahl · streng“. Rekorde zählen in
   beiden Modi gleich (Stellen bis zum ersten Fehler) und stehen zusammen.
+- [x] **Lernen** (dritter Modus, seit 14.10.2026): Loci bringt neue Stellen bei,
+  statt nur abzufragen. In Blöcken zu 10 Stellen (eine Zeile, wie beim Aufsagen),
+  los geht es beim Block mit der ersten Stelle nach dem Rekord, mit „Davor“ und
+  „Danach“ auch anderswo. **Ansehen** (darüber leise die Zeile davor als
+  Anschluss), **verdecken**, **aus dem Kopf tippen**: Jede Ziffer wird sofort
+  geprüft, eine falsche steht rot mit der richtigen darunter, dann wird nochmal
+  angesehen. Sitzt der Block, geht es **von vorn bis zu seinem Ende** (Aufsagen
+  im Modus streng, endet am Blockende). Erst das ist ein Durchgang und zählt für
+  den Rekord; danach „Nächste 10 lernen“, nach einem Fehler „Ab Stelle 41
+  ansehen“ (der Block, in dem es hakt). Beim ersten Block ist das Tippen schon
+  „von vorn“ und zählt gleich. Physik-Konstanten sind ein einziger Block.
 - [x] Lange Konstanten erscheinen in Zeilen zu 10 (als 5 + 5) mit
   Stellennummer, kurze in einer Zeile mit Platzhaltern.
 - [x] **Ende:** Stellen bis zum ersten Fehler (zählen für den Rekord), „Neuer
@@ -285,7 +296,7 @@ Karten, 4 px Tasten).
 - `deck.takt`: Sekunden (bleibt stehen, wenn der Taktgeber aus ist).
 - `rechnen.stufe`: `2x1` · `3x1` · `2x2` · `3x2` · `3x3`; `rechnen.methode`:
   `zerlegen` · `ueberkreuz`.
-- `konstanten.modus`: `frei` · `streng`. Ältere Einstellungen ohne Modus bekommen
+- `konstanten.modus`: `frei` · `streng` · `lernen`. Ältere Einstellungen ohne Modus bekommen
   `frei`.
 - `Aufgabe` (Wochentag): `{ d: 'YYYY-MM-DD', a: 0–6 (gewählt), r: Antwort
   stimmt, z: ms, t: Tipps }`. `RechenAufgabe`: `{ x, y, a: Antwort, r, z, t }`.
@@ -420,7 +431,8 @@ Karten, 4 px Tasten).
   Einstellungen.
 
 ### 16 – Konstanten
-- [x] Umschalter **Frei | Streng** mit einem Satz dazu (seit 14.10.2026).
+- [x] Umschalter **Frei | Streng | Lernen** mit einem Satz dazu (seit 14.10.2026).
+  Bei Lernen öffnet ein Tipp auf eine Konstante das Lernen (Ansicht 18).
 - [x] Titel, ein Satz, Karten **Mathematik** und **Physik** mit Symbol, Name und
   Rekord bzw. Stellenzahl und Erklärung. Hinweis „Exponent und Einheit stehen
   da“. Statistik zurücksetzen.
@@ -433,7 +445,16 @@ Karten, 4 px Tasten).
 - [x] Ziffernblock mit ⌫ (ohne OK). Nach dem Ende statt Ziffernblock: Stellen groß
   („bis zum ersten Fehler“), Rekord, der erste Fehler auf rotem Grund, was
   danach kam, „So geht es weiter“, Nochmal · Fertig. Oben dann „π · 30
-  getippt“.
+  getippt“. Aus dem Lernen statt Nochmal „Nächste 10 lernen“ bzw. „Ab Stelle 41
+  ansehen“.
+
+### 18 – Lernen (Vollbild)
+- [x] ✕, „π · Lernen“ mit „Stellen 91–100“. Name, „π = 3,“, die Zeile davor
+  leise, der Block groß (beim Tippen mit Cursor und Lücken), ein Satz dazu.
+- [x] Unten beim Ansehen Davor · Verdecken · Danach, beim Tippen der
+  Ziffernblock ohne ⌫, danach Fehler bzw. „Stellen 91–100 sitzen.“ mit dem
+  nächsten Schritt und Fertig. Wegziehen schließt sofort (es geht nichts
+  verloren).
 
 ## Querschnitt
 
@@ -466,7 +487,7 @@ Karten, 4 px Tasten).
   - Karten: Mischen, Wertung, nächste freie Stelle, ⌫ in allen drei Fällen
   - Konstanten: alle Stellen, physikalische Werte, Komma, Rekorde, Prüfen
     nach dem Weitertippen (Stellen bis zum ersten Fehler, alle Fehler), Modus
-    streng (unkorrigierter Fehler)
+    streng (unkorrigierter Fehler), Lernblöcke (Start nach dem Rekord, Blockende)
   - Gespeichertes lesen: gültige Werte bleiben, kaputte fallen auf den Standard
 
 ## Dateien
@@ -497,7 +518,8 @@ apps/loci/
    └─ views/               Wochentag, Anleitung, Zeitraum, Rechnen,
                            RechnenAnleitung, Stufe, UebungsStatistik, Karten
                            (Reiter und Vollbild), KartenStart, Merken,
-                           Wiedergeben, Auswertung, Konstanten, Aufsagen
+                           Wiedergeben, Auswertung, Konstanten, Aufsagen,
+                           Lernen
 icons/loci.svg
 ```
 
@@ -553,6 +575,8 @@ Erweiterung (04.10.2026):
     bleiben wählbar.
 20. **Rechnen ganz rechts** in der Tab-Leiste.
 21. **Trachtenberg in der Anleitung Rechnen** erklärt, mit Beispiel.
+22. **Konstanten lernen** als dritter Modus: Block für Block ansehen, verdecken,
+    tippen, dann von vorn bis dorthin. Nur das Von-vorn zählt für den Rekord.
 
 ## Nicht drin
 

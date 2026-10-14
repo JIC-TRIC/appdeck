@@ -72,6 +72,19 @@ export function unkorrigiert(k: Konstante, getippt: string) {
   return i >= 0 && getippt[i] !== k.ziffern[i]
 }
 
+/** Lernen geht in Zehnerbloecken wie die Zeilen beim Aufsagen; eine kurze Konstante ist ein Block. */
+export const BLOCK = 10
+
+/** Wo ein Block endet (Stelle, 0-basiert, exklusiv). */
+export const blockBis = (k: Konstante, ab: number) => (istLang(k) ? Math.min(ab + BLOCK, k.ziffern.length) : k.ziffern.length)
+
+/** Womit das Lernen anfaengt: der Block mit der ersten Stelle nach dem Rekord (hoechstens der letzte). */
+export function lernStart(k: Konstante, rekord: number) {
+  if (!istLang(k)) return 0
+  const letzter = Math.floor((k.ziffern.length - 1) / BLOCK) * BLOCK
+  return Math.min(Math.floor(rekord / BLOCK) * BLOCK, letzter)
+}
+
 /** Die naechsten Ziffern ab einer Stelle - nach dem Aufhoeren: "so geht es weiter". */
 export const weiter = (k: Konstante, ab: number, anzahl = 20) => k.ziffern.slice(ab, ab + anzahl)
 

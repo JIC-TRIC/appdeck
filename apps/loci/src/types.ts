@@ -20,8 +20,9 @@ export type Stufe = '2x1' | '3x1' | '2x2' | '3x2' | '3x3'
 export type Methode = 'zerlegen' | 'ueberkreuz'
 
 /** Konstanten aufsagen. Frei: weitertippen bis "Fertig", gewertet am Ende.
- *  Streng: ein Fehler, der nicht sofort mit ⌫ korrigiert wird, beendet den Durchgang. */
-export type KModus = 'frei' | 'streng'
+ *  Streng: ein Fehler, der nicht sofort mit ⌫ korrigiert wird, beendet den Durchgang.
+ *  Lernen: Block fuer Block ansehen, verdecken, tippen, dann von vorn bis dorthin. */
+export type KModus = 'frei' | 'streng' | 'lernen'
 
 export interface Einstellungen {
   reiter: Reiter

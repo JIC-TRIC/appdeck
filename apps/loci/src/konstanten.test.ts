@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { KONSTANTE, KONSTANTEN, istLang, mitKomma, pruefe, rekorde, unkorrigiert, weiter } from './konstanten'
+import { KONSTANTE, KONSTANTEN, blockBis, istLang, lernStart, mitKomma, pruefe, rekorde, unkorrigiert, weiter } from './konstanten'
 import { ZIFFERN } from './konstanten-ziffern'
 
 // Die 1000 Nachkommastellen stammen aus einem Skript (mpmath). Hier rechnet
@@ -163,5 +163,23 @@ describe('Modus streng: ein Fehler muss sofort mit ⌫ weg', () => {
   it('richtig oder noch nichts getippt: weiter', () => {
     expect(unkorrigiert(pi, '')).toBe(false)
     expect(unkorrigiert(pi, '1415')).toBe(false)
+  })
+})
+
+describe('Lernen in Zehnerbloecken', () => {
+  const pi = KONSTANTE.pi
+
+  it('faengt beim Block mit der ersten Stelle nach dem Rekord an', () => {
+    expect(lernStart(pi, 0)).toBe(0)
+    expect(lernStart(pi, 87)).toBe(80)
+    expect(lernStart(pi, 90)).toBe(90)
+    expect(lernStart(pi, 1000)).toBe(990)
+  })
+
+  it('ein Block hat 10 Stellen, eine kurze Konstante ist ein Block', () => {
+    expect(blockBis(pi, 90)).toBe(100)
+    expect(blockBis(pi, 990)).toBe(1000)
+    expect(lernStart(KONSTANTE.h, 5)).toBe(0)
+    expect(blockBis(KONSTANTE.h, 0)).toBe(9)
   })
 })

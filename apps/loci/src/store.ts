@@ -74,7 +74,7 @@ const jahr = (x: unknown) => ganz(x, FRUEHESTES_JAHR, SPAETESTES_JAHR)
 const REITER: Reiter[] = ['wochentag', 'rechnen', 'karten', 'konstanten']
 const ZEITRAUM_IDS: ZeitraumId[] = ['jahr', '1900', '1600', 'eigen']
 const METHODEN: Methode[] = ['zerlegen', 'ueberkreuz']
-const K_MODI: KModus[] = ['frei', 'streng']
+const K_MODI: KModus[] = ['frei', 'streng', 'lernen']
 
 export function normalisiereEinstellungen(raw: unknown): Einstellungen {
   const r = obj(raw)

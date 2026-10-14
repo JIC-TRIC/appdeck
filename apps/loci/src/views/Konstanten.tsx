@@ -6,12 +6,14 @@ import { AppsKnopf, Bestaetigen, Vollbild } from '../ui'
 import { wann } from '../util'
 import type { Einstellungen, KModus, KVersuch } from '../types'
 import Aufsagen from './Aufsagen'
+import Lernen from './Lernen'
 
-// Reiter Konstanten: Modus (frei oder streng), Liste mit Rekorden, Aufsagen als
-// Vollbild darueber.
+// Reiter Konstanten: Modus (frei, streng oder lernen), Liste mit Rekorden,
+// Aufsagen bzw. Lernen als Vollbild darueber.
 const MODI: { id: KModus; name: string; info: string }[] = [
   { id: 'frei', name: 'Frei', info: 'Weitertippen bis „Fertig“, ausgewertet wird am Ende.' },
   { id: 'streng', name: 'Streng', info: 'Ein Fehler, den du nicht sofort mit ⌫ korrigierst, beendet den Durchgang.' },
+  { id: 'lernen', name: 'Lernen', info: 'Die nächsten 10 Stellen nach deinem Rekord ansehen, verdecken, tippen – dann von vorn bis dorthin.' },
 ]
 
 export default function Konstanten({
@@ -74,7 +76,7 @@ export default function Konstanten({
           <h1 className="l-h1">Konstanten</h1>
         </div>
         <div>
-          <div className="l-seg" role="radiogroup" aria-label="Modus">
+          <div className="l-seg drei" role="radiogroup" aria-label="Modus">
             {MODI.map((m) => (
               <button
                 key={m.id}
@@ -108,7 +110,16 @@ export default function Konstanten({
       </div>
 
       <Vollbild offen={offen !== null} label="Konstante aufsagen" onZu={() => setOffen(null)}>
-        {k ? (
+        {k && einst.konstanten.modus === 'lernen' ? (
+          <Lernen
+            key={k.id}
+            k={k}
+            rekord={rekord[k.id] ?? 0}
+            uhrAn={einst.uhr}
+            onSpeichern={(v: KVersuch) => setVersuche(speichereKVersuch(v))}
+            onSchliessen={() => setOffen(null)}
+          />
+        ) : k ? (
           <Aufsagen
             key={k.id}
             k={k}

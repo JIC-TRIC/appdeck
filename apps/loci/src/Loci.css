@@ -2122,6 +2122,10 @@ ion-alert.l-alert .alert-button-role-destructive {
   margin-top: 12px;
 }
 
+.l-seg.drei {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .l-seg button {
   min-height: 40px;
   border-radius: var(--r-s);
@@ -2458,4 +2462,18 @@ ion-alert.l-alert .alert-button-role-destructive {
 
 .l-konst-ende .l-knoepfe {
   margin-top: 4px;
+}
+
+/* Lernen: der Block gross, die Zeile davor leise als Anschluss, Luecken blass. */
+.l-lernen .l-ziffern-zeile .z {
+  font-size: 30px;
+}
+
+.l-lernen .l-ziffern-zeile.davor .z {
+  color: var(--text-3);
+  font-size: 20px;
+}
+
+.l-lernen .rest {
+  color: var(--text-3);
 }
