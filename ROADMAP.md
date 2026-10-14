@@ -151,6 +151,12 @@ macht.
   die Daten liegen unverschlüsselt im Speicher.
 - Speicher unkritisch: 365 × 200 Zeichen sind auch mit Emoji unter 150 KB im Jahr.
 
+### Zeitkapsel
+
+Briefe an dich selbst, die sich erst an einem bestimmten Tag öffnen, auf Wunsch mit „damals und heute“ aus
+den anderen Apps. Konzept-Entwurf mit offenen Fragen: [ideen/zeitkapsel.md](ideen/zeitkapsel.md)
+(14.10.2026, noch nicht gebaut).
+
 ## Geht nicht / bewusst nicht
 
 - Erinnerung per Push (bräuchte auf iOS einen eigenen Server), Widgets (für Web-Apps nicht möglich).
