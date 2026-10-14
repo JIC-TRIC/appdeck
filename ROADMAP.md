@@ -75,6 +75,9 @@ dem Gerät; wer das Icon löscht, löscht sie.
 
 ## Loci
 
+- **Morse** als fünfter Reiter: das Alphabet nach Gehör lernen (Koch-Methode), Empfangen und Senden über eine
+  Taste auf dem Bildschirm. Konzept-Entwurf mit Vergleich zu den fertigen Apps im App Store und offenen Fragen:
+  [ideen/loci-morse.md](ideen/loci-morse.md) (14.10.2026, noch nicht gebaut). Erst entscheiden, ob es sich lohnt.
 - **Wurzeln mit Nachkommastellen** (√ und ∛): von der nächsten glatten Wurzel aus annähern und
   verfeinern, z. B. √40 = 6 + 4 ÷ 12,33 ≈ 6,3243. Besprochen, vorerst zurückgestellt. Offen wäre: abschneiden
   oder runden gelten lassen.
