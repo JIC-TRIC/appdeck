@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import NumPad, { useBetrag } from './NumPad'
-import { Amount, Label, Toggle } from '../ui'
+import { Amount, AppsKnopf, Label, Toggle } from '../ui'
 import { ACCOUNT_COLORS } from '../data'
 import { padToCent } from '../util'
 import { addAccount, importFile, isOnboarded, seedCategories, updateSettings } from '../kontorStore'
@@ -15,7 +15,7 @@ import type { KontorCtx } from '../types'
 // einer Exportdatei wieder her - statt erst ein Wegwerf-Konto anzulegen, nur
 // um an die Einstellungen zu kommen.
 function Onboarding({ ctx }: { ctx: KontorCtx }) {
-  const { refresh } = ctx
+  const { refresh, onExit } = ctx
   const [name, setName] = useState('Girokonto')
   const [includeInTotal, setInclude] = useState(true)
   const betrag = useBetrag()
@@ -49,7 +49,10 @@ function Onboarding({ ctx }: { ctx: KontorCtx }) {
 
   return (
     <div className="k-screen fixed">
-      <header className="k-head">
+      {/* "‹ Apps" neben der Wortmarke statt in eigener Leiste - der Erststart
+          muss samt Zahlenfeld ohne Scrollen passen. */}
+      <header className="k-head erst">
+        <AppsKnopf onClick={onExit} />
         <div className="k-head-mid">
           <div className="k-brand">Kontor</div>
         </div>

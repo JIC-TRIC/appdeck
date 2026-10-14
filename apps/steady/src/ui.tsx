@@ -8,6 +8,19 @@ import { colorOf } from './data'
 import { addDays, formatValue, formatValueShort, mondayOf } from './util'
 import { NICHT_GESCHAFFT, type DayState, type Habit } from './types'
 
+// "‹ Apps" zurueck zum Launcher, wie in Stash - eigene Leiste ganz oben, in
+// der Hauptansicht und im Erststart.
+export function AppsLeiste({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="s-bar">
+      <button type="button" className="s-apps" onClick={onClick}>
+        <IconLeft />
+        Apps
+      </button>
+    </div>
+  )
+}
+
 // Farbe einer Gewohnheit als CSS-Variable --h: alle Punkte, Kaesten und
 // Namen darunter faerben sich damit.
 export const hue = (h: Habit | string): CSSProperties =>

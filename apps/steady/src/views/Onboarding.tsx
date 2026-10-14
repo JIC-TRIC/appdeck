@@ -2,6 +2,7 @@ import { useRef, useState, type CSSProperties } from 'react'
 import { colorOf } from '../data'
 import { importFile } from '../store'
 import type { SteadyCtx } from '../types'
+import { AppsLeiste } from '../ui'
 
 // Angedeutetes Raster: drei Zeilen, ein paar Punkte und Ringe.
 const GHOST: [string, string][][] = [
@@ -13,12 +14,13 @@ const GHOST: [string, string][][] = [
 // Erststart: nur Wortmarke, angedeutetes Raster und ein Knopf. Keine
 // Vorlagen, kein Erklaertext - die App erklaert sich beim ersten Abhaken.
 function Onboarding({ ctx }: { ctx: SteadyCtx }) {
-  const { push, refresh } = ctx
+  const { push, refresh, onExit } = ctx
   const fileRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
 
   return (
     <div className="s-onb">
+      <AppsLeiste onClick={onExit} />
       <div className="s-onb-mid">
         <div className="s-wordmark">steady</div>
         <div className="s-ghost" aria-hidden="true">

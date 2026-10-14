@@ -396,6 +396,17 @@ ion-modal.k-sheet-modal {
   height: 1.625rem;
 }
 
+/* Erststart: "‹ Apps" links in der Kopfzeile, die Wortmarke bleibt trotzdem
+   in der Mitte des Schirms. */
+.k-head.erst {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.k-head.erst > .k-apps {
+  justify-self: start;
+}
+
 /* ---------- Zeitraum ---------- */
 
 .k-period {

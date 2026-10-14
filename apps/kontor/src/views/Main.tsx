@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { Donut } from '../charts'
 import { breakdown, totalsInRange } from '../calc'
-import { IconEye, IconEyeOff, IconLeft, IconMinus, IconMore, IconPlus, IconRight } from '../icons'
-import { Money, PeriodBar } from '../ui'
+import { IconEye, IconEyeOff, IconMinus, IconMore, IconPlus, IconRight } from '../icons'
+import { AppsKnopf, Money, PeriodBar } from '../ui'
 import { imZeitraum, periodRange, shiftPeriod } from '../util'
 import { totalBalance } from '../kontorStore'
 import type { CategoryKind, KontorCtx } from '../types'
@@ -189,10 +189,7 @@ function Main({ ctx }: { ctx: KontorCtx }) {
           Menue rechts - neben den Pfeilen des Zeitraums ist fuer den Text kein
           Platz, ohne an "September 2026" zu stossen. */}
       <header className="k-leiste">
-        <button type="button" className="k-apps" onClick={onExit}>
-          <IconLeft />
-          Apps
-        </button>
+        <AppsKnopf onClick={onExit} />
         <button type="button" className="k-ic" onClick={() => push({ name: 'menu', sheet: true })} aria-label="Menü">
           <IconMore />
         </button>

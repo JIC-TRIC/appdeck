@@ -575,9 +575,11 @@ Regeln in der App finden und nicht nur hier.
 
 ### 11 – Erststart
 
-- [x] Nur die Wortmarke, ein angedeutetes leeres Raster und **Erste
+- [x] Die Wortmarke, ein angedeutetes leeres Raster und **Erste
       Gewohnheit anlegen**. Keine Vorlagen, kein Erklärtext
 - [x] Darunter still: „Aus Exportdatei wiederherstellen“
+- [x] Oben links **„‹ Apps“** in derselben Leiste wie in der Hauptansicht
+      (seit 14.10.2026, vorher gab es hier keinen Weg zurück zu den Apps)
 - [x] Nach dem Anlegen direkt die Hauptansicht
 
 ---

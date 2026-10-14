@@ -61,6 +61,17 @@ export function Screen({
   )
 }
 
+// "‹ Apps" zurueck zum Launcher, wie in Stash - in der Uebersicht und im
+// Erststart.
+export function AppsKnopf({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" className="k-apps" onClick={onClick}>
+      <IconLeft />
+      Apps
+    </button>
+  )
+}
+
 // Zeitraum-Zeile: Pfeile links und rechts, dazwischen der Zeitraum als Knopf,
 // der die Auswahl oeffnet. Uebersicht und Statistik teilen sie sich - der
 // Zeitraum ist derselbe, also soll er auch gleich aussehen und gleich gehen.

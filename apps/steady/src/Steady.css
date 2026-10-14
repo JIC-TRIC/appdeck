@@ -2150,6 +2150,11 @@ button.s-li:active {
   padding: 0 24px calc(28px + env(safe-area-inset-bottom));
 }
 
+/* "‹ Apps" an derselben Stelle wie in der Hauptansicht, ohne den Seitenrand. */
+.s-onb > .s-bar {
+  margin: 0 -24px;
+}
+
 .s-onb-mid {
   flex: 1;
   display: flex;

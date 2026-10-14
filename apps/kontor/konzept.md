@@ -548,6 +548,10 @@ fuers Hochformat gerechnet – von oben nach unten:
       ein Handy passen, und die App erklaert sich beim ersten Buchen selbst
 - [x] Gleiches festes Geruest wie die Erfassen-Formulare: Wortmarke oben,
       Ziffernfeld unten, der Rest scrollt bei Bedarf
+- [x] **„‹ Apps" links neben der Wortmarke** (14.10.2026), die Wortmarke
+      bleibt in der Mitte. Keine eigene Leiste wie in der Uebersicht – auf
+      dem iPhone SE waere es dann ueber dem Ziffernfeld zu eng. Vorher gab es
+      hier keinen Weg zurueck zu den Apps
 - [x] Standardkategorien werden angelegt
 - [x] Direkt danach die Hauptansicht mit leerem Donut
 
