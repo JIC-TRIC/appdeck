@@ -1,7 +1,7 @@
 // Alles, was aus den Eintraegen berechnet wird: Verlauf, Veraenderung, Ziel,
 // Achsen. Nichts davon wird gespeichert (konzept.md, "Die Regeln").
 
-import { addMonths, rund } from './util'
+import { addDays, addMonths, diffDays, rund } from './util'
 import type { Bereich, Log, Punkt, Richtung, Wert } from './types'
 
 /** Alle Eintraege eines Werts, aelteste zuerst. */
@@ -74,6 +74,76 @@ export function bereichAb(bereich: Bereich, heute: string): string | null {
 export function imBereich(punkte: Punkt[], bereich: Bereich, heute: string): Punkt[] {
   const ab = bereichAb(bereich, heute)
   return ab ? punkte.filter((p) => p.tag >= ab) : punkte
+}
+
+// ---------- Trend ----------
+
+/** Tage, ueber die der Trend mittelt. */
+export const TREND_TAGE = 7
+/** Tempo und "oft genug gemessen" zaehlen ueber die 4 Wochen bis zur juengsten Messung. */
+const TEMPO_TAGE = 28
+const TEMPO_MIN = 8
+
+/**
+ * Der Trend zu jedem Messtag: der Schnitt aller Messungen der 7 Tage bis
+ * dahin. Glaettet Tagesschwankungen (beim Koerpergewicht 1-2 kg durch Wasser
+ * und Essen), damit man sieht, wohin es wirklich geht.
+ */
+export function trend(punkte: Punkt[], tage = TREND_TAGE): Punkt[] {
+  return punkte.map((p, i) => {
+    let summe = 0
+    let n = 0
+    for (let j = i; j >= 0 && diffDays(punkte[j].tag, p.tag) < tage; j -= 1) {
+      summe += punkte[j].zahl
+      n += 1
+    }
+    return { tag: p.tag, zahl: rund(summe / n) }
+  })
+}
+
+export interface TrendStand {
+  /** Trend am juengsten Messtag */
+  jetzt: number
+  /** Veraenderung pro Woche: Ausgleichsgerade durch die Messungen der letzten 4 Wochen */
+  proWoche: number
+}
+
+/**
+ * Trend und Tempo - nur bei einem Wert, der oft genug gemessen wird
+ * (mindestens 8 Messungen in den 4 Wochen bis zur juengsten, also etwa
+ * zweimal pro Woche). Seltener waere der Schnitt nur die Messung selbst.
+ */
+export function trendStand(punkte: Punkt[]): TrendStand | null {
+  const letzter = punkte[punkte.length - 1]
+  if (!letzter) return null
+  const fenster = punkte.filter((p) => diffDays(p.tag, letzter.tag) < TEMPO_TAGE)
+  if (fenster.length < TEMPO_MIN) return null
+  const xs = fenster.map((p) => diffDays(fenster[0].tag, p.tag))
+  const mx = xs.reduce((a, b) => a + b, 0) / xs.length
+  const my = fenster.reduce((a, p) => a + p.zahl, 0) / fenster.length
+  let oben = 0
+  let unten = 0
+  fenster.forEach((p, i) => {
+    oben += (xs[i] - mx) * (p.zahl - my)
+    unten += (xs[i] - mx) ** 2
+  })
+  const t = trend(punkte)
+  return { jetzt: t[t.length - 1].zahl, proWoche: unten ? (oben / unten) * 7 : 0 }
+}
+
+/**
+ * Wann das Ziel bei diesem Tempo etwa erreicht ist (Tag 'YYYY-MM-DD'). null,
+ * wenn es kein Ziel gibt, der Trend es schon erreicht hat, das Tempo nicht
+ * dorthin fuehrt oder es laenger als zwei Jahre dauern wuerde - dann sagt die
+ * Zahl nichts mehr.
+ */
+export function zielPrognose(wert: Wert, ts: TrendStand, letzterTag: string): string | null {
+  if (wert.ziel === null || zielStand(wert, ts.jetzt)?.erreicht) return null
+  const rest = wert.ziel - ts.jetzt
+  const proTag = ts.proWoche / 7
+  if (rest * proTag <= 0) return null
+  const tage = Math.round(rest / proTag)
+  return tage > 730 ? null : addDays(letzterTag, tage)
 }
 
 // ---------- Achse ----------

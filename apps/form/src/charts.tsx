@@ -16,16 +16,22 @@ import type { Punkt, Wert } from './types'
 // Verlauf ziehen - gewaehlt ist der naechste Punkt, mit einer senkrechten
 // Linie. Die Zahl dazu zeigt die Seite. Ein zweiter Tipp auf denselben Punkt
 // hebt die Auswahl auf.
+//
+// Mit trend (Werte, die oft gemessen werden) ist der Schnitt die kraeftige
+// Linie, die einzelnen Messungen stehen leiser dahinter.
 export function Verlauf({
   wert,
   punkte,
   heute,
+  trend,
   auswahl = null,
   onAuswahl,
 }: {
   wert: Pick<Wert, 'name' | 'ziel'>
   punkte: Punkt[]
   heute: string
+  /** Trend zu denselben Tagen wie punkte (calc.ts, trend) */
+  trend?: Punkt[]
   /** Index des gewaehlten Punkts in `punkte` */
   auswahl?: number | null
   onAuswahl?: (i: number | null) => void
@@ -49,7 +55,9 @@ export function Verlauf({
   const spanne = erster && letzter ? diffDays(erster, letzter) : 0
   const x = (tag: string) => (spanne ? L + (pw * diffDays(erster, tag)) / spanne : L + pw / 2)
   const y = (v: number) => T + ph * (1 - (v - s.min) / (s.max - s.min || 1))
-  const pfad = punkte.map((p, i) => `${i ? 'L' : 'M'}${x(p.tag).toFixed(1)} ${y(p.zahl).toFixed(1)}`).join(' ')
+  const linie = (reihe: Punkt[]) => reihe.map((p, i) => `${i ? 'L' : 'M'}${x(p.tag).toFixed(1)} ${y(p.zahl).toFixed(1)}`).join(' ')
+  const pfad = linie(punkte)
+  const mitTrend = !!trend && trend.length > 1
   const ende = punkte[punkte.length - 1]
   const zielY = wert.ziel === null ? null : y(wert.ziel)
   const gewaehlt = auswahl !== null ? punkte[auswahl] : undefined
@@ -97,9 +105,9 @@ export function Verlauf({
     <svg
       ref={svgRef}
       viewBox={`0 0 ${W} ${H}`}
-      className={`f-chart${onAuswahl ? ' waehlbar' : ''}`}
+      className={`f-chart${onAuswahl ? ' waehlbar' : ''}${mitTrend ? ' mit-trend' : ''}`}
       role="img"
-      aria-label={`Verlauf ${wert.name}, ${punkte.length} Messungen`}
+      aria-label={`Verlauf ${wert.name}, ${punkte.length} Messungen${mitTrend ? ', mit Trend' : ''}`}
       {...fingerProps}
     >
       {s.ticks.map((t) => (
@@ -121,6 +129,7 @@ export function Verlauf({
         </g>
       ) : null}
       {punkte.length > 1 ? <path d={pfad} className="linie" /> : null}
+      {mitTrend && trend ? <path d={linie(trend)} className="trend" /> : null}
       {punkte.length <= 60
         ? punkte.slice(0, -1).map((p) => <circle key={p.tag} cx={x(p.tag)} cy={y(p.zahl)} r={2.8} className="punkt" />)
         : null}

@@ -97,6 +97,13 @@ export function formatMonat(key: string, heute: string) {
   return `${MONATE[Number(key.slice(5, 7)) - 1]}${jahr}`
 }
 
+// 'Anfang Dezember', 'Mitte März 2027', 'Ende Juni' - fuer Schaetzungen, die
+// auf den Tag genau nur so tun wuerden.
+export function ungefaehr(key: string, heute: string) {
+  const t = Number(key.slice(8, 10))
+  return `${t <= 10 ? 'Anfang' : t <= 20 ? 'Mitte' : 'Ende'} ${formatMonat(key, heute)}`
+}
+
 // Ein Monat als Kalenderblatt ab Montag: wie viele Felder vor dem Ersten leer
 // bleiben, und alle Tage. `key` ist irgendein Tag im Monat.
 export function monatsBlatt(key: string): { leer: number; tage: string[] } {

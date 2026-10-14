@@ -69,6 +69,13 @@ Akzentfarbe. Schmale, fette Versalien wie auf einer Anzeigetafel für Wortmarke,
   „egal“ erst genau auf dem Wert – davor zählt der Abstand in beide Richtungen.
 - [x] Reihenfolge = Reihenfolge des Anlegens.
 - [x] Löschen nimmt alle Einträge mit (Rückfrage nennt die Anzahl), ohne Rückgängig.
+- [x] **Trend** (seit 14.10.2026): Wird ein Wert oft genug gemessen (mindestens 8 Messungen in den 4 Wochen
+  bis zur jüngsten, also etwa zweimal pro Woche), gibt es zu jedem Messtag den Schnitt der Messungen aus den
+  7 Tagen bis dahin – das glättet Tagesschwankungen wie beim Körpergewicht. Dazu das **Tempo pro Woche**
+  (Ausgleichsgerade durch die Messungen der letzten 4 Wochen, in die gewünschte Richtung orange) und mit Ziel,
+  wann es bei diesem Tempo **etwa erreicht** ist („Mitte Dezember“). Keine Prognose, wenn der Trend das Ziel
+  schon erreicht hat, das Tempo davon wegführt oder es über zwei Jahre dauern würde. Seltener gemessene Werte
+  bleiben, wie sie sind.
 
 ### Einträge
 
@@ -117,6 +124,8 @@ Launcher-Backup erfasst alles automatisch.
 - [x] Drei Kacheln: seit Start, seit der letzten Messung, Ziel (nur mit Ziel).
 - [x] Verlauf über **3 Monate / 1 Jahr / Alles** (Standard: Alles). Waagerecht nach Zeit, nicht nach
   Anzahl. Ziel als gestrichelte orange Linie, jüngster Punkt orange.
+- [x] Mit Trend (siehe Regeln): darüber „Trend · Schnitt 7 Tage“ groß, rechts „pro Woche“ und „Ziel etwa“;
+  im Verlauf ist der Trend die kräftige Linie, die Messungen stehen leiser dahinter.
 - [x] Alle Einträge, neueste zuerst, mit Veränderung zum Eintrag davor. Ein Tipp öffnet den Messtag.
 - [x] Oben rechts „Bearbeiten“.
 

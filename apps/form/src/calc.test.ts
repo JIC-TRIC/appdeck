@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { imBereich, reihe, schritt, skala, stand, urteil, vorher, zielStand } from './calc'
+import { imBereich, reihe, schritt, skala, stand, trend, trendStand, urteil, vorher, zielPrognose, zielStand } from './calc'
+import { addDays } from './util'
 import type { Wert } from './types'
 
 const wert = (teil: Partial<Wert>): Wert => ({
@@ -120,5 +121,46 @@ describe('Achse', () => {
 
   it('geht bei positiven Werten nicht unter null', () => {
     expect(skala([0.2, 3]).min).toBe(0)
+  })
+})
+
+describe('Trend', () => {
+  it('Schnitt der Messungen aus den 7 Tagen bis zum Messtag', () => {
+    const p = [
+      { tag: '2026-10-01', zahl: 80 },
+      { tag: '2026-10-03', zahl: 82 },
+      { tag: '2026-10-08', zahl: 84 },
+    ]
+    // Am 8. zaehlt der 1. nicht mehr mit (7 Tage davor)
+    expect(trend(p).map((x) => x.zahl)).toEqual([80, 81, 83])
+  })
+
+  // 28 Tage taeglich, jeden Tag 0,1 kg weniger
+  const taeglich = Array.from({ length: 28 }, (_, i) => ({ tag: addDays('2026-09-16', i), zahl: Math.round((85 - i * 0.1) * 10) / 10 }))
+
+  it('Tempo pro Woche aus den letzten 4 Wochen', () => {
+    const t = trendStand(taeglich)!
+    expect(t.proWoche).toBeCloseTo(-0.7)
+    expect(t.jetzt).toBe(82.6)
+  })
+
+  it('erst ab etwa zwei Messungen pro Woche', () => {
+    expect(trendStand(taeglich.filter((_, i) => i % 4 === 0))).toBeNull()
+    expect(trendStand([])).toBeNull()
+  })
+
+  it('Prognose: wann das Ziel bei diesem Tempo erreicht ist', () => {
+    const t = trendStand(taeglich)!
+    const letzter = taeglich[taeglich.length - 1].tag
+    expect(zielPrognose(wert({ ziel: 80 }), t, letzter)).toBe(addDays(letzter, 26))
+  })
+
+  it('keine Prognose ohne Ziel, wenn es weggeht, schon erreicht oder zu weit weg ist', () => {
+    const t = trendStand(taeglich)!
+    const letzter = taeglich[taeglich.length - 1].tag
+    expect(zielPrognose(wert({}), t, letzter)).toBeNull()
+    expect(zielPrognose(wert({ richtung: 'mehr', ziel: 90 }), t, letzter)).toBeNull()
+    expect(zielPrognose(wert({ ziel: 83 }), t, letzter)).toBeNull()
+    expect(zielPrognose(wert({ ziel: 5 }), t, letzter)).toBeNull()
   })
 })

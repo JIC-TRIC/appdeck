@@ -10,6 +10,7 @@ import {
   monatsBlatt,
   parseZahl,
   relativTag,
+  ungefaehr,
   wieLange,
 } from './util'
 
@@ -120,5 +121,11 @@ describe('Kalender', () => {
   it('formatMonat nennt das Jahr nur, wenn es nicht dieses ist', () => {
     expect(formatMonat('2026-10-01', '2026-10-11')).toBe('Oktober')
     expect(formatMonat('2025-12-01', '2026-10-11')).toBe('Dezember 2025')
+  })
+
+  it('ungefaehr: Anfang, Mitte oder Ende des Monats', () => {
+    expect(ungefaehr('2026-12-10', '2026-10-14')).toBe('Anfang Dezember')
+    expect(ungefaehr('2026-12-11', '2026-10-14')).toBe('Mitte Dezember')
+    expect(ungefaehr('2027-03-21', '2026-10-14')).toBe('Ende März 2027')
   })
 })

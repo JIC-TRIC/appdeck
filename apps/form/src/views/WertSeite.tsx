@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { imBereich, reihe, stand, zielStand } from '../calc'
+import { imBereich, reihe, stand, trend, trendStand, urteil, zielPrognose, zielStand } from '../calc'
 import { Verlauf } from '../charts'
 import { IconCheck, IconRight } from '../icons'
 import { Diff, RICHTUNG_TEXT, Segment, Seite, TextKnopf, Zurueck } from '../ui'
-import { formatKurz, formatTag, formatZahl, mitEinheit, wieLange } from '../util'
+import { formatDiff, formatKurz, formatTag, formatZahl, mitEinheit, ungefaehr, wieLange } from '../util'
 import type { Bereich, FormCtx } from '../types'
 
 const BEREICHE: { id: Bereich; label: string }[] = [
@@ -15,6 +15,11 @@ const BEREICHE: { id: Bereich; label: string }[] = [
 // Ein Wert im Detail: Stand, Veraenderung seit Start und seit der letzten
 // Messung, Ziel, Verlauf und alle Eintraege. Ein Tipp auf einen Eintrag
 // oeffnet den Messtag dazu (aendern oder leeren).
+//
+// Wird der Wert oft genug gemessen (etwa zweimal pro Woche), steht ueber dem
+// Verlauf der Trend (Schnitt der letzten 7 Tage), das Tempo pro Woche und mit
+// Ziel, wann es bei diesem Tempo etwa erreicht ist. Im Verlauf ist der Trend
+// dann die kraeftige Linie (calc.ts, trend).
 function WertSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const { byId, log, heute, push, back } = ctx
   const [bereich, setBereich] = useState<Bereich>('alles')
@@ -26,6 +31,9 @@ function WertSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const s = stand(punkte)
   const z = s.letzter ? zielStand(wert, s.letzter.zahl) : null
   const sichtbar = imBereich(punkte, bereich, heute)
+  const ts = trendStand(punkte)
+  const trendSichtbar = ts ? imBereich(trend(punkte), bereich, heute) : undefined
+  const prognose = ts && s.letzter ? zielPrognose(wert, ts, s.letzter.tag) : null
   const neueste = [...punkte].reverse()
 
   return (
@@ -79,8 +87,33 @@ function WertSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
 
           <section className="f-karte-flach">
             <Segment label="Zeitraum" optionen={BEREICHE} wert={bereich} onWahl={setBereich} />
+            {ts ? (
+              <div className="f-verlauf-kopf">
+                <span className="f-verlauf-wert">
+                  <small>Trend · Schnitt 7 Tage</small>
+                  <b>
+                    {formatZahl(Math.round(ts.jetzt * 10) / 10)}
+                    {wert.einheit ? <em> {wert.einheit}</em> : null}
+                  </b>
+                </span>
+                <span className="f-verlauf-neben">
+                  <span>
+                    <small>pro Woche</small>
+                    <b className={urteil(wert.richtung, ts.proWoche) === 'gut' ? 'f-gut' : ''}>
+                      {mitEinheit(formatDiff(ts.proWoche), wert.einheit)}
+                    </b>
+                  </span>
+                  {prognose ? (
+                    <span>
+                      <small>Ziel etwa</small>
+                      <b>{ungefaehr(prognose, heute)}</b>
+                    </span>
+                  ) : null}
+                </span>
+              </div>
+            ) : null}
             {sichtbar.length ? (
-              <Verlauf wert={wert} punkte={sichtbar} heute={heute} />
+              <Verlauf wert={wert} punkte={sichtbar} heute={heute} trend={trendSichtbar} />
             ) : (
               <p className="f-note f-chart-leer">In diesem Zeitraum nichts gemessen.</p>
             )}

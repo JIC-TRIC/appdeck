@@ -817,6 +817,24 @@ input {
   fill: var(--text);
 }
 
+/* Mit Trend: der Schnitt kraeftig, die einzelnen Messungen leiser dahinter. */
+.f-chart .trend {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.f-chart.mit-trend .linie {
+  stroke-width: 1.5;
+  opacity: 0.3;
+}
+
+.f-chart.mit-trend .punkt {
+  opacity: 0.45;
+}
+
 .f-chart .letzter {
   fill: var(--accent);
   stroke: var(--surface);
