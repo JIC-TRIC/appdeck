@@ -264,6 +264,35 @@ textarea {
 
 /* ---------- Hauptansicht ---------- */
 
+/* "‹ Apps" ueber der Kopfzeile, wie die Leiste in Stash. */
+.s-bar {
+  flex: none;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 6px;
+}
+
+.s-apps {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  padding-right: 8px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.s-apps svg {
+  width: 26px;
+  height: 26px;
+}
+
+.s-apps:active {
+  opacity: 0.55;
+}
+
 .s-hdr {
   flex: none;
   height: 58px;

@@ -369,32 +369,41 @@ ion-modal.k-sheet-modal {
   flex-shrink: 0;
 }
 
+/* ---------- Leiste der Uebersicht ---------- */
+
+/* "‹ Apps" links, Menue rechts - wie die Leiste in Stash. */
+.k-leiste {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.375rem;
+  flex-shrink: 0;
+}
+
+.k-apps {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  min-height: 2.75rem;
+  padding-right: 0.5rem;
+  color: var(--ink);
+  font-size: 1.0625rem;
+  font-weight: 500;
+}
+
+.k-apps svg {
+  width: 1.625rem;
+  height: 1.625rem;
+}
+
 /* ---------- Zeitraum ---------- */
 
 .k-period {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   flex-shrink: 0;
-}
-
-/* Aus dem Fluss genommen, damit der Zeitraum in der Mitte des Schirms bleibt
-   und nicht um die halbe Knopfbreite zur Seite rutscht. */
-.k-period-left,
-.k-period-right {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.k-period-left {
-  left: 0.375rem;
-}
-
-.k-period-right {
-  right: 0.375rem;
 }
 
 .k-period-btn {
@@ -3077,7 +3086,8 @@ ion-item-option.k-slide-del {
   transition: none;
 }
 
-.k-period-btn:active {
+.k-period-btn:active,
+.k-apps:active {
   opacity: 0.55;
 }
 

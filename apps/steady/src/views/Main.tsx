@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { hakenAm, isArchived, isRestToday, messwert, statesBetween, streaks, todayToEnter } from '../calc'
-import { IconGrid, IconMore, IconPlus, IconRight, IconStats } from '../icons'
+import { IconLeft, IconMore, IconPlus, IconRight, IconStats } from '../icons'
 import { DayBox, Dot, Streak, hue, ruleShort } from '../ui'
 import {
   WEEKDAYS_SHORT,
@@ -211,12 +211,16 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
 
   return (
     <div className="s-main">
+      {/* "‹ Apps" mit einem Tipp, wie in Stash - in eigener Leiste, damit das
+          Datum in der Kopfzeile nicht schmaler werden muss. */}
+      <div className="s-bar">
+        <button type="button" className="s-apps" onClick={onExit}>
+          <IconLeft />
+          Apps
+        </button>
+      </div>
       <header className="s-hdr">
-        {/* Alle Apps mit einem Tipp, wie in Stash - frueher nur ueber das Menue. */}
         <div className="s-hdr-l">
-          <button type="button" className="s-ib" onClick={onExit} aria-label="Alle Apps">
-            <IconGrid />
-          </button>
           <button type="button" className="s-ib" onClick={() => push({ name: 'stats' })} aria-label="Statistik">
             <IconStats />
           </button>

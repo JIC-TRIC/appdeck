@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
 import { Donut } from '../charts'
 import { breakdown, totalsInRange } from '../calc'
-import { IconEye, IconEyeOff, IconGrid, IconMinus, IconMore, IconPlus, IconRight } from '../icons'
+import { IconEye, IconEyeOff, IconLeft, IconMinus, IconMore, IconPlus, IconRight } from '../icons'
 import { Money, PeriodBar } from '../ui'
 import { imZeitraum, periodRange, shiftPeriod } from '../util'
 import { totalBalance } from '../kontorStore'
@@ -183,10 +183,20 @@ function Main({ ctx }: { ctx: KontorCtx }) {
 
   return (
     <div className="k-main" onTouchStart={onMainTouchStart} onTouchEnd={onMainTouchEnd}>
-      {/* Keine Kopfzeile mehr: die Wortmarke stand auf jedem Start dieselbe
-          halbe Zeile lang da und kostete die Hoehe, die der Ring braucht. Der
-          Menueknopf haengt jetzt am rechten Rand der Zeitraumzeile, der Weg
-          zu allen Apps gegenueber am linken - ein Tipp, wie in Stash. */}
+      {/* Keine Kopfzeile mit Wortmarke: die stand auf jedem Start dieselbe
+          halbe Zeile lang da und kostete die Hoehe, die der Ring braucht.
+          Nur eine schmale Leiste mit "‹ Apps" links (wie in Stash) und dem
+          Menue rechts - neben den Pfeilen des Zeitraums ist fuer den Text kein
+          Platz, ohne an "September 2026" zu stossen. */}
+      <header className="k-leiste">
+        <button type="button" className="k-apps" onClick={onExit}>
+          <IconLeft />
+          Apps
+        </button>
+        <button type="button" className="k-ic" onClick={() => push({ name: 'menu', sheet: true })} aria-label="Menü">
+          <IconMore />
+        </button>
+      </header>
       <PeriodBar
         range={kopf}
         gesamt={!blaetterbar}
@@ -194,16 +204,6 @@ function Main({ ctx }: { ctx: KontorCtx }) {
         onPrev={() => blaettern(-1)}
         onNext={() => blaettern(1)}
         onOpen={() => push({ name: 'period', sheet: true })}
-        left={
-          <button type="button" className="k-ic" onClick={onExit} aria-label="Alle Apps">
-            <IconGrid />
-          </button>
-        }
-        right={
-          <button type="button" className="k-ic" onClick={() => push({ name: 'menu', sheet: true })} aria-label="Menü">
-            <IconMore />
-          </button>
-        }
       />
 
       {/* Die Summen sind zugleich der Umschalter fuer den Ring: wer wissen

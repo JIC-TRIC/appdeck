@@ -226,7 +226,8 @@ Hauptansicht
 │  └─ Buchung bearbeiten
 ├─ Kategorie-Detail            (Segment antippen, dann „Details")
 ├─ Konten                      (Tippen auf die Gesamtbalance)
-└─ Menue                       (Zeitraum-Zeile ⋮)
+├─ Alle Apps                   („‹ Apps" oben links, zurueck zum Launcher)
+└─ Menue                       (⋮ oben rechts)
    ├─ Konten
    │  └─ Kontodetail ─ Konto bearbeiten / Saldo korrigieren
    ├─ Statistik
@@ -237,14 +238,15 @@ Hauptansicht
 
 ### 1 – Hauptansicht
 
-- [x] **Keine Kopfzeile.** Die Wortmarke stand auf jedem Start dieselbe halbe
-      Zeile lang da und kostete die Hoehe, die der Ring braucht; sie steht
-      weiter im Erststart und in den Einstellungen. Das Menue haengt am rechten
-      Rand der Zeitraum-Zeile, aus dem Fluss genommen, damit der Zeitraum in
-      der Mitte des Schirms bleibt. Die Umbuchung sitzt im Menue
-- [x] **Alle Apps mit einem Tipp** (06.10.2026): Raster-Knopf am linken Rand
-      der Zeitraum-Zeile, gegenueber vom Menue und genauso aus dem Fluss
-      genommen. Vorher nur ueber Menue → Alle Apps; dort steht er weiterhin
+- [x] **Keine Kopfzeile mit Wortmarke.** Die stand auf jedem Start dieselbe
+      halbe Zeile lang da und kostete die Hoehe, die der Ring braucht; sie
+      steht weiter im Erststart und in den Einstellungen. Die Umbuchung sitzt
+      im Menue
+- [x] **„‹ Apps" oben links** (14.10.2026, wie in Stash): schmale Leiste ueber
+      der Zeitraum-Zeile, links „‹ Apps", rechts das Menue. Vorher (ab
+      06.10.2026) ein Raster-Knopf links in der Zeitraum-Zeile und das Menue
+      rechts darin – fuer den Text ist neben dem Pfeil zurueck kein Platz,
+      ohne an „September 2026" zu stossen. Menue → Alle Apps bleibt
 - [x] Zeitraum-Zeile mit Pfeilen; Wischen blaettert einen Zeitraum vor/zurueck.
       Im Monat ohne Datumszeile darunter – „01.09. – 30.09." sagt nichts, was
       „September 2026" nicht schon sagt, und die Zeile fehlt dem Ring
