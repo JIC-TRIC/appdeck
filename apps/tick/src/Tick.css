@@ -1011,6 +1011,7 @@ button.t-ck::after {
 
 .t-pl {
   flex: none;
+  position: relative;
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -1026,19 +1027,24 @@ button.t-ck::after {
   stroke-width: 2.6;
 }
 
-/* Offen: das Plus legt an, leiser als „Hinzufügen“ rechts */
-.t-pl.leise {
-  background: var(--fill-2);
-  color: var(--tx);
+/* Offen ist das Plus der Knopf zum Anlegen - blass, solange das Feld leer ist. */
+button.t-pl {
   transition: opacity 0.15s, transform 0.12s;
 }
 
-.t-pl.leise:disabled {
-  opacity: 0.45;
+button.t-pl:disabled {
+  opacity: 0.3;
 }
 
-.t-pl.leise:active:not(:disabled) {
+button.t-pl:active:not(:disabled) {
   transform: scale(0.9);
+}
+
+/* Treffer 44 px, das Plus bleibt klein */
+button.t-pl::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
 }
 
 .t-feld input {
@@ -1058,31 +1064,6 @@ button.t-ck::after {
 
 .t-feld input::placeholder {
   color: var(--tx3);
-}
-
-.t-add.offen .t-feld {
-  padding-right: 12px;
-}
-
-.t-los {
-  flex: none;
-  height: 36px;
-  padding: 0 15px;
-  border-radius: 999px;
-  background: var(--ink);
-  color: #ffffff;
-  font-size: 14.5px;
-  font-weight: 700;
-  white-space: nowrap;
-  transition: opacity 0.15s, transform 0.12s;
-}
-
-.t-los:disabled {
-  opacity: 0.28;
-}
-
-.t-los:active:not(:disabled) {
-  transform: scale(0.95);
 }
 
 .t-ziel {

@@ -17,7 +17,7 @@ interface Props {
 }
 
 // Unten in jeder Liste: zu ist es eine Pille mit „Neues Todo“ und dem Ordner,
-// in dem es landet. Offen sitzt es ueber der Tastatur, rechts „Hinzufügen“,
+// in dem es landet. Offen sitzt es ueber der Tastatur, das Plus legt an,
 // darunter Ordner und Datum als Chips. Solange Text drinsteht, bleibt es offen -
 // auch mit geschlossener Tastatur.
 export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAnlegen, onOrdnerWahl }: Props) {
@@ -59,7 +59,7 @@ export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAn
       ) : null}
 
       {/* Ein Formular, damit die Eingabetaste auf dem iPhone sicher abschickt.
-          Hinzufuegen und die Taste legen an, das Feld bleibt offen fuer das naechste. */}
+          Plus und Taste legen an, das Feld bleibt offen fuer das naechste. */}
       <form
         className="t-feld"
         onClick={(e) => {
@@ -70,9 +70,9 @@ export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAn
           onAnlegen()
         }}
       >
-        {/* Das Plus bleibt stehen: zu oeffnet es das Feld, offen legt es an wie „Hinzufügen“. */}
+        {/* Das Plus bleibt stehen: zu oeffnet es das Feld, offen legt es an. */}
         {offen ? (
-          <button type="submit" className="t-pl leise" aria-label="Hinzufügen" disabled={!entwurf.titel.trim()} onMouseDown={fokusBleibt}>
+          <button type="submit" className="t-pl" aria-label="Hinzufügen" disabled={!entwurf.titel.trim()} onMouseDown={fokusBleibt}>
             <IconPlus />
           </button>
         ) : (
@@ -94,11 +94,7 @@ export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAn
           autoComplete="off"
           maxLength={TITEL_MAX}
         />
-        {offen ? (
-          <button type="submit" className="t-los" disabled={!entwurf.titel.trim()} onMouseDown={fokusBleibt}>
-            Hinzufügen
-          </button>
-        ) : (
+        {offen ? null : (
           <span className="t-ziel" onClick={() => feld.current?.focus()}>
             <i />
             {name}
