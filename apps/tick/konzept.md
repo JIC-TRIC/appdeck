@@ -105,8 +105,10 @@ Die Kurzfassung, Details unter „Regeln“. Die Nummern in Klammern sind die An
   **Morgen**, **Datum …** (öffnet den Kalender des Telefons). Ein Tipp auf den gewählten Datums-Chip nimmt
   ihn wieder heraus. Die Chips nehmen dem Feld den Fokus nicht, die Tastatur bleibt stehen.
 - [x] Vorgewählt ist der offene Ordner, in „Alle“ der Eingang. Ein anderer Reiter setzt den Ordner neu.
-- [x] **Weiter** auf der Tastatur legt an. Das Feld bleibt offen und leer, Ordner und Datum bleiben stehen, so
-  geht die Einkaufsliste am Stück. Fertig ist man mit einem Tipp neben das Feld oder Tastatur zu.
+- [x] **Hinzufügen** rechts im Feld oder **Weiter** auf der Tastatur legt an. Das Feld bleibt offen und leer,
+  Ordner und Datum bleiben stehen, so geht die Einkaufsliste am Stück. Fertig ist man mit einem Tipp neben das
+  Feld oder Tastatur zu. Steht noch Text drin, bleibt das Feld mit „Hinzufügen“ offen, auch ohne Tastatur.
+  (Seit 23.10.2026: Vorher legte nur die Taste an, am iPhone fand man keinen Weg, das Geschriebene abzulegen.)
 - [x] Das neue Todo leuchtet kurz in der Ordnerfarbe auf und wird ins Bild geholt.
 - [x] **`#` im Titel**: `#ge` zeigt passende Ordner über dem Feld (die mit dem Getippten beginnen zuerst,
   höchstens vier), ein Tipp setzt den Ordner und nimmt `#ge` aus dem Titel. Ohne Tipp bleibt `#ge` einfach

@@ -1049,6 +1049,31 @@ button.t-ck::after {
   color: var(--tx3);
 }
 
+.t-add.offen .t-feld {
+  padding-right: 12px;
+}
+
+.t-los {
+  flex: none;
+  height: 36px;
+  padding: 0 15px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: opacity 0.15s, transform 0.12s;
+}
+
+.t-los:disabled {
+  opacity: 0.28;
+}
+
+.t-los:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
 .t-ziel {
   flex: none;
   display: inline-flex;

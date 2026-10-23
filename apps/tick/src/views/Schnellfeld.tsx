@@ -17,8 +17,9 @@ interface Props {
 }
 
 // Unten in jeder Liste: zu ist es eine Pille mit „Neues Todo“ und dem Ordner,
-// in dem es landet. Offen sitzt es ueber der Tastatur, darunter Ordner und
-// Datum als Chips. Weiter legt an, das Feld bleibt offen fuer das naechste.
+// in dem es landet. Offen sitzt es ueber der Tastatur, rechts „Hinzufügen“,
+// darunter Ordner und Datum als Chips. Solange Text drinsteht, bleibt es offen -
+// auch mit geschlossener Tastatur.
 export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAnlegen, onOrdnerWahl }: Props) {
   const [fokus, setFokus] = useState(false)
   const feld = useRef<HTMLInputElement>(null)
@@ -57,9 +58,20 @@ export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAn
         </div>
       ) : null}
 
-      <div className="t-feld" onClick={() => feld.current?.focus()}>
+      {/* Ein Formular, damit die Eingabetaste auf dem iPhone sicher abschickt.
+          Hinzufuegen und die Taste legen an, das Feld bleibt offen fuer das naechste. */}
+      <form
+        className="t-feld"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) feld.current?.focus()
+        }}
+        onSubmit={(e) => {
+          e.preventDefault()
+          onAnlegen()
+        }}
+      >
         {offen ? <span className="t-ck leer" aria-hidden="true" /> : (
-          <span className="t-pl" aria-hidden="true">
+          <span className="t-pl" aria-hidden="true" onClick={() => feld.current?.focus()}>
             <IconPlus />
           </span>
         )}
@@ -68,12 +80,7 @@ export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAn
           value={entwurf.titel}
           onChange={(e) => setEntwurf({ ...entwurf, titel: e.target.value })}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              onAnlegen()
-            } else if (e.key === 'Escape') {
-              feld.current?.blur()
-            }
+            if (e.key === 'Escape') feld.current?.blur()
           }}
           placeholder="Neues Todo"
           aria-label="Neues Todo"
@@ -82,13 +89,17 @@ export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAn
           autoComplete="off"
           maxLength={TITEL_MAX}
         />
-        {offen ? null : (
-          <span className="t-ziel">
+        {offen ? (
+          <button type="submit" className="t-los" disabled={!entwurf.titel.trim()} onMouseDown={fokusBleibt}>
+            Hinzufügen
+          </button>
+        ) : (
+          <span className="t-ziel" onClick={() => feld.current?.focus()}>
             <i />
             {name}
           </span>
         )}
-      </div>
+      </form>
 
       {offen ? (
         <div className="t-chips">
