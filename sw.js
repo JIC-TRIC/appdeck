@@ -2,7 +2,8 @@
    sw.js – macht Launcher und Apps offline-fähig
 
    Strategie "Netz zuerst": Mit Internet bekommst du immer die neueste Version
-   (nach einem Push also beim nächsten Öffnen). Ohne Netz oder bei sehr
+   (nach einem Push also beim nächsten Öffnen – gefragt wird am HTTP-Cache vorbei,
+   siehe networkFirst). Ohne Netz oder bei sehr
    langsamer Verbindung wird nach 2,5 Sekunden die gespeicherte Kopie genutzt.
    Ausnahme: gebaute Dateien unter assets/ kommen sofort aus dem Cache – sie
    tragen einen Hash im Namen, eine neue Version ist also eine neue Datei.
@@ -75,7 +76,11 @@ async function cacheFirst(req) {
 async function networkFirst(event, req) {
   const cache = await caches.open(CACHE);
 
-  const fromNetwork = fetch(req).then((res) => {
+  // Am HTTP-Cache des Browsers vorbei beim Server nachfragen: GitHub Pages erlaubt
+  // jeder Seite 10 Minuten Zwischenspeichern (max-age=600) – ohne das käme nach einem
+  // Push so lange noch die alte Seite, selbst über „Neu laden“. Dank ETag kostet die
+  // Nachfrage meist nur ein kurzes „304 – unverändert“.
+  const fromNetwork = fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' }).then((res) => {
     if (res.ok && !res.redirected && res.type === 'basic') {
       cache.put(req, res.clone());
     }
