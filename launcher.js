@@ -50,8 +50,34 @@
       a.append(icon, name);
       grid.appendChild(a);
     });
+    refreshBadges();
+  }
+
+  // Rote Plakette an der Kachel, wenn die App in apps.js eine badge()-Funktion hat
+  // (z. B. Tick: was heute fällig ist). Liegt neben dem Icon, damit der Übergang
+  // in die App nur das Icon mitnimmt.
+  function refreshBadges() {
+    apps.forEach(function (app, i) {
+      if (typeof app.badge !== 'function') return;
+      var tile = grid.querySelector('.tile[data-i="' + i + '"]');
+      if (!tile) return;
+      var n = 0;
+      try { n = Number(app.badge()) || 0; } catch (e) { /* kaputte Daten: keine Plakette */ }
+      var badge = tile.querySelector('.tile-badge');
+      if (n <= 0) { if (badge) badge.remove(); return; }
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'tile-badge';
+        tile.appendChild(badge);
+      }
+      badge.textContent = n > 99 ? '99+' : String(n);
+    });
   }
   render();
+  // Zurück in die Web-App (z. B. am nächsten Morgen): neu zählen.
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') refreshBadges();
+  });
 
   /* ---------- Übergang in eine App und zurück ----------
      Wie auf dem iPhone: die Kachel wächst zum Bildschirm und geht dabei in den
@@ -215,6 +241,7 @@
     document.querySelectorAll('.launch').forEach(function (el) { el.remove(); });
     grid.querySelectorAll('.tile-icon').forEach(function (el) { el.style.visibility = ''; });
     launcherEl.getAnimations().forEach(function (a) { a.cancel(); });
+    refreshBadges();
   });
 
   /* ---------- Hinweis "Zum Home-Bildschirm" (nur iOS-Safari) ---------- */

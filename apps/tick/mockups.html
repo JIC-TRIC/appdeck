@@ -1,0 +1,831 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tick Mockups</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&family=Archivo:wdth,wght@62..125,400..900&display=swap">
+<style>
+/* Seite: Kopf, dann drei Richtungen nebeneinander, dann alle Ansichten in Richtung A im Raster.
+   Die Seite folgt hell/dunkel, die Bildschirme haben feste Farben je Richtung (.A .B .C .L). */
+:root {
+  --page: #EEF0F3;
+  --card: #FFFFFF;
+  --ink: #15171C;
+  --ink-2: #59606A;
+  --ink-3: #868D96;
+  --rule: #DCDFE4;
+  --chip: #E2E5E9;
+  --frame: #1B1D21;
+  --frame-ring: #2E3137;
+  --f-ui: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-geist: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --f-block: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --f-ios: -apple-system, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0E0F12; --card: #17191D; --ink: #ECEDF0; --ink-2: #A2A8B1; --ink-3: #6F757E;
+    --rule: #272A30; --chip: #1F2227; --frame: #26292E; --frame-ring: #363A41; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0E0F12; --card: #17191D; --ink: #ECEDF0; --ink-2: #A2A8B1; --ink-3: #6F757E;
+  --rule: #272A30; --chip: #1F2227; --frame: #26292E; --frame-ring: #363A41; color-scheme: dark;
+}
+html, body { background: var(--page); color: var(--ink); }
+body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+
+/* ---------- Seite ---------- */
+.pg { max-width: 1340px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 48px 96px; }
+.pg-intro { display: grid; gap: 24px; margin-bottom: 68px; }
+.pg-brand { display: flex; align-items: center; gap: 18px; }
+.pg-brand svg { width: 72px; height: 72px; flex: none; border-radius: 22.5%; }
+.pg-wm { font: 800 clamp(48px, 9vw, 72px)/0.85 var(--f-ui); letter-spacing: -0.05em; margin: 0; }
+.pg-brand p { margin: 10px 0 0; color: var(--ink-2); font-size: 15px; }
+.pg-lede { max-width: 70ch; color: var(--ink-2); font-size: 16.5px; margin: 0; text-wrap: pretty; }
+.pg-lede strong { color: var(--ink); font-weight: 600; }
+.pg-lede code, .pg-sub code { font-family: var(--f-mono); font-size: .9em; background: var(--chip); padding: 1px 6px; border-radius: 6px; color: var(--ink); }
+.pg-dec { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; max-width: 80ch; }
+.pg-dec li { position: relative; padding-left: 20px; color: var(--ink-2); text-wrap: pretty; }
+.pg-dec li::before { content: ""; position: absolute; left: 0; top: .58em; width: 8px; height: 8px; border-radius: 50%; background: var(--d); }
+.pg-dec li:nth-child(1) { --d: #2E7CF6; } .pg-dec li:nth-child(2) { --d: #2F9E5B; } .pg-dec li:nth-child(3) { --d: #EF7A1C; }
+.pg-dec li:nth-child(4) { --d: #9B51E0; } .pg-dec li:nth-child(5) { --d: #E0457B; }
+.pg-dec b { color: var(--ink); font-weight: 600; }
+.pg-toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.pg-toc a { color: var(--ink-2); text-decoration: none; background: var(--card); border-radius: 999px; padding: 6px 13px; font-size: 13.5px; font-weight: 500; box-shadow: 0 0 0 1px var(--rule); }
+.pg-toc a:hover, .pg-toc a:focus-visible { color: var(--ink); box-shadow: 0 0 0 1.5px var(--ink-3); outline: none; }
+.pg-toc a b { color: var(--ink-3); font-weight: 700; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.pg-sec { margin-bottom: 84px; scroll-margin-top: 24px; }
+.pg-h2 { font: 800 32px/1.1 var(--f-ui); letter-spacing: -0.03em; margin: 0 0 8px; text-wrap: balance; }
+.pg-sub { color: var(--ink-2); margin: 0 0 28px; max-width: 70ch; text-wrap: pretty; }
+
+/* drei Richtungen: Spalte = Richtung, Zeile = Ansicht */
+.pg-dirs { display: grid; gap: 26px 36px; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto auto; grid-auto-flow: column; }
+.pg-dh { max-width: 402px; }
+.pg-dh h3 { margin: 0 0 6px; font: 700 20px/1.25 var(--f-ui); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.pg-dh h3 span { color: var(--ink-3); font-weight: 800; }
+.pg-dh h3 em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--ink); background: var(--chip); border-radius: 999px; padding: 2px 10px; }
+.pg-dh p { margin: 0; color: var(--ink-2); font-size: 14.5px; text-wrap: pretty; }
+@media (max-width: 900px) {
+  .pg-dirs { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-flow: row; }
+  .pg-dh:not(:first-child) { margin-top: 36px; }
+}
+
+.pg-screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 402px), 1fr)); gap: 80px 44px; align-items: start; }
+.pg-shot { margin: 0; display: grid; gap: 22px; min-width: 0; scroll-margin-top: 24px; }
+.pg-fit { width: 100%; max-width: 402px; }
+.pg-cap { max-width: 402px; }
+.pg-cap h3 { margin: 0 0 8px; font: 700 19px/1.3 var(--f-ui); display: flex; gap: 10px; align-items: baseline; }
+.pg-cap h3 span { color: var(--ink-3); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pg-cap ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 14.5px; display: grid; gap: 5px; }
+.pg-cap li { text-wrap: pretty; }
+
+/* Farben und Zeichen */
+.pg-bs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 20px; align-items: start; }
+.pg-card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 0 0 1px var(--rule); min-width: 0; }
+.pg-card h3 { margin: 0 0 14px; font: 700 16px/1.3 var(--f-ui); }
+.pg-pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 12px 10px; }
+.pg-sw { display: flex; gap: 10px; align-items: center; }
+.pg-sw i { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--o); }
+.pg-sw b { display: block; font-size: 13.5px; font-weight: 600; line-height: 1.2; }
+.pg-sw small { display: block; color: var(--ink-3); font: 500 11.5px/1.3 var(--f-mono); }
+.pg-dt { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.pg-dt td { padding: 8px 0; border-top: 1px solid var(--rule); vertical-align: baseline; }
+.pg-dt tr:first-child td { border-top: 0; }
+.pg-dt td:first-child { color: var(--ink-2); width: 55%; }
+.pg-dt td:last-child { font-weight: 600; }
+.pg-dt .red { color: #E5484D; }
+.pg-sym { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.pg-sym svg { display: block; border-radius: 22.5%; }
+.pg-sym p { margin: 14px 0 0; color: var(--ink-2); font-size: 14px; flex-basis: 100%; }
+.demo { font-family: var(--sf); background: var(--sheet); color: var(--tx); border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 1px var(--rule); }
+.pg-foot { color: var(--ink-3); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 20px; }
+
+/* ---------- Gerät ---------- */
+.device { width: 402px; border-radius: 58px; padding: 6px; background: var(--frame); box-shadow: 0 0 0 1px var(--frame-ring), 0 40px 80px -40px rgba(10, 12, 16, .55); }
+.screen { width: 390px; height: 844px; border-radius: 52px; overflow: hidden; position: relative; display: flex; flex-direction: column; background: var(--bg); color: var(--tx); font-family: var(--sf); }
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 50; }
+.sb { height: 54px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 8px 30px 0 48px; font: 600 16px/1 var(--f-ios); color: var(--tx); position: relative; z-index: 5; }
+.sb .ico { display: flex; gap: 6px; align-items: center; }
+.sb svg { display: block; }
+.homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 136px; height: 5px; border-radius: 3px; background: var(--tx); z-index: 60; }
+
+/* ---------- Richtung A: Reiter (hell) ---------- */
+.A { --bg: #ECEEF1; --sheet: #FFFFFF; --tx: #16181D; --tx2: #5E6570; --tx3: #959BA4; --ln: #ECEEF1; --fill: #F1F2F4; --red: #D92D20; --ink: #16181D; --sf: var(--f-ui); }
+.a-top { height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 12px; }
+.back { display: flex; align-items: center; gap: 6px; font-size: 17px; font-weight: 500; color: var(--tx); }
+.back svg { width: 11px; height: 19px; }
+.icbs { display: flex; gap: 10px; }
+.icb { width: 36px; height: 36px; border-radius: 50%; background: var(--sheet); display: grid; place-items: center; color: var(--tx); box-shadow: 0 1px 2px rgba(22, 24, 29, .06); }
+.icb svg { width: 19px; height: 19px; }
+.a-lt { flex: none; padding: 4px 20px 12px; }
+.a-lt h1 { margin: 0; font: 800 34px/1.06 var(--f-ui); letter-spacing: -0.03em; }
+.a-lt p { margin: 5px 0 0; font-size: 14.5px; font-weight: 500; color: var(--tx2); font-variant-numeric: tabular-nums; }
+.a-nav { height: 44px; flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px 0 12px; }
+.a-nav b { font-size: 17px; font-weight: 700; }
+.a-nav .icbs { justify-self: end; }
+
+.a-tabs { flex: none; height: 46px; position: relative; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.a-tabs::-webkit-scrollbar { display: none; }
+.a-tr { display: flex; align-items: flex-end; height: 100%; padding: 0 14px; gap: 2px; width: max-content; }
+.tab { flex: none; height: 42px; padding: 0 14px; display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 600; color: var(--tx2); border-radius: 14px 14px 0 0; position: relative; white-space: nowrap; }
+.tab i { width: 8px; height: 8px; border-radius: 50%; background: var(--o); }
+.tab small { font-size: 13px; font-weight: 600; color: var(--tx3); font-variant-numeric: tabular-nums; }
+.tab.on { background: var(--sheet); color: var(--tx); box-shadow: inset 0 3px 0 var(--o, var(--ink)); }
+.tab.on::before, .tab.on::after { content: ""; position: absolute; bottom: 0; width: 14px; height: 14px; pointer-events: none; }
+.tab.on::before { left: -14px; background: radial-gradient(circle at 0 0, transparent 13.5px, var(--sheet) 14px); }
+.tab.on::after { right: -14px; background: radial-gradient(circle at 100% 0, transparent 13.5px, var(--sheet) 14px); }
+.tab.plus { color: var(--tx3); padding: 0 12px; }
+.tab.plus svg { width: 18px; height: 18px; }
+
+.sheet { flex: 1; min-height: 0; background: var(--sheet); position: relative; overflow: hidden; }
+.sheet.round { border-radius: 22px 22px 0 0; }
+.lab { display: flex; gap: 7px; padding: 16px 20px 4px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tx3); }
+.lab span { color: var(--tx2); }
+.sh { display: flex; align-items: center; gap: 9px; padding: 20px 20px 6px; font-size: 15px; font-weight: 700; color: var(--tx); }
+.sh i { width: 9px; height: 9px; border-radius: 50%; background: var(--o); }
+.sh svg { width: 15px; height: 15px; color: var(--tx3); margin-left: -4px; }
+
+.row { display: flex; gap: 13px; align-items: flex-start; padding: 12px 20px 12px 18px; position: relative; background: var(--sheet); }
+.row::before { content: ""; position: absolute; top: 0; left: 53px; right: 0; height: 1px; background: var(--ln); }
+.sh + .row::before, .lab + .row::before, .sheet > .row:first-child::before, .demo > .row:first-child::before { display: none; }
+.ck { flex: none; width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--o); display: grid; place-items: center; color: #FFFFFF; }
+.ck svg { width: 14px; height: 14px; }
+.ck.on { background: var(--o); box-shadow: none; }
+.rt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.rt b { font-size: 16px; font-weight: 500; line-height: 1.3; color: var(--tx); }
+.rt small { display: flex; gap: 10px; align-items: center; font-size: 13px; line-height: 1.25; font-weight: 500; color: var(--tx2); }
+.rt .snip { font-size: 13.5px; line-height: 1.35; color: var(--tx2); font-weight: 500; }
+.due { font-weight: 600; color: var(--tx2); }
+.due.now { color: var(--tx); }
+.due.red { color: var(--red); }
+.of { display: inline-flex; align-items: center; gap: 5px; }
+.of i { width: 7px; height: 7px; border-radius: 50%; background: var(--o); }
+.nt { display: inline-grid; color: var(--tx3); }
+.nt svg { width: 14px; height: 14px; }
+.row.done .rt b { color: var(--tx3); text-decoration: line-through; text-decoration-color: #C3C7CD; }
+.row.flash { background: color-mix(in srgb, var(--o) 11%, var(--sheet)); }
+mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; }
+
+.donebar { display: flex; align-items: center; gap: 8px; padding: 18px 20px; font-size: 15px; font-weight: 600; color: var(--tx2); border-top: 1px solid var(--ln); }
+.donebar small { font-size: 15px; color: var(--tx3); }
+.donebar svg { width: 16px; height: 16px; margin-left: auto; color: var(--tx3); }
+.wipe { margin: 16px 16px 0; height: 46px; border-radius: 14px; background: var(--fill); color: var(--red); display: grid; place-items: center; font-size: 15.5px; font-weight: 600; }
+
+.fade { position: absolute; left: 0; right: 0; bottom: 0; height: 150px; background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--sheet) 58%); z-index: 6; pointer-events: none; }
+.add { position: absolute; left: 14px; right: 14px; bottom: 32px; height: 54px; border-radius: 27px; background: var(--sheet); box-shadow: 0 0 0 1px rgba(22, 24, 29, .08), 0 12px 28px -10px rgba(22, 24, 29, .3); display: flex; align-items: center; gap: 11px; padding: 0 9px 0 14px; z-index: 7; }
+.add .pl { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #FFFFFF; display: grid; place-items: center; }
+.add .pl svg { width: 16px; height: 16px; }
+.add > span:nth-child(2) { flex: 1; font-size: 16.5px; font-weight: 500; color: var(--tx3); }
+.add em { font-style: normal; display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; color: var(--tx2); background: var(--fill); padding: 8px 12px; border-radius: 999px; }
+.add em i { width: 7px; height: 7px; border-radius: 50%; background: var(--o); }
+
+.compose { position: absolute; left: 0; right: 0; bottom: 296px; background: var(--sheet); padding: 10px 0 12px; z-index: 8; box-shadow: 0 -1px 0 var(--ln), 0 -14px 26px -18px rgba(22, 24, 29, .35); }
+.cf { display: flex; gap: 13px; align-items: center; padding: 4px 20px 12px 18px; font-size: 17px; font-weight: 500; }
+.cf .ck { opacity: .45; }
+.caret { display: inline-block; width: 2px; height: 21px; background: var(--ink); vertical-align: -4px; margin-left: 1px; border-radius: 1px; animation: blink 1.05s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.tok { color: var(--t); background: color-mix(in srgb, var(--t) 14%, transparent); border-radius: 5px; padding: 0 3px; font-weight: 600; }
+.chips { display: flex; gap: 8px; padding: 0 16px; overflow: hidden; }
+.chip { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 13px; border-radius: 999px; background: var(--fill); font-size: 14px; font-weight: 600; color: var(--tx2); white-space: nowrap; }
+.chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--o); }
+.chip svg { width: 15px; height: 15px; }
+.chip.on { background: color-mix(in srgb, var(--o) 14%, #FFFFFF); color: var(--tx); }
+.chip.sel { background: var(--ink); color: #FFFFFF; }
+.chip.ring { background: var(--sheet); color: var(--tx); box-shadow: inset 0 0 0 1.5px var(--o); }
+.chip.new { background: var(--sheet); color: var(--tx); box-shadow: inset 0 0 0 1.5px #E1E4E8; }
+.chip.new svg { color: var(--o); }
+.hash { display: flex; gap: 8px; padding: 2px 16px 12px; align-items: center; }
+.hash small { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tx3); margin-right: 2px; }
+
+.kb { position: absolute; left: 0; right: 0; bottom: 0; height: 296px; background: #D2D5DB; z-index: 9; font-family: var(--f-ios); }
+.kb .qt { height: 44px; display: flex; align-items: center; justify-content: space-around; font-size: 16px; color: #16181D; }
+.kb .qt i { width: 1px; height: 24px; background: #B5B9C1; }
+.kb .qt span { flex: 1; text-align: center; }
+.kb .r { display: flex; gap: 6px; padding: 0 3px; margin-bottom: 11px; }
+.kb .k { flex: 1 1 0; min-width: 0; height: 42px; border-radius: 5px; background: #FFFFFF; box-shadow: 0 1px 0 rgba(0, 0, 0, .3); display: grid; place-items: center; font-size: 22px; color: #111111; }
+.kb .r3 { justify-content: space-between; }
+.kb .r3 .mid { display: flex; gap: 6px; }
+.kb .r3 .mid .k { flex: 0 0 29.5px; }
+.kb .k.w { flex: 0 0 43px; background: #ABB0BA; }
+.kb .k.w svg { width: 22px; height: 22px; }
+.kb .k.n { flex: 0 0 92px; background: #ABB0BA; font-size: 15.5px; }
+.kb .k.sp { flex: 1; font-size: 15.5px; }
+.kb .kb-b { display: flex; justify-content: space-between; padding: 2px 24px 0; color: #3C3F45; }
+.kb .kb-b svg { width: 26px; height: 26px; }
+
+.scrim { position: absolute; inset: 0; background: rgba(12, 14, 18, .32); z-index: 20; }
+.scrim.dark { background: rgba(12, 14, 18, .42); z-index: 30; }
+.bs { position: absolute; left: 0; right: 0; bottom: 0; background: var(--sheet); border-radius: 26px 26px 0 0; z-index: 21; padding: 7px 0 40px; box-shadow: 0 -10px 30px rgba(0, 0, 0, .12); }
+.bs.tall { top: 58px; }
+.grab { width: 36px; height: 5px; border-radius: 3px; background: #D3D6DB; margin: 0 auto 4px; }
+.bs-h { display: grid; grid-template-columns: 90px 1fr 90px; align-items: center; padding: 8px 18px 12px; min-height: 52px; }
+.bs-h > span:nth-child(2) { text-align: center; }
+.bs-h b { display: block; font-size: 16.5px; font-weight: 700; }
+.bs-h small { display: block; font-size: 13px; color: var(--tx2); font-weight: 500; }
+.bs-h .l { color: var(--tx2); font-size: 16px; font-weight: 500; }
+.bs-h .r { text-align: right; font-size: 16px; font-weight: 700; color: var(--ink); }
+.pick { display: flex; align-items: center; gap: 13px; padding: 0 20px; height: 52px; font-size: 16.5px; font-weight: 500; position: relative; }
+.pick + .pick::before { content: ""; position: absolute; top: 0; left: 45px; right: 0; height: 1px; background: var(--ln); }
+.pick > i { width: 12px; height: 12px; border-radius: 50%; background: var(--o); }
+.pick small { margin-left: auto; color: var(--tx3); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pick .okc { width: 20px; display: grid; color: var(--ink); }
+.pick .okc svg { width: 19px; height: 19px; }
+.pick.new { color: var(--tx2); }
+.pick.new svg { width: 13px; height: 13px; margin-left: -1px; }
+
+.td-title { display: flex; gap: 13px; padding: 4px 20px 0 18px; align-items: flex-start; }
+.td-title .ck { width: 26px; height: 26px; margin-top: 2px; }
+.td-title b { font-size: 23px; font-weight: 700; line-height: 1.25; letter-spacing: -0.015em; }
+.td-note { padding: 8px 22px 20px 57px; font-size: 15.5px; line-height: 1.45; color: var(--tx2); font-weight: 500; }
+.grp { margin: 0 16px; background: var(--fill); border-radius: 16px; }
+.li { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px 0 16px; font-size: 16.5px; font-weight: 500; position: relative; }
+.li + .li::before { content: ""; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background: #E3E5E9; }
+.li .v { margin-left: auto; color: var(--tx2); font-size: 15.5px; font-weight: 500; display: flex; align-items: center; gap: 7px; font-variant-numeric: tabular-nums; }
+.li .v i { width: 9px; height: 9px; border-radius: 50%; background: var(--o); }
+.li .v svg { width: 15px; height: 15px; color: var(--tx3); }
+.li.chrow { gap: 6px; padding: 0 12px 12px; min-height: 0; }
+.li.chrow::before { display: none; }
+.li.chrow .chip { background: var(--sheet); }
+.li.chrow .chip.sel { background: var(--ink); }
+.td-meta { padding: 14px 22px; font-size: 13px; color: var(--tx3); font-weight: 500; }
+.td-del { position: absolute; left: 16px; right: 16px; bottom: 40px; height: 50px; border-radius: 14px; background: #FBEAE8; color: var(--red); display: grid; place-items: center; font-size: 16px; font-weight: 600; }
+
+.sw { position: relative; overflow: hidden; }
+.sw .acts { position: absolute; top: 0; bottom: 0; right: 0; display: flex; }
+.sw .acts span { width: 86px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #FFFFFF; font-size: 12.5px; font-weight: 600; }
+.sw .acts svg { width: 20px; height: 20px; }
+.sw .mv { background: #5E6570; }
+.sw .del { background: var(--red); }
+.sw .row { transform: translateX(-172px); }
+
+.srch { flex: none; display: flex; align-items: center; gap: 12px; padding: 4px 16px 14px; }
+.sf { flex: 1; height: 40px; border-radius: 12px; background: #DDE0E5; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 17px; font-weight: 500; }
+.sf > svg { width: 18px; height: 18px; color: var(--tx2); }
+.sf .x { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; background: #A3A8B0; color: #FFFFFF; display: grid; place-items: center; }
+.sf .x svg { width: 10px; height: 10px; }
+.srch > span { font-size: 17px; font-weight: 500; }
+
+.ig { margin: 0 16px 20px; background: var(--sheet); border-radius: 16px; position: relative; }
+.ig .li + .li::before { left: 44px; background: var(--ln); }
+.li .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--o); flex: none; }
+.li .gr { display: grid; color: #B9BEC5; }
+.li .gr svg { width: 20px; height: 20px; }
+.ig .li .v { color: var(--tx3); font-weight: 600; font-size: 15px; }
+.li.lift { background: var(--sheet); border-radius: 14px; box-shadow: 0 18px 32px -12px rgba(22, 24, 29, .42), 0 0 0 1px rgba(22, 24, 29, .06); transform: translateY(-5px) scale(1.03); z-index: 2; }
+.li.lift::before, .li.lift + .li::before { display: none; }
+.li.new { font-weight: 600; }
+.li.new svg { width: 16px; height: 16px; }
+
+.fld { margin: 4px 16px 0; height: 52px; border-radius: 14px; background: var(--fill); display: flex; align-items: center; padding: 0 16px; font-size: 17px; font-weight: 500; }
+.sec-l { padding: 20px 22px 12px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tx3); }
+.swg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px 0; padding: 0 16px; justify-items: center; }
+.swg i { width: 44px; height: 44px; border-radius: 50%; background: var(--o); display: grid; place-items: center; color: #FFFFFF; }
+.swg i svg { width: 20px; height: 20px; }
+.swg i.sel { box-shadow: 0 0 0 3px var(--sheet), 0 0 0 5.5px var(--o); }
+.prev { margin: 0 16px; background: var(--bg); border-radius: 16px; padding: 14px 0 0 28px; overflow: hidden; }
+.prev .row { margin-left: -28px; padding-left: 46px; }
+.danger { margin: 22px 16px 0; height: 50px; border-radius: 14px; background: #FBEAE8; color: var(--red); display: grid; place-items: center; font-size: 16px; font-weight: 600; }
+
+.as { position: absolute; left: 10px; right: 10px; bottom: 34px; z-index: 32; display: grid; gap: 8px; font-family: var(--f-ios); }
+.as .g { background: rgba(249, 249, 250, .97); border-radius: 16px; overflow: hidden; text-align: center; }
+.as .hd { padding: 16px 24px 14px; font-size: 13.5px; color: var(--tx2); line-height: 1.35; }
+.as .hd b { display: block; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.as .bt { height: 57px; display: grid; place-items: center; font-size: 18.5px; color: var(--ink); border-top: 1px solid #DFE1E5; }
+.as .bt.red { color: var(--red); }
+.as .cancel { background: #FFFFFF; border-radius: 16px; height: 57px; display: grid; place-items: center; font-size: 18.5px; font-weight: 600; color: var(--ink); }
+
+.fs { padding: 116px 28px 0; text-align: center; display: grid; justify-items: center; }
+.fs h2 { margin: 0; font: 800 30px/1.1 var(--f-ui); letter-spacing: -0.025em; }
+.fs p { margin: 26px 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tx3); }
+.fs-c { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 320px; }
+
+/* ---------- Launcher ---------- */
+.L { --bg: #000000; --tx: #FFFFFF; --sf: var(--f-ios); }
+.l-head { padding: 14px 20px 0; display: flex; justify-content: space-between; align-items: flex-end; }
+.l-date { font-size: 13px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: rgba(235, 235, 245, .6); }
+.l-head h1 { margin: 2px 0 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: .01em; }
+.l-gear { width: 36px; height: 36px; border-radius: 50%; background: rgba(118, 118, 128, .24); display: grid; place-items: center; color: #0A84FF; margin-bottom: 4px; }
+.l-gear svg { width: 20px; height: 20px; }
+.l-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 8px; padding: 26px 20px 0; }
+.l-t { display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 12px; position: relative; }
+.l-ic { width: 64px; height: 64px; border-radius: 22.5%; overflow: hidden; position: relative; box-shadow: 0 8px 18px -8px var(--tc); }
+.l-ic svg { display: block; width: 100%; height: 100%; }
+.l-ic::after { content: ""; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 55%); }
+.badge { position: absolute; top: -7px; left: calc(50% + 20px); min-width: 24px; height: 24px; border-radius: 12px; background: #FF3B30; color: #FFFFFF; font: 600 15px/24px var(--f-ios); text-align: center; padding: 0 7px; z-index: 2; }
+
+/* ---------- Richtung B: Nacht (dunkel) ---------- */
+.B { --bg: #0C0D0F; --surf: #17191C; --tx: #ECEDEF; --tx2: #979EA7; --tx3: #646A72; --ln: #1C1F23; --red: #FF6B5E; --sf: var(--f-geist); }
+.B .icb { background: var(--surf); box-shadow: none; }
+.b-lt { flex: none; padding: 4px 20px 14px; }
+.b-lt h1 { margin: 0; font: 600 32px/1.1 var(--f-geist); letter-spacing: -0.04em; }
+.b-lt p { margin: 6px 0 0; font: 500 12.5px/1 var(--f-mono); color: var(--tx2); }
+.b-chips { flex: none; display: flex; gap: 8px; padding: 0 16px 10px; overflow: hidden; }
+.bc { flex: none; height: 34px; display: inline-flex; align-items: center; gap: 7px; padding: 0 13px; border-radius: 999px; background: var(--surf); color: var(--tx); font-size: 14px; font-weight: 500; white-space: nowrap; }
+.bc i { width: 7px; height: 7px; border-radius: 50%; background: var(--o); }
+.bc small { font: 500 11.5px/1 var(--f-mono); color: var(--tx3); }
+.bc.on { background: var(--o, var(--tx)); color: #0C0D0F; }
+.bc.on i { background: #0C0D0F; }
+.bc.on small { color: rgba(12, 13, 15, .6); }
+.b-list { flex: 1; min-height: 0; overflow: hidden; }
+.b-lab { padding: 18px 20px 8px; font: 500 11px/1 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--tx3); }
+.b-row { display: flex; gap: 13px; align-items: center; padding: 11px 20px; border-top: 1px solid var(--ln); }
+.b-lab + .b-row, .b-list > .b-row:first-child { border-top: 0; }
+.b-row .ck { box-shadow: inset 0 0 0 1.75px var(--o); }
+.b-row .rt { gap: 2px; }
+.b-row .rt b { font: 500 15.5px/1.3 var(--f-geist); color: var(--tx); }
+.b-row .rt small { font-size: 12.5px; color: var(--o); font-weight: 500; }
+.b-row .dt { flex: none; font: 500 12px/1 var(--f-mono); color: var(--tx2); }
+.b-row .dt.now { color: var(--tx); }
+.b-row .dt.red { color: var(--red); }
+.b-done { display: flex; align-items: center; gap: 8px; padding: 16px 20px; border-top: 1px solid var(--ln); color: var(--tx2); font-size: 14.5px; font-weight: 500; }
+.b-done small { font: 500 12px/1 var(--f-mono); color: var(--tx3); }
+.b-done svg { width: 16px; height: 16px; margin-left: auto; }
+.fab { position: absolute; right: 20px; bottom: 40px; width: 58px; height: 58px; border-radius: 50%; background: var(--tx); color: #0C0D0F; display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0, 0, 0, .55); z-index: 7; }
+.fab svg { width: 24px; height: 24px; }
+
+/* ---------- Richtung C: Block (farbig) ---------- */
+.C { --bg: #F1F2F4; --tx: #121317; --tx2: #5D636C; --tx3: #949AA2; --red: #D92D20; --sf: var(--f-block); }
+.C .back { font-family: var(--f-ios); }
+.C .icb { background: #FFFFFF; }
+.c-wm { flex: none; padding: 6px 20px 16px; display: flex; align-items: flex-end; justify-content: space-between; }
+.c-wm h1 { margin: 0; font: 800 44px/0.9 var(--f-block); font-variation-settings: "wdth" 125; letter-spacing: -0.02em; text-transform: uppercase; }
+.c-due { font: 700 13px/1 var(--f-block); background: var(--red); color: #FFFFFF; padding: 8px 11px; border-radius: 999px; margin-bottom: 2px; }
+.blocks { padding: 0 12px; display: grid; gap: 8px; }
+.blk { background: var(--o); color: #FFFFFF; border-radius: 22px; padding: 15px 16px 14px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; min-height: 92px; }
+.blk h3 { margin: 0; font: 800 21px/1.05 var(--f-block); font-variation-settings: "wdth" 115; text-transform: uppercase; letter-spacing: .01em; }
+.blk .n { grid-row: span 2; font: 800 44px/0.88 var(--f-block); font-variant-numeric: tabular-nums; }
+.blk p { margin: 6px 0 0; font: 500 13.5px/1.35 var(--f-block); opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.C.full { --bg: var(--o); --tx: #FFFFFF; --tx2: rgba(255, 255, 255, .8); --tx3: rgba(255, 255, 255, .62); }
+.C.full .icb { background: rgba(255, 255, 255, .2); color: #FFFFFF; box-shadow: none; }
+.c-title { flex: none; padding: 8px 20px 14px; }
+.c-title h1 { margin: 0; font: 800 46px/0.92 var(--f-block); font-variation-settings: "wdth" 125; letter-spacing: -0.02em; text-transform: uppercase; }
+.c-title p { margin: 10px 0 0; font: 600 14px/1 var(--f-block); color: var(--tx2); }
+.c-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px 20px; border-top: 1px solid rgba(255, 255, 255, .2); }
+.c-row .ck { width: 24px; height: 24px; box-shadow: inset 0 0 0 2.5px #FFFFFF; }
+.c-row .rt b { font: 600 17px/1.3 var(--f-block); color: #FFFFFF; }
+.c-row .rt small { margin-top: 4px; }
+.c-chip { font: 700 12px/1 var(--f-block); padding: 5px 9px; border-radius: 999px; background: #FFFFFF; color: var(--o); }
+.c-chip.red { color: #D92D20; }
+.c-done { padding: 18px 20px; border-top: 1px solid rgba(255, 255, 255, .2); font: 700 13px/1 var(--f-block); color: var(--tx2); text-transform: uppercase; letter-spacing: .06em; }
+.c-add { position: absolute; left: 14px; right: 14px; bottom: 32px; height: 56px; border-radius: 28px; background: #FFFFFF; color: var(--o); display: flex; align-items: center; gap: 10px; padding: 0 18px; font: 700 16.5px/1 var(--f-block); z-index: 7; }
+.c-add svg { width: 20px; height: 20px; }
+
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+</style>
+
+<main class="pg">
+  <header class="pg-intro">
+    <div class="pg-brand">
+      <svg viewBox="0 0 180 180" role="img" aria-label="App-Symbol Tick" id="brand-icon"></svg>
+      <div>
+        <h1 class="pg-wm">Tick</h1>
+        <p>Todo-Liste für appdeck · Mockups vom 23.10.2026, gewählt: Richtung A</p>
+      </div>
+    </div>
+    <p class="pg-lede">Eine Gesamtliste mit allem, was offen ist, und Ordner, die man einzeln ansieht. Beispiel überall: <strong>Freitag, 23. Oktober 2026</strong>, 21 offene Todos im Eingang und in fünf Ordnern, drei davon fällig. Alle Todos sind Beispiele. Regeln und Feature-Liste stehen in <code>apps/tick/konzept.md</code>, die Nummern in Klammern verweisen auf die Ansichten unten.</p>
+    <ul class="pg-dec">
+      <li><b>„Alle“ zeigt alles.</b> Oben, was heute fällig oder überfällig ist, darunter ein Abschnitt pro Ordner (1). Ein Tipp auf einen Reiter zeigt nur diesen Ordner (2).</li>
+      <li><b>Ein Todo, ein Ordner, oder keiner.</b> Ohne Ordner liegt es im Eingang. Die Farbe des Ordners steckt im Kreis, so sieht man sie auch in „Alle“.</li>
+      <li><b>Erfassen ist eine Zeile.</b> Tippen, Weiter, das nächste (3). Ordner und Datum sind Chips, <b>#</b> wählt den Ordner beim Tippen (4).</li>
+      <li><b>Die Reihenfolge ist die Priorität.</b> Ziehen im Ordner, keine Sterne, keine Stufen.</li>
+      <li><b>Fälliges findet man ohne Push:</b> oben in „Alle“ und als Zahl an der Kachel im Launcher (14).</li>
+    </ul>
+    <nav class="pg-toc" id="toc" aria-label="Inhalt"></nav>
+  </header>
+
+  <section class="pg-sec" id="richtungen" aria-labelledby="h-dirs">
+    <h2 class="pg-h2" id="h-dirs">Drei Richtungen</h2>
+    <p class="pg-sub">Dieselben Todos dreimal, oben die Gesamtliste, darunter der Ordner Projekte. Die Ansichten 1 bis 14 weiter unten sind in Richtung A gezeichnet.</p>
+    <div class="pg-dirs" id="dirs"></div>
+  </section>
+
+  <section class="pg-sec" id="ansichten" aria-labelledby="h-views">
+    <h2 class="pg-h2" id="h-views">Ansichten in Richtung A</h2>
+    <p class="pg-sub">Hell, die Ordner als Karteireiter über einem weißen Blatt. Farbe nur an Punkten, Kreisen und dem Strich am aktiven Reiter, die Knöpfe in Tinte.</p>
+    <div class="pg-screens" id="screens"></div>
+  </section>
+
+  <section class="pg-sec" id="zeichen" aria-labelledby="h-signs">
+    <h2 class="pg-h2" id="h-signs">Farben und Zeichen</h2>
+    <p class="pg-sub">Zehn Ordnerfarben auf gleicher Höhe, abgestimmt auf Weiß. Richtung B nimmt hellere, Richtung C kräftigere Varianten derselben Töne. Der Eingang ist grau und keine der zehn.</p>
+    <div class="pg-bs">
+      <div class="pg-card"><h3>Ordnerfarben</h3><div class="pg-pal" id="pal"></div></div>
+      <div class="pg-card"><h3>Zeilen</h3><div class="A demo" id="demo"></div></div>
+      <div class="pg-card">
+        <h3>Fällig, angezeigt am Freitag, 23. Oktober</h3>
+        <table class="pg-dt">
+          <tr><td>Fr, 2. Okt</td><td class="red">seit 2. Okt</td></tr>
+          <tr><td>Mo, 19. Okt</td><td class="red">seit Mo</td></tr>
+          <tr><td>Do, 22. Okt</td><td class="red">gestern</td></tr>
+          <tr><td>Fr, 23. Okt</td><td>heute</td></tr>
+          <tr><td>Sa, 24. Okt</td><td>morgen</td></tr>
+          <tr><td>Mi, 28. Okt</td><td>Mi</td></tr>
+          <tr><td>Di, 10. Nov</td><td>10. Nov</td></tr>
+          <tr><td>Fr, 15. Jan 2027</td><td>15. Jan 2027</td></tr>
+        </table>
+      </div>
+      <div class="pg-card">
+        <h3>Symbol</h3>
+        <div class="pg-sym" id="sym"></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="pg-foot">Tick · Mockups zu <code>apps/tick/konzept.md</code> · 23.10.2026. Gewählt wurden Richtung A „Reiter“, der Name Tick und dieses Symbol, danach ist Tick so gebaut. Wo der Bau abweicht, steht es im Konzept.</p>
+</main>
+
+<script>
+(() => {
+  // ---------- Daten ----------
+  // Ordner: Name und Farbe je Richtung (A auf Weiß, B auf Schwarz, C als Fläche unter weißer Schrift)
+  const F = {
+    in: { n: 'Eingang', A: '#8E959E', B: '#80878F', C: '#5F6670' },
+    pr: { n: 'Projekte', A: '#2E7CF6', B: '#5B9BFF', C: '#2D6BDF' },
+    zu: { n: 'Zuhause', A: '#2F9E5B', B: '#43C07A', C: '#21874C' },
+    ei: { n: 'Einkauf', A: '#EF7A1C', B: '#F78F3D', C: '#D9620C' },
+    pa: { n: 'Papierkram', A: '#9B51E0', B: '#B47DF3', C: '#8640D2' },
+    ge: { n: 'Geschenke', A: '#E0457B', B: '#F26B9B', C: '#CC336A' },
+  };
+  const ORDER = ['in', 'pr', 'zu', 'ei', 'pa', 'ge'];
+  const COUNT = { alle: 21, in: 3, pr: 5, zu: 4, ei: 4, pa: 3, ge: 2 };
+  const PAL = [
+    ['Rot', '#E5484D'], ['Orange', '#EF7A1C'], ['Gelb', '#E2A800'], ['Grün', '#2F9E5B'], ['Petrol', '#0E9384'],
+    ['Blau', '#2E7CF6'], ['Indigo', '#5B5FE0'], ['Violett', '#9B51E0'], ['Pink', '#E0457B'], ['Braun', '#A0714F'],
+  ];
+  const VIOLET = '#7A50E0';
+
+  // d = [Anzeige, Art]: red = überfällig, now = heute
+  const T = {
+    backup: { f: 'pr', t: 'appdeck: Backup in Dateien sichern', d: ['gestern', 'red'] },
+    zahn: { f: 'in', t: 'Zahnarzt anrufen', d: ['heute', 'now'] },
+    mock: { f: 'pr', t: 'Todo-App: Mockups ansehen', d: ['heute', 'now'] },
+    reifen: { f: 'in', t: 'Reifenwechsel buchen' },
+    buch: { f: 'in', t: 'Buchtipp von Jonas: Der Schwarm', n: 1 },
+    kontor: { f: 'pr', t: 'Kontor: Monatsrückblick bauen', n: 1 },
+    morse: { f: 'pr', t: 'Loci: Lohnt sich Morse?' },
+    steady: { f: 'pr', t: 'Steady-Testdaten bis Oktober verlängern' },
+    heiz: { f: 'zu', t: 'Heizung entlüften', d: ['morgen', ''], n: 1 },
+    birne: { f: 'zu', t: 'Glühbirne im Flur tauschen' },
+    fenster: { f: 'zu', t: 'Fenster putzen' },
+    monstera: { f: 'zu', t: 'Monstera umtopfen' },
+    hafer: { f: 'ei', t: 'Haferflocken' },
+    kaffee: { f: 'ei', t: 'Kaffeebohnen' },
+    tabs: { f: 'ei', t: 'Spülmaschinentabs' },
+    creatin: { f: 'ei', t: 'Creatin' },
+    nk: { f: 'pa', t: 'Nebenkostenabrechnung prüfen', d: ['Mi', ''], n: 1 },
+    kfz: { f: 'pa', t: 'Kfz-Versicherung kündigen', d: ['30. Nov', ''] },
+    rf: { f: 'pa', t: 'Rundfunkbeitrag: neue Adresse' },
+    mama: { f: 'ge', t: 'Geschenk für Mama', d: ['10. Nov', ''], n: 1 },
+    advent: { f: 'ge', t: 'Adventskalender für Sarah' },
+  };
+
+  // ---------- Symbole ----------
+  const s = (vb, body, extra = '') => `<svg viewBox="${vb}" ${extra}>${body}</svg>`;
+  const ST = 'fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"';
+  const I = {
+    back: s('0 0 12 20', '<path d="M10 2 2 10l8 8"/>', `${ST} stroke-width="2.6"`),
+    search: s('0 0 24 24', '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/>', `${ST} stroke-width="2.2"`),
+    more: s('0 0 24 24', '<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>', 'fill="currentColor"'),
+    chev: s('0 0 24 24', '<path d="m9 5 7 7-7 7"/>', `${ST} stroke-width="2.4"`),
+    down: s('0 0 24 24', '<path d="m5 9 7 7 7-7"/>', `${ST} stroke-width="2.4"`),
+    up: s('0 0 24 24', '<path d="m5 15 7-7 7 7"/>', `${ST} stroke-width="2.4"`),
+    plus: s('0 0 24 24', '<path d="M12 5v14M5 12h14"/>', `${ST} stroke-width="2.4"`),
+    note: s('0 0 24 24', '<path d="M5 7h14M5 12h14M5 17h8"/>', `${ST} stroke-width="2.2"`),
+    check: s('0 0 24 24', '<path d="m5.5 12.5 4 4 9-9.5"/>', `${ST} stroke-width="3.2"`),
+    ok: s('0 0 24 24', '<path d="m5 12.5 4.5 4.5L19 7"/>', `${ST} stroke-width="2.6"`),
+    grip: s('0 0 24 24', '<path d="M5 8h14M5 12h14M5 16h14"/>', `${ST} stroke-width="2"`),
+    cal: s('0 0 24 24', '<rect x="4" y="5.5" width="16" height="14.5" rx="3"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>', `${ST} stroke-width="2.1"`),
+    folder: s('0 0 24 24', '<path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/>', `${ST} stroke-width="2"`),
+    trash: s('0 0 24 24', '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5h9l1-12.5"/>', `${ST} stroke-width="2"`),
+    x: s('0 0 24 24', '<path d="m7 7 10 10M17 7 7 17"/>', `${ST} stroke-width="3"`),
+    shift: s('0 0 24 24', '<path d="M12 4 4 12.5h4.5V20h7v-7.5H20z"/>', `${ST} stroke-width="1.8"`),
+    del: s('0 0 26 20', '<path d="M8 2h15a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8l-7-8z"/><path d="m12 7 6 6M18 7l-6 6"/>', `${ST} stroke-width="1.8"`),
+    emoji: s('0 0 24 24', '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01" stroke-width="2.6"/>', `${ST} stroke-width="1.7"`),
+    mic: s('0 0 24 24', '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>', `${ST} stroke-width="1.7"`),
+    gear: s('0 0 24 24', '<circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>', `${ST} stroke-width="2"`),
+  };
+  const BAR = s('0 0 18 12', '<rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" width="3" height="12" rx="1"/>', 'width="18" height="12" fill="currentColor"') +
+    s('0 0 16 12', '<path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0z" fill="currentColor"/><path d="M3.3 6.8a6.6 6.6 0 0 1 9.4 0M1 4.3a9.9 9.9 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>', 'width="16" height="12"') +
+    s('0 0 27 13', '<rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="2" y="2" width="18" height="9" rx="2" fill="currentColor"/><path d="M25 4.5v4a2 2 0 0 0 0-4z" fill="currentColor" fill-opacity=".4"/>', 'width="27" height="13"');
+
+  // App-Symbole im Stil „Signal“ (Kopien aus icons/, Tick neu)
+  const TICK = `<rect width="180" height="180" fill="${VIOLET}"/>` +
+    '<circle cx="56" cy="56" r="16" fill="#FFFFFF"/>' +
+    `<path d="M48.5 56.5l5.5 5.5 10-11" fill="none" stroke="${VIOLET}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>` +
+    '<path d="M86 56h48" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>' +
+    '<g fill="none" stroke="#FFFFFF" stroke-opacity=".6" stroke-linecap="round"><circle cx="56" cy="90" r="13" stroke-width="6"/><path d="M86 90h34" stroke-width="12"/>' +
+    '<circle cx="56" cy="124" r="13" stroke-width="6"/><path d="M86 124h42" stroke-width="12"/></g>';
+  const APPS = [
+    ['Kontor', '#2E9E6B', '<rect width="180" height="180" fill="#2E9E6B"/><g transform="rotate(-90 90 90)" fill="none" stroke="#FFFFFF" stroke-width="24"><circle cx="90" cy="90" r="38" stroke-dasharray="105 133.76"/><circle cx="90" cy="90" r="38" stroke-opacity="0.72" stroke-dasharray="62 176.76" stroke-dashoffset="-113"/><circle cx="90" cy="90" r="38" stroke-opacity="0.45" stroke-dasharray="47.76 191" stroke-dashoffset="-183"/></g>'],
+    ['Steady', '#F2785C', '<rect width="180" height="180" fill="#F2785C"/><rect x="44" y="44" width="92" height="92" rx="28" fill="#FFFFFF"/><path d="M68 91l15 15 30-31" fill="none" stroke="#F2785C" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>'],
+    ['Piano', '#D9A953', '<rect width="180" height="180" fill="#D9A953"/><rect x="40" y="38" width="100" height="9" rx="4.5" fill="#0E0D0B"/><g fill="#FBF6EA"><path d="M42 52h28v81a7 7 0 0 1-7 7h-14a7 7 0 0 1-7-7z"/><path d="M76 52h28v81a7 7 0 0 1-7 7h-14a7 7 0 0 1-7-7z"/><path d="M110 52h28v81a7 7 0 0 1-7 7h-14a7 7 0 0 1-7-7z"/></g><g fill="#0E0D0B"><path d="M63 52h20v47a5 5 0 0 1-5 5h-10a5 5 0 0 1-5-5z"/><path d="M97 52h20v47a5 5 0 0 1-5 5h-10a5 5 0 0 1-5-5z"/></g>'],
+    ['Loci', '#1E4DB7', '<rect width="180" height="180" fill="#1E4DB7"/><path d="M60 133V77a30 30 0 0 1 60 0v56" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round"/><path d="M42 133h96" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"/><path d="M85 98.8A11 11 0 1 1 95 98.8L98.5 116h-17z" fill="#FFFFFF"/>'],
+    ['Stash', '#1F1D1A', '<rect width="180" height="180" fill="#1F1D1A"/><rect x="46" y="48" width="88" height="86" rx="9" fill="#A79E8B" transform="rotate(-10 90 91)"/><rect x="46" y="48" width="88" height="86" rx="9" fill="#FFFDF8"/><path d="M62 72h38" stroke="#1F1D1A" stroke-width="9" stroke-linecap="round"/><path d="M62 94h56M62 114h40" stroke="#B5AC9A" stroke-width="6" stroke-linecap="round"/>'],
+    ['Form', '#FF6A00', '<rect width="180" height="180" fill="#FF6A00"/><path d="M40 44H140" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round" stroke-dasharray="11 12"/><path d="M40 136L66 110L89 121L117 86L134 70" fill="none" stroke="#FFFFFF" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/><circle cx="134" cy="70" r="17" fill="#0D0D0E" stroke="#FF6A00" stroke-width="7"/>'],
+    ['Tick', VIOLET, TICK, 3],
+  ];
+
+  // ---------- Bausteine ----------
+  const dev = (cls, inner, style = '') =>
+    `<div class="device"><div class="screen ${cls}"${style ? ` style="${style}"` : ''}><div class="island"></div>${inner}<div class="homebar"></div></div></div>`;
+  const sb = () => `<div class="sb"><span>9:41</span><span class="ico">${BAR}</span></div>`;
+  const icb = (i) => `<span class="icb">${i}</span>`;
+
+  // Richtung A
+  const aTop = (back = 'Apps', icons = true) =>
+    `<div class="a-top"><span class="back">${I.back}${back}</span>${icons ? `<span class="icbs">${icb(I.search)}${icb(I.more)}</span>` : ''}</div>`;
+  const aNav = (t) => `<div class="a-nav"><span class="back">${I.back}Apps</span><b>${t}</b><span class="icbs">${icb(I.search)}${icb(I.more)}</span></div>`;
+  const aTitle = (t, sub) => `<div class="a-lt"><h1>${t}</h1><p>${sub}</p></div>`;
+  const tab = (k, on, n) => k === 'alle'
+    ? `<span class="tab${on ? ' on' : ''}">Alle<small>${n}</small></span>`
+    : `<span class="tab${on ? ' on' : ''}" style="--o:${F[k].A}"><i></i>${F[k].n}<small>${n}</small></span>`;
+  const aTabs = (on, counts = {}) => {
+    const c = { ...COUNT, ...counts };
+    return `<div class="a-tabs"><div class="a-tr">${['alle', ...ORDER].map((k) => tab(k, k === on, c[k])).join('')}<span class="tab plus">${I.plus}</span></div></div>`;
+  };
+  const meta = (t, o) => {
+    const p = [];
+    if (t.d) p.push(`<span class="due ${t.d[1]}">${t.d[0]}</span>`);
+    if (o.when) p.push(`<span>erledigt ${o.when}</span>`);
+    if (o.f) p.push(`<span class="of" style="--o:${F[t.f].A}"><i></i>${F[t.f].n}</span>`);
+    if (t.n) p.push(`<span class="nt">${I.note}</span>`);
+    return (p.length ? `<small>${p.join('')}</small>` : '') + (o.snip ? `<span class="snip">${o.snip}</span>` : '');
+  };
+  const aRow = (t, o = {}) =>
+    `<div class="row${o.done ? ' done' : ''}${o.cls ? ' ' + o.cls : ''}" style="--o:${F[t.f].A}">` +
+    `<span class="ck${o.done ? ' on' : ''}">${o.done ? I.check : ''}</span><span class="rt"><b>${t.t}</b>${meta(t, o)}</span></div>`;
+  const R = (k, o) => aRow(T[k], o);
+  const done = (f, t) => aRow({ f, t }, { done: 1 });
+  const sec = (k) => `<div class="sh" style="--o:${F[k].A}"><i></i>${F[k].n}${I.chev}</div>`;
+  const lab = (t) => `<div class="lab">${t}</div>`;
+  const donebar = (n, open) => `<div class="donebar">Erledigt <small>${n}</small>${open ? I.up : I.down}</div>`;
+  const aAdd = (k) => `<div class="fade"></div><div class="add"><span class="pl">${I.plus}</span><span>Neues Todo</span><em style="--o:${F[k].A}"><i></i>${F[k].n}</em></div>`;
+  const kb = (sugg) => {
+    const keys = (str) => [...str].map((c) => `<span class="k">${c}</span>`).join('');
+    return `<div class="kb"><div class="qt">${sugg.map((x) => `<span>${x}</span>`).join('<i></i>')}</div>` +
+      `<div class="r">${keys('qwertzuiopü')}</div><div class="r">${keys('asdfghjklöä')}</div>` +
+      `<div class="r r3"><span class="k w">${I.shift}</span><span class="mid">${keys('yxcvbnm')}</span><span class="k w">${I.del}</span></div>` +
+      `<div class="r"><span class="k n">123</span><span class="k sp">Leerzeichen</span><span class="k n">Weiter</span></div>` +
+      `<div class="kb-b">${I.emoji}${I.mic}</div></div>`;
+  };
+  const compose = (typed, f, hash) =>
+    `<div class="compose" style="--o:${F[f].A}">` +
+    (hash ? `<div class="hash"><small>Ordner</small><span class="chip ring" style="--o:${F[hash].A}"><i></i>${F[hash].n}</span></div>` : '') +
+    `<div class="cf"><span class="ck"></span><span>${typed}<i class="caret"></i></span></div>` +
+    `<div class="chips"><span class="chip on"><i></i>${F[f].n}${I.down}</span><span class="chip">Heute</span><span class="chip">Morgen</span><span class="chip">${I.cal}Datum</span></div></div>`;
+  const pick = (k, n, sel) =>
+    `<div class="pick" style="--o:${F[k].A}"><i></i>${F[k].n}<small>${n}</small><span class="okc">${sel ? I.ok : ''}</span></div>`;
+  const fli = (k, n, o = {}) =>
+    `<div class="li${o.lift ? ' lift' : ''}" style="--o:${F[k].A}"><span class="dot"></span>${F[k].n}<span class="v">${n}</span>${o.nogrip ? '' : `<span class="gr">${I.grip}</span>`}</div>`;
+
+  // Wiederkehrende Hintergründe
+  const alleSheet = () => `<div class="sheet">${lab('Fällig')}${R('backup', { f: 1 })}${R('zahn', { f: 1 })}${R('mock', { f: 1 })}` +
+    `${sec('in')}${R('reifen')}${R('buch')}${sec('pr')}${R('kontor')}${R('morse')}${R('steady')}${sec('zu')}${R('heiz')}${R('birne')}</div>`;
+  const alle = () => sb() + aTop() + aTitle('Alle', '21 offen · 3 fällig') + aTabs('alle') + alleSheet();
+  const zuhause = () => sb() + aTop() + aTitle('Zuhause', '4 offen · 9 erledigt') + aTabs('zu') +
+    `<div class="sheet">${R('heiz')}${R('birne')}${R('fenster')}${R('monstera')}${donebar(9)}</div>` + aAdd('zu');
+  const ordnerListe = () => sb() + aTop('Alle', false) + aTitle('Ordner', '5 Ordner · 21 offen') +
+    `<div class="ig">${fli('in', 3, { nogrip: 1 })}</div>` +
+    `<div class="ig">${fli('pr', 5)}${fli('ei', 4, { lift: 1 })}${fli('zu', 4)}${fli('pa', 3)}${fli('ge', 2)}</div>` +
+    `<div class="ig"><div class="li new">${I.plus}Neuer Ordner</div></div>`;
+  const ordnerBlatt = () => `<div class="scrim"></div><div class="bs" style="--o:${F.pa.A}"><div class="grab"></div>` +
+    `<div class="bs-h"><span class="l">Abbrechen</span><span><b>Ordner</b></span><span class="r">Fertig</span></div>` +
+    `<div class="fld">Papierkram</div><div class="sec-l">Farbe</div>` +
+    `<div class="swg">${PAL.map(([, c], i) => `<i style="--o:${c}"${i === 7 ? ' class="sel"' : ''}>${i === 7 ? I.check : ''}</i>`).join('')}</div>` +
+    `<div class="sec-l">Vorschau</div><div class="prev"><div class="a-tr" style="padding:0">${tab('pa', true, 3)}</div>${R('nk')}</div>` +
+    `<div class="danger">Ordner löschen</div></div>`;
+
+  // ---------- Ansichten in Richtung A ----------
+  const V = {
+    alle: () => dev('A', alle() + aAdd('in')),
+    ordner: () => dev('A', sb() + aTop() + aTitle('Projekte', '5 offen · 6 erledigt') + aTabs('pr') +
+      `<div class="sheet">${R('mock')}${R('backup')}${R('kontor')}${R('morse')}${R('steady')}${donebar(6)}</div>` + aAdd('pr')),
+    erfassen: () => dev('A', sb() + aTop() + aTitle('Einkauf', '5 offen') + aTabs('ei', { alle: 22, ei: 5 }) +
+      `<div class="sheet">${R('hafer')}${R('kaffee')}${R('tabs')}${R('creatin')}${aRow({ f: 'ei', t: 'Backpapier' }, { cls: 'flash' })}</div>` +
+      compose('Spülmittel', 'ei') + kb(['„Spülmittel“', 'Spülmittel', 'Spülmitteln'])),
+    hash: () => dev('A', alle() +
+      compose(`Gutschein für Jonas <span class="tok" style="--t:${F.ge.A}">#ge</span>`, 'in', 'ge') + kb(['„ge“', 'gerne', 'gestern'])),
+    waehlen: () => dev('A', alle() + aAdd('in') +
+      `<div class="scrim"></div><div class="bs"><div class="grab"></div>` +
+      `<div class="bs-h"><span class="l">Abbrechen</span><span><b>Verschieben</b><small>Reifenwechsel buchen</small></span><span></span></div>` +
+      pick('in', 3, 1) + pick('pr', 5) + pick('zu', 4) + pick('ei', 4) + pick('pa', 3) + pick('ge', 2) +
+      `<div class="pick new" style="--o:${F.in.A}">${I.plus}Neuer Ordner …</div></div>`),
+    todo: () => dev('A', zuhause() +
+      `<div class="scrim"></div><div class="bs tall" style="--o:${F.zu.A}"><div class="grab"></div>` +
+      `<div class="bs-h"><span></span><span></span><span class="r">Fertig</span></div>` +
+      `<div class="td-title"><span class="ck"></span><b>Heizung entlüften</b></div>` +
+      '<div class="td-note">Thermostatköpfe ab, der Entlüftungsschlüssel liegt in der Werkzeugkiste. Danach den Druck an der Therme prüfen, 1,5 bar.</div>' +
+      `<div class="grp"><div class="li">Ordner<span class="v"><i></i>Zuhause${I.chev}</span></div>` +
+      '<div class="li">Fällig<span class="v">Samstag, 24. Oktober</span></div>' +
+      `<div class="li chrow"><span class="chip">Heute</span><span class="chip sel">Morgen</span><span class="chip">${I.cal}Datum</span><span class="chip">Ohne</span></div></div>` +
+      '<div class="td-meta">Angelegt am Montag, 19. Oktober</div><div class="td-del">Löschen</div></div>'),
+    abhaken: () => dev('A', sb() + aTop() + aTitle('Zuhause', '3 offen · 10 erledigt') + aTabs('zu', { alle: 20, zu: 3 }) +
+      `<div class="sheet">${R('heiz')}${aRow(T.birne, { done: 1 })}` +
+      `<div class="sw"><div class="acts"><span class="mv">${I.folder}Verschieben</span><span class="del">${I.trash}Löschen</span></div>${R('fenster')}</div>` +
+      `${R('monstera')}${donebar(10)}</div>` + aAdd('zu')),
+    erledigt: () => dev('A', sb() + aNav('Projekte') + aTabs('pr') +
+      `<div class="sheet">${R('steady')}${donebar(6, 1)}` +
+      lab('Heute') + done('pr', 'Zeitkapsel-Konzept durchlesen') +
+      lab('Gestern') + done('pr', 'Stash: Senden an die Inbox testen') + done('pr', 'Loci: Konstanten in Blöcken ausprobieren') +
+      lab('Mittwoch, 21. Okt') + done('pr', 'Form: Trend über 7 Tage prüfen') +
+      lab('Donnerstag, 15. Okt') + done('pr', 'Morse-Apps im App Store vergleichen') + done('pr', 'Kontor-Testdaten bis September') +
+      '<div class="wipe">Erledigte löschen</div></div>' + aAdd('pr')),
+    suche: () => dev('A', sb() +
+      `<div class="srch"><div class="sf">${I.search}<span>heiz<i class="caret"></i></span><span class="x">${I.x}</span></div><span>Abbrechen</span></div>` +
+      `<div class="sheet round">${lab('Offen <span>2</span>')}` +
+      aRow({ f: 'zu', t: '<mark>Heiz</mark>ung entlüften', d: ['morgen', ''] }, { f: 1 }) +
+      aRow({ f: 'pa', t: 'Nebenkostenabrechnung prüfen', d: ['Mi', ''] }, { f: 1, snip: '… die <mark>Heiz</mark>kosten mit dem Zählerstand vom Januar vergleichen' }) +
+      lab('Erledigt <span>1</span>') +
+      aRow({ f: 'zu', t: '<mark>Heiz</mark>lüfter zurückschicken' }, { done: 1, f: 1, when: '2. Okt' }) +
+      '</div>' + kb(['„heiz“', 'Heizung', 'heizen'])),
+    ordnerliste: () => dev('A', ordnerListe()),
+    ordnerblatt: () => dev('A', ordnerListe() + ordnerBlatt()),
+    loeschen: () => dev('A', ordnerListe() + ordnerBlatt() +
+      '<div class="scrim dark"></div><div class="as"><div class="g"><div class="hd"><b>„Papierkram“ löschen?</b>Darin liegen noch 3 offene Todos.</div>' +
+      '<div class="bt">In den Eingang verschieben</div><div class="bt red">Mit allen 3 Todos löschen</div></div><div class="cancel">Abbrechen</div></div>'),
+    erststart: () => dev('A', sb() + aTop() + aTitle('Alle', 'Noch nichts offen') +
+      `<div class="a-tabs"><div class="a-tr">${tab('alle', true, 0)}<span class="tab plus">${I.plus}</span></div></div>` +
+      '<div class="sheet"><div class="fs"><h2>Was steht an?</h2><p>Ordner zum Start</p><div class="fs-c">' +
+      [['Zuhause', '#2F9E5B'], ['Einkauf', '#EF7A1C'], ['Projekte', '#2E7CF6'], ['Papierkram', '#9B51E0'], ['Arbeit', '#E5484D']]
+        .map(([n, c]) => `<span class="chip new" style="--o:${c}">${I.plus}${n}</span>`).join('') +
+      '</div></div></div>' + aAdd('in')),
+    launcher: () => dev('L', sb() +
+      `<div class="l-head"><div><div class="l-date">Freitag, 23. Oktober</div><h1>appdeck</h1></div><span class="l-gear">${I.gear}</span></div>` +
+      `<div class="l-grid">${APPS.map(([n, c, svg, badge]) =>
+        `<div class="l-t"><span class="l-ic" style="--tc:${c}"><svg viewBox="0 0 180 180">${svg}</svg></span>${badge ? `<span class="badge">${badge}</span>` : ''}<span>${n}</span></div>`).join('')}</div>`),
+  };
+
+  // ---------- Richtung B: Nacht ----------
+  const bTop = () => `<div class="a-top"><span class="back">${I.back}Apps</span><span class="icbs">${icb(I.search)}${icb(I.more)}</span></div>`;
+  const bChips = (on) => `<div class="b-chips">${['alle', ...ORDER].map((k) => k === 'alle'
+    ? `<span class="bc${on === k ? ' on' : ''}">Alle<small>${COUNT.alle}</small></span>`
+    : `<span class="bc${on === k ? ' on' : ''}" style="--o:${F[k].B}"><i></i>${F[k].n}<small>${COUNT[k]}</small></span>`).join('')}</div>`;
+  const bRow = (k, showF) => {
+    const t = T[k];
+    return `<div class="b-row" style="--o:${F[t.f].B}"><span class="ck"></span><span class="rt"><b>${t.t}</b>${showF ? `<small>${F[t.f].n}</small>` : ''}</span>` +
+      (t.d ? `<span class="dt ${t.d[1]}">${t.d[0]}</span>` : '') + '</div>';
+  };
+  const blab = (t) => `<div class="b-lab">${t}</div>`;
+  const fab = `<div class="fab">${I.plus}</div>`;
+  const B = {
+    alle: () => dev('B', sb() + bTop() + '<div class="b-lt"><h1>Alle</h1><p>21 offen · 3 fällig</p></div>' + bChips('alle') +
+      `<div class="b-list">${blab('Fällig')}${bRow('backup', 1)}${bRow('zahn', 1)}${bRow('mock', 1)}${blab('Diese Woche')}${bRow('heiz', 1)}${bRow('nk', 1)}` +
+      `${blab('Später')}${bRow('mama', 1)}${bRow('kfz', 1)}${blab('Ohne Datum')}${bRow('reifen', 1)}${bRow('buch', 1)}${bRow('kontor', 1)}</div>` + fab),
+    ordner: () => dev('B', sb() + bTop() + '<div class="b-lt"><h1>Projekte</h1><p>5 offen · 6 erledigt</p></div>' + bChips('pr') +
+      `<div class="b-list">${bRow('mock')}${bRow('backup')}${bRow('kontor')}${bRow('morse')}${bRow('steady')}<div class="b-done">Erledigt <small>6</small>${I.down}</div></div>` + fab),
+  };
+
+  // ---------- Richtung C: Block ----------
+  const cTop = (back) => `<div class="a-top"><span class="back">${I.back}${back}</span><span class="icbs">${icb(I.search)}</span></div>`;
+  const blk = (k, n, c, p) => `<div class="blk" style="--o:${k === 'alle' ? '#16181D' : F[k].C}"><h3>${n}</h3><span class="n">${c}</span><p>${p}</p></div>`;
+  const cRow = (k) => {
+    const t = T[k];
+    return `<div class="c-row"><span class="ck"></span><span class="rt"><b>${t.t}</b>` +
+      (t.d ? `<small><span class="c-chip${t.d[1] === 'red' ? ' red' : ''}">${t.d[0]}</span></small>` : '') + '</span></div>';
+  };
+  const C = {
+    alle: () => dev('C', sb() + cTop('Apps') + '<div class="c-wm"><h1>Tick</h1><span class="c-due">3 fällig</span></div><div class="blocks">' +
+      blk('alle', 'Alle', 21, 'Backup in Dateien sichern · Zahnarzt anrufen · Mockups ansehen') +
+      blk('in', 'Eingang', 3, 'Zahnarzt anrufen · Reifenwechsel buchen') +
+      blk('pr', 'Projekte', 5, 'Todo-App: Mockups ansehen · Backup in Dateien sichern') +
+      blk('zu', 'Zuhause', 4, 'Heizung entlüften · Glühbirne im Flur tauschen') +
+      blk('ei', 'Einkauf', 4, 'Haferflocken · Kaffeebohnen · Spülmaschinentabs') +
+      blk('pa', 'Papierkram', 3, 'Nebenkostenabrechnung prüfen · Kfz-Versicherung') +
+      blk('ge', 'Geschenke', 2, 'Geschenk für Mama · Adventskalender für Sarah') + '</div>'),
+    ordner: () => dev('C full', sb() + cTop('Tick') + '<div class="c-title"><h1>Projekte</h1><p>5 offen · 6 erledigt</p></div>' +
+      `<div>${cRow('mock')}${cRow('backup')}${cRow('kontor')}${cRow('morse')}${cRow('steady')}<div class="c-done">Erledigt · 6</div></div>` +
+      `<div class="c-add">${I.plus}Neues Todo</div>`, `--o:${F.pr.C}`),
+  };
+
+  // ---------- Seite füllen ----------
+  const DIRS = [
+    ['A', 'Reiter', 'Gewählt', 'Hell. Die Ordner sind Karteireiter über einem weißen Blatt, der aktive geht ins Blatt über. Farbe nur an Punkten, Kreisen und dem Strich am Reiter. Schrift Figtree.', V.alle, V.ordner],
+    ['B', 'Nacht', '', 'Dunkel. Ordner als Chips, „Alle“ als flache Liste nach Datum, das Datum rechts in Mono. Schrift Geist. Nah an Steady und Form, appdeck hätte dann vier dunkle Apps.', B.alle, B.ordner],
+    ['C', 'Block', '', 'Farbig. Der Start ist eine Übersicht aus Farbblöcken, ein Ordner ist eine ganze Seite in seiner Farbe. Schrift Archivo, breit und fett. Ändert auch den Aufbau: „Alle“ ist der erste Block.', C.alle, C.ordner],
+  ];
+  document.getElementById('dirs').innerHTML = DIRS.map(([l, n, tag, p, a, o]) =>
+    `<div class="pg-dh"><h3><span>${l}</span>${n}${tag ? `<em>${tag}</em>` : ''}</h3><p>${p}</p></div>` +
+    `<div class="pg-fit">${a()}</div><div class="pg-fit">${o()}</div>`).join('');
+
+  const SCREENS = [
+    ['v1', 1, 'Alle', V.alle, [
+      'Oben „Fällig“: Überfälliges in Rot, dann was heute fällig ist. Hier nennt jede Zeile ihren Ordner.',
+      'Darunter ein Abschnitt pro Ordner, der Eingang zuerst. Ein Tipp auf den Kopf öffnet den Ordner.',
+      'Der Ring jedes Kreises hat die Farbe seines Ordners.',
+      'Unten das Schnellfeld, rechts darin der Ordner, in dem das neue Todo landet. In „Alle“ ist das der Eingang.',
+    ]],
+    ['v2', 2, 'Ordner', V.ordner, [
+      'Der Reiter „Projekte“ geht ins Blatt über, oben ein Strich in Blau.',
+      'Eigene Reihenfolge per Ziehen. „Mockups ansehen“ steht oben, weil es dorthin gezogen wurde, nicht weil es fällig ist.',
+      'Am Ende „Erledigt“ mit Anzahl, eingeklappt (8).',
+      'Das Schnellfeld legt direkt in Projekte ab.',
+    ]],
+    ['v3', 3, 'Erfassen', V.erfassen, [
+      'Weiter legt an, das Feld bleibt offen. „Backpapier“ ist gerade dazugekommen und leuchtet kurz am Ende auf.',
+      'Ordner und Datum bleiben für das nächste stehen. Ein Tipp auf „Einkauf“ öffnet die Ordnerauswahl (5).',
+      'Heute, Morgen und Datum sind Chips, nichts davon ist Pflicht.',
+    ]],
+    ['v4', 4, '# für den Ordner', V.hash, [
+      '„#ge“ im Titel zeigt passende Ordner über dem Feld. Ein Tipp setzt Geschenke und nimmt „#ge“ aus dem Titel.',
+      'Ohne Tipp bleibt „#ge“ einfach Text.',
+      'Landet das Todo nicht in der offenen Ansicht, kommt kurz „In Geschenke abgelegt“.',
+    ]],
+    ['v5', 5, 'Ordner wählen', V.waehlen, [
+      'Kommt vom Ordner-Chip beim Erfassen, aus dem Todo (6) und vom Wischen „Verschieben“ (7).',
+      'Der aktuelle Ordner hat den Haken, daneben steht, wie viel offen ist.',
+      '„Neuer Ordner …“ legt an und verschiebt gleich hinein.',
+    ]],
+    ['v6', 6, 'Todo', V.todo, [
+      'Titel und Notiz direkt bearbeitbar, kein Sichern-Knopf. Fertig oder nach unten wegziehen schließt.',
+      'Fällig: Heute, Morgen, Datum oder Ohne, darüber ausgeschrieben, welcher Tag.',
+      'Der Kreis oben hakt auch hier ab.',
+    ]],
+    ['v7', 7, 'Abhaken und Wischen', V.abhaken, [
+      '„Glühbirne“ ist gerade abgehakt. Zwei Sekunden lang nimmt ein zweiter Tipp es zurück, dann rutscht es zu „Erledigt“.',
+      '„Fenster putzen“ ist nach links gewischt: Verschieben oder Löschen. Ganz durchwischen löscht, mit Rückgängig in der Meldung.',
+    ]],
+    ['v8', 8, 'Erledigt', V.erledigt, [
+      'Aufgeklappt nach Tagen, das Neueste zuerst. Beim Scrollen wird der Titel klein, die Reiter bleiben stehen.',
+      'Ein Tipp auf den vollen Kreis macht ein Todo wieder offen, an seinem alten Platz.',
+      '„Erledigte löschen“ fragt nach und gilt für diesen Ordner, in „Alle“ für alle.',
+    ]],
+    ['v9', 9, 'Suche', V.suche, [
+      'Sucht in Titel und Notiz, in allen Ordnern, auch im Erledigten.',
+      'Steht der Treffer nur in der Notiz, zeigt die Zeile den Ausschnitt.',
+    ]],
+    ['v10', 10, 'Ordner verwalten', V.ordnerliste, [
+      'Über ⋯. Die Reihenfolge hier ist die der Reiter und der Abschnitte in „Alle“.',
+      '„Einkauf“ wird gerade nach oben gezogen.',
+      'Der Eingang steht für sich: immer zuerst, kein Griff, nicht löschbar.',
+    ]],
+    ['v11', 11, 'Ordner', V.ordnerblatt, [
+      'Name und eine von zehn Farben. Die Vorschau zeigt den Reiter so, wie er oben steht.',
+      'Ein neuer Ordner bekommt die nächste freie Farbe.',
+    ]],
+    ['v12', 12, 'Ordner löschen', V.loeschen, [
+      'Fragt nur nach, wenn noch Offenes darin liegt. Zuerst steht das Verschieben in den Eingang.',
+      'Erledigte gehen mit dem Ordner.',
+    ]],
+    ['v13', 13, 'Erststart', V.erststart, [
+      'Nur der Reiter „Alle“ und das +. „Was steht an?“, darunter Ordner, die ein Tipp anlegt.',
+      'Das Schnellfeld ist sofort da, das erste Todo darf ohne Ordner kommen.',
+    ]],
+    ['v14', 14, 'Launcher', V.launcher, [
+      'Die Plakette zählt, was heute fällig oder überfällig ist. Sie ersetzt die Mitteilung, die eine Web-App nicht schicken kann.',
+      'Bei 0 keine Plakette. Gebaut als allgemeine badge()-Funktion in apps.js, die Zeitkapsel kann sie mitnutzen.',
+    ]],
+  ];
+
+  document.getElementById('toc').innerHTML = '<a href="#richtungen"><b>A–C</b>Richtungen</a>' +
+    SCREENS.map(([id, n, t]) => `<a href="#${id}"><b>${n}</b>${t}</a>`).join('') +
+    '<a href="#zeichen">Farben und Zeichen</a>';
+
+  document.getElementById('screens').innerHTML = SCREENS.map(([id, n, t, fn, notes]) =>
+    `<figure class="pg-shot" id="${id}"><div class="pg-fit">${fn()}</div>` +
+    `<figcaption class="pg-cap"><h3><span>${n}</span>${t}</h3><ul>${notes.map((x) => `<li>${x}</li>`).join('')}</ul></figcaption></figure>`).join('');
+
+  document.getElementById('pal').innerHTML = PAL.map(([n, c]) =>
+    `<div class="pg-sw" style="--o:${c}"><i></i><div><b>${n}</b><small>${c}</small></div></div>`).join('') +
+    `<div class="pg-sw" style="--o:${F.in.A}"><i></i><div><b>Eingang</b><small>${F.in.A}</small></div></div>`;
+
+  document.getElementById('demo').innerHTML =
+    aRow({ f: 'zu', t: 'Offen' }) +
+    aRow({ f: 'zu', t: 'Mit Notiz', n: 1 }) +
+    aRow({ f: 'pr', t: 'Heute fällig', d: ['heute', 'now'] }) +
+    aRow({ f: 'pr', t: 'Überfällig, in „Alle“ mit Ordner', d: ['gestern', 'red'] }, { f: 1 }) +
+    aRow({ f: 'ei', t: 'Gerade abgehakt, noch 2 Sekunden' }, { done: 1 }) +
+    aRow({ f: 'ei', t: 'Gerade angelegt' }, { cls: 'flash' });
+
+  document.getElementById('brand-icon').innerHTML = TICK;
+  document.getElementById('sym').innerHTML =
+    [96, 64, 40].map((px) => `<svg viewBox="0 0 180 180" width="${px}" height="${px}" role="img" aria-label="Tick-Symbol ${px} px">${TICK}</svg>`).join('') +
+    `<p>Drei Listenzeilen, die oberste abgehakt, weiß auf Violett ${VIOLET}. Die Farbe hat noch keine App, und das Motiv ist nicht der einzelne Kasten von Steady.</p>`;
+
+  // Aktiver Reiter rückt ins Bild, wenn er rechts aus der Leiste fällt
+  function tabsInView() {
+    document.querySelectorAll('.a-tabs').forEach((bar) => {
+      const on = bar.querySelector('.tab.on');
+      if (!on) return;
+      const right = on.offsetLeft + on.offsetWidth;
+      bar.scrollLeft = right > bar.clientWidth - 24 ? right - bar.clientWidth + 64 : 0;
+    });
+  }
+
+  // Geräte auf schmalen Schirmen verkleinern (zoom statt transform: die Höhe schrumpft mit)
+  function fit() {
+    document.querySelectorAll('.pg-fit').forEach((f) => {
+      const d = f.firstElementChild;
+      d.style.zoom = Math.min(1, f.clientWidth / 402);
+    });
+  }
+  fit();
+  tabsInView();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(tabsInView);
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(document.body);
+  else window.addEventListener('resize', fit);
+})();
+</script>

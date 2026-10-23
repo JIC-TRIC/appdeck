@@ -4,7 +4,7 @@ Briefe an dich selbst, die sich erst an einem bestimmten Tag öffnen. Heute schr
 vergessen – und in einem Jahr lesen, was dich damals beschäftigt hat und wo du damals standest.
 
 Projekt-ID `zeitkapsel` (vorläufig, siehe Name in den offenen Fragen), später Ordner `apps/zeitkapsel/`,
-Speicher unter `zeitkapsel:*`. Gebaut in TypeScript + Ionic wie Kontor, Steady, Piano, Loci, Stash und Form.
+Speicher unter `zeitkapsel:*`. Gebaut in TypeScript + Ionic wie Kontor, Steady, Piano, Loci, Stash, Form und Tick.
 
 `[ ]` = offen, `[x]` = gebaut. **Stand: Entwurf (14.10.2026), noch nichts gebaut.** Vor dem Bau wie gewohnt:
 Fragerunde (siehe „Offene Fragen“ ganz unten), dann Mockups, dann bauen.
@@ -94,7 +94,8 @@ bricht ab, wenn es den Ordner schon gibt. Beim Bau zieht die Datei als `apps/zei
 
 - [ ] Liegt ein Brief bereit (Tag erreicht, noch nicht geöffnet), trägt die Kachel im Launcher eine Plakette
   mit der Anzahl, wie bei iOS. Der Launcher liest dafür nur die Öffnungstage und ob geöffnet aus
-  `zeitkapsel:briefe`, nie den Text.
+  `zeitkapsel:briefe`, nie den Text. Die Plakette gibt es seit Tick (23.10.2026): eine `badge`-Funktion in
+  `apps.js` genügt, siehe `tickBadge()`.
 - [ ] Sonst keine Hinweise – keine Liste, kein Countdown im Launcher.
 
 ### Backup
@@ -172,8 +173,8 @@ davon abheben. Drei Richtungen zum Vergleichen:
   Schreibmaschinen-Mono.
 - **Symbol** im Stil „Signal“ (siehe README): Umschlag mit Siegel oder Sanduhr.
 - **Schrift:** möglichst eine, die noch keine App nutzt. Belegt sind Barlow Condensed, Instrument Sans und
-  Serif, Schibsted Grotesk, IBM Plex, Gloock, Newsreader, Bricolage Grotesque und Onest. Eine neue Schrift wäre
-  eine neue `@fontsource`-Abhängigkeit.
+  Serif, Schibsted Grotesk, IBM Plex, Gloock, Newsreader, Bricolage Grotesque, Onest und Figtree (Tick).
+  Eine neue Schrift wäre eine neue `@fontsource`-Abhängigkeit.
 
 ## Nicht im MVP
 

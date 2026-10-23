@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- Tick: drei Listenzeilen, die oberste abgehakt (Haken in der Kachelfarbe), weiss auf Violett (Symbol-Stil „Signal“ siehe README) -->
+  <rect width="180" height="180" fill="#7A50E0"/>
+  <circle cx="56" cy="56" r="16" fill="#FFFFFF"/>
+  <path d="M48.5 56.5l5.5 5.5 10-11" fill="none" stroke="#7A50E0" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M86 56h48" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>
+  <g fill="none" stroke="#FFFFFF" stroke-opacity="0.6" stroke-linecap="round">
+    <circle cx="56" cy="90" r="13" stroke-width="6"/>
+    <path d="M86 90h34" stroke-width="12"/>
+    <circle cx="56" cy="124" r="13" stroke-width="6"/>
+    <path d="M86 124h42" stroke-width="12"/>
+  </g>
+</svg>

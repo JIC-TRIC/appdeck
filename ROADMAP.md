@@ -134,6 +134,19 @@ Wochenziel, „Fertig“ mit Meilensteinen, Konfetti und Teilen. Noch offen:
 - Speicher: bei 4 Trainings à 20 Sätzen pro Woche grob 4.000 Sätze im Jahr, ein paar hundert KB –
   bleibt vorerst in localStorage, zusammen mit Kontor ein Grund für den IndexedDB-Umzug (siehe oben).
 
+## Tick
+
+Gebaut am 23.10.2026 nach Feature-Liste und Mockups (`apps/tick/mockups.html`, Richtung A „Reiter“),
+Regeln in `apps/tick/konzept.md`: Gesamtliste mit Fällig oben, Ordner als Reiter, Schnellfeld mit `#` für
+den Ordner, Abhaken mit Bedenkzeit, Wischen, Suche, Ordner verwalten, Plakette an der Kachel (dafür kann
+jetzt jede App in `apps.js` eine `badge`-Funktion haben). Noch offen:
+
+- **Am iPhone testen**: Schnellfeld über der Tastatur, Chips ohne dass die Tastatur zugeht, Haptik, langer
+  Druck zum Sortieren.
+- **Wiederholungen** („alle N Tage“) – bewusst draußen, Grenze zu Steady.
+- **Mehrfachauswahl** zum Aufräumen des Eingangs, **Unteraufgaben**, eigene Ansicht **Heute**, Ordner
+  **archivieren**, **aus Stash übernehmen**. Siehe „Nicht im MVP“ im Konzept.
+
 ## Ideen für neue Apps
 
 Nur festgehalten, noch nicht entschieden. Vor dem Bau wie gewohnt: Fragerunde, dann `konzept.md`
