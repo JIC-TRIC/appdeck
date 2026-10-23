@@ -67,25 +67,36 @@ export interface Zaehlung {
   alle: number
   eingang: number
   je: Map<string, number>
+  /** heute faellig oder ueberfaellig - insgesamt, im Eingang, je Ordner */
   faellig: number
+  faelligEingang: number
+  faelligJe: Map<string, number>
 }
 
 /** Offene Todos je Reiter, dazu wie viele heute faellig oder ueberfaellig sind. */
 export function zaehle(todos: Todo[], ordner: Ordner[], heute: string): Zaehlung {
   const ids = ordnerIds(ordner)
   const je = new Map(ordner.map((o) => [o.id, 0]))
+  const faelligJe = new Map(ordner.map((o) => [o.id, 0]))
   let alle = 0
   let eingang = 0
   let faellig = 0
+  let faelligEingang = 0
   for (const t of todos) {
     if (!istOffen(t)) continue
     alle++
-    if (istFaellig(t, heute)) faellig++
+    const f = istFaellig(t, heute)
+    if (f) faellig++
     const o = ordnerVon(t, ids)
-    if (o === null) eingang++
-    else je.set(o, (je.get(o) ?? 0) + 1)
+    if (o === null) {
+      eingang++
+      if (f) faelligEingang++
+    } else {
+      je.set(o, (je.get(o) ?? 0) + 1)
+      if (f) faelligJe.set(o, (faelligJe.get(o) ?? 0) + 1)
+    }
   }
-  return { alle, eingang, je, faellig }
+  return { alle, eingang, je, faellig, faelligEingang, faelligJe }
 }
 
 /** Zahl fuer die Plakette an der Kachel - dieselbe Rechnung steht in apps.js (tickBadge). */

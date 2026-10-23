@@ -272,6 +272,16 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
 .srch > span { font-size: 17px; font-weight: 500; }
 
 .ig { margin: 0 16px 20px; background: var(--sheet); border-radius: 16px; position: relative; }
+.a-top .txt { font-size: 16.5px; font-weight: 500; color: var(--tx2); }
+.kk { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 4px 16px 0; }
+.kt { display: flex; flex-direction: column; justify-content: space-between; gap: 14px; min-height: 108px; padding: 15px 14px 13px 16px; border-radius: 18px; background: var(--sheet); box-shadow: inset 0 3px 0 var(--o, var(--ink)), 0 1px 2px rgba(22, 24, 29, .06); }
+.kn { display: flex; align-items: baseline; gap: 8px; font-size: 16px; font-weight: 700; }
+.kn i { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--o); }
+.kz { display: flex; align-items: baseline; gap: 5px; font-size: 13px; font-weight: 600; color: var(--tx2); }
+.kz b { font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: -.02em; color: var(--tx); }
+.kz em { margin-left: auto; font-style: normal; font-weight: 700; color: var(--red); }
+.kt.neu { flex-direction: row; align-items: center; justify-content: center; gap: 6px; background: none; box-shadow: inset 0 0 0 1.5px #E1E4E8; color: var(--tx2); font-size: 15px; font-weight: 600; }
+.kt.neu svg { width: 16px; height: 16px; }
 .ig .li + .li::before { left: 44px; background: var(--ln); }
 .li .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--o); flex: none; }
 .li .gr { display: grid; color: #B9BEC5; }
@@ -539,8 +549,11 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
 
   // Richtung A
   const aTop = (back = 'Apps', icons = true) =>
-    `<div class="a-top"><span class="back">${I.back}${back}</span>${icons ? `<span class="icbs">${icb(I.search)}${icb(I.more)}</span>` : ''}</div>`;
-  const aNav = (t) => `<div class="a-nav"><span class="back">${I.back}Apps</span><b>${t}</b><span class="icbs">${icb(I.search)}${icb(I.more)}</span></div>`;
+    `<div class="a-top"><span class="back">${I.back}${back}</span>${icons ? `<span class="icbs">${icb(I.folder)}${icb(I.search)}${icb(I.more)}</span>` : ''}</div>`;
+  const aNav = (t) => `<div class="a-nav"><span class="back">${I.back}Apps</span><b>${t}</b><span class="icbs">${icb(I.folder)}${icb(I.search)}${icb(I.more)}</span></div>`;
+  const karte = (n, f, offen, faellig) =>
+    `<div class="kt"${f ? ` style="--o:${f}"` : ''}><span class="kn">${f ? '<i></i>' : ''}${n}</span>` +
+    `<span class="kz"><b>${offen}</b>offen${faellig ? `<em>${faellig} fällig</em>` : ''}</span></div>`;
   const aTitle = (t, sub) => `<div class="a-lt"><h1>${t}</h1><p>${sub}</p></div>`;
   const tab = (k, on, n) => k === 'alle'
     ? `<span class="tab${on ? ' on' : ''}">Alle<small>${n}</small></span>`
@@ -655,6 +668,12 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
       [['Zuhause', '#2F9E5B'], ['Einkauf', '#EF7A1C'], ['Projekte', '#2E7CF6'], ['Papierkram', '#9B51E0'], ['Arbeit', '#E5484D']]
         .map(([n, c]) => `<span class="chip new" style="--o:${c}">${I.plus}${n}</span>`).join('') +
       '</div></div></div>' + aAdd('in')),
+    uebersicht: () => dev('A', sb() +
+      `<div class="a-top"><span class="back">${I.back}Alle</span><span class="txt">Bearbeiten</span></div>` +
+      aTitle('Ordner', '5 Ordner · 21 offen') +
+      `<div class="kk">${karte('Alle', '', 21, 3)}${karte('Eingang', F.in.A, 3, 1)}${karte('Projekte', F.pr.A, 5, 2)}` +
+      `${karte('Zuhause', F.zu.A, 4, 0)}${karte('Einkauf', F.ei.A, 4, 0)}${karte('Papierkram', F.pa.A, 3, 0)}` +
+      `${karte('Geschenke', F.ge.A, 2, 0)}<div class="kt neu">${I.plus}Neuer Ordner</div></div>`),
     launcher: () => dev('L', sb() +
       `<div class="l-head"><div><div class="l-date">Freitag, 23. Oktober</div><h1>appdeck</h1></div><span class="l-gear">${I.gear}</span></div>` +
       `<div class="l-grid">${APPS.map(([n, c, svg, badge]) =>
@@ -719,6 +738,7 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
       'Darunter ein Abschnitt pro Ordner, der Eingang zuerst. Ein Tipp auf den Kopf öffnet den Ordner.',
       'Der Ring jedes Kreises hat die Farbe seines Ordners.',
       'Unten das Schnellfeld, rechts darin der Ordner, in dem das neue Todo landet. In „Alle“ ist das der Eingang.',
+      'Oben rechts das Ordner-Symbol: alle Ordner als Karten (15).',
     ]],
     ['v2', 2, 'Ordner', V.ordner, [
       'Der Reiter „Projekte“ geht ins Blatt über, oben ein Strich in Blau.',
@@ -780,6 +800,11 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     ['v14', 14, 'Launcher', V.launcher, [
       'Die Plakette zählt, was heute fällig oder überfällig ist. Sie ersetzt die Mitteilung, die eine Web-App nicht schicken kann.',
       'Bei 0 keine Plakette. Gebaut als allgemeine badge()-Funktion in apps.js, die Zeitkapsel kann sie mitnutzen.',
+    ]],
+    ['v15', 15, 'Alle Ordner', V.uebersicht, [
+      'Das Ordner-Symbol oben rechts öffnet alle Ordner als Karten, mit dem Strich in der Ordnerfarbe wie am aktiven Reiter.',
+      'Jede Karte zeigt, wie viel offen und in Rot, wie viel fällig ist. Ein Tipp führt direkt in den Ordner.',
+      'Bearbeiten macht daraus die Liste mit Griffen (10).',
     ]],
   ];
 

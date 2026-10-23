@@ -39,5 +39,5 @@ export interface Entwurf {
 /** Der offene Reiter: alle, der Eingang oder die id eines Ordners. */
 export type Reiter = string
 
-/** Seiten ueber der Liste. */
-export type View = { name: 'ordner' }
+/** Seiten ueber der Liste: alle Ordner, als Karten oder gleich zum Bearbeiten. */
+export type View = { name: 'ordner'; bearbeiten: boolean }

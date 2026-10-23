@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { IonList, IonReorder, IonReorderGroup } from '@ionic/react'
 import { EINGANG_FARBE, farbe } from '../farben'
 import { haptik } from '../geraet'
-import { IconDown, IconGriff, IconLeft, IconMehr, IconPlus, IconRight, IconSuche, IconUp, IconX } from '../icons'
+import { IconDown, IconGriff, IconLeft, IconMehr, IconOrdner, IconPlus, IconRight, IconSuche, IconUp, IconX } from '../icons'
 import {
   alleAbschnitte,
   ausschnitt,
@@ -56,6 +56,8 @@ export interface ListeProps {
   onNeuerOrdner: () => void
   onVorschlag: (name: string, farbe: number) => void
   onMenue: () => void
+  /** alle Ordner als Karten */
+  onUebersicht: () => void
   onSortiert: (ids: string[]) => void
   onErledigteLoeschen: (ansicht: string | null, n: number) => void
 }
@@ -351,6 +353,9 @@ export function Liste(p: ListeProps) {
             </button>
           ) : (
             <>
+              <button type="button" className="t-rund" aria-label="Alle Ordner" onClick={p.onUebersicht} tabIndex={suche ? -1 : 0}>
+                <IconOrdner />
+              </button>
               <button type="button" className="t-rund" aria-label="Suchen" onClick={sucheAn} tabIndex={suche ? -1 : 0}>
                 <IconSuche />
               </button>

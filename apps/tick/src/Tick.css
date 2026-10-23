@@ -1499,6 +1499,94 @@ button.t-li:active {
   background: var(--sheet);
 }
 
+/* ---------- Alle Ordner als Karten ---------- */
+
+/* Wie die Reiter: weisse Flaeche, oben ein Strich in der Ordnerfarbe. */
+.t-karten {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 4px 16px 0;
+}
+
+.t-karte {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 108px;
+  padding: 15px 14px 13px 16px;
+  border-radius: 18px;
+  background: var(--sheet);
+  box-shadow: inset 0 3px 0 var(--o, var(--ink)), 0 1px 2px rgba(22, 24, 29, 0.06);
+  text-align: left;
+  transition: transform 0.12s;
+}
+
+.t-karte:active {
+  transform: scale(0.97);
+}
+
+.k-name {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.k-name i {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--o);
+}
+
+.k-zahl {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tx2);
+}
+
+.k-zahl b {
+  font: 800 30px/1 var(--f-ui);
+  letter-spacing: -0.02em;
+  color: var(--tx);
+  font-variant-numeric: tabular-nums;
+}
+
+.k-zahl em {
+  margin-left: auto;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--red);
+  white-space: nowrap;
+}
+
+.t-karte.neu {
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 6px;
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--fill-2);
+  color: var(--tx2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.t-karte.neu .t-i {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.6;
+}
+
 /* ---------- Ordner verwalten ---------- */
 
 .t-ig {

@@ -75,6 +75,9 @@ describe('Ansichten', () => {
     expect(z.je.get('pr')).toBe(3)
     expect(z.je.get('ge')).toBe(0)
     expect(z.faellig).toBe(3)
+    expect(z.faelligEingang).toBe(1)
+    expect(z.faelligJe.get('pr')).toBe(2)
+    expect(z.faelligJe.get('zu')).toBe(0)
     expect(plakette(alle, HEUTE)).toBe(3)
   })
 

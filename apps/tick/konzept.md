@@ -53,6 +53,7 @@ Die Kurzfassung, Details unter „Regeln“. Die Nummern in Klammern sind die An
 11. [x] **Plakette an der Kachel** im Launcher mit der Zahl der fälligen Todos (14)
 12. [x] **Tick öffnet im zuletzt offenen Reiter**
 13. [x] **Erststart** mit Ordner-Vorschlägen (13)
+14. [x] **Alle Ordner** als Karten, ein Tipp führt direkt in den Ordner (15)
 
 ## Regeln
 
@@ -154,11 +155,22 @@ Die Kurzfassung, Details unter „Regeln“. Die Nummern in Klammern sind die An
 - [x] **Überfällig** in Rot: **gestern**, sonst **seit Mo** bzw. **seit 2. Okt**.
 - [x] Nach Mitternacht rechnet Tick beim Zurückkommen neu (und jede Minute, solange es offen ist).
 
+### Alle Ordner (seit 23.10.2026)
+
+- [x] Das Ordner-Symbol oben rechts (neben der Lupe) öffnet eine Seite mit allen Ordnern als Karten, zwei
+  nebeneinander: **Alle**, **Eingang** (wenn darin etwas liegt), dann die Ordner in ihrer Reihenfolge, am Ende
+  **Neuer Ordner**. Jede Karte trägt oben den Strich in der Ordnerfarbe wie ein aktiver Reiter, dazu Name,
+  wie viel offen ist und in Rot, wie viel fällig ist.
+- [x] Ein Tipp auf eine Karte führt direkt in den Ordner (die Seite gleitet weg, darunter steht schon sein
+  Reiter). Zurück ohne Wahl per „‹“ oder Wischen vom Rand.
+- [x] **Bearbeiten** oben rechts macht aus den Karten die Liste zum Verwalten (siehe unten), **Fertig** wieder
+  die Karten.
+
 ### Ordner verwalten
 
-- [x] Über ⋯ → **Ordner verwalten** (eigene Seite, zurück per Wischen vom Rand): der Eingang für sich, darunter
-  alle Ordner mit Farbpunkt, Name, Anzahl und Griff. Die Reihenfolge hier ist die der Reiter und der
-  Abschnitte in „Alle“. Darunter **Neuer Ordner**.
+- [x] Über ⋯ → **Ordner verwalten** oder **Bearbeiten** auf der Seite „Alle Ordner“ (zurück per Wischen vom
+  Rand): der Eingang für sich, darunter alle Ordner mit Farbpunkt, Name, Anzahl und Griff. Die Reihenfolge hier
+  ist die der Reiter und der Abschnitte in „Alle“. Darunter **Neuer Ordner**.
 - [x] ⋯ bietet außerdem **Reihenfolge ändern**, den offenen Ordner bearbeiten und **Neuer Ordner**.
 - [x] Ein Tipp auf einen Ordner öffnet ein Blatt mit Name, Farbe, Vorschau des Reiters und **Ordner löschen**.
 - [x] **Löschen** fragt nach. Liegen noch offene Todos darin: **In den Eingang verschieben** (ans Ende) oder
@@ -215,7 +227,7 @@ tick:reiter    'alle' | 'eingang' | ordnerId
 
 Nummern wie in den Mockups.
 
-1. **Alle (Start):** Kopf mit ‹ Apps, Lupe und ⋯, großer Titel mit „21 offen · 3 fällig“, Reiterleiste. Darunter
+1. **Alle (Start):** Kopf mit ‹ Apps, Ordner-Symbol, Lupe und ⋯, großer Titel mit „21 offen · 3 fällig“, Reiterleiste. Darunter
    Fällig, dann die Ordner-Abschnitte, unten das Schnellfeld.
 2. **Ordner:** wie 1, der Reiter des Ordners ist aktiv. Nur seine Todos in eigener Reihenfolge, am Ende
    „Erledigt · 6“.
@@ -232,6 +244,7 @@ Nummern wie in den Mockups.
 12. **Ordner löschen:** Rückfrage, wohin die offenen Todos sollen.
 13. **Erststart:** „Was steht an?“, Ordner-Vorschläge, Schnellfeld.
 14. **Launcher:** Kachel mit Plakette.
+15. **Alle Ordner:** Karten mit Name, offen und fällig, ein Tipp führt in den Ordner.
 
 ## Design (Richtung „Reiter“)
 

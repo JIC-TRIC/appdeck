@@ -272,7 +272,7 @@ function Tick() {
       buttons.push({ text: 'Reihenfolge ändern', handler: () => setSortieren(true) })
     if (o) buttons.push({ text: `„${o.name}“ bearbeiten`, handler: () => setOffen({ art: 'ordner', id: o.id }) })
     buttons.push({ text: 'Neuer Ordner', handler: () => setOffen({ art: 'ordner', id: null }) })
-    buttons.push({ text: 'Ordner verwalten', handler: () => push({ name: 'ordner' }) })
+    buttons.push({ text: 'Ordner verwalten', handler: () => push({ name: 'ordner', bearbeiten: true }) })
     buttons.push({ text: 'Abbrechen', role: 'cancel' })
     auswahl({ cssClass: 't-as', buttons })
   }
@@ -285,7 +285,13 @@ function Tick() {
         ordner={daten.ordner}
         zaehlung={zaehlung}
         zurueck={titelHier}
+        bearbeiten={view.bearbeiten}
         onZurueck={back}
+        onOeffnen={(r) => {
+          // Erst den Reiter setzen, dann zurueck: die Liste darunter zeigt ihn schon beim Hinausgleiten.
+          setReiter(r)
+          back()
+        }}
         onBearbeiten={(id) => setOffen({ art: 'ordner', id })}
         onNeu={() => setOffen({ art: 'ordner', id: null })}
         onSortiert={(ids) => {
@@ -320,6 +326,7 @@ function Tick() {
           refresh()
         }}
         onMenue={menue}
+        onUebersicht={() => push({ name: 'ordner', bearbeiten: false })}
         onSortiert={(ids) => {
           sortiere(ids)
           refresh()
