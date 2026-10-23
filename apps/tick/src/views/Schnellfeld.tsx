@@ -70,7 +70,12 @@ export function Schnellfeld({ entwurf, setEntwurf, ordner, heute, tastatur, onAn
           onAnlegen()
         }}
       >
-        {offen ? <span className="t-ck leer" aria-hidden="true" /> : (
+        {/* Das Plus bleibt stehen: zu oeffnet es das Feld, offen legt es an wie „Hinzufügen“. */}
+        {offen ? (
+          <button type="submit" className="t-pl leise" aria-label="Hinzufügen" disabled={!entwurf.titel.trim()} onMouseDown={fokusBleibt}>
+            <IconPlus />
+          </button>
+        ) : (
           <span className="t-pl" aria-hidden="true" onClick={() => feld.current?.focus()}>
             <IconPlus />
           </span>

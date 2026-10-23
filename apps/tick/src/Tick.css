@@ -646,10 +646,6 @@ button.t-ck::after {
   animation: t-hakt 0.3s ease;
 }
 
-.t-ck.leer {
-  opacity: 0.45;
-}
-
 .t-rt {
   flex: 1;
   min-width: 0;
@@ -1028,6 +1024,21 @@ button.t-ck::after {
   width: 16px;
   height: 16px;
   stroke-width: 2.6;
+}
+
+/* Offen: das Plus legt an, leiser als „Hinzufügen“ rechts */
+.t-pl.leise {
+  background: var(--fill-2);
+  color: var(--tx);
+  transition: opacity 0.15s, transform 0.12s;
+}
+
+.t-pl.leise:disabled {
+  opacity: 0.45;
+}
+
+.t-pl.leise:active:not(:disabled) {
+  transform: scale(0.9);
 }
 
 .t-feld input {
