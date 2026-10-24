@@ -46,7 +46,7 @@ import {
   speichereTraining,
 } from '../trainingStore'
 import { NAME_MAX, sauber } from '../store'
-import { Blatt, Schalter, Seite, Stepper, TextKnopf } from '../ui'
+import { Blatt, Schalter, Seite, Stepper, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatZahl, relativTag, wieLange } from '../util'
 import { Hinzufuegen } from './Hinzufuegen'
 import { LiveZahlen, PauseAnzeige, PauseBlatt } from './Pause'
@@ -54,8 +54,8 @@ import { FELDNAME, Tastenfeld, type Feld } from './Tastenfeld'
 import { Zettel, useNotizAendern } from './Zettel'
 import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung, Uebung, VorlagenUebung } from '../types'
 
-// Ein Training. Laufend ist es die Startseite des Tabs "Training" (kein
-// Zurueck) und jeder Tipp wird sofort gesichert. Als Entwurf aendert es ein beendetes
+// Ein Training. Laufend liegt es ueber der Startseite des Tabs "Training"
+// ("< Form" fuehrt dorthin) und jeder Tipp wird sofort gesichert. Als Entwurf aendert es ein beendetes
 // oder macht ein nachgetragenes fertig - mit Name, Zeit und Notiz, erst
 // "Sichern" schreibt. Fertige Uebungen bleiben offen.
 //
@@ -84,7 +84,7 @@ const sortiert = (saetze: Satz[]) => [...saetze.filter((s) => s.aufwaermen), ...
 const nummer = (saetze: Satz[], si: number) => saetze.slice(0, si + 1).filter((s) => !s.aufwaermen).length
 
 function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training; neu?: boolean }) {
-  const { laufend, trainings, uebungById, vorlagen, heute, refresh, melde, push, back, toRoot, einstellungen: einst } = ctx
+  const { laufend, trainings, uebungById, vorlagen, heute, refresh, melde, push, replace, back, toRoot, einstellungen: einst } = ctx
   const istLaufend = !entwurf
   const [lokal, setLokal] = useState<Training | null>(entwurf ?? null)
   const t = istLaufend ? laufend : lokal
@@ -167,7 +167,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
   }, [frisch, rekorde])
 
   // Gerade beendet oder verworfen - die Seite gleitet noch hinaus.
-  if (!t) return <Seite>{null}</Seite>
+  if (!t) return <Seite links={istLaufend ? <Zurueck label="Form" onClick={back} /> : null}>{null}</Seite>
 
   const erfVon = (tu: TrainingsUebung): Erfassung => uebungById[tu.uebung]?.erfassung ?? 'gewicht'
 
@@ -284,6 +284,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
   const verwerfen = () => {
     setzeLaufend(null)
     refresh()
+    back()
     melde('Training verworfen')
   }
 
@@ -301,7 +302,8 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
     if (istLaufend) {
       setzeLaufend(null)
       refresh()
-      push({ name: 'fertig', id: fertig.id })
+      // Statt des Trainings - zurueck geht es dann zur Startseite.
+      replace({ name: 'fertig', id: fertig.id })
     } else {
       refresh()
       back()
@@ -389,15 +391,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
   return (
     <>
       <Seite
-        links={
-          istLaufend ? (
-            <button type="button" className="f-rund" onClick={() => setMenue(true)} aria-label="Menü">
-              <IconMehr />
-            </button>
-          ) : (
-            <TextKnopf onClick={back}>Abbrechen</TextKnopf>
-          )
-        }
+        links={istLaufend ? <Zurueck label="Form" onClick={back} /> : <TextKnopf onClick={back}>Abbrechen</TextKnopf>}
         titel={
           istLaufend ? (
             <PauseAnzeige t={t} uebungById={uebungById} korrektur={ctx.pausenKorrektur} onClick={() => setPauseOffen(true)} />
@@ -408,9 +402,16 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
           )
         }
         rechts={
-          <TextKnopf stark onClick={fertigMachen}>
-            {istLaufend ? 'Beenden' : 'Sichern'}
-          </TextKnopf>
+          <>
+            {istLaufend ? (
+              <button type="button" className="f-rund" onClick={() => setMenue(true)} aria-label="Menü">
+                <IconMehr />
+              </button>
+            ) : null}
+            <TextKnopf stark onClick={fertigMachen}>
+              {istLaufend ? 'Beenden' : 'Sichern'}
+            </TextKnopf>
+          </>
         }
         unterKopf={istLaufend ? <LiveZahlen t={t} uebungById={uebungById} /> : null}
         seiteRef={seiteRef}

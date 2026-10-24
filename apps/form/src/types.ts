@@ -129,6 +129,8 @@ export type Tab = 'training' | 'kalender' | 'statistik' | 'uebungen' | 'werte'
 
 /** Seiten ueber der Uebersicht. */
 export type View =
+  /** Das laufende Training - eine Seite ueber der Startseite des Tabs "Training". */
+  | { name: 'laufend' }
   | { name: 'wert'; id: string }
   | { name: 'messen'; tag: string }
   | { name: 'wertForm'; id?: string }

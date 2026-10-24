@@ -45,6 +45,11 @@ import type { FormCtx, Tab, Uebung, View, Wert } from './types'
 // Formularen, dem Bearbeiten eines Trainings und "Fertig" nicht: Dort wuerde
 // ein Tipp auf einen Tab die Eingabe verwerfen. Laeuft ein Training und man
 // steht woanders, zeigt eine Leiste darueber das Training mit seiner Pause.
+//
+// Das laufende Training ist eine Seite ueber der Startseite des Trainings
+// (Woche, Vorlagen): "< Form" oder Wischen fuehrt dorthin, von dort "< Apps"
+// zum Launcher, die Leiste ueber den Tabs wieder hinein. Der Tab "Training"
+// oeffnet es von anderen Tabs aus direkt, ein zweiter Tipp zeigt die Startseite.
 const TABS: { id: Tab; label: string; Icon: ComponentType }[] = [
   { id: 'training', label: 'Training', Icon: IconHantel },
   { id: 'kalender', label: 'Kalender', Icon: IconKalender },
@@ -52,12 +57,16 @@ const TABS: { id: Tab; label: string; Icon: ComponentType }[] = [
   { id: 'uebungen', label: 'Übungen', Icon: IconListe },
   { id: 'werte', label: 'Werte', Icon: IconWerte },
 ]
-const MIT_LEISTE: View['name'][] = ['training', 'uebung', 'vorlagen', 'wert']
+const MIT_LEISTE: View['name'][] = ['laufend', 'training', 'uebung', 'vorlagen', 'wert']
 
 const seitenKey = (v: View, i: number) => {
   const zusatz = 'id' in v ? (v.id ?? '') : v.name === 'messen' ? v.tag : v.name === 'neu' ? v.training.id : ''
   return `${i}:${v.name}:${zusatz}`
 }
+
+const LAUFEND: View = { name: 'laufend' }
+/** Das laufende Training direkt ueber der Startseite - so erscheint es beim Tab-Wechsel ohne Fahrt. */
+const LAUFEND_KEY = seitenKey(LAUFEND, 0)
 
 function Form() {
   // Ein Zaehler statt einzelner Zustaende: nach jeder Aenderung wird alles neu
@@ -105,7 +114,8 @@ function Form() {
   useWach(!!daten.laufend && daten.einstellungen.wach)
   usePausenTon(daten.laufend, daten.uebungById, daten.pausenKorrektur, daten.einstellungen.ton)
 
-  const { stack, push, replace, back, toRoot } = useHistoryStack<View>(() => [])
+  // Laeuft ein Training, oeffnet Form gleich darin.
+  const { stack, push, replace, back, toRoot } = useHistoryStack<View>(() => (getLaufend() ? [LAUFEND] : []))
 
   // Form oeffnet beim laufenden Training, sonst bei den Werten oder beim
   // Training - je nachdem, wo man zuletzt war (form:bereich).
@@ -116,25 +126,37 @@ function Form() {
   useEffect(() => {
     if (ohneFahrt) setOhneFahrt(undefined)
   }, [ohneFahrt])
-  // Aktiver Tab nochmal: zurueck zu seiner Startseite. Anderer Tab: ohne Fahrt wechseln.
+  // Aktiver Tab nochmal: zurueck zu seiner Startseite. Anderer Tab: ohne Fahrt
+  // wechseln - zum Training mit dem laufenden Training obenauf.
   const zeigeTab = useCallback(
     (t: Tab) => {
       if (t === tab) {
         if (stack.length) toRoot()
         return
       }
-      setOhneFahrt(`start:${t}`)
+      const mitLauf = t === 'training' && !!getLaufend()
+      setOhneFahrt(mitLauf ? LAUFEND_KEY : `start:${t}`)
       toRoot()
+      if (mitLauf) replace(LAUFEND)
       setTab(t)
       speichereBereich(t === 'werte' ? 'werte' : 'training')
     },
-    [tab, stack.length, toRoot],
+    [tab, stack.length, toRoot, replace],
   )
+  // Die Leiste ueber den Tabs: von der Startseite hinein, aus einer Seite
+  // darueber (Verlauf einer Uebung) zurueck.
+  const zumTraining = () => {
+    if (tab !== 'training') zeigeTab('training')
+    else if (!stack.length) push(LAUFEND)
+    else {
+      toRoot()
+      replace(LAUFEND)
+    }
+  }
   const oben = stack[stack.length - 1]
   const leiste = !oben || MIT_LEISTE.includes(oben.name)
-  // Das laufende Training ist die Startseite des Trainings-Tabs - steht man
-  // dort, braucht es keine Leiste, die dorthin fuehrt.
-  const lauf = daten.laufend && leiste && (tab !== 'training' || !!oben) ? daten.laufend : null
+  // Steht man im laufenden Training, braucht es keine Leiste, die dorthin fuehrt.
+  const lauf = daten.laufend && leiste && oben?.name !== 'laufend' ? daten.laufend : null
 
   // Es gibt immer nur eine Meldung - eine neue ersetzt die alte. Oben, weil
   // unten der Hauptknopf steht.
@@ -159,7 +181,7 @@ function Form() {
     if (!view) {
       switch (tab) {
         case 'training':
-          return daten.laufend ? <TrainingSeite ctx={ctx} /> : <TrainingStart ctx={ctx} />
+          return <TrainingStart ctx={ctx} />
         case 'kalender':
           return <Kalender ctx={ctx} />
         case 'statistik':
@@ -171,6 +193,8 @@ function Form() {
       }
     }
     switch (view.name) {
+      case 'laufend':
+        return <TrainingSeite ctx={ctx} />
       case 'wert':
         return <WertSeite ctx={ctx} id={view.id} />
       case 'messen':
@@ -212,7 +236,7 @@ function Form() {
         instantFor={ohneFahrt}
       />
       {lauf ? (
-        <LaufLeiste t={lauf} uebungById={daten.uebungById} korrektur={daten.pausenKorrektur} onClick={() => zeigeTab('training')} />
+        <LaufLeiste t={lauf} uebungById={daten.uebungById} korrektur={daten.pausenKorrektur} onClick={zumTraining} />
       ) : null}
       {leiste ? (
         <nav className="f-tabs" aria-label="Bereiche">

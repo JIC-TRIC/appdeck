@@ -158,16 +158,21 @@ Wert.
 ### Prinzipien
 
 - **Unten eine Tab-Leiste** (seit 11.10.2026, vorher Zeilen „Verlauf“, „Übungen“, „Vorlagen“ auf der
-  Startseite): **Training** (Startseite, hier startet man – läuft eins, steht hier das laufende Training),
+  Startseite): **Training** (Startseite, hier startet man – läuft eins, liegt es darüber),
   **Kalender**, **Statistik**, **Übungen**, **Werte**. Im Seitenfluss unter der Bühne wie bei Piano, aktiv
   in Kreide statt Orange. Ein Tipp auf den aktiven Tab führt zu seiner Startseite zurück. Sie steht auch
   unter „Ein Training“, „Eine Übung“, „Ein Wert“ und der Liste der Vorlagen, aber **nicht** über
   Formularen (Vorlage, Übung, Wert, Messen, Nachtragen), dem Bearbeiten eines Trainings und „Fertig“ –
   dort würde ein Tipp die Eingabe verwerfen.
-- **Das laufende Training ist der Tab „Training“** (seit 11.10.2026, vorher gehörte ihm der ganze
-  Bildschirm ohne Tab-Leiste). Sein Tab hat dann einen orangen Punkt. Steht man woanders, zeigt eine
-  Leiste über den Tabs Name, Dauer, Sätze und die Pause (wie der Mini-Player bei Strong und Hevy); ein
-  Tipp führt zurück. Ton am Pausenende und „Bildschirm bleibt an“ gelten auf jedem Tab.
+- **Das laufende Training liegt über der Startseite des Tabs „Training“** (seit 25.10.2026; vom
+  11.10.2026 an war es selbst die Startseite des Tabs, Woche und Vorlagen waren dann nicht zu erreichen,
+  davor gehörte ihm der ganze Bildschirm ohne Tab-Leiste). Oben links „‹ Form“ (oder Wischen) führt zur
+  Startseite, dort „‹ Apps“ zum Launcher; das Menü ⋯ steht rechts neben „Beenden“. Sein Tab hat einen
+  orangen Punkt und öffnet es von anderen Tabs aus direkt, ein zweiter Tipp zeigt die Startseite. Steht
+  man nicht im Training, zeigt eine Leiste über den Tabs Name, Dauer, Sätze und die Pause (wie der
+  Mini-Player bei Strong und Hevy); ein Tipp führt zurück. Ein zweites Training startet nicht, solange
+  eins läuft („Push läuft noch“ mit „Zum Training“). Ton am Pausenende und „Bildschirm bleibt an“ gelten
+  auf jedem Tab.
 - **Grau steht das letzte Mal.** Ein Haken übernimmt es – wer dasselbe schafft wie letztes Mal, tippt
   nur Haken. Kein eigenes „Zuletzt“-Feld.
 - **Die Pause wird berechnet, nicht gezählt.** Jeder Haken speichert seine Uhrzeit, die Pause ist jetzt
@@ -350,7 +355,7 @@ Nummern wie in den Mockups.
   führt zur Liste der Vorlagen.
 - [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“, ein Knopf
   und darunter „Vorlage anlegen“.
-- [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden, darunter die Live-Zahlen. Pro Übung Name,
+- [x] **4 Training läuft:** ‹ Form, Pause, ⋯ (Menü), Beenden, darunter die Live-Zahlen. Pro Übung Name,
   Vorschlag (fertig: Vergleich), Wdh-Bereich, ⋯, Notiz als Zettel, Sätze `Nr | kg × Wdh | Haken`, „+ Satz“. Unten
   „+ Übung“ und die Notiz des Trainings. Darunter die Tab-Leiste.
 - [x] **5 Satz eingeben:** Blatt mit beiden Feldern, Schnellknöpfen, Ziffern und „Abhaken“.

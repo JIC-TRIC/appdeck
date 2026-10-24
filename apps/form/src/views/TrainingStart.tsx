@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useIonAlert } from '@ionic/react'
 import { IconPlay, IconPlus } from '../icons'
 import { naechsteVorlage } from '../trainingCalc'
 import { starteTraining } from '../trainingStore'
@@ -13,18 +14,32 @@ import type { FormCtx, Vorlage } from '../types'
 // dran ist, steht mit "als Nächstes" da - und ein leeres Training. "+" legt
 // eine Vorlage an, "Bearbeiten" sortiert und aendert sie. Solange es weder
 // Training noch Vorlage gibt, nur der Knopf fuers erste Training und darunter
-// "Vorlage anlegen". Laeuft ein Training, steht hier stattdessen das Training
-// (Form.tsx).
+// "Vorlage anlegen". Ein laufendes Training liegt als Seite darueber
+// (Form.tsx) - solange es laeuft, startet hier kein zweites.
 function TrainingStart({ ctx }: { ctx: FormCtx }) {
-  const { vorlagen, trainings, uebungById, heute, push, refresh } = ctx
+  const { vorlagen, trainings, uebungById, heute, laufend, push, refresh } = ctx
   const [zielOffen, setZielOffen] = useState(false)
+  const [frage] = useIonAlert()
   const tagVon = (ms: number) => dateKey(new Date(ms))
   const letztes = trainings[trainings.length - 1]
   const dran = naechsteVorlage(vorlagen, trainings)
 
   const starte = (v: Vorlage | null) => {
+    if (laufend) {
+      frage({
+        header: `${laufend.name} läuft noch`,
+        message: 'Erst beenden, dann geht das nächste los.',
+        cssClass: 'f-alert',
+        buttons: [
+          { text: 'Abbrechen', role: 'cancel' },
+          { text: 'Zum Training', handler: () => push({ name: 'laufend' }) },
+        ],
+      })
+      return
+    }
     starteTraining(v)
     refresh()
+    push({ name: 'laufend' })
   }
 
   const wann = (v: Vorlage) => {
@@ -34,7 +49,7 @@ function TrainingStart({ ctx }: { ctx: FormCtx }) {
     return 'noch nie'
   }
 
-  const ersterStart = !trainings.length && !vorlagen.length
+  const ersterStart = !trainings.length && !vorlagen.length && !laufend
 
   return (
     <Seite
