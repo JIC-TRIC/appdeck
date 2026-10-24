@@ -37,6 +37,16 @@ const RICHTUNGEN: Richtung[] = ['mehr', 'weniger', 'egal']
 /** Namen und Einheiten sind immer eine Zeile ohne doppelte Leerzeichen. */
 export const sauber = (s: string, max: number) => s.replace(/\s+/g, ' ').trim().slice(0, max).trim()
 
+/** Notizen duerfen mehrere Zeilen haben - jede ohne doppelte Leerzeichen, leere fallen weg. */
+export const sauberZeilen = (s: string, max: number) =>
+  s
+    .split(/\r?\n/)
+    .map((z) => z.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+    .join('\n')
+    .slice(0, max)
+    .trim()
+
 // ---------- Werte ----------
 
 /** Nur gueltige Werte, jede id einmal, in Anlege-Reihenfolge. */

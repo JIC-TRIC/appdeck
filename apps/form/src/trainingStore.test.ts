@@ -15,6 +15,7 @@ import {
   setzeEinstellungen,
   setzeLaufend,
   setzePausenKorrektur,
+  setzeUebung,
   speichereTraining,
   speichereUebung,
   speichereVorlage,
@@ -185,5 +186,16 @@ describe('loescheUebung', () => {
     expect(loescheUebung(a.id)).toBe(true)
     expect(getUebungen().map((u) => u.name)).toEqual(['B'])
     expect(getVorlagen()[0].uebungen).toEqual([])
+  })
+})
+
+describe('Notiz einer Uebung', () => {
+  it('behaelt Zeilen, raeumt Leerzeichen und leere Zeilen weg', () => {
+    const u = speichereUebung({ name: 'Beinpresse', erfassung: 'gewicht', pause: 120, notiz: '  Sitz   Stufe 4 \n\n\n Lehne 2  ' })!
+    expect(u.notiz).toBe('Sitz Stufe 4\nLehne 2')
+    setzeUebung(u.id, { notiz: 'Füße  schulterbreit\r\nnicht durchdrücken' })
+    expect(getUebungen()[0]).toMatchObject({ notiz: 'Füße schulterbreit\nnicht durchdrücken', pause: 120 })
+    setzeUebung(u.id, { notiz: 'x'.repeat(300) })
+    expect(getUebungen()[0].notiz).toHaveLength(200)
   })
 })

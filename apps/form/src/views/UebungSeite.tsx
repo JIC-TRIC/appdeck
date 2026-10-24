@@ -19,6 +19,7 @@ import {
 } from '../trainingCalc'
 import { Segment, Seite, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatDiff, formatKurz, formatZahl, relativTag, wieLange } from '../util'
+import { Zettel, useNotizAendern } from './Zettel'
 import type { Bereich, Erfassung, FormCtx, Punkt, Satz } from '../types'
 
 const BEREICHE: { id: Bereich; label: string }[] = [
@@ -52,11 +53,12 @@ const KENNZAHL_TEXT: Record<Kennzahl, string> = { gewicht: 'Schwerster Satz', '1
 // 1RM mit dem Satz, aus dem es geschaetzt ist. Rechts das Beste im Zeitraum
 // und die Veraenderung seit seinem Anfang.
 function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
-  const { uebungById, trainings, heute, push, back } = ctx
+  const { uebungById, trainings, heute, push, back, refresh } = ctx
   const [bereich, setBereich] = useState<Bereich>('alles')
   const [art, setArt] = useState<Kennzahl>('gewicht')
   // Angetippter Punkt im Verlauf (Index in den sichtbaren) - null = der juengste.
   const [auswahl, setAuswahl] = useState<number | null>(null)
+  const notizAendern = useNotizAendern(refresh)
   const u = uebungById[id]
   if (!u) return <Seite links={<Zurueck label="Übungen" onClick={back} />}>{null}</Seite>
 
@@ -119,7 +121,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
       <header className="f-kopf">
         <h1 className="f-h1">{u.name}</h1>
       </header>
-      {u.notiz ? <p className="f-notiz">{u.notiz}</p> : null}
+      {u.notiz ? <Zettel text={u.notiz} onClick={() => notizAendern(u)} /> : null}
 
       {letzte && best ? (
         <>

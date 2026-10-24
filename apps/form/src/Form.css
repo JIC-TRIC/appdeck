@@ -1323,9 +1323,47 @@ input {
   color: var(--text-2);
 }
 
-/* "Nicht als Vorgabe" - leiser als die Notiz. */
+/* "Nicht als Vorgabe" - leise. */
 .f-aus {
   color: var(--text-3);
+}
+
+/* Notiz der Uebung als Zettel: getoentes Papier mit Eselsohr, Text in voller
+   Kreide - im Training soll sie ins Auge fallen, ohne dem Orange Konkurrenz
+   zu machen. Ein Tipp aendert sie. */
+.f-zettel {
+  --papier: #2f2c26;
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 6px 20px 7px 10px;
+  border-radius: 6px;
+  background: linear-gradient(225deg, transparent 9px, var(--papier) 9px);
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.35;
+  text-align: left;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.f-zettel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 13px;
+  height: 13px;
+  border-bottom-left-radius: 3px;
+  background: linear-gradient(225deg, transparent 50%, #4a453b 50%);
+}
+
+.f-zettel:active {
+  opacity: 0.7;
+}
+
+.f-ex .f-zettel {
+  margin: -2px 0 1px;
 }
 
 .f-saetze {
@@ -2004,12 +2042,6 @@ ion-modal.f-voll-modal {
 }
 
 /* ---------- Eine Uebung ---------- */
-
-.f-notiz {
-  margin: -4px 2px 0 !important;
-  font-size: 13.5px;
-  color: var(--text-2);
-}
 
 .f-seg-doppel {
   display: grid;
@@ -2796,6 +2828,16 @@ button.f-pz:active {
   margin-top: 1px;
   font-size: 12.5px;
   color: var(--text-2);
+}
+
+/* Die Notiz im Blatt der Uebung: hoechstens zwei Zeilen, der Zettel steht im Training. */
+.f-zeile-text small.f-zeile-notiz {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: pre-line;
+  color: var(--text);
 }
 
 /* Die laufende Woche: Tage als Punkte, rechts die Zahl (mit Ziel). */

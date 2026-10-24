@@ -183,7 +183,12 @@ Wert.
 Übungen:
 
 - [x] Name (40 Zeichen), Erfassung **Gewicht × Wdh**, **nur Wdh** oder **Zeit** (Sekunden), Pause
-  (0:15–10:00 in 15-s-Schritten, Standard 2:00), Notiz (80 Zeichen, steht im Training unter dem Namen).
+  (0:15–10:00 in 15-s-Schritten, Standard 2:00), Notiz.
+- [x] **Notiz als Zettel** (seit 25.10.2026, vorher eine kleine graue Zeile, nur unter „Übung bearbeiten“
+  zu ändern): ein paar Zeilen (200 Zeichen), etwa wie das Gerät eingestellt wird. Steht im Training immer
+  unter dem Namen als Zettel (getöntes Papier mit Eselsohr, Text in Kreide) und ebenso auf „Eine Übung“.
+  Ein Tipp auf den Zettel ändert sie gleich dort, ohne Notiz geht das über „Notiz“ im Blatt der Übung.
+  Sie gehört zur Übung, nicht zum Training, und gilt sofort für jedes Mal.
 - [x] Bei Gewicht × Wdh: **Gewichtsschritt** (1 / 1,25 / 2 / 2,5 / 5 kg, Standard 2,5) für ± im
   Tastenfeld und den Vorschlag, und auf Wunsch **Langhantel** (Stange 10 / 15 / 20 kg) für den
   Scheibenrechner.
@@ -319,6 +324,7 @@ Rückblick:
 
 ```
 form:uebungen   [{ id, name, erfassung, pause, notiz, schritt, stange, archiviert, erstellt }]
+                notiz mit Zeilenumbrüchen, höchstens 200 Zeichen
 form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, aufwaermen, von, bis }] }]
 form:trainings  [{ id, vorlage, name, start, ende, notiz,
                    uebungen: [{ uebung, keineVorgabe?, saetze: [{ kg, wdh, sek, fertig, aufwaermen }] }] }]
@@ -345,13 +351,13 @@ Nummern wie in den Mockups.
 - [x] **3 Erster Start:** solange es weder Training noch Vorlage gibt – „Erstes Training?“, ein Knopf
   und darunter „Vorlage anlegen“.
 - [x] **4 Training läuft:** ⋯ (Menü), Pause, Beenden, darunter die Live-Zahlen. Pro Übung Name,
-  Vorschlag (fertig: Vergleich), Wdh-Bereich, ⋯, Notiz, Sätze `Nr | kg × Wdh | Haken`, „+ Satz“. Unten
+  Vorschlag (fertig: Vergleich), Wdh-Bereich, ⋯, Notiz als Zettel, Sätze `Nr | kg × Wdh | Haken`, „+ Satz“. Unten
   „+ Übung“ und die Notiz des Trainings. Darunter die Tab-Leiste.
 - [x] **5 Satz eingeben:** Blatt mit beiden Feldern, Schnellknöpfen, Ziffern und „Abhaken“.
 - [x] **6 Übung hinzufügen:** ganze Seite, Suche, „Zuletzt“ (bis 5, nicht schon dabei), „Alle“.
   Mehrere auf einmal; beim Tauschen genügt ein Tipp.
 - [x] **7 Übung im Training:** die letzten drei Male und der Rekord bisher (ohne das Training zu
-  verlassen), Pause der Übung, „Nicht als Vorgabe“ (Schalter, seit 13.10.2026; im Training steht es dann
+  verlassen), Pause und Notiz der Übung, „Nicht als Vorgabe“ (Schalter, seit 13.10.2026; im Training steht es dann
   leise unter dem Namen, ebenso in „Ein Training“ und bei den letzten Malen), Aufwärmsatz hinzufügen,
   Verlauf ansehen, tauschen (Satzzahl bleibt), verschieben, herausnehmen. Neu daneben: **Satz-Blatt** über
   die Satznummer (Aufwärmsatz, Satz entfernen).

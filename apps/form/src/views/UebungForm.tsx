@@ -170,8 +170,8 @@ function UebungForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
         </div>
 
         <label className="f-feld">
-          <span className="f-label">Notiz</span>
-          <input type="text" value={notiz} maxLength={NOTIZ_MAX} autoComplete="off" onChange={(e) => setNotiz(e.target.value)} />
+          <span className="f-label">Notiz · steht im Training bei der Übung</span>
+          <textarea value={notiz} maxLength={NOTIZ_MAX} rows={3} onChange={(e) => setNotiz(e.target.value)} />
         </label>
       </div>
 

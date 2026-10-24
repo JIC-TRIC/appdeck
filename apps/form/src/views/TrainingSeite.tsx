@@ -51,6 +51,7 @@ import { dateKey, formatZahl, relativTag, wieLange } from '../util'
 import { Hinzufuegen } from './Hinzufuegen'
 import { LiveZahlen, PauseAnzeige, PauseBlatt } from './Pause'
 import { FELDNAME, Tastenfeld, type Feld } from './Tastenfeld'
+import { Zettel, useNotizAendern } from './Zettel'
 import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung, Uebung, VorlagenUebung } from '../types'
 
 // Ein Training. Laufend ist es die Startseite des Tabs "Training" (kein
@@ -110,6 +111,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
     f?.()
   }
   const [frage] = useIonAlert()
+  const notizAendern = useNotizAendern(refresh)
   const seiteRef = useRef<HTMLDivElement>(null)
 
   const vorlage = t?.vorlage ? vorlagen.find((v) => v.id === t.vorlage) : undefined
@@ -473,6 +475,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
               onNummer={(si) => setSatzBlatt({ ui, si })}
               onPlus={() => plusSatz(ui)}
               onMehr={() => setBlatt(ui)}
+              onNotiz={() => notizAendern(u)}
             />
           )
         })}
@@ -632,7 +635,6 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                       <div className="f-sheet-kopf">
                         <div>
                           <b>{u.name}</b>
-                          {u.notiz ? <small>{u.notiz}</small> : null}
                         </div>
                         <button type="button" className="f-rund klein" onClick={schliessen} aria-label="Schließen">
                           <IconX />
@@ -651,6 +653,17 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                             plusAus={u.pause >= PAUSE_MAX}
                           />
                         </div>
+                        <button type="button" className="f-zeile" onClick={dann(() => notizAendern(u))}>
+                          <span className="f-zeile-text">
+                            Notiz
+                            <small className={u.notiz ? 'f-zeile-notiz' : ''}>
+                              {u.notiz || 'Steht dann immer bei der Übung – etwa, wie das Gerät eingestellt wird.'}
+                            </small>
+                          </span>
+                          <span className="f-zeile-r">
+                            <IconRight />
+                          </span>
+                        </button>
                       </div>
                       <div className="f-gruppe">
                         <button type="button" className="f-zeile" aria-pressed={keineVorgabe} onClick={() => vorgabeUmschalten(ui)}>
@@ -893,6 +906,7 @@ function UebungBlock({
   onNummer,
   onPlus,
   onMehr,
+  onNotiz,
 }: {
   tu: TrainingsUebung
   ui: number
@@ -914,6 +928,7 @@ function UebungBlock({
   onNummer: (si: number) => void
   onPlus: () => void
   onMehr: () => void
+  onNotiz: () => void
 }) {
   const bereich = vu ? formatBereich(vu) : ''
   const fertig = tu.saetze.length > 0 && tu.saetze.every(erledigt)
@@ -940,7 +955,7 @@ function UebungBlock({
           <IconMehr />
         </button>
       </div>
-      {u.notiz ? <p className="f-ex-notiz">{u.notiz}</p> : null}
+      {u.notiz ? <Zettel text={u.notiz} onClick={onNotiz} /> : null}
       {tu.keineVorgabe ? <p className="f-ex-notiz f-aus">Nicht als Vorgabe</p> : null}
       <div className="f-saetze">
         {tu.saetze.map((s, si) => (

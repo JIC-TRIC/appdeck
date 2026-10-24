@@ -11,12 +11,13 @@
  *   form:einstellungen  { ton, wach, wochenziel }   Schalter im Menue des Trainings, Ziel pro Woche
  *   form:pause      { haken, sek }  Pause nach diesem Haken von Hand geaendert
  */
-import { NAME_MAX, lies, neueId, obj, sauber, schreibe, zahl } from './store'
+import { NAME_MAX, lies, neueId, obj, sauber, sauberZeilen, schreibe, zahl } from './store'
 import { rund } from './util'
 import type { PausenKorrektur } from './trainingCalc'
 import type { AppBereich, Einstellungen, Erfassung, Satz, Training, TrainingsUebung, Uebung, Vorlage, VorlagenUebung } from './types'
 
-export const NOTIZ_MAX = 80
+/** Notiz einer Uebung - ein Zettel mit ein paar Zeilen (Geraeteeinstellung, worauf achten). */
+export const NOTIZ_MAX = 200
 export const PAUSE_STANDARD = 120
 export const PAUSE_MIN = 15
 export const PAUSE_MAX = 600
@@ -58,7 +59,7 @@ export function normalisiereUebungen(raw: unknown): Uebung[] {
       name,
       erfassung: ERFASSUNGEN.includes(u.erfassung as Erfassung) ? (u.erfassung as Erfassung) : 'gewicht',
       pause: zahl(u.pause) ? pauseSauber(u.pause) : PAUSE_STANDARD,
-      notiz: typeof u.notiz === 'string' ? sauber(u.notiz, NOTIZ_MAX) : '',
+      notiz: typeof u.notiz === 'string' ? sauberZeilen(u.notiz, NOTIZ_MAX) : '',
       schritt: zahl(u.schritt) && SCHRITTE.includes(u.schritt) ? u.schritt : SCHRITT_STANDARD,
       stange: zahl(u.stange) && STANGEN.includes(u.stange) ? u.stange : null,
       archiviert: u.archiviert === true,
@@ -90,7 +91,7 @@ export function speichereUebung(e: UebungEingabe, id?: string, jetzt = Date.now(
     name,
     erfassung: e.erfassung,
     pause: pauseSauber(e.pause),
-    notiz: sauber(e.notiz, NOTIZ_MAX),
+    notiz: sauberZeilen(e.notiz, NOTIZ_MAX),
     schritt: e.schritt !== undefined && SCHRITTE.includes(e.schritt) ? e.schritt : (alt?.schritt ?? SCHRITT_STANDARD),
     stange: e.stange !== undefined ? (e.stange !== null && STANGEN.includes(e.stange) ? e.stange : null) : (alt?.stange ?? null),
     archiviert: alt?.archiviert ?? false,
@@ -100,8 +101,8 @@ export function speichereUebung(e: UebungEingabe, id?: string, jetzt = Date.now(
   return u
 }
 
-/** Aendert nur Pause oder Archiv - der Rest bleibt. */
-export function setzeUebung(id: string, aenderung: Partial<Pick<Uebung, 'pause' | 'archiviert'>>) {
+/** Aendert nur Pause, Notiz oder Archiv - der Rest bleibt. */
+export function setzeUebung(id: string, aenderung: Partial<Pick<Uebung, 'pause' | 'notiz' | 'archiviert'>>) {
   schreibe(
     'uebungen',
     getUebungen().map((u) =>
@@ -109,6 +110,7 @@ export function setzeUebung(id: string, aenderung: Partial<Pick<Uebung, 'pause' 
         ? {
             ...u,
             ...(aenderung.pause !== undefined ? { pause: pauseSauber(aenderung.pause) } : {}),
+            ...(aenderung.notiz !== undefined ? { notiz: sauberZeilen(aenderung.notiz, NOTIZ_MAX) } : {}),
             ...(aenderung.archiviert !== undefined ? { archiviert: aenderung.archiviert } : {}),
           }
         : u,
