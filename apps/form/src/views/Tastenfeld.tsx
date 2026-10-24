@@ -1,35 +1,75 @@
 import { Fragment, useState } from 'react'
 import { IconLoeschTaste, IconX } from '../icons'
-import { scheiben, vollstaendig, type Zahlen } from '../trainingCalc'
+import { FELDER, alsUhr, ausUhrZiffern, scheiben, uhrZiffern, vollstaendig, type Feld, type Zahlen } from '../trainingCalc'
 import { Blatt } from '../ui'
 import { formatZahl, parseZahl, rund } from '../util'
 import type { Erfassung } from '../types'
 
 // Eigenes Tastenfeld statt der iOS-Tastatur: groessere Tasten und
-// +- der Gewichtsschritt der Uebung (bzw. +-1 Wdh, +-5 s) auf einen Tipp. Bei
+// +- der Gewichtsschritt der Uebung (bzw. +-1 Wdh, +-5 s, +-100 m) auf einen Tipp. Bei
 // Langhantel-Uebungen steht darunter, welche Scheiben pro Seite drauf muessen. Jeder Tastendruck wird sofort
 // gesichert - wer das Blatt wegwischt, verliert nichts. "Abhaken" nimmt fuer
 // leere Felder das Graue (das letzte Mal).
+//
+// Zeiten tippt man wie an der Mikrowelle ('2830' ist 28:30, trainingCalc.ts),
+// Strecken bei Strecke und Zeit in km mit Komma, bei Gewicht und Strecke in m.
 
-export type Feld = 'kg' | 'wdh' | 'sek'
+export type { Feld }
 
-export const FELDER: Record<Erfassung, Feld[]> = { gewicht: ['kg', 'wdh'], wdh: ['wdh'], zeit: ['sek'] }
-export const FELDNAME: Record<Feld, string> = { kg: 'kg', wdh: 'Wdh', sek: 'Sek' }
-const SCHRITT: Record<Exclude<Feld, 'kg'>, number> = { wdh: 1, sek: 5 }
+/** Wie ein Feld fuer Vorlesen und Meldungen heisst. */
+export const FELDNAME: Record<Feld, string> = { kg: 'kg', wdh: 'Wdh', sek: 'Zeit', m: 'Strecke' }
+const FEHLT: Record<Feld, string> = {
+  kg: 'Erst das Gewicht eintragen',
+  wdh: 'Erst die Wdh eintragen',
+  sek: 'Erst die Zeit eintragen',
+  m: 'Erst die Strecke eintragen',
+}
+/** Zwischen den Feldern: 82,5 × 8, aber 5 km in 26:30. */
+export const trenner = (erf: Erfassung) => (erf === 'strecke' ? 'in' : '×')
 const TASTEN = ['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0']
 
-const alsText = (f: Feld, v: number | null) => (v === null ? '' : f === 'kg' ? formatZahl(v) : String(v))
+/** Strecke in km (mit Komma) - nur bei Strecke und Zeit, sonst in m. */
+const inKm = (erf: Erfassung) => erf === 'strecke'
 
-function alsZahl(f: Feld, text: string): number | null {
-  const z = parseZahl(text)
-  if (z === null || z < 0) return null
-  return f === 'kg' ? rund(z) : Math.round(z)
+/** Die Zahl als Text zum Weitertippen - Zeiten als Ziffern ('130'), Strecken in km oder m. */
+function alsText(f: Feld, v: number | null, erf: Erfassung): string {
+  if (v === null) return ''
+  if (f === 'kg') return formatZahl(v)
+  if (f === 'sek') return uhrZiffern(v)
+  if (f === 'm' && inKm(erf)) return formatZahl(v / 1000)
+  return String(v)
 }
 
-const zahlenAus = (t: Record<Feld, string>): Zahlen => ({
-  kg: alsZahl('kg', t.kg),
-  wdh: alsZahl('wdh', t.wdh),
-  sek: alsZahl('sek', t.sek),
+function alsZahl(f: Feld, text: string, erf: Erfassung): number | null {
+  if (f === 'sek') return ausUhrZiffern(text)
+  const z = parseZahl(text)
+  if (z === null || z < 0) return null
+  if (f === 'kg') return rund(z)
+  return Math.round(f === 'm' && inKm(erf) ? z * 1000 : z)
+}
+
+/** -/+ in der Einheit, in der gespeichert wird (kg, Wdh, s, m). */
+function schrittFuer(f: Feld, erf: Erfassung, kgSchritt: number) {
+  if (f === 'kg') return kgSchritt
+  if (f === 'wdh') return 1
+  if (f === 'sek') return erf === 'strecke' ? 60 : 5
+  return inKm(erf) ? 100 : 10
+}
+
+function schrittText(f: Feld, s: number, erf: Erfassung) {
+  if (f === 'sek') return s < 60 ? `${s} s` : `${s / 60} min`
+  if (f === 'm') return inKm(erf) ? `${formatZahl(s / 1000)} km` : `${s} m`
+  return formatZahl(s)
+}
+
+/** So steht der Text im Feld: Zeiten mit Doppelpunkt. */
+const anzeige = (f: Feld, text: string) => (f === 'sek' ? alsUhr(text) : text)
+
+const zahlenAus = (t: Record<Feld, string>, erf: Erfassung): Zahlen => ({
+  kg: alsZahl('kg', t.kg, erf),
+  wdh: alsZahl('wdh', t.wdh, erf),
+  sek: alsZahl('sek', t.sek, erf),
+  m: alsZahl('m', t.m, erf),
 })
 
 export function Tastenfeld({
@@ -70,9 +110,10 @@ export function Tastenfeld({
 }) {
   const [feld, setFeld] = useState<Feld>(start)
   const [texte, setTexte] = useState<Record<Feld, string>>(() => ({
-    kg: alsText('kg', werte.kg),
-    wdh: alsText('wdh', werte.wdh),
-    sek: alsText('sek', werte.sek),
+    kg: alsText('kg', werte.kg, erf),
+    wdh: alsText('wdh', werte.wdh, erf),
+    sek: alsText('sek', werte.sek, erf),
+    m: alsText('m', werte.m, erf),
   }))
   // Der erste Tastendruck in einem Feld ersetzt, was drinsteht.
   const [frisch, setFrisch] = useState(true)
@@ -81,26 +122,29 @@ export function Tastenfeld({
     const neu = { ...texte, [feld]: text }
     setTexte(neu)
     setFrisch(nochFrisch)
-    onAendern(zahlenAus(neu))
+    onAendern(zahlenAus(neu, erf))
   }
+
+  const mitKomma = feld === 'kg' || (feld === 'm' && inKm(erf))
 
   const taste = (k: string) => {
     const alt = frisch ? '' : texte[feld]
     if (k === ',') {
-      if (feld === 'kg' && !alt.includes(',')) setze(`${alt || '0'},`)
+      if (mitKomma && !alt.includes(',')) setze(`${alt || '0'},`)
       return
     }
     const neu = alt === '0' ? k : alt + k
     const komma = neu.indexOf(',')
-    if (neu.replace(',', '').length > 5 || (komma >= 0 && neu.length - komma - 1 > 2)) return
+    // Zeiten bis 99:59:59 - sechs Ziffern, sonst fuenf.
+    if (neu.replace(',', '').length > (feld === 'sek' ? 6 : 5) || (komma >= 0 && neu.length - komma - 1 > 2)) return
     setze(neu)
   }
 
-  const s = feld === 'kg' ? kgSchritt : SCHRITT[feld]
+  const s = schrittFuer(feld, erf, kgSchritt)
 
   const schritt = (vz: 1 | -1) => {
-    const basis = alsZahl(feld, texte[feld]) ?? platzhalter?.[feld] ?? 0
-    setze(alsText(feld, Math.max(0, rund(basis + vz * s))), true)
+    const basis = alsZahl(feld, texte[feld], erf) ?? platzhalter?.[feld] ?? 0
+    setze(alsText(feld, Math.max(0, rund(basis + vz * s)), erf), true)
   }
 
   const wechsle = (f: Feld) => {
@@ -110,26 +154,25 @@ export function Tastenfeld({
   }
 
   const abhaken = (schliessen: () => void) => {
-    const z = zahlenAus(texte)
+    const z = zahlenAus(texte, erf)
     const voll: Zahlen = {
       kg: z.kg ?? platzhalter?.kg ?? null,
       wdh: z.wdh ?? platzhalter?.wdh ?? null,
       sek: z.sek ?? platzhalter?.sek ?? null,
+      m: z.m ?? platzhalter?.m ?? null,
     }
     if (!vollstaendig(voll, erf)) {
       const fehlt = FELDER[erf].find((f) => voll[f] === null) ?? feld
       wechsle(fehlt)
-      melde(fehlt === 'kg' ? 'Erst das Gewicht eintragen' : fehlt === 'wdh' ? 'Erst die Wdh eintragen' : 'Erst die Zeit eintragen')
+      melde(FEHLT[fehlt])
       return
     }
     onAbhaken(voll)
     schliessen()
   }
 
-  const schrittText = feld === 'sek' ? `${s} s` : formatZahl(s)
-
   // Scheiben pro Seite fuer das Gewicht, das gerade gilt (getippt oder grau).
-  const kg = alsZahl('kg', texte.kg) ?? platzhalter?.kg ?? null
+  const kg = alsZahl('kg', texte.kg, erf) ?? platzhalter?.kg ?? null
   let scheibenText = ''
   if (stange !== null && erf === 'gewicht' && kg !== null) {
     const pro = scheiben(kg, stange)
@@ -162,15 +205,17 @@ export function Tastenfeld({
               const grau = platzhalter?.[f] ?? null
               return (
                 <Fragment key={f}>
-                  {i ? <span className="f-mal">×</span> : null}
+                  {i ? <span className="f-mal">{trenner(erf)}</span> : null}
                   <button
                     type="button"
                     className={`f-wahl-box${f === feld ? ' an' : ''}`}
                     onClick={() => wechsle(f)}
                     aria-pressed={f === feld}
                   >
-                    <small>{FELDNAME[f]}</small>
-                    <b className={texte[f] ? '' : 'ph'}>{texte[f] || (grau !== null ? alsText(f, grau) : '–')}</b>
+                    <small>{f === 'm' ? (inKm(erf) ? 'km' : 'm') : FELDNAME[f]}</small>
+                    <b className={texte[f] ? '' : 'ph'}>
+                      {texte[f] ? anzeige(f, texte[f]) : grau !== null ? anzeige(f, alsText(f, grau, erf)) : '–'}
+                    </b>
                   </button>
                 </Fragment>
               )
@@ -186,10 +231,10 @@ export function Tastenfeld({
 
           <div className="f-schnell">
             <button type="button" onClick={() => schritt(-1)}>
-              −{schrittText}
+              −{schrittText(feld, s, erf)}
             </button>
             <button type="button" onClick={() => schritt(1)}>
-              +{schrittText}
+              +{schrittText(feld, s, erf)}
             </button>
           </div>
 
@@ -199,8 +244,8 @@ export function Tastenfeld({
                 key={k}
                 type="button"
                 onClick={() => taste(k)}
-                disabled={k === ',' && feld !== 'kg'}
-                className={k === ',' && feld !== 'kg' ? 'aus' : ''}
+                disabled={k === ',' && !mitKomma}
+                className={k === ',' && !mitKomma ? 'aus' : ''}
               >
                 {k}
               </button>

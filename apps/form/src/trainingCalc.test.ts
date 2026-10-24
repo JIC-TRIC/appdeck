@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import {
+  KENNZAHLEN,
+  alsUhr,
+  ausUhrZiffern,
+  formatSatz,
+  formatStrecke,
+  kennwert,
+  kmh,
+  nurNoetige,
+  uhrZiffern,
+  vollstaendig,
   abschliessen,
   dieseWoche,
   leistung,
@@ -49,6 +59,7 @@ const s = (kg: number | null, wdh: number | null, fertig: number | null = 1): Sa
   kg,
   wdh,
   sek: null,
+  m: null,
   fertig,
   aufwaermen: false,
 })
@@ -118,24 +129,24 @@ describe('platzhalter', () => {
   const ref = [s(30, 10), s(30, 9)]
 
   it('derselbe Satz vom letzten Mal', () => {
-    expect(platzhalter(ref, [leer(), leer()], 1)).toEqual({ kg: 30, wdh: 9, sek: null })
+    expect(platzhalter(ref, [leer(), leer()], 1)).toEqual({ kg: 30, wdh: 9, sek: null, m: null })
   })
 
   it('hat das letzte Mal weniger Saetze, gilt der Satz davor', () => {
-    expect(platzhalter(ref, [leer(), s(32.5, null, null), leer()], 2)).toEqual({ kg: 32.5, wdh: 9, sek: null })
+    expect(platzhalter(ref, [leer(), s(32.5, null, null), leer()], 2)).toEqual({ kg: 32.5, wdh: 9, sek: null, m: null })
   })
 
   it('ohne letztes Mal nichts, bis etwas getippt ist', () => {
     expect(platzhalter(null, [leer()], 0)).toBeNull()
-    expect(effektiv(null, [s(40, null, null), leer()], 1)).toEqual({ kg: 40, wdh: null, sek: null })
+    expect(effektiv(null, [s(40, null, null), leer()], 1)).toEqual({ kg: 40, wdh: null, sek: null, m: null })
   })
 })
 
 describe('besser', () => {
   it('mehr Gewicht oder bei gleichem Gewicht mehr Wdh', () => {
-    expect(besser(s(82.5, 8), s(80, 8), 'gewicht')).toEqual({ kg: true, wdh: false, sek: false })
-    expect(besser(s(80, 9), s(80, 8), 'gewicht')).toEqual({ kg: false, wdh: true, sek: false })
-    expect(besser(s(77.5, 10), s(80, 8), 'gewicht')).toEqual({ kg: false, wdh: false, sek: false })
+    expect(besser(s(82.5, 8), s(80, 8), 'gewicht')).toEqual({ kg: true, wdh: false, sek: false, m: false })
+    expect(besser(s(80, 9), s(80, 8), 'gewicht')).toEqual({ kg: false, wdh: true, sek: false, m: false })
+    expect(besser(s(77.5, 10), s(80, 8), 'gewicht')).toEqual({ kg: false, wdh: false, sek: false, m: false })
     expect(besser(s(80, 8), null, 'gewicht').kg).toBe(false)
   })
 })
@@ -187,7 +198,7 @@ describe('Training', () => {
     const weg = abschliessen(t, 300, 'verwerfen', byId, vorher)
     expect(weg.uebungen.map((u) => u.saetze.length)).toEqual([1])
     const ab = abschliessen(t, 300, 'abhaken', byId, vorher)
-    expect(ab.uebungen[0].saetze[1]).toEqual({ kg: 80, wdh: 7, sek: null, fertig: 300, aufwaermen: false })
+    expect(ab.uebungen[0].saetze[1]).toEqual({ kg: 80, wdh: 7, sek: null, m: null, fertig: 300, aufwaermen: false })
     expect(ab.uebungen).toHaveLength(1)
     expect(ab.ende).toBe(300)
   })
@@ -261,8 +272,8 @@ describe('Aufwaermsaetze', () => {
   it('grau kommt vom passenden Satz gleicher Art', () => {
     const ref = [auf(40, 10), s(80, 8), s(80, 7)]
     const heute = [auf(null, null, null), leer(), leer()]
-    expect(platzhalter(ref, heute, 0)).toEqual({ kg: 40, wdh: 10, sek: null })
-    expect(platzhalter(ref, heute, 2)).toEqual({ kg: 80, wdh: 7, sek: null })
+    expect(platzhalter(ref, heute, 0)).toEqual({ kg: 40, wdh: 10, sek: null, m: null })
+    expect(platzhalter(ref, heute, 2)).toEqual({ kg: 80, wdh: 7, sek: null, m: null })
     expect(gleicherSatz(ref, heute, 1)).toEqual(s(80, 8))
   })
 
@@ -284,8 +295,8 @@ describe('steigerung', () => {
     const ref = [auf(40, 10), s(80, 8), s(80, 8)]
     const plus = steigerung(ref, { von: 5, bis: 8 }, 'gewicht', 2.5)
     expect(plus).toEqual({ kg: 2.5, wdh: 5 })
-    expect(platzhalter(ref, [auf(null, null, null), leer()], 1, plus)).toEqual({ kg: 82.5, wdh: 5, sek: null })
-    expect(platzhalter(ref, [auf(null, null, null), leer()], 0, plus)).toEqual({ kg: 40, wdh: 10, sek: null })
+    expect(platzhalter(ref, [auf(null, null, null), leer()], 1, plus)).toEqual({ kg: 82.5, wdh: 5, sek: null, m: null })
+    expect(platzhalter(ref, [auf(null, null, null), leer()], 0, plus)).toEqual({ kg: 40, wdh: 10, sek: null, m: null })
   })
 
   it('sonst kein Vorschlag', () => {
@@ -357,9 +368,9 @@ describe('Hilfen', () => {
     const start = new Date('2026-10-10T17:40:00').getTime()
     const t = tr('t', 'push', start, [{ uebung: 'bank', saetze: [auf(40, 10), s(82.5, 8), s(82.5, null, null)] }])
     expect(alsCsv([{ ...t, name: 'Push; schwer' }], byId).split('\r\n')).toEqual([
-      'Datum;Beginn;Training;Übung;Satz;kg;Wdh;Sekunden',
-      '2026-10-10;17:40;"Push; schwer";bank;A;40;10;',
-      '2026-10-10;17:40;"Push; schwer";bank;1;82,5;8;',
+      'Datum;Beginn;Training;Übung;Satz;kg;Wdh;Sekunden;Meter',
+      '2026-10-10;17:40;"Push; schwer";bank;A;40;10;;',
+      '2026-10-10;17:40;"Push; schwer";bank;1;82,5;8;;',
       '',
     ])
   })
@@ -480,5 +491,106 @@ describe('Woche und Fertig', () => {
     const text = zumTeilen(t, byId, [{ uebung: 'bank', ui: 0, si: 1, art: 'gewicht', satz: s(80, 8) }], '2026-10-10')
     // Der Name des Trainings ist hier sein Tag (tr setzt name = id).
     expect(text).toBe('2026-10-10 – heute\n58 min · 2 Sätze · 1.200 kg\n\nbank: 80 × 8 · 7\n\nRekorde: bank 80 × 8')
+  })
+})
+
+describe('Strecke, Zeit und Gewicht', () => {
+  // Strecke in Metern, Zeit in Sekunden.
+  const lauf = (m: number | null, sek: number | null, fertig: number | null = 1): Satz => ({ ...s(null, null, fertig), m, sek })
+  const mitKg = (kg: number | null, sek: number | null, m: number | null): Satz => ({ ...s(kg, null), sek, m })
+  const ids = { band: uebung('band', 'strecke'), plank: uebung('plank', 'gewichtZeit'), farmer: uebung('farmer', 'gewichtStrecke') }
+
+  it('jede Erfassung braucht ihre Zahlen, der Rest wird leer', () => {
+    expect(vollstaendig(lauf(5000, null), 'strecke')).toBe(false)
+    expect(vollstaendig(lauf(5000, 1590), 'strecke')).toBe(true)
+    expect(vollstaendig(mitKg(10, 60, null), 'gewichtZeit')).toBe(true)
+    expect(vollstaendig(mitKg(10, 60, null), 'gewichtStrecke')).toBe(false)
+    expect(nurNoetige({ kg: 20, wdh: 8, sek: 60, m: 40 }, 'gewichtStrecke')).toEqual({ kg: 20, wdh: null, sek: null, m: 40 })
+    expect(nurNoetige({ kg: 20, wdh: 8, sek: 60, m: 40 }, 'strecke')).toEqual({ kg: null, wdh: null, sek: 60, m: 40 })
+  })
+
+  it('orange: weiter, oder fuer mindestens dieselbe Strecke schneller', () => {
+    expect(besser(lauf(5500, 1800), lauf(5000, 1590), 'strecke')).toMatchObject({ m: true, sek: false })
+    expect(besser(lauf(5000, 1560), lauf(5000, 1590), 'strecke')).toMatchObject({ m: false, sek: true })
+    expect(besser(lauf(4000, 1200), lauf(5000, 1590), 'strecke')).toMatchObject({ m: false, sek: false })
+  })
+
+  it('orange mit Gewicht: schwerer, oder bei mindestens gleichem Gewicht laenger bzw. weiter', () => {
+    expect(besser(mitKg(12.5, 45, null), mitKg(10, 60, null), 'gewichtZeit')).toMatchObject({ kg: true, sek: false })
+    expect(besser(mitKg(10, 70, null), mitKg(10, 60, null), 'gewichtZeit')).toMatchObject({ kg: false, sek: true })
+    expect(besser(mitKg(8, 90, null), mitKg(10, 60, null), 'gewichtZeit')).toMatchObject({ kg: false, sek: false })
+    expect(besser(mitKg(24, null, 50), mitKg(24, null, 40), 'gewichtStrecke')).toMatchObject({ kg: false, m: true })
+  })
+
+  it('Rekord: weiteste Strecke, sonst schnellstes Tempo', () => {
+    const vorher = [tr('a', null, 100, [{ uebung: 'band', saetze: [lauf(5000, 1590)] }])]
+    const weiter = tr('b', null, 200, [{ uebung: 'band', saetze: [lauf(6000, 2100)] }])
+    const schneller = tr('b', null, 200, [{ uebung: 'band', saetze: [lauf(5000, 1500)] }])
+    const langsamer = tr('b', null, 200, [{ uebung: 'band', saetze: [lauf(4000, 1500)] }])
+    expect(rekordeIn(weiter, vorher, ids).map((r) => r.art)).toEqual(['strecke'])
+    expect(rekordeIn(schneller, vorher, ids).map((r) => r.art)).toEqual(['tempo'])
+    expect(rekordeIn(langsamer, vorher, ids)).toEqual([])
+  })
+
+  it('Rekord mit Gewicht: schwerer, sonst laenger bzw. weiter', () => {
+    const vorher = [
+      tr('a', null, 100, [
+        { uebung: 'plank', saetze: [mitKg(10, 60, null)] },
+        { uebung: 'farmer', saetze: [mitKg(24, null, 40)] },
+      ]),
+    ]
+    const heute = tr('b', null, 200, [
+      { uebung: 'plank', saetze: [mitKg(10, 75, null), mitKg(15, 30, null)] },
+      { uebung: 'farmer', saetze: [mitKg(24, null, 50)] },
+    ])
+    expect(rekordeIn(heute, vorher, ids).map((r) => [r.uebung, r.art])).toEqual([
+      ['plank', 'zeit'],
+      ['plank', 'gewicht'],
+      ['farmer', 'strecke'],
+    ])
+  })
+
+  it('bester Satz, Leistung und Kennzahlen', () => {
+    const saetze = [lauf(5000, 1590), lauf(5000, 1500), lauf(3000, 840)]
+    expect(besterSatz(saetze, 'strecke')).toBe(saetze[1])
+    expect(besterSatz([mitKg(10, 90, null), mitKg(12.5, 45, null)], 'gewichtZeit')?.kg).toBe(12.5)
+    expect(leistung(saetze, 'strecke')).toBe(13000)
+    expect(leistung([mitKg(24, null, 40), mitKg(24, null, 30)], 'gewichtStrecke')).toBe(1680)
+    expect(kmh(lauf(5000, 1500))).toBe(12)
+    expect(kennwert(saetze, 'tempo', 'strecke')).toBe(12.9)
+    expect(kennwert(saetze, 'strecke', 'strecke')).toBe(5000)
+    expect(KENNZAHLEN.strecke).toEqual(['strecke', 'tempo'])
+  })
+
+  it('Vergleich mit dem letzten Mal: weiter, bei gleicher Strecke schneller', () => {
+    expect(vergleichMitLetztem([lauf(6000, 2100)], [lauf(5000, 1590)], 'strecke')).toBe(20)
+    expect(vergleichMitLetztem([lauf(5000, 1545)], [lauf(5000, 1590)], 'strecke')).toBe(3)
+    expect(vergleichMitLetztem([mitKg(10, 60, null)], [mitKg(10, 50, null)], 'gewichtZeit')).toBe(20)
+  })
+
+  it('als Text', () => {
+    expect(formatStrecke(400)).toBe('400 m')
+    expect(formatStrecke(5250)).toBe('5,25 km')
+    expect(formatSatz(lauf(5000, 1590), 'strecke')).toBe('5 km in 26:30')
+    expect(formatSatz(mitKg(10, 45, null), 'gewichtZeit')).toBe('10 kg × 45 s')
+    expect(formatSatz(mitKg(24, null, 40), 'gewichtStrecke')).toBe('24 kg × 40 m')
+    expect(kurzSaetze([mitKg(10, 60, null), mitKg(10, 45, null)], 'gewichtZeit')).toBe('10 kg × 1:00 · 45 s')
+    expect(kurzSaetze([lauf(400, 80), lauf(400, 78)], 'strecke')).toBe('400 m in 1:20 · 400 m in 1:18')
+  })
+
+  it('Zeiten tippt man wie an der Mikrowelle', () => {
+    expect(uhrZiffern(90)).toBe('130')
+    expect(uhrZiffern(1710)).toBe('2830')
+    expect(uhrZiffern(3900)).toBe('10500')
+    expect(uhrZiffern(45)).toBe('45')
+    expect(ausUhrZiffern('2830')).toBe(1710)
+    expect(ausUhrZiffern('90')).toBe(90)
+    expect(ausUhrZiffern('10500')).toBe(3900)
+    expect(ausUhrZiffern('')).toBeNull()
+    expect(alsUhr('5')).toBe('0:05')
+    expect(alsUhr('130')).toBe('1:30')
+    expect(alsUhr('2830')).toBe('28:30')
+    expect(alsUhr('10500')).toBe('1:05:00')
+    expect(alsUhr('')).toBe('')
   })
 })

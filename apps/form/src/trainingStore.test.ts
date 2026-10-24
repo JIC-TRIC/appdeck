@@ -128,8 +128,8 @@ describe('Trainings', () => {
     expect(t.map((x) => x.id)).toEqual(['a', 'b'])
     expect(t[1].name).toBe('Training')
     expect(t[1].uebungen[0].saetze).toEqual([
-      { kg: 80, wdh: 8, sek: null, fertig: 250, aufwaermen: false },
-      { kg: null, wdh: null, sek: null, fertig: null, aufwaermen: false },
+      { kg: 80, wdh: 8, sek: null, m: null, fertig: 250, aufwaermen: false },
+      { kg: null, wdh: null, sek: null, m: null, fertig: null, aufwaermen: false },
     ])
     expect(t[0].notiz).toBe('')
   })
@@ -179,7 +179,7 @@ describe('loescheUebung', () => {
       name: 'T',
       start: 10,
       ende: 20,
-      uebungen: [{ uebung: b.id, saetze: [{ kg: null, wdh: 10, sek: null, fertig: 15, aufwaermen: false }] }],
+      uebungen: [{ uebung: b.id, saetze: [{ kg: null, wdh: 10, sek: null, m: null, fertig: 15, aufwaermen: false }] }],
       notiz: '',
     })
     expect(loescheUebung(b.id)).toBe(false)

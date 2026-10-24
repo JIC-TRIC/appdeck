@@ -30,7 +30,9 @@ export const SCHRITTE = [1, 1.25, 2, 2.5, 5]
 export const SCHRITT_STANDARD = 2.5
 /** Stangen fuer den Scheibenrechner (kg). */
 export const STANGEN = [10, 15, 20]
-const ERFASSUNGEN: Erfassung[] = ['gewicht', 'wdh', 'zeit']
+const ERFASSUNGEN: Erfassung[] = ['gewicht', 'wdh', 'zeit', 'strecke', 'gewichtZeit', 'gewichtStrecke']
+/** Laengste Strecke eines Satzes (m) - darueber ist es ein Tippfehler. */
+const STRECKE_MAX = 1_000_000
 
 /** Pausen in 15-Sekunden-Schritten zwischen 0:15 und 10:00. */
 export const pauseSauber = (s: number) => Math.min(PAUSE_MAX, Math.max(PAUSE_MIN, Math.round(s / 15) * 15))
@@ -215,7 +217,7 @@ export function ordneVorlagen(ids: string[]) {
 
 // ---------- Trainings ----------
 
-export const leererSatz = (aufwaermen = false): Satz => ({ kg: null, wdh: null, sek: null, fertig: null, aufwaermen })
+export const leererSatz = (aufwaermen = false): Satz => ({ kg: null, wdh: null, sek: null, m: null, fertig: null, aufwaermen })
 
 /** Die Saetze einer Uebung beim Start: erst die Aufwaermsaetze, dann die Arbeitssaetze. */
 export const saetzeFuer = (v: Pick<VorlagenUebung, 'saetze' | 'aufwaermen'>): Satz[] => [
@@ -229,6 +231,7 @@ function normalisiereSatz(x: unknown): Satz {
     kg: zahl(s.kg) && s.kg >= 0 ? rund(s.kg) : null,
     wdh: ganz(s.wdh, 0, 9999),
     sek: ganz(s.sek, 0, 86400),
+    m: ganz(s.m, 0, STRECKE_MAX),
     fertig: zahl(s.fertig) && s.fertig > 0 ? s.fertig : null,
     aufwaermen: s.aufwaermen === true,
   }

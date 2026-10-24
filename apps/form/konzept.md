@@ -187,16 +187,21 @@ Wert.
 
 Übungen:
 
-- [x] Name (40 Zeichen), Erfassung **Gewicht × Wdh**, **nur Wdh** oder **Zeit** (Sekunden), Pause
-  (0:15–10:00 in 15-s-Schritten, Standard 2:00), Notiz.
+- [x] Name (40 Zeichen), Erfassung **Gewicht × Wdh**, **nur Wdh** oder **Zeit** (Sekunden), seit
+  25.10.2026 auch **Strecke + Zeit** (Laufband, Rad, Rudern), **Gewicht × Zeit** (Plank mit Gewicht,
+  Halten) und **Gewicht × Strecke** (Farmer's Walk, Schlitten), Pause (0:15–10:00 in 15-s-Schritten,
+  Standard 2:00), Notiz. Welche Zahlen eine Erfassung braucht, steht an einer Stelle (`FELDER` in
+  `trainingCalc.ts`); im Satz stehen sie nebeneinander, „82,5 × 8“, „5 km in 26:30“, „10 kg × 45 s“,
+  „24 kg × 40 m“. Strecken werden in Metern gespeichert und unter 1 km in m, darüber in km gezeigt.
 - [x] **Notiz als Zettel** (seit 25.10.2026, vorher eine kleine graue Zeile, nur unter „Übung bearbeiten“
   zu ändern): ein paar Zeilen (200 Zeichen), etwa wie das Gerät eingestellt wird. Steht im Training immer
   unter dem Namen als Zettel (getöntes Papier mit Eselsohr, Text in Kreide) und ebenso auf „Eine Übung“.
   Ein Tipp auf den Zettel ändert sie gleich dort, ohne Notiz geht das über „Notiz“ im Blatt der Übung.
   Sie gehört zur Übung, nicht zum Training, und gilt sofort für jedes Mal.
-- [x] Bei Gewicht × Wdh: **Gewichtsschritt** (1 / 1,25 / 2 / 2,5 / 5 kg, Standard 2,5) für ± im
-  Tastenfeld und den Vorschlag, und auf Wunsch **Langhantel** (Stange 10 / 15 / 20 kg) für den
-  Scheibenrechner.
+- [x] Mit Gewicht: **Gewichtsschritt** (1 / 1,25 / 2 / 2,5 / 5 kg, Standard 2,5) für ± im
+  Tastenfeld und bei Gewicht × Wdh den Vorschlag, dort auf Wunsch auch **Langhantel** (Stange 10 / 15 /
+  20 kg) für den Scheibenrechner.
+- [x] Den **Wdh-Bereich** der Vorlage gibt es nur bei Erfassungen mit Wdh.
 - [x] Kein Startkatalog: Übungen entstehen beim Hinzufügen über die Suche („‚Facepull‘ anlegen“, mit
   Gewicht × Wdh) oder unter Übungen.
 - [x] Die Erfassung lässt sich nur ändern, solange die Übung nie trainiert wurde. Trainierte werden
@@ -246,15 +251,22 @@ Sätze:
 - [x] **Rekord beim Abhaken:** orange Meldung oben („Neuer Rekord · Schulterdrücken 55 × 9“), der Satz
   leuchtet orange auf, doppelter Tick.
 - [x] **Übung fertig** (alle Sätze abgehakt): Haken vor dem Namen und daneben der Vergleich mit dem
-  letzten Mal – Volumen, bei nur Wdh die Summe der Wdh, bei Zeit die Summe der Sekunden („+6 %“, mehr
-  in Orange; wie Strongs „Focus Metric“).
+  letzten Mal – Volumen, bei nur Wdh die Summe der Wdh, bei Zeit die Summe der Sekunden, bei Strecke +
+  Zeit die Summe der Strecke (gleich weit: wie viel schneller), mit Gewicht kg × Sekunden bzw. kg × Meter
+  („+6 %“, mehr in Orange; wie Strongs „Focus Metric“).
 - [x] **Tastenfeld** statt iOS-Tastatur: der erste Tastendruck ersetzt, ± Gewichtsschritt / ±1 Wdh /
-  ±5 s, jeder Tastendruck wird sofort gesichert. Darunter „Zuletzt bei Push: 30 × 9“ und bei Langhantel
+  ±5 s (bei Strecke + Zeit ±1 min) / ±100 m bzw. ±10 m, jeder Tastendruck wird sofort gesichert.
+  **Zeiten tippt man wie an der Mikrowelle** (seit 25.10.2026, vorher in Sekunden): die letzten zwei
+  Ziffern sind Sekunden, davor Minuten und Stunden – „2830“ ist 28:30, im Feld steht es gleich so da.
+  Strecken bei Strecke + Zeit in km mit Komma, bei Gewicht × Strecke in m. Darunter „Zuletzt bei Push: 30 × 9“ und bei Langhantel
   die Scheiben pro Seite („Je Seite 25 · 5 · 1,25“, aus 25 bis 1,25 kg).
 - [x] **Orange** am abgehakten Satz: mehr Gewicht als der gleiche Satz vom letzten Mal, oder mehr Wdh
-  bei mindestens gleichem Gewicht.
+  (Zeit, Strecke) bei mindestens gleichem Gewicht. Bei Strecke + Zeit weiter, oder für mindestens
+  dieselbe Strecke weniger Zeit.
 - [x] **Rekord** („PR“ statt Satznummer): schwerster Satz oder bestes geschätztes 1RM (Epley) bisher,
-  über alle Vorlagen – bei nur Wdh die meisten, bei Zeit die längste. Zählt auch gegen frühere Sätze im
+  über alle Vorlagen – bei nur Wdh die meisten, bei Zeit die längste, bei Strecke + Zeit die weiteste
+  Strecke oder das schnellste Tempo, mit Gewicht der schwerste Satz oder die längste Zeit bzw. weiteste
+  Strecke. Zählt auch gegen frühere Sätze im
   selben Training. Im ersten Training einer Übung gibt es keinen.
 - [x] Fertige Übungen bleiben offen (in den Mockups noch zugeklappt, nach dem ersten Ausprobieren
   geändert).
@@ -332,7 +344,8 @@ form:uebungen   [{ id, name, erfassung, pause, notiz, schritt, stange, archivier
                 notiz mit Zeilenumbrüchen, höchstens 200 Zeichen
 form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, aufwaermen, von, bis }] }]
 form:trainings  [{ id, vorlage, name, start, ende, notiz,
-                   uebungen: [{ uebung, keineVorgabe?, saetze: [{ kg, wdh, sek, fertig, aufwaermen }] }] }]
+                   uebungen: [{ uebung, keineVorgabe?, saetze: [{ kg, wdh, sek, m, fertig, aufwaermen }] }] }]
+                sek in Sekunden, m in Metern (Strecke)
                 keineVorgabe nur gespeichert, wenn an (true)
 form:laufend    das laufende Training (gleiche Form, ende null) – nach jedem Tipp gesichert
 form:bereich    'werte' | 'training' – wo Form zuletzt war (Tab Werte oder Training beim Öffnen)
@@ -376,8 +389,10 @@ Nummern wie in den Mockups.
   „Bearbeiten“: Name, Sätze, „Training löschen“.
 - [x] **12 Nachtragen.**
 - [x] **13 Übungen** (Tab): alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
-- [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem,
-  Rekord), Verlauf (Gewicht, 1RM oder Volumen, 3 M / 1 J / Alles) – darüber die Zahl selbst (seit
+- [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem –
+  seit 25.10.2026 in der Kennzahl des Verlaufs –, Rekord), Verlauf (Gewicht, 1RM oder Volumen; bei
+  Strecke + Zeit Strecke oder Tempo in km/h; mit Gewicht Gewicht oder Zeit bzw. Strecke; 3 M / 1 J /
+  Alles) – darüber die Zahl selbst (seit
   11.10.2026): die jüngste oder die eines angetippten Trainings (Finger über den Verlauf ziehen geht
   auch, ein zweiter Tipp hebt die Auswahl auf), beim 1RM mit dem Satz, aus dem es geschätzt ist
   („98,7 kg – geschätzt aus 80 × 7“, eine Nachkommastelle), sonst mit den Sätzen des Trainings; rechts das

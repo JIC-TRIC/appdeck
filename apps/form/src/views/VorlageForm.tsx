@@ -2,14 +2,17 @@ import { useState } from 'react'
 import { IonReorder, IonReorderGroup, useIonAlert } from '@ionic/react'
 import { IconGriff, IconPlus, IconX } from '../icons'
 import { NAME_MAX, sauber } from '../store'
-import { formatBereich } from '../trainingCalc'
+import { FELDER, formatBereich } from '../trainingCalc'
 import { AUFWAERMEN_MAX, SAETZE_MAX, WDH_MAX, loescheVorlage, speichereVorlage } from '../trainingStore'
 import { Blatt, Seite, Stepper, TextKnopf } from '../ui'
 import { Hinzufuegen } from './Hinzufuegen'
-import type { FormCtx, VorlagenUebung } from '../types'
+import type { Erfassung, FormCtx, VorlagenUebung } from '../types'
 
-const chipText = (v: VorlagenUebung) => {
-  const b = formatBereich(v)
+/** Ohne Wdh (Zeit, Strecke) gibt es keinen Wdh-Bereich. */
+const mitWdh = (erf: Erfassung | undefined) => !erf || FELDER[erf].includes('wdh')
+
+const chipText = (v: VorlagenUebung, erf: Erfassung | undefined) => {
+  const b = mitWdh(erf) ? formatBereich(v) : ''
   const arbeit = b ? `${v.saetze} × ${b}` : `${v.saetze} ${v.saetze === 1 ? 'Satz' : 'Sätze'}`
   return v.aufwaermen ? `${v.aufwaermen}A + ${arbeit}` : arbeit
 }
@@ -102,7 +105,7 @@ function VorlageForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
                   {uebungById[v.uebung]?.name ?? 'Übung'}
                 </button>
                 <button type="button" className="f-vz-chip" onClick={() => setWahl(i)}>
-                  {chipText(v)}
+                  {chipText(v, uebungById[v.uebung]?.erfassung)}
                 </button>
               </div>
             ))}
@@ -158,32 +161,36 @@ function VorlageForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
                       plusAus={v.aufwaermen >= AUFWAERMEN_MAX}
                     />
                   </div>
-                  <div className="f-zeile">
-                    <span>Wdh von</span>
-                    <Stepper
-                      label="Wdh von"
-                      text={v.von === null ? '–' : String(v.von)}
-                      onMinus={() => aendere(i, { von: schritt(v.von, -1, 8) })}
-                      onPlus={() => {
-                        const von = schritt(v.von, 1, 8)
-                        aendere(i, { von, bis: v.bis !== null && von !== null && von > v.bis ? von : v.bis })
-                      }}
-                      minusAus={v.von === null}
-                    />
-                  </div>
-                  <div className="f-zeile">
-                    <span>Wdh bis</span>
-                    <Stepper
-                      label="Wdh bis"
-                      text={v.bis === null ? '–' : String(v.bis)}
-                      onMinus={() => {
-                        const bis = schritt(v.bis, -1, 12)
-                        aendere(i, { bis, von: v.von !== null && bis !== null && bis < v.von ? bis : v.von })
-                      }}
-                      onPlus={() => aendere(i, { bis: schritt(v.bis, 1, Math.max(12, v.von ?? 0)) })}
-                      minusAus={v.bis === null}
-                    />
-                  </div>
+                  {mitWdh(uebungById[v.uebung]?.erfassung) ? (
+                    <>
+                      <div className="f-zeile">
+                        <span>Wdh von</span>
+                        <Stepper
+                          label="Wdh von"
+                          text={v.von === null ? '–' : String(v.von)}
+                          onMinus={() => aendere(i, { von: schritt(v.von, -1, 8) })}
+                          onPlus={() => {
+                            const von = schritt(v.von, 1, 8)
+                            aendere(i, { von, bis: v.bis !== null && von !== null && von > v.bis ? von : v.bis })
+                          }}
+                          minusAus={v.von === null}
+                        />
+                      </div>
+                      <div className="f-zeile">
+                        <span>Wdh bis</span>
+                        <Stepper
+                          label="Wdh bis"
+                          text={v.bis === null ? '–' : String(v.bis)}
+                          onMinus={() => {
+                            const bis = schritt(v.bis, -1, 12)
+                            aendere(i, { bis, von: v.von !== null && bis !== null && bis < v.von ? bis : v.von })
+                          }}
+                          onPlus={() => aendere(i, { bis: schritt(v.bis, 1, Math.max(12, v.von ?? 0)) })}
+                          minusAus={v.bis === null}
+                        />
+                      </div>
+                    </>
+                  ) : null}
                 </div>
                 <div className="f-gruppe">
                   <button

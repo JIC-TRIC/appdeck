@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useIonAlert } from '@ionic/react'
 import { NAME_MAX, sauber } from '../store'
-import { formatStoppuhr } from '../trainingCalc'
+import { FELDER, formatStoppuhr } from '../trainingCalc'
 import { formatZahl } from '../util'
 import {
   NOTIZ_MAX,
@@ -24,11 +24,15 @@ const ERFASSUNGEN: { id: Erfassung; label: string }[] = [
   { id: 'gewicht', label: 'Gewicht × Wdh' },
   { id: 'wdh', label: 'Nur Wdh' },
   { id: 'zeit', label: 'Zeit' },
+  { id: 'strecke', label: 'Strecke + Zeit' },
+  { id: 'gewichtZeit', label: 'Gewicht × Zeit' },
+  { id: 'gewichtStrecke', label: 'Gewicht × Strecke' },
 ]
 
 // Uebung anlegen oder bearbeiten: Name, was eingetragen wird, Pause, Notiz -
-// bei Gewicht x Wdh auch der Gewichtsschritt (+/- im Tastenfeld, Vorschlag
-// fuers naechste Gewicht) und die Stange fuer den Scheibenrechner.
+// mit Gewicht auch der Gewichtsschritt (+/- im Tastenfeld, bei Gewicht x Wdh
+// der Vorschlag fuers naechste Gewicht), bei Gewicht x Wdh die Stange fuer den
+// Scheibenrechner.
 // Die Erfassung laesst sich nur aendern, solange die Uebung nie trainiert
 // wurde. Trainierte Uebungen werden archiviert statt geloescht - ihr Verlauf
 // bleibt.
@@ -117,44 +121,45 @@ function UebungForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
           </div>
         </div>
 
-        {erfassung === 'gewicht' ? (
-          <>
-            <div className="f-feld">
-              <span className="f-label">Gewichtsschritt</span>
-              <div className="f-chips">
-                {SCHRITTE.map((x) => (
-                  <button
-                    key={x}
-                    type="button"
-                    className={`f-chip${schritt === x ? ' an' : ''}`}
-                    aria-pressed={schritt === x}
-                    onClick={() => setSchritt(x)}
-                  >
-                    {formatZahl(x)} kg
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="f-feld">
-              <span className="f-label">Langhantel (Scheibenrechner)</span>
-              <div className="f-chips">
-                <button type="button" className={`f-chip${stange === null ? ' an' : ''}`} aria-pressed={stange === null} onClick={() => setStange(null)}>
-                  Nein
+        {FELDER[erfassung].includes('kg') ? (
+          <div className="f-feld">
+            <span className="f-label">Gewichtsschritt</span>
+            <div className="f-chips">
+              {SCHRITTE.map((x) => (
+                <button
+                  key={x}
+                  type="button"
+                  className={`f-chip${schritt === x ? ' an' : ''}`}
+                  aria-pressed={schritt === x}
+                  onClick={() => setSchritt(x)}
+                >
+                  {formatZahl(x)} kg
                 </button>
-                {STANGEN.map((x) => (
-                  <button
-                    key={x}
-                    type="button"
-                    className={`f-chip${stange === x ? ' an' : ''}`}
-                    aria-pressed={stange === x}
-                    onClick={() => setStange(x)}
-                  >
-                    {x} kg
-                  </button>
-                ))}
-              </div>
+              ))}
             </div>
-          </>
+          </div>
+        ) : null}
+
+        {erfassung === 'gewicht' ? (
+          <div className="f-feld">
+            <span className="f-label">Langhantel (Scheibenrechner)</span>
+            <div className="f-chips">
+              <button type="button" className={`f-chip${stange === null ? ' an' : ''}`} aria-pressed={stange === null} onClick={() => setStange(null)}>
+                Nein
+              </button>
+              {STANGEN.map((x) => (
+                <button
+                  key={x}
+                  type="button"
+                  className={`f-chip${stange === x ? ' an' : ''}`}
+                  aria-pressed={stange === x}
+                  onClick={() => setStange(x)}
+                >
+                  {x} kg
+                </button>
+              ))}
+            </div>
+          </div>
         ) : null}
 
         <div className="f-feld quer">

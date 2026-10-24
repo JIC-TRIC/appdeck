@@ -3,22 +3,25 @@ import { imBereich } from '../calc'
 import { Verlauf } from '../charts'
 import { IconRight } from '../icons'
 import {
+  KENNZAHLEN,
   alleRekorde,
   besterE1rmSatz,
   besterSatz,
-  bestesE1rm,
   bestwerteJeWdh,
   einheiten,
   formatSatz,
+  formatStoppuhr,
   gewichtJeWdh,
   formatSek,
+  formatStrecke,
   formatTausend,
-  kennzahl,
+  kennwert,
   kurzSaetze,
-  leistung,
+  streckeTeile,
+  type Kennzahl,
 } from '../trainingCalc'
 import { Segment, Seite, TextKnopf, Zurueck } from '../ui'
-import { dateKey, formatDiff, formatKurz, formatZahl, relativTag, wieLange } from '../util'
+import { dateKey, formatKurz, formatZahl, relativTag, wieLange } from '../util'
 import { Zettel, useNotizAendern } from './Zettel'
 import type { Bereich, Erfassung, FormCtx, Punkt, Satz } from '../types'
 
@@ -28,22 +31,56 @@ const BEREICHE: { id: Bereich; label: string }[] = [
   { id: 'alles', label: 'Alles' },
 ]
 
-type Kennzahl = 'gewicht' | '1rm' | 'volumen'
-
-const ARTEN: { id: Kennzahl; label: string }[] = [
-  { id: 'gewicht', label: 'Gewicht' },
-  { id: '1rm', label: '1RM' },
-  { id: 'volumen', label: 'Volumen' },
-]
-
-const EINHEIT: Record<Erfassung, string> = { gewicht: 'kg', wdh: 'Wdh', zeit: 's' }
+const ART_LABEL: Record<Kennzahl, string> = {
+  gewicht: 'Gewicht',
+  '1rm': '1RM',
+  volumen: 'Volumen',
+  wdh: 'Wdh',
+  zeit: 'Zeit',
+  strecke: 'Strecke',
+  tempo: 'Tempo',
+}
 
 /** Wie die Zahl ueber dem Verlauf heisst. */
-const KENNZAHL_TEXT: Record<Kennzahl, string> = { gewicht: 'Schwerster Satz', '1rm': 'Geschätztes 1RM', volumen: 'Volumen' }
+const KENNZAHL_TEXT: Record<Kennzahl, string> = {
+  gewicht: 'Schwerster Satz',
+  '1rm': 'Geschätztes 1RM',
+  volumen: 'Volumen',
+  wdh: 'Meiste Wdh',
+  zeit: 'Längste Zeit',
+  strecke: 'Weiteste Strecke',
+  tempo: 'Schnellstes Tempo',
+}
+
+/** Eine Zeit gross: '45' mit 's', ab einer Minute '1:30' mit 'min'. */
+const zeitTeile = (sek: number): [string, string] => (sek < 60 ? [String(sek), 's'] : [formatStoppuhr(sek), 'min'])
+
+/**
+ * Ein Satz zum Grossschreiben: die erste Zahl, ihre Einheit und der Rest -
+ * ['82,5', 'kg', '× 8'], ['5', 'km', 'in 26:30'], ['12', 'Wdh', ''].
+ */
+function satzTeile(s: Satz, erf: Erfassung): [string, string, string] {
+  switch (erf) {
+    case 'gewicht':
+      return [formatZahl(s.kg ?? 0), 'kg', `× ${s.wdh ?? 0}`]
+    case 'gewichtZeit':
+      return [formatZahl(s.kg ?? 0), 'kg', `× ${formatSek(s.sek ?? 0)}`]
+    case 'gewichtStrecke':
+      return [formatZahl(s.kg ?? 0), 'kg', `× ${formatStrecke(s.m ?? 0)}`]
+    case 'wdh':
+      return [String(s.wdh ?? 0), 'Wdh', '']
+    case 'zeit':
+      return [...zeitTeile(s.sek ?? 0), '']
+    case 'strecke':
+      return [...streckeTeile(s.m ?? 0), `in ${formatSek(s.sek ?? 0)}`]
+  }
+}
 
 // Eine Uebung ueber alle Vorlagen: gross der staerkste Satz aus dem letzten
-// Training, Kacheln (seit Start, seit dem letzten Mal, Rekord), der Verlauf
-// (schwerster Satz, geschaetztes 1RM oder Volumen), die Bestwerte je Wdh-Zahl,
+// Training, Kacheln (seit Start und seit dem letzten Mal in der Kennzahl des
+// Verlaufs, Rekord), der Verlauf
+// (je nach Erfassung schwerster Satz, geschaetztes 1RM, Volumen, Wdh, Zeit,
+// Strecke oder Tempo), die Bestwerte je Wdh-Zahl,
 // welches Gewicht fuer wie viele Wdh passt (aus dem 1RM des letzten Trainings,
 // das als Vorgabe zaehlt) und darunter jedes Training. Aufwaermsaetze zaehlen
 // nirgends mit.
@@ -55,7 +92,7 @@ const KENNZAHL_TEXT: Record<Kennzahl, string> = { gewicht: 'Schwerster Satz', '1
 function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const { uebungById, trainings, heute, push, back, refresh } = ctx
   const [bereich, setBereich] = useState<Bereich>('alles')
-  const [art, setArt] = useState<Kennzahl>('gewicht')
+  const [art, setArt] = useState<Kennzahl | null>(null)
   // Angetippter Punkt im Verlauf (Index in den sichtbaren) - null = der juengste.
   const [auswahl, setAuswahl] = useState<number | null>(null)
   const notizAendern = useNotizAendern(refresh)
@@ -66,7 +103,6 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const ein = einheiten(trainings, id)
   const tagVon = (ms: number) => dateKey(new Date(ms))
   const bestJe = ein.map((e) => besterSatz(e.saetze, erf))
-  const zahl = (s: Satz | null) => (s ? kennzahl(s, erf) : 0)
   const letzte = ein[ein.length - 1]
   const best = bestJe[bestJe.length - 1]
   const rekord = besterSatz(ein.flatMap((e) => e.saetze), erf)
@@ -77,11 +113,9 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   const basisE = [...ein].reverse().find((e) => !e.training.uebungen.some((tu) => tu.uebung === id && tu.keineVorgabe))
   const basis = erf === 'gewicht' && basisE ? besterE1rmSatz(basisE.saetze) : null
 
-  const kenn: Kennzahl = erf === 'gewicht' ? art : 'gewicht'
-  const punkte: Punkt[] = ein.map((e, i) => ({
-    tag: tagVon(e.training.start),
-    zahl: kenn === 'gewicht' ? zahl(bestJe[i]) : kenn === '1rm' ? bestesE1rm(e.saetze) : leistung(e.saetze, erf),
-  }))
+  const arten = KENNZAHLEN[erf]
+  const kenn: Kennzahl = art && arten.includes(art) ? art : arten[0]
+  const punkte: Punkt[] = ein.map((e) => ({ tag: tagVon(e.training.start), zahl: kennwert(e.saetze, kenn, erf) }))
   const sichtbar = imBereich(punkte, bereich, heute)
   // imBereich laesst nur die aeltesten weg - die sichtbaren sind das Ende der Reihe.
   const versatz = punkte.length - sichtbar.length
@@ -92,10 +126,23 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
 
   // Zahl und Einheit getrennt, damit die Zahl gross stehen kann.
   const teile = (v: number): [string, string] => {
-    if (erf === 'zeit') return v < 60 ? [String(v), 's'] : [formatSek(v), 'min']
-    if (erf === 'wdh') return [String(v), 'Wdh']
-    // Das 1RM ist geschaetzt - eine Nachkommastelle genuegt.
-    return [kenn === 'volumen' ? formatTausend(v) : formatZahl(kenn === '1rm' ? Math.round(v * 10) / 10 : v), 'kg']
+    switch (kenn) {
+      case 'wdh':
+        return [String(v), 'Wdh']
+      case 'zeit':
+        return zeitTeile(v)
+      case 'strecke':
+        return streckeTeile(v)
+      case 'tempo':
+        return [formatZahl(v), 'km/h']
+      case 'volumen':
+        return [formatTausend(v), 'kg']
+      // Das 1RM ist geschaetzt - eine Nachkommastelle genuegt.
+      case '1rm':
+        return [formatZahl(Math.round(v * 10) / 10), 'kg']
+      case 'gewicht':
+        return [formatZahl(v), 'kg']
+    }
   }
   const mitEinheit = (v: number) => teile(v).join(' ')
   const herkunft = () => {
@@ -108,10 +155,15 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   }
   const veraenderung = zeigeP && sichtbar.length > 1 ? zeigeP.zahl - sichtbar[0].zahl : null
 
-  const diff = (a: number, b: number) => {
-    const d = a - b
-    return <em className={`f-diff${d > 0 ? ' gut' : ''}`}>{`${formatDiff(d)} ${EINHEIT[erf]}`}</em>
+  // Kachel: das juengste Training gegen ein frueheres, in der Kennzahl des Verlaufs.
+  const diff = (b: Punkt) => {
+    const d = punkte[punkte.length - 1].zahl - b.zahl
+    const text = d === 0 ? `±0 ${teile(0)[1]}` : `${d > 0 ? '+' : '−'}${mitEinheit(Math.abs(d))}`
+    return <em className={`f-diff${d > 0 ? ' gut' : ''}`}>{text}</em>
   }
+
+  const stand = best ? satzTeile(best, erf) : null
+  const rek = rekord ? satzTeile(rekord, erf) : null
 
   return (
     <Seite
@@ -123,21 +175,12 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
       </header>
       {u.notiz ? <Zettel text={u.notiz} onClick={() => notizAendern(u)} /> : null}
 
-      {letzte && best ? (
+      {letzte && stand ? (
         <>
           <div className="f-stand">
             <span className="f-zahl gross">
-              {erf === 'gewicht' ? (
-                <>
-                  <b>{formatZahl(best.kg ?? 0)}</b>
-                  <small>kg × {best.wdh}</small>
-                </>
-              ) : (
-                <>
-                  <b>{erf === 'wdh' ? best.wdh : formatSek(best.sek ?? 0).replace(' s', '')}</b>
-                  <small>{erf === 'wdh' ? 'Wdh' : (best.sek ?? 0) < 60 ? 's' : 'min'}</small>
-                </>
-              )}
+              <b>{stand[0]}</b>
+              <small>{stand[2] ? `${stand[1]} ${stand[2]}` : stand[1]}</small>
             </span>
             <span className="f-stand-wann">{wieLange(tagVon(letzte.training.start), heute)}</span>
           </div>
@@ -145,22 +188,20 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
           <div className="f-kacheln">
             <div className="f-kachel">
               <small>Seit Start</small>
-              {ein.length > 1 ? diff(zahl(best), zahl(bestJe[0])) : <em className="f-diff">–</em>}
+              {ein.length > 1 ? diff(punkte[0]) : <em className="f-diff">–</em>}
               <span>{formatKurz(tagVon(ein[0].training.start), heute)}</span>
             </div>
             <div className="f-kachel">
               <small>Seit letztem</small>
-              {ein.length > 1 ? diff(zahl(best), zahl(bestJe[bestJe.length - 2])) : <em className="f-diff">–</em>}
+              {ein.length > 1 ? diff(punkte[punkte.length - 2]) : <em className="f-diff">–</em>}
               <span>{ein.length > 1 ? formatKurz(tagVon(ein[ein.length - 2].training.start), heute) : 'erstes Mal'}</span>
             </div>
-            {rekord ? (
+            {rekord && rek ? (
               <div className="f-kachel">
                 <small>Rekord</small>
-                <em className="f-diff">
-                  {erf === 'gewicht' ? `${formatZahl(rekord.kg ?? 0)} kg` : erf === 'wdh' ? `${rekord.wdh} Wdh` : formatSek(rekord.sek ?? 0)}
-                </em>
+                <em className="f-diff">{erf === 'zeit' ? formatSek(rekord.sek ?? 0) : `${rek[0]} ${rek[1]}`}</em>
                 <span>
-                  {erf === 'gewicht' ? `× ${rekord.wdh} · ` : ''}
+                  {rek[2] ? `${rek[2]} · ` : ''}
                   {formatKurz(tagVon(ein.find((e) => e.saetze.includes(rekord))?.training.start ?? 0), heute)}
                 </span>
               </div>
@@ -168,12 +209,12 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
           </div>
 
           <section className="f-karte-flach">
-            <div className={erf === 'gewicht' ? 'f-seg-doppel' : ''}>
-              {erf === 'gewicht' ? (
+            <div className={arten.length > 1 ? 'f-seg-doppel' : ''}>
+              {arten.length > 1 ? (
                 <Segment
                   label="Kennzahl"
-                  optionen={ARTEN}
-                  wert={art}
+                  optionen={arten.map((a) => ({ id: a, label: ART_LABEL[a] }))}
+                  wert={kenn}
                   onWahl={(a) => {
                     setArt(a)
                     setAuswahl(null)
@@ -194,8 +235,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
               <div className="f-verlauf-kopf" aria-live="polite">
                 <span className="f-verlauf-wert">
                   <small>
-                    {erf === 'gewicht' ? KENNZAHL_TEXT[kenn] : erf === 'wdh' ? 'Meiste Wdh' : 'Längste Zeit'} ·{' '}
-                    {relativTag(zeigeP.tag, heute)}
+                    {KENNZAHL_TEXT[kenn]} · {relativTag(zeigeP.tag, heute)}
                   </small>
                   <b>
                     {teile(zeigeP.zahl)[0]}

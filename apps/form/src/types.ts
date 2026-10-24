@@ -38,8 +38,13 @@ export type Bereich = '3m' | '1j' | 'alles'
 
 // ---------- Training ----------
 
-/** Was pro Satz eingetragen wird: Gewicht und Wdh, nur Wdh oder eine Zeit. */
-export type Erfassung = 'gewicht' | 'wdh' | 'zeit'
+/**
+ * Was pro Satz eingetragen wird: Gewicht und Wdh, nur Wdh, eine Zeit, Strecke
+ * und Zeit (Laufband, Rad, Rudern), Gewicht und Zeit (Plank mit Gewicht,
+ * Halten) oder Gewicht und Strecke (Farmer's Walk, Schlitten). Welche Zahlen
+ * dazugehoeren: FELDER in trainingCalc.ts.
+ */
+export type Erfassung = 'gewicht' | 'wdh' | 'zeit' | 'strecke' | 'gewichtZeit' | 'gewichtStrecke'
 
 export interface Uebung {
   id: string
@@ -84,8 +89,10 @@ export interface Vorlage {
 export interface Satz {
   kg: number | null
   wdh: number | null
-  /** Bei Erfassung 'zeit' (Sekunden). */
+  /** Zeit in Sekunden (Erfassung 'zeit', 'strecke', 'gewichtZeit'). */
   sek: number | null
+  /** Strecke in Metern (Erfassung 'strecke', 'gewichtStrecke'). */
+  m: number | null
   fertig: number | null
   /** Aufwaermsatz: zaehlt nicht fuer Rekorde, Volumen und Vorschlag. */
   aufwaermen: boolean

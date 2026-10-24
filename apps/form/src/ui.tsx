@@ -120,6 +120,8 @@ export const REKORD_TEXT: Record<RekordArt, string> = {
   '1rm': 'bestes 1RM',
   wdh: 'meiste Wdh',
   zeit: 'längste Zeit',
+  strecke: 'weiteste Strecke',
+  tempo: 'schnellstes Tempo',
 }
 
 /** Ein- und Ausschalter wie in den iOS-Einstellungen - steht rechts in einer Zeile. */

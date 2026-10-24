@@ -6,22 +6,33 @@ import { addDays, dateKey, formatZahl, parseKey, rund } from './util'
 import type { Erfassung, Satz, Training, Uebung, Vorlage, VorlagenUebung } from './types'
 
 /** Die Zahlen eines Satzes ohne den Haken. */
-export type Zahlen = Pick<Satz, 'kg' | 'wdh' | 'sek'>
+export type Zahlen = Pick<Satz, 'kg' | 'wdh' | 'sek' | 'm'>
+
+/** Eine Zahl im Satz: Gewicht (kg), Wdh, Zeit (Sekunden) oder Strecke (Meter). */
+export type Feld = keyof Zahlen
+
+/** Welche Zahlen eine Erfassung braucht, in der Reihenfolge im Satz. */
+export const FELDER: Record<Erfassung, Feld[]> = {
+  gewicht: ['kg', 'wdh'],
+  wdh: ['wdh'],
+  zeit: ['sek'],
+  strecke: ['m', 'sek'],
+  gewichtZeit: ['kg', 'sek'],
+  gewichtStrecke: ['kg', 'm'],
+}
+
+export const LEER: Zahlen = { kg: null, wdh: null, sek: null, m: null }
 
 /** Hat der Satz die Zahlen, die seine Erfassung braucht? */
 export function vollstaendig(s: Zahlen, erf: Erfassung): boolean {
-  if (erf === 'gewicht') return s.kg !== null && s.wdh !== null
-  if (erf === 'wdh') return s.wdh !== null
-  return s.sek !== null
+  return FELDER[erf].every((f) => s[f] !== null)
 }
 
 /** Nur die Zahlen, die zur Erfassung gehoeren - der Rest wird leer. */
 export function nurNoetige(s: Zahlen, erf: Erfassung): Zahlen {
-  return {
-    kg: erf === 'gewicht' ? s.kg : null,
-    wdh: erf === 'zeit' ? null : s.wdh,
-    sek: erf === 'zeit' ? s.sek : null,
-  }
+  const z = { ...LEER }
+  for (const f of FELDER[erf]) z[f] = s[f]
+  return z
 }
 
 export const erledigt = (s: Satz) => s.fertig !== null
@@ -110,8 +121,8 @@ export function platzhalter(ref: Satz[] | null, saetze: Satz[], i: number, plus:
   const auf = saetze[i]?.aufwaermen ?? false
   const r = gleicherSatz(ref, saetze, i)
   if (r) {
-    if (!auf && plus && r.kg !== null) return { kg: rund(r.kg + plus.kg), wdh: plus.wdh ?? r.wdh, sek: r.sek }
-    return { kg: r.kg, wdh: r.wdh, sek: r.sek }
+    if (!auf && plus && r.kg !== null) return { kg: rund(r.kg + plus.kg), wdh: plus.wdh ?? r.wdh, sek: r.sek, m: r.m }
+    return { kg: r.kg, wdh: r.wdh, sek: r.sek, m: r.m }
   }
   for (let j = i - 1; j >= 0; j -= 1) {
     if ((saetze[j]?.aufwaermen ?? false) === auf) return effektiv(ref, saetze, j, plus)
@@ -124,8 +135,8 @@ export function effektiv(ref: Satz[] | null, saetze: Satz[], i: number, plus: St
   const s = saetze[i]
   const p = platzhalter(ref, saetze, i, plus)
   if (!s) return p
-  const z = { kg: s.kg ?? p?.kg ?? null, wdh: s.wdh ?? p?.wdh ?? null, sek: s.sek ?? p?.sek ?? null }
-  return z.kg === null && z.wdh === null && z.sek === null ? null : z
+  const z = { kg: s.kg ?? p?.kg ?? null, wdh: s.wdh ?? p?.wdh ?? null, sek: s.sek ?? p?.sek ?? null, m: s.m ?? p?.m ?? null }
+  return z.kg === null && z.wdh === null && z.sek === null && z.m === null ? null : z
 }
 
 /**
@@ -146,16 +157,31 @@ export function steigerung(
   return { kg: schritt, wdh: vu.von }
 }
 
-/** Was an einem Satz mehr ist als beim gleichen Satz vom letzten Mal - das wird orange. */
-export function besser(s: Zahlen, ref: Zahlen | null | undefined, erf: Erfassung) {
-  const nein = { kg: false, wdh: false, sek: false }
-  if (!ref) return nein
-  if (erf === 'gewicht') {
-    if (s.kg === null || s.wdh === null || ref.kg === null || ref.wdh === null) return nein
-    return { kg: s.kg > ref.kg, wdh: s.wdh > ref.wdh && s.kg >= ref.kg, sek: false }
+/**
+ * Was an einem Satz besser ist als beim gleichen Satz vom letzten Mal - das
+ * wird orange: mehr Gewicht, oder mehr Wdh, Zeit bzw. Strecke bei mindestens
+ * gleichem Gewicht. Bei Strecke und Zeit weiter, oder fuer mindestens dieselbe
+ * Strecke weniger Zeit.
+ */
+export function besser(s: Zahlen, ref: Zahlen | null | undefined, erf: Erfassung): Record<Feld, boolean> {
+  const nein = { kg: false, wdh: false, sek: false, m: false }
+  if (!ref || !vollstaendig(s, erf) || !vollstaendig(ref, erf)) return nein
+  const kg = s.kg! > ref.kg!
+  const schwer = s.kg! >= ref.kg!
+  switch (erf) {
+    case 'gewicht':
+      return { ...nein, kg, wdh: s.wdh! > ref.wdh! && schwer }
+    case 'wdh':
+      return { ...nein, wdh: s.wdh! > ref.wdh! }
+    case 'zeit':
+      return { ...nein, sek: s.sek! > ref.sek! }
+    case 'strecke':
+      return { ...nein, m: s.m! > ref.m!, sek: s.sek! < ref.sek! && s.m! >= ref.m! }
+    case 'gewichtZeit':
+      return { ...nein, kg, sek: s.sek! > ref.sek! && schwer }
+    case 'gewichtStrecke':
+      return { ...nein, kg, m: s.m! > ref.m! && schwer }
   }
-  if (erf === 'wdh') return { ...nein, wdh: s.wdh !== null && ref.wdh !== null && s.wdh > ref.wdh }
-  return { ...nein, sek: s.sek !== null && ref.sek !== null && s.sek > ref.sek }
 }
 
 // ---------- Rekorde ----------
@@ -168,9 +194,12 @@ export interface Bestwerte {
   e1rm: number
   wdh: number
   sek: number
+  m: number
+  /** Meter pro Sekunde - mehr ist schneller. */
+  tempo: number
 }
 
-export type RekordArt = 'gewicht' | '1rm' | 'wdh' | 'zeit'
+export type RekordArt = 'gewicht' | '1rm' | 'wdh' | 'zeit' | 'strecke' | 'tempo'
 
 export interface Rekord {
   uebung: string
@@ -186,6 +215,8 @@ const bestwerteVon = (s: Satz): Bestwerte => ({
   e1rm: s.kg !== null && s.wdh !== null && s.wdh > 0 ? epley(s.kg, s.wdh) : 0,
   wdh: s.wdh ?? 0,
   sek: s.sek ?? 0,
+  m: s.m ?? 0,
+  tempo: s.m !== null && s.sek ? s.m / s.sek : 0,
 })
 
 const max = (a: Bestwerte, b: Bestwerte): Bestwerte => ({
@@ -193,7 +224,31 @@ const max = (a: Bestwerte, b: Bestwerte): Bestwerte => ({
   e1rm: Math.max(a.e1rm, b.e1rm),
   wdh: Math.max(a.wdh, b.wdh),
   sek: Math.max(a.sek, b.sek),
+  m: Math.max(a.m, b.m),
+  tempo: Math.max(a.tempo, b.tempo),
 })
+
+/**
+ * Was ein Satz gegen die Bestwerte davor gebrochen hat: das hoechste Gewicht
+ * (bei Gewicht x Wdh sonst das beste 1RM), die meisten Wdh, die laengste Zeit,
+ * die weiteste Strecke (bei Strecke und Zeit sonst das schnellste Tempo).
+ */
+function rekordArt(erf: Erfassung, neu: Bestwerte, alt: Bestwerte): RekordArt | null {
+  switch (erf) {
+    case 'gewicht':
+      return neu.kg > alt.kg ? 'gewicht' : neu.e1rm > alt.e1rm ? '1rm' : null
+    case 'wdh':
+      return neu.wdh > alt.wdh ? 'wdh' : null
+    case 'zeit':
+      return neu.sek > alt.sek ? 'zeit' : null
+    case 'strecke':
+      return neu.m > alt.m ? 'strecke' : neu.tempo > alt.tempo ? 'tempo' : null
+    case 'gewichtZeit':
+      return neu.kg > alt.kg ? 'gewicht' : neu.sek > alt.sek ? 'zeit' : null
+    case 'gewichtStrecke':
+      return neu.kg > alt.kg ? 'gewicht' : neu.m > alt.m ? 'strecke' : null
+  }
+}
 
 /**
  * Die Rekorde eines Trainings: Saetze, die alles davor schlagen - fruehere
@@ -213,13 +268,7 @@ function rekordeUndWeiter(t: Training, beste: Map<string, Bestwerte>, byId: Reco
       const neu = bestwerteVon(s)
       const alt = beste.get(tu.uebung)
       if (alt && bekannt.has(tu.uebung)) {
-        let art: RekordArt | null = null
-        if (u.erfassung === 'gewicht') {
-          if (neu.kg > alt.kg) art = 'gewicht'
-          else if (neu.e1rm > alt.e1rm) art = '1rm'
-        } else if (u.erfassung === 'wdh') {
-          if (neu.wdh > alt.wdh) art = 'wdh'
-        } else if (neu.sek > alt.sek) art = 'zeit'
+        const art = rekordArt(u.erfassung, neu, alt)
         if (art) out.push({ uebung: tu.uebung, ui, si, art, satz: s })
       }
       beste.set(tu.uebung, alt ? max(alt, neu) : neu)
@@ -311,23 +360,29 @@ export function naechsterSatz(t: Training): { ui: number; si: number } | null {
 
 /**
  * Was eine Uebung in einem Training geschafft hat, als eine Zahl: Volumen
- * (kg x Wdh), bei nur Wdh die Summe der Wdh, bei Zeit die Summe der Sekunden.
- * Nur erledigte Arbeitssaetze.
+ * (kg x Wdh), bei nur Wdh die Summe der Wdh, bei Zeit die Summe der Sekunden,
+ * bei Strecke und Zeit die Summe der Meter, mit Gewicht kg x Sekunden bzw.
+ * kg x Meter. Nur erledigte Arbeitssaetze.
  */
 export function leistung(saetze: Satz[], erf: Erfassung): number {
   let n = 0
   for (const s of saetze) {
     if (!erledigt(s) || s.aufwaermen) continue
-    if (erf === 'gewicht') n += (s.kg ?? 0) * (s.wdh ?? 0)
+    const kg = s.kg ?? 0
+    if (erf === 'gewicht') n += kg * (s.wdh ?? 0)
     else if (erf === 'wdh') n += s.wdh ?? 0
-    else n += s.sek ?? 0
+    else if (erf === 'zeit') n += s.sek ?? 0
+    else if (erf === 'strecke') n += s.m ?? 0
+    else if (erf === 'gewichtZeit') n += kg * (s.sek ?? 0)
+    else n += kg * (s.m ?? 0)
   }
   return rund(n)
 }
 
 /**
  * Sind alle Saetze einer Uebung abgehakt: wie viel Prozent mehr (oder
- * weniger) sie geschafft hat als beim letzten Mal. null, solange noch etwas
+ * weniger) sie geschafft hat als beim letzten Mal (leistung) - bei Strecke und
+ * Zeit mit gleicher Strecke, wie viel schneller. null, solange noch etwas
  * offen ist, ohne letztes Mal oder wenn es dort nichts zu vergleichen gibt.
  */
 export function vergleichMitLetztem(saetze: Satz[], ref: Satz[] | null, erf: Erfassung): number | null {
@@ -335,6 +390,12 @@ export function vergleichMitLetztem(saetze: Satz[], ref: Satz[] | null, erf: Erf
   const vorher = leistung(ref, erf)
   const jetzt = leistung(saetze, erf)
   if (vorher <= 0 || jetzt <= 0) return null
+  // Strecke und Zeit gleich weit wie letztes Mal (die feste Runde): dann zaehlt das Tempo.
+  if (erf === 'strecke' && jetzt === vorher) {
+    const zeitVorher = leistung(ref, 'zeit')
+    const zeitJetzt = leistung(saetze, 'zeit')
+    if (zeitVorher > 0 && zeitJetzt > 0) return Math.round((zeitVorher / zeitJetzt - 1) * 100)
+  }
   return Math.round(((jetzt - vorher) / vorher) * 100)
 }
 
@@ -434,26 +495,71 @@ export function einheiten(trainings: Training[], uebung: string): Einheit[] {
   return out
 }
 
-/** Der staerkste Satz: der schwerste (bei gleichem Gewicht mehr Wdh), die meisten Wdh, die laengste Zeit. */
+/** Ist Satz s staerker als b? Mit Gewicht zuerst das Gewicht, bei Strecke und Zeit zuerst die Strecke. */
+function staerker(s: Satz, b: Satz, erf: Erfassung): boolean {
+  switch (erf) {
+    case 'gewicht':
+      return s.kg! > b.kg! || (s.kg === b.kg && s.wdh! > b.wdh!)
+    case 'wdh':
+      return s.wdh! > b.wdh!
+    case 'zeit':
+      return s.sek! > b.sek!
+    case 'strecke':
+      return s.m! > b.m! || (s.m === b.m && s.sek! < b.sek!)
+    case 'gewichtZeit':
+      return s.kg! > b.kg! || (s.kg === b.kg && s.sek! > b.sek!)
+    case 'gewichtStrecke':
+      return s.kg! > b.kg! || (s.kg === b.kg && s.m! > b.m!)
+  }
+}
+
+/**
+ * Der staerkste Satz: der schwerste (bei gleichem Gewicht mehr Wdh, Zeit oder
+ * Strecke), die meisten Wdh, die laengste Zeit, die weiteste Strecke (bei
+ * gleicher Strecke die schnellere).
+ */
 export function besterSatz(saetze: Satz[], erf: Erfassung): Satz | null {
   let best: Satz | null = null
   for (const s of saetze) {
     if (!vollstaendig(s, erf)) continue
-    if (!best) best = s
-    else if (erf === 'gewicht') {
-      if (s.kg! > best.kg! || (s.kg === best.kg && s.wdh! > best.wdh!)) best = s
-    } else if (erf === 'wdh') {
-      if (s.wdh! > best.wdh!) best = s
-    } else if (s.sek! > best.sek!) best = s
+    if (!best || staerker(s, best, erf)) best = s
   }
   return best
 }
 
-/** Die Zahl fuer Verlauf und Kacheln: Gewicht oder 1RM, sonst Wdh bzw. Sekunden. */
-export function kennzahl(s: Satz, erf: Erfassung, art: 'gewicht' | '1rm' = 'gewicht'): number {
-  if (erf === 'gewicht') return art === '1rm' ? epley(s.kg ?? 0, s.wdh ?? 0) : (s.kg ?? 0)
-  if (erf === 'wdh') return s.wdh ?? 0
-  return s.sek ?? 0
+/** Was der Verlauf einer Uebung zeigen kann. */
+export type Kennzahl = 'gewicht' | '1rm' | 'volumen' | 'wdh' | 'zeit' | 'strecke' | 'tempo'
+
+/** Die Kennzahlen je Erfassung - die erste ist die, mit der der Verlauf aufgeht. */
+export const KENNZAHLEN: Record<Erfassung, Kennzahl[]> = {
+  gewicht: ['gewicht', '1rm', 'volumen'],
+  wdh: ['wdh'],
+  zeit: ['zeit'],
+  strecke: ['strecke', 'tempo'],
+  gewichtZeit: ['gewicht', 'zeit'],
+  gewichtStrecke: ['gewicht', 'strecke'],
+}
+
+/**
+ * Eine Kennzahl ueber die Saetze eines Trainings: das Hoechste davon, beim
+ * Volumen die Summe. Tempo in km/h (mehr ist schneller - so steigt der Verlauf
+ * wie bei allen anderen).
+ */
+export function kennwert(saetze: Satz[], art: Kennzahl, erf: Erfassung): number {
+  if (art === '1rm') return bestesE1rm(saetze)
+  if (art === 'volumen') return leistung(saetze, erf)
+  let best = 0
+  for (const s of saetze) {
+    const v =
+      art === 'gewicht' ? s.kg : art === 'wdh' ? s.wdh : art === 'zeit' ? s.sek : art === 'strecke' ? s.m : kmh(s)
+    if (v !== null && v > best) best = v
+  }
+  return best
+}
+
+/** Tempo eines Satzes in km/h, auf eine Stelle - null ohne Strecke oder Zeit. */
+export function kmh(s: Pick<Satz, 'm' | 'sek'>): number | null {
+  return s.m !== null && s.sek ? Math.round((s.m / s.sek) * 36) / 10 : null
 }
 
 /**
@@ -589,21 +695,68 @@ export function formatBereich(v: Pick<VorlagenUebung, 'von' | 'bis'>) {
 /** Eine Zeit: '45 s', ab einer Minute '1:30'. */
 export const formatSek = (sek: number) => (sek < 60 ? `${sek} s` : formatStoppuhr(sek))
 
-/** Ein Satz als Text: '82,5 × 8', '12', '1:30'. */
+/** Eine Strecke als Zahl und Einheit: ['400', 'm'], ab einem Kilometer ['5,25', 'km']. */
+export const streckeTeile = (m: number): [string, string] => (m < 1000 ? [String(m), 'm'] : [formatZahl(m / 1000), 'km'])
+
+/** '400 m', '5,25 km' */
+export const formatStrecke = (m: number) => streckeTeile(m).join(' ')
+
+/** Die zweite Zahl eines Satzes mit Gewicht: Wdh, Zeit oder Strecke. */
+const nachGewicht = (s: Zahlen, erf: Erfassung) =>
+  erf === 'gewichtZeit' ? formatSek(s.sek ?? 0) : erf === 'gewichtStrecke' ? formatStrecke(s.m ?? 0) : String(s.wdh ?? 0)
+
+/** Ein Satz als Text: '82,5 × 8', '12', '1:30', '5 km in 26:30', '10 kg × 45 s', '24 kg × 40 m'. */
 export function formatSatz(s: Zahlen, erf: Erfassung) {
   if (erf === 'gewicht') return `${formatZahl(s.kg ?? 0)} × ${s.wdh ?? 0}`
+  if (erf === 'gewichtZeit' || erf === 'gewichtStrecke') return `${formatZahl(s.kg ?? 0)} kg × ${nachGewicht(s, erf)}`
   if (erf === 'wdh') return String(s.wdh ?? 0)
+  if (erf === 'strecke') return `${formatStrecke(s.m ?? 0)} in ${formatSek(s.sek ?? 0)}`
   return formatSek(s.sek ?? 0)
 }
 
-/** Alle Saetze kurz: '82,5 × 8 · 8 · 7' bei gleichem Gewicht, sonst '80 × 8 · 82,5 × 6'. */
+/**
+ * Alle Saetze kurz: '82,5 × 8 · 8 · 7' bei gleichem Gewicht, sonst
+ * '80 × 8 · 82,5 × 6'. Mit Gewicht und Zeit bzw. Strecke genauso
+ * ('10 kg × 60 s · 45 s').
+ */
 export function kurzSaetze(saetze: Zahlen[], erf: Erfassung) {
   if (!saetze.length) return ''
-  if (erf === 'gewicht') {
+  if (FELDER[erf][0] === 'kg') {
     const kg = saetze[0].kg
-    if (saetze.every((s) => s.kg === kg)) return `${formatZahl(kg ?? 0)} × ${saetze.map((s) => s.wdh ?? 0).join(' · ')}`
+    if (saetze.every((s) => s.kg === kg)) {
+      const rest = saetze.map((s) => nachGewicht(s, erf)).join(' · ')
+      return erf === 'gewicht' ? `${formatZahl(kg ?? 0)} × ${rest}` : `${formatZahl(kg ?? 0)} kg × ${rest}`
+    }
   }
   return saetze.map((s) => formatSatz(s, erf)).join(' · ')
+}
+
+// Zeiten tippt man wie an der Mikrowelle: die letzten zwei Ziffern sind
+// Sekunden, davor Minuten, davor Stunden - '2830' ist 28:30, '130' ist 1:30.
+
+/** Sekunden als Ziffern zum Weitertippen: 90 -> '130', 1710 -> '2830'. */
+export function uhrZiffern(sek: number) {
+  const s = Math.max(0, Math.round(sek))
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  if (h) return `${h}${zwei(m)}${zwei(s % 60)}`
+  return m ? `${m}${zwei(s % 60)}` : String(s % 60)
+}
+
+/** Getippte Ziffern als Sekunden: '2830' -> 1710, '90' -> 90. null ohne Ziffer. */
+export function ausUhrZiffern(ziffern: string): number | null {
+  const d = ziffern.replace(/\D/g, '')
+  if (!d) return null
+  return Number(d.slice(0, -4) || 0) * 3600 + Number(d.slice(-4, -2) || 0) * 60 + Number(d.slice(-2))
+}
+
+/** Getippte Ziffern so, wie sie dastehen: '5' -> '0:05', '2830' -> '28:30', '10500' -> '1:05:00'. */
+export function alsUhr(ziffern: string) {
+  if (!ziffern) return ''
+  const d = ziffern.padStart(3, '0')
+  const rest = d.slice(0, -2)
+  if (rest.length <= 2) return `${Number(rest)}:${d.slice(-2)}`
+  return `${Number(rest.slice(0, -2))}:${rest.slice(-2)}:${d.slice(-2)}`
 }
 
 // ---------- Hilfen ----------
@@ -803,7 +956,7 @@ export function naechsteVorlage(vorlagen: Vorlage[], trainings: Training[]): str
 /** Alle Trainings als CSV - Semikolon und Komma, wie Excel und Numbers auf Deutsch es erwarten. */
 export function alsCsv(trainings: Training[], byId: Record<string, Uebung>): string {
   const feld = (x: string) => (/[;"\r\n]/.test(x) ? `"${x.replace(/"/g, '""')}"` : x)
-  const zeilen = [['Datum', 'Beginn', 'Training', 'Übung', 'Satz', 'kg', 'Wdh', 'Sekunden'].join(';')]
+  const zeilen = [['Datum', 'Beginn', 'Training', 'Übung', 'Satz', 'kg', 'Wdh', 'Sekunden', 'Meter'].join(';')]
   for (const t of trainings) {
     const tag = dateKey(new Date(t.start))
     const uhr = formatUhr(t.start)
@@ -823,6 +976,7 @@ export function alsCsv(trainings: Training[], byId: Record<string, Uebung>): str
             s.kg === null ? '' : formatZahl(s.kg),
             s.wdh === null ? '' : String(s.wdh),
             s.sek === null ? '' : String(s.sek),
+            s.m === null ? '' : String(s.m),
           ].join(';'),
         )
       }

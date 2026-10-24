@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { IonReorder, IonReorderGroup, useIonAlert } from '@ionic/react'
 import { IconCheck, IconGriff, IconMehr, IconPlus, IconRight, IconX } from '../icons'
 import { kannWach, tick, tonBereit } from '../geraet'
 import {
+  FELDER,
   abschliessen,
   besser,
   besterSatz,
@@ -15,6 +16,7 @@ import {
   formatSatz,
   formatSek,
   formatStoppuhr,
+  formatStrecke,
   formatUhr,
   gleicherSatz,
   kurzSaetze,
@@ -50,7 +52,7 @@ import { Blatt, Schalter, Seite, Stepper, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatZahl, relativTag, wieLange } from '../util'
 import { Hinzufuegen } from './Hinzufuegen'
 import { LiveZahlen, PauseAnzeige, PauseBlatt } from './Pause'
-import { FELDNAME, Tastenfeld, type Feld } from './Tastenfeld'
+import { FELDNAME, Tastenfeld, trenner, type Feld } from './Tastenfeld'
 import { Zettel, useNotizAendern } from './Zettel'
 import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung, Uebung, VorlagenUebung } from '../types'
 
@@ -73,9 +75,10 @@ import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung
 // ist markiert; ein Haken tickt (Haptik), springt kurz auf, holt den
 // naechsten Satz ins Bild und meldet einen neuen Rekord.
 
-const NEIN = { kg: false, wdh: false, sek: false }
+const NEIN = { kg: false, wdh: false, sek: false, m: false }
 
-const zeige = (f: Feld, v: number) => (f === 'kg' ? formatZahl(v) : f === 'sek' ? formatSek(v) : String(v))
+const zeige = (f: Feld, v: number) =>
+  f === 'kg' ? formatZahl(v) : f === 'sek' ? formatSek(v) : f === 'm' ? formatStrecke(v) : String(v)
 
 /** Aufwaermsaetze zuerst, sonst bleibt die Reihenfolge. */
 const sortiert = (saetze: Satz[]) => [...saetze.filter((s) => s.aufwaermen), ...saetze.filter((s) => !s.aufwaermen)]
@@ -201,7 +204,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
     }
     const z = effektiv(vorgaben[ui]?.saetze ?? null, tu.saetze, si, plusse[ui])
     if (!z || !vollstaendig(z, erf)) {
-      const feld: Feld = erf === 'gewicht' ? (z?.kg == null ? 'kg' : 'wdh') : erf === 'wdh' ? 'wdh' : 'sek'
+      const feld = FELDER[erf].find((f) => z?.[f] == null) ?? FELDER[erf][0]
       setEingabe({ ui, si, feld })
       return
     }
@@ -931,7 +934,8 @@ function UebungBlock({
   onMehr: () => void
   onNotiz: () => void
 }) {
-  const bereich = vu ? formatBereich(vu) : ''
+  // Der Wdh-Bereich nur, wo es Wdh gibt.
+  const bereich = vu && FELDER[u.erfassung].includes('wdh') ? formatBereich(vu) : ''
   const fertig = tu.saetze.length > 0 && tu.saetze.every(erledigt)
   return (
     <section className="f-ex">
@@ -1035,22 +1039,19 @@ function SatzZeile({
 
   return (
     <div
-      className={`f-satz${erf === 'gewicht' ? '' : ' einzeln'}${s.aufwaermen ? ' auf' : ''}${dran ? ' dran' : ''}${frisch ? ' frisch' : ''}${
-        frisch && pr ? ' rekord' : ''
-      }`}
+      className={`f-satz${FELDER[erf].length === 1 ? ' einzeln' : ''}${s.aufwaermen ? ' auf' : ''}${dran ? ' dran' : ''}${
+        frisch ? ' frisch' : ''
+      }${frisch && pr ? ' rekord' : ''}`}
     >
       <button type="button" className="f-nr" onClick={onNummer} aria-label={`${name}: Aufwärmsatz oder entfernen`}>
         {pr ? <span className="f-pr">PR</span> : s.aufwaermen ? 'A' : nr}
       </button>
-      {erf === 'gewicht' ? (
-        <>
-          {zelle('kg')}
-          <span className="f-mal">×</span>
-          {zelle('wdh')}
-        </>
-      ) : (
-        zelle(erf === 'wdh' ? 'wdh' : 'sek')
-      )}
+      {FELDER[erf].map((f, i) => (
+        <Fragment key={f}>
+          {i ? <span className="f-mal">{trenner(erf)}</span> : null}
+          {zelle(f)}
+        </Fragment>
+      ))}
       <button
         type="button"
         className={`f-haken${fertig ? ' an' : ''}`}
