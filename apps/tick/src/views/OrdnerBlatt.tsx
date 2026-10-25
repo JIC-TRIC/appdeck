@@ -3,22 +3,24 @@ import { FARBEN, farbe as farbWert } from '../farben'
 import { IconHaken } from '../icons'
 import { NAME_MAX, naechsteFarbe, ordnerAendern, ordnerAnlegen, pruefeName, saubererName } from '../store'
 import { Blatt, BlattKopf, mitFarbe } from '../ui'
+import { Karte } from './OrdnerKarten'
 import type { Ordner } from '../types'
 
 interface Props {
   /** null = neuer Ordner */
   ordner: Ordner | null
   alle: Ordner[]
-  /** offene Todos darin - fuer die Vorschau des Reiters */
+  /** offene und faellige Todos darin - fuer die Vorschau der Karte */
   anzahl: number
+  faellig?: number
   onClose: () => void
   /** nach dem Schliessen, mit dem angelegten oder geaenderten Ordner */
   onFertig?: (o: Ordner) => void
   onLoeschen?: (o: Ordner) => void
 }
 
-// Name und eine von zehn Farben, darunter der Reiter, wie er oben stehen wird.
-export function OrdnerBlatt({ ordner, alle, anzahl, onClose, onFertig, onLoeschen }: Props) {
+// Name und eine von zehn Farben, darunter die Karte, wie sie auf der Startseite stehen wird.
+export function OrdnerBlatt({ ordner, alle, anzahl, faellig = 0, onClose, onFertig, onLoeschen }: Props) {
   const neu = ordner === null
   const [name, setName] = useState(ordner?.name ?? '')
   const [farbe, setFarbe] = useState(ordner?.farbe ?? naechsteFarbe(alle))
@@ -100,14 +102,7 @@ export function OrdnerBlatt({ ordner, alle, anzahl, onClose, onFertig, onLoesche
 
             <h3 className="t-sec-l">Vorschau</h3>
             <div className="t-prev" aria-hidden="true">
-              <div className="t-tr">
-                <span className="t-tab on" style={mitFarbe(farbWert(farbe))}>
-                  <i />
-                  {name.trim() || 'Name'}
-                  <small>{anzahl}</small>
-                </span>
-              </div>
-              <div className="t-prev-blatt" />
+              <Karte name={name.trim() || 'Name'} f={farbWert(farbe)} offen={anzahl} faellig={faellig} />
             </div>
 
             {ordner && onLoeschen ? (

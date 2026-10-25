@@ -15,7 +15,7 @@ export function zumLauncher() {
 /** Knoepfe am Schnellfeld: ein Tipp darauf nimmt dem Textfeld nicht den Fokus - die Tastatur bleibt stehen. */
 export const fokusBleibt = (e: { preventDefault: () => void }) => e.preventDefault()
 
-/** Farbe eines Ordners als CSS-Variable --o (Punkte, Kreise, Reiter). */
+/** Farbe eines Ordners als CSS-Variable --o (Punkte, Kreise, Karten). */
 export const mitFarbe = (wert: string) => ({ '--o': wert }) as CSSProperties
 
 /** Text mit hervorgehobenen Treffern der Suche. */

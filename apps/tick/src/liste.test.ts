@@ -68,7 +68,7 @@ describe('Ansichten', () => {
     ])
   })
 
-  it('zaehlt je Reiter und was faellig ist', () => {
+  it('zaehlt je Ordner und was faellig ist', () => {
     const z = zaehle(alle, ordner, HEUTE)
     expect(z.alle).toBe(7)
     expect(z.eingang).toBe(3)

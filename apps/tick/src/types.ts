@@ -25,7 +25,7 @@ export interface Ordner {
   name: string
   /** Index in FARBEN (farben.ts) */
   farbe: number
-  /** Reihenfolge der Reiter und Abschnitte */
+  /** Reihenfolge der Karten und der Abschnitte in „Alle“ */
   rang: number
 }
 
@@ -36,8 +36,8 @@ export interface Entwurf {
   faellig: string | null
 }
 
-/** Der offene Reiter: alle, der Eingang oder die id eines Ordners. */
-export type Reiter = string
+/** Die zuletzt offene Seite: 'start' (alle Ordner), 'alle', 'eingang' oder die id eines Ordners. */
+export type Seite = string
 
-/** Seiten ueber der Liste: alle Ordner, als Karten oder gleich zum Bearbeiten. */
-export type View = { name: 'ordner'; bearbeiten: boolean }
+/** Eine Seite ueber der Startseite: Alle, der Eingang oder ein Ordner. */
+export type View = { name: 'liste'; ansicht: string }

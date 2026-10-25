@@ -1,10 +1,11 @@
 /* =========================
    Tick - Richtung "Reiter", nur hell.
 
-   Die Ordner sind Karteireiter ueber einem weissen Blatt, der aktive geht ins
-   Blatt ueber und traegt oben einen Strich in seiner Farbe. Kuehles Hellgrau
-   als Grund, Tinte fuer Knoepfe. Farbe gehoert den Ordnern (Punkte, Kreise,
-   Reiter), dazu nur Rot fuer Ueberfaelliges und Loeschen. Figtree fuer alles.
+   Start sind die Ordner als weisse Karten auf kuehlem Hellgrau, jede mit einem
+   Strich in ihrer Farbe oben. Ein Ordner ist eine eigene Seite: ein weisses
+   Blatt mit demselben Strich (bis 25.10.2026 waren es Karteireiter ueber dem
+   Blatt). Tinte fuer Knoepfe. Farbe gehoert den Ordnern (Punkte, Kreise,
+   Karten), dazu nur Rot fuer Ueberfaelliges und Loeschen. Figtree fuer alles.
    Werte und Gruende: konzept.md, Bilder: mockups.html (Richtung A).
 
    Die Tokens haengen an :root und nicht an .tick: Ionic haengt Blaetter,
@@ -346,7 +347,7 @@ mark {
   stroke-width: 3;
 }
 
-/* ---------- Scrollbereich, Titel, Reiter ---------- */
+/* ---------- Scrollbereich, Titel ---------- */
 
 /* Oben grau (Gummiband ueber dem Titel), unten weiss (unter dem Blatt). */
 .t-scroll {
@@ -362,7 +363,12 @@ mark {
 
 .t-scroll.grau {
   background: var(--bg);
-  padding-bottom: calc(32px + env(safe-area-inset-bottom));
+}
+
+/* Startseite: die Karten liegen auf dem Grau, unten Platz fuer das Schnellfeld. */
+.t-flaeche {
+  flex: 1 0 auto;
+  padding-bottom: calc(110px + env(safe-area-inset-bottom));
 }
 
 .t-lt {
@@ -384,104 +390,6 @@ mark {
   font-variant-numeric: tabular-nums;
 }
 
-.t-tabs {
-  flex: none;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  height: 46px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  touch-action: pan-x pan-y;
-  background: var(--bg);
-}
-
-.t-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.t-tr {
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 100%;
-  width: max-content;
-  padding: 0 14px;
-}
-
-.t-tab {
-  flex: none;
-  position: relative;
-  height: 42px;
-  padding: 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  border-radius: 14px 14px 0 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--tx2);
-  white-space: nowrap;
-}
-
-.t-tab i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--o);
-}
-
-.t-tab small {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--tx3);
-  font-variant-numeric: tabular-nums;
-}
-
-.t-tab:active:not(.on) {
-  color: var(--tx);
-}
-
-/* Der aktive Reiter geht ins Blatt ueber: weisser Grund, Strich in der
-   Ordnerfarbe oben, unten nach aussen gerundete Fuesse. */
-.t-tab.on {
-  background: var(--sheet);
-  color: var(--tx);
-  box-shadow: inset 0 3px 0 var(--o, var(--ink));
-}
-
-.t-tab.on::before,
-.t-tab.on::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  width: 14px;
-  height: 14px;
-  pointer-events: none;
-}
-
-.t-tab.on::before {
-  left: -14px;
-  background: radial-gradient(circle at 0 0, transparent 13.5px, var(--sheet) 14px);
-}
-
-.t-tab.on::after {
-  right: -14px;
-  background: radial-gradient(circle at 100% 0, transparent 13.5px, var(--sheet) 14px);
-}
-
-.t-tab.plus {
-  padding: 0 12px;
-  color: var(--tx3);
-}
-
-.t-tab.plus .t-i {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2.4;
-}
-
 .t-blatt {
   flex: 1 0 auto;
   background: var(--sheet);
@@ -491,6 +399,15 @@ mark {
 .t-blatt.rund {
   border-radius: 22px 22px 0 0;
   padding-top: 4px;
+}
+
+/* Ordnerseite: das Blatt traegt oben den Strich in der Ordnerfarbe wie die
+   Karte, aus der es kommt („Alle“: Tinte). Der Abstand oben haelt die erste
+   Zeile davon frei. */
+.t-blatt.kappe {
+  border-radius: 22px 22px 0 0;
+  padding-top: 6px;
+  box-shadow: inset 0 3px 0 var(--o, var(--ink));
 }
 
 /* ---------- Abschnitte ---------- */
@@ -967,6 +884,11 @@ button.t-ck::after {
   height: calc(120px + env(safe-area-inset-bottom));
   background: linear-gradient(rgba(255, 255, 255, 0), var(--sheet) 58%);
   pointer-events: none;
+}
+
+/* Auf der Startseite liegt das Schnellfeld ueber dem Grau. */
+.t-screen.start .t-fade {
+  background: linear-gradient(rgba(236, 238, 241, 0), var(--bg) 58%);
 }
 
 .t-add {
@@ -1480,28 +1402,19 @@ button.t-li:active {
   box-shadow: 0 0 0 3px var(--sheet), 0 0 0 5.5px var(--o);
 }
 
+/* Die Karte auf dem Grau der Startseite, so breit wie dort (halbe Breite). */
 .t-prev {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0 16px;
-  padding-top: 14px;
+  padding: 14px;
   border-radius: 16px;
-  overflow: hidden;
   background: var(--bg);
-  box-shadow: inset 0 0 0 1px var(--ln);
-}
-
-.t-prev .t-tr {
-  padding: 0 28px;
-  height: auto;
-}
-
-.t-prev-blatt {
-  height: 18px;
-  background: var(--sheet);
 }
 
 /* ---------- Alle Ordner als Karten ---------- */
 
-/* Wie die Reiter: weisse Flaeche, oben ein Strich in der Ordnerfarbe. */
+/* Weisse Flaeche, oben ein Strich in der Ordnerfarbe („Alle“: Tinte). */
 .t-karten {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

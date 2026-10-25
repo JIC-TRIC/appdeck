@@ -6,14 +6,14 @@
  *   tick:todos     Todo[]                       alle Todos, offen und erledigt
  *   tick:ordner    Ordner[]                     nach rang
  *   tick:entwurf   { titel, ordner, faellig }   was gerade im Schnellfeld steht
- *   tick:reiter    'alle' | 'eingang' | id      der zuletzt offene Reiter
+ *   tick:seite     'start' | 'alle' | 'eingang' | id   die zuletzt offene Seite
  *
  * Die Plakette im Launcher liest tick:todos selbst (tickBadge in apps.js).
  */
 import { FARBEN } from './farben'
 import { imOrdner, ordnerIds, ordnerVon } from './liste'
 import { istTag } from './tage'
-import type { Entwurf, Ordner, Reiter, Todo } from './types'
+import type { Entwurf, Ordner, Seite, Todo } from './types'
 
 export const APP_ID = 'tick'
 export const TITEL_MAX = 200
@@ -34,6 +34,14 @@ function schreibe(key: string, value: unknown) {
     localStorage.setItem(`${APP_ID}:${key}`, JSON.stringify(value))
   } catch {
     window.Shell?.toast('Speichern fehlgeschlagen – Speicher voll?')
+  }
+}
+
+function entferne(key: string) {
+  try {
+    localStorage.removeItem(`${APP_ID}:${key}`)
+  } catch {
+    // nichts zu tun
   }
 }
 
@@ -191,7 +199,7 @@ export function pruefeName(name: string, ordner: Ordner[], selbst?: string): str
   const n = saubererName(name)
   const klein = n.toLocaleLowerCase('de')
   if (!n) return 'Der Ordner braucht einen Namen.'
-  if (klein === 'alle' || klein === 'eingang') return `„${n}“ steht schon als Reiter oben.`
+  if (klein === 'alle' || klein === 'eingang') return `„${n}“ gibt es schon als Karte.`
   if (ordner.some((o) => o.id !== selbst && o.name.toLocaleLowerCase('de') === klein)) return `„${n}“ gibt es schon.`
   return null
 }
@@ -250,7 +258,7 @@ export function ordnerSortieren(ids: string[]) {
   schreibe('ordner', getOrdner().map((o) => (lage.has(o.id) ? { ...o, rang: lage.get(o.id)! } : o)))
 }
 
-// ---------- Entwurf und Reiter ----------
+// ---------- Entwurf und zuletzt offene Seite ----------
 
 export function normalisiereEntwurf(raw: unknown): Entwurf {
   const r = obj(raw)
@@ -264,6 +272,11 @@ export function normalisiereEntwurf(raw: unknown): Entwurf {
 export const getEntwurf = () => normalisiereEntwurf(lies('entwurf'))
 export const speichereEntwurf = (e: Entwurf) => schreibe('entwurf', e)
 
-export const normalisiereReiter = (raw: unknown): Reiter => (typeof raw === 'string' && raw ? raw : 'alle')
-export const getReiter = () => normalisiereReiter(lies('reiter'))
-export const speichereReiter = (r: Reiter) => schreibe('reiter', r)
+export const normalisiereSeite = (raw: unknown): Seite => (typeof raw === 'string' && raw ? raw : 'start')
+export const getSeite = () => normalisiereSeite(lies('seite'))
+
+export function speichereSeite(s: Seite) {
+  schreibe('seite', s)
+  // Bis 25.10.2026 gab es Reiter statt der Startseite mit Karten (tick:reiter).
+  entferne('reiter')
+}

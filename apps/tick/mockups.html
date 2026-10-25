@@ -128,21 +128,12 @@ body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -
 .a-nav b { font-size: 17px; font-weight: 700; }
 .a-nav .icbs { justify-self: end; }
 
-.a-tabs { flex: none; height: 46px; position: relative; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
-.a-tabs::-webkit-scrollbar { display: none; }
-.a-tr { display: flex; align-items: flex-end; height: 100%; padding: 0 14px; gap: 2px; width: max-content; }
-.tab { flex: none; height: 42px; padding: 0 14px; display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 600; color: var(--tx2); border-radius: 14px 14px 0 0; position: relative; white-space: nowrap; }
-.tab i { width: 8px; height: 8px; border-radius: 50%; background: var(--o); }
-.tab small { font-size: 13px; font-weight: 600; color: var(--tx3); font-variant-numeric: tabular-nums; }
-.tab.on { background: var(--sheet); color: var(--tx); box-shadow: inset 0 3px 0 var(--o, var(--ink)); }
-.tab.on::before, .tab.on::after { content: ""; position: absolute; bottom: 0; width: 14px; height: 14px; pointer-events: none; }
-.tab.on::before { left: -14px; background: radial-gradient(circle at 0 0, transparent 13.5px, var(--sheet) 14px); }
-.tab.on::after { right: -14px; background: radial-gradient(circle at 100% 0, transparent 13.5px, var(--sheet) 14px); }
-.tab.plus { color: var(--tx3); padding: 0 12px; }
-.tab.plus svg { width: 18px; height: 18px; }
 
 .sheet { flex: 1; min-height: 0; background: var(--sheet); position: relative; overflow: hidden; }
 .sheet.round { border-radius: 22px 22px 0 0; }
+/* Ordnerseite: das Blatt traegt oben den Strich in der Ordnerfarbe wie die Karte, aus der es kommt. */
+.sheet.kappe { border-radius: 22px 22px 0 0; padding-top: 6px; box-shadow: inset 0 3px 0 var(--k, var(--ink)); }
+.flaeche { flex: 1; min-height: 0; position: relative; overflow: hidden; }
 .lab { display: flex; gap: 7px; padding: 16px 20px 4px; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tx3); }
 .lab span { color: var(--tx2); }
 .sh { display: flex; align-items: center; gap: 9px; padding: 20px 20px 6px; font-size: 15px; font-weight: 700; color: var(--tx); }
@@ -176,6 +167,7 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
 .wipe { margin: 16px 16px 0; height: 46px; border-radius: 14px; background: var(--fill); color: var(--red); display: grid; place-items: center; font-size: 15.5px; font-weight: 600; }
 
 .fade { position: absolute; left: 0; right: 0; bottom: 0; height: 150px; background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--sheet) 58%); z-index: 6; pointer-events: none; }
+.fade.grau { background: linear-gradient(to bottom, rgba(236, 238, 241, 0), var(--bg) 58%); }
 .add { position: absolute; left: 14px; right: 14px; bottom: 32px; height: 54px; border-radius: 27px; background: var(--sheet); box-shadow: 0 0 0 1px rgba(22, 24, 29, .08), 0 12px 28px -10px rgba(22, 24, 29, .3); display: flex; align-items: center; gap: 11px; padding: 0 9px 0 14px; z-index: 7; }
 .add .pl { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: #FFFFFF; display: grid; place-items: center; }
 .add .pl svg { width: 16px; height: 16px; }
@@ -273,6 +265,7 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
 
 .ig { margin: 0 16px 20px; background: var(--sheet); border-radius: 16px; position: relative; }
 .a-top .txt { font-size: 16.5px; font-weight: 500; color: var(--tx2); }
+.a-top .txt.fertig { font-weight: 700; color: var(--ink); }
 .kk { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 4px 16px 0; }
 .kt { display: flex; flex-direction: column; justify-content: space-between; gap: 14px; min-height: 108px; padding: 15px 14px 13px 16px; border-radius: 18px; background: var(--sheet); box-shadow: inset 0 3px 0 var(--o, var(--ink)), 0 1px 2px rgba(22, 24, 29, .06); }
 .kn { display: flex; align-items: baseline; gap: 8px; font-size: 16px; font-weight: 700; }
@@ -298,8 +291,7 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
 .swg i { width: 44px; height: 44px; border-radius: 50%; background: var(--o); display: grid; place-items: center; color: #FFFFFF; }
 .swg i svg { width: 20px; height: 20px; }
 .swg i.sel { box-shadow: 0 0 0 3px var(--sheet), 0 0 0 5.5px var(--o); }
-.prev { margin: 0 16px; background: var(--bg); border-radius: 16px; padding: 14px 0 0 28px; overflow: hidden; }
-.prev .row { margin-left: -28px; padding-left: 46px; }
+.prev { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0 16px; padding: 14px; background: var(--bg); border-radius: 16px; }
 .danger { margin: 22px 16px 0; height: 50px; border-radius: 14px; background: #FBEAE8; color: var(--red); display: grid; place-items: center; font-size: 16px; font-weight: 600; }
 
 .as { position: absolute; left: 10px; right: 10px; bottom: 34px; z-index: 32; display: grid; gap: 8px; font-family: var(--f-ios); }
@@ -400,24 +392,24 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     </div>
     <p class="pg-lede">Eine Gesamtliste mit allem, was offen ist, und Ordner, die man einzeln ansieht. Beispiel überall: <strong>Freitag, 23. Oktober 2026</strong>, 21 offene Todos im Eingang und in fünf Ordnern, drei davon fällig. Alle Todos sind Beispiele. Regeln und Feature-Liste stehen in <code>apps/tick/konzept.md</code>, die Nummern in Klammern verweisen auf die Ansichten unten.</p>
     <ul class="pg-dec">
-      <li><b>„Alle“ zeigt alles.</b> Oben, was heute fällig oder überfällig ist, darunter ein Abschnitt pro Ordner (1). Ein Tipp auf einen Reiter zeigt nur diesen Ordner (2).</li>
+      <li><b>Start sind die Ordner.</b> Jeder Ordner ist eine Karte mit dem, was offen und fällig ist (1). Ein Tipp öffnet ihn als eigene Seite über die ganze Höhe (3). „Alle“ zeigt alles, oben das Fällige (2).</li>
       <li><b>Ein Todo, ein Ordner, oder keiner.</b> Ohne Ordner liegt es im Eingang. Die Farbe des Ordners steckt im Kreis, so sieht man sie auch in „Alle“.</li>
-      <li><b>Erfassen ist eine Zeile.</b> Tippen, Weiter, das nächste (3). Ordner und Datum sind Chips, <b>#</b> wählt den Ordner beim Tippen (4).</li>
+      <li><b>Erfassen ist eine Zeile.</b> Tippen, Plus oder Weiter, das nächste (4). Ordner und Datum sind Chips, <b>#</b> wählt den Ordner beim Tippen (5).</li>
       <li><b>Die Reihenfolge ist die Priorität.</b> Ziehen im Ordner, keine Sterne, keine Stufen.</li>
-      <li><b>Fälliges findet man ohne Push:</b> oben in „Alle“ und als Zahl an der Kachel im Launcher (14).</li>
+      <li><b>Fälliges findet man ohne Push:</b> rot auf den Karten, oben in „Alle“ und als Zahl an der Kachel im Launcher (15).</li>
     </ul>
     <nav class="pg-toc" id="toc" aria-label="Inhalt"></nav>
   </header>
 
   <section class="pg-sec" id="richtungen" aria-labelledby="h-dirs">
     <h2 class="pg-h2" id="h-dirs">Drei Richtungen</h2>
-    <p class="pg-sub">Dieselben Todos dreimal, oben die Gesamtliste, darunter der Ordner Projekte. Die Ansichten 1 bis 14 weiter unten sind in Richtung A gezeichnet.</p>
+    <p class="pg-sub">Dieselben Todos dreimal, oben der Start, darunter der Ordner Projekte. Gewählt wurde A. Die Ansichten 1 bis 15 weiter unten zeigen A so, wie Tick gebaut ist.</p>
     <div class="pg-dirs" id="dirs"></div>
   </section>
 
   <section class="pg-sec" id="ansichten" aria-labelledby="h-views">
     <h2 class="pg-h2" id="h-views">Ansichten in Richtung A</h2>
-    <p class="pg-sub">Hell, die Ordner als Karteireiter über einem weißen Blatt. Farbe nur an Punkten, Kreisen und dem Strich am aktiven Reiter, die Knöpfe in Tinte.</p>
+    <p class="pg-sub">Hell. Start sind die Ordner als weiße Karten auf Grau, ein Ordner ist eine eigene Seite: ein weißes Blatt mit demselben Strich in der Ordnerfarbe oben. Bis 25.10.2026 standen die Ordner als Karteireiter über dem Blatt, die Reiter brauchten aber zu viel Platz.</p>
     <div class="pg-screens" id="screens"></div>
   </section>
 
@@ -548,20 +540,15 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
   const icb = (i) => `<span class="icb">${i}</span>`;
 
   // Richtung A
-  const aTop = (back = 'Apps', icons = true) =>
-    `<div class="a-top"><span class="back">${I.back}${back}</span>${icons ? `<span class="icbs">${icb(I.folder)}${icb(I.search)}${icb(I.more)}</span>` : ''}</div>`;
-  const aNav = (t) => `<div class="a-nav"><span class="back">${I.back}Apps</span><b>${t}</b><span class="icbs">${icb(I.folder)}${icb(I.search)}${icb(I.more)}</span></div>`;
+  const aTop = (back = 'Apps', rechts = `<span class="icbs">${icb(I.search)}${icb(I.more)}</span>`) =>
+    `<div class="a-top"><span class="back">${I.back}${back}</span>${rechts}</div>`;
+  const aNav = (t, back = 'Ordner') => `<div class="a-nav"><span class="back">${I.back}${back}</span><b>${t}</b><span class="icbs">${icb(I.search)}${icb(I.more)}</span></div>`;
+  // Das Blatt einer Ordnerseite, oben der Strich in der Farbe des Ordners ('alle': Tinte)
+  const kappe = (k, inhalt) => `<div class="sheet kappe"${k === 'alle' ? '' : ` style="--k:${F[k].A}"`}>${inhalt}</div>`;
   const karte = (n, f, offen, faellig) =>
     `<div class="kt"${f ? ` style="--o:${f}"` : ''}><span class="kn">${f ? '<i></i>' : ''}${n}</span>` +
     `<span class="kz"><b>${offen}</b>offen${faellig ? `<em>${faellig} fällig</em>` : ''}</span></div>`;
   const aTitle = (t, sub) => `<div class="a-lt"><h1>${t}</h1><p>${sub}</p></div>`;
-  const tab = (k, on, n) => k === 'alle'
-    ? `<span class="tab${on ? ' on' : ''}">Alle<small>${n}</small></span>`
-    : `<span class="tab${on ? ' on' : ''}" style="--o:${F[k].A}"><i></i>${F[k].n}<small>${n}</small></span>`;
-  const aTabs = (on, counts = {}) => {
-    const c = { ...COUNT, ...counts };
-    return `<div class="a-tabs"><div class="a-tr">${['alle', ...ORDER].map((k) => tab(k, k === on, c[k])).join('')}<span class="tab plus">${I.plus}</span></div></div>`;
-  };
   const meta = (t, o) => {
     const p = [];
     if (t.d) p.push(`<span class="due ${t.d[1]}">${t.d[0]}</span>`);
@@ -578,7 +565,7 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
   const sec = (k) => `<div class="sh" style="--o:${F[k].A}"><i></i>${F[k].n}${I.chev}</div>`;
   const lab = (t) => `<div class="lab">${t}</div>`;
   const donebar = (n, open) => `<div class="donebar">Erledigt <small>${n}</small>${open ? I.up : I.down}</div>`;
-  const aAdd = (k) => `<div class="fade"></div><div class="add"><span class="pl">${I.plus}</span><span>Neues Todo</span><em style="--o:${F[k].A}"><i></i>${F[k].n}</em></div>`;
+  const aAdd = (k, grau) => `<div class="fade${grau ? ' grau' : ''}"></div><div class="add"><span class="pl">${I.plus}</span><span>Neues Todo</span><em style="--o:${F[k].A}"><i></i>${F[k].n}</em></div>`;
   const kb = (sugg) => {
     const keys = (str) => [...str].map((c) => `<span class="k">${c}</span>`).join('');
     return `<div class="kb"><div class="qt">${sugg.map((x) => `<span>${x}</span>`).join('<i></i>')}</div>` +
@@ -598,12 +585,15 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     `<div class="li${o.lift ? ' lift' : ''}" style="--o:${F[k].A}"><span class="dot"></span>${F[k].n}<span class="v">${n}</span>${o.nogrip ? '' : `<span class="gr">${I.grip}</span>`}</div>`;
 
   // Wiederkehrende Hintergründe
-  const alleSheet = () => `<div class="sheet">${lab('Fällig')}${R('backup', { f: 1 })}${R('zahn', { f: 1 })}${R('mock', { f: 1 })}` +
-    `${sec('in')}${R('reifen')}${R('buch')}${sec('pr')}${R('kontor')}${R('morse')}${R('steady')}${sec('zu')}${R('heiz')}${R('birne')}</div>`;
-  const alle = () => sb() + aTop() + aTitle('Alle', '21 offen · 3 fällig') + aTabs('alle') + alleSheet();
-  const zuhause = () => sb() + aTop() + aTitle('Zuhause', '4 offen · 9 erledigt') + aTabs('zu') +
-    `<div class="sheet">${R('heiz')}${R('birne')}${R('fenster')}${R('monstera')}${donebar(9)}</div>` + aAdd('zu');
-  const ordnerListe = () => sb() + aTop('Alle', false) + aTitle('Ordner', '5 Ordner · 21 offen') +
+  const alleSheet = () => kappe('alle', `${lab('Fällig')}${R('backup', { f: 1 })}${R('zahn', { f: 1 })}${R('mock', { f: 1 })}` +
+    `${sec('in')}${R('reifen')}${R('buch')}${sec('pr')}${R('kontor')}${R('morse')}${R('steady')}${sec('zu')}${R('heiz')}${R('birne')}`);
+  const alle = () => sb() + aTop('Ordner') + aTitle('Alle', '21 offen · 3 fällig') + alleSheet();
+  const zuhause = () => sb() + aTop('Ordner') + aTitle('Zuhause', '4 offen · 9 erledigt') +
+    kappe('zu', `${R('heiz')}${R('birne')}${R('fenster')}${R('monstera')}${donebar(9)}`) + aAdd('zu');
+  const karten = () => `<div class="kk">${karte('Alle', '', 21, 3)}${karte('Eingang', F.in.A, 3, 1)}${karte('Projekte', F.pr.A, 5, 2)}` +
+    `${karte('Zuhause', F.zu.A, 4, 0)}${karte('Einkauf', F.ei.A, 4, 0)}${karte('Papierkram', F.pa.A, 3, 0)}` +
+    `${karte('Geschenke', F.ge.A, 2, 0)}<div class="kt neu">${I.plus}Neuer Ordner</div></div>`;
+  const ordnerListe = () => sb() + aTop('Apps', '<span class="txt fertig">Fertig</span>') + aTitle('Ordner', '21 offen · 3 fällig') +
     `<div class="ig">${fli('in', 3, { nogrip: 1 })}</div>` +
     `<div class="ig">${fli('pr', 5)}${fli('ei', 4, { lift: 1 })}${fli('zu', 4)}${fli('pa', 3)}${fli('ge', 2)}</div>` +
     `<div class="ig"><div class="li new">${I.plus}Neuer Ordner</div></div>`;
@@ -611,16 +601,17 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     `<div class="bs-h"><span class="l">Abbrechen</span><span><b>Ordner</b></span><span class="r">Fertig</span></div>` +
     `<div class="fld">Papierkram</div><div class="sec-l">Farbe</div>` +
     `<div class="swg">${PAL.map(([, c], i) => `<i style="--o:${c}"${i === 7 ? ' class="sel"' : ''}>${i === 7 ? I.check : ''}</i>`).join('')}</div>` +
-    `<div class="sec-l">Vorschau</div><div class="prev"><div class="a-tr" style="padding:0">${tab('pa', true, 3)}</div>${R('nk')}</div>` +
+    `<div class="sec-l">Vorschau</div><div class="prev">${karte('Papierkram', F.pa.A, 3, 0)}</div>` +
     `<div class="danger">Ordner löschen</div></div>`;
 
   // ---------- Ansichten in Richtung A ----------
   const V = {
+    start: () => dev('A', sb() + aTop() + aTitle('Ordner', '21 offen · 3 fällig') + `<div class="flaeche">${karten()}</div>` + aAdd('in', 1)),
     alle: () => dev('A', alle() + aAdd('in')),
-    ordner: () => dev('A', sb() + aTop() + aTitle('Projekte', '5 offen · 6 erledigt') + aTabs('pr') +
-      `<div class="sheet">${R('mock')}${R('backup')}${R('kontor')}${R('morse')}${R('steady')}${donebar(6)}</div>` + aAdd('pr')),
-    erfassen: () => dev('A', sb() + aTop() + aTitle('Einkauf', '5 offen') + aTabs('ei', { alle: 22, ei: 5 }) +
-      `<div class="sheet">${R('hafer')}${R('kaffee')}${R('tabs')}${R('creatin')}${aRow({ f: 'ei', t: 'Backpapier' }, { cls: 'flash' })}</div>` +
+    ordner: () => dev('A', sb() + aTop('Ordner') + aTitle('Projekte', '5 offen · 6 erledigt') +
+      kappe('pr', `${R('mock')}${R('backup')}${R('kontor')}${R('morse')}${R('steady')}${donebar(6)}`) + aAdd('pr')),
+    erfassen: () => dev('A', sb() + aTop('Ordner') + aTitle('Einkauf', '5 offen') +
+      kappe('ei', `${R('hafer')}${R('kaffee')}${R('tabs')}${R('creatin')}${aRow({ f: 'ei', t: 'Backpapier' }, { cls: 'flash' })}`) +
       compose('Spülmittel', 'ei') + kb(['„Spülmittel“', 'Spülmittel', 'Spülmitteln'])),
     hash: () => dev('A', alle() +
       compose(`Gutschein für Jonas <span class="tok" style="--t:${F.ge.A}">#ge</span>`, 'in', 'ge') + kb(['„ge“', 'gerne', 'gestern'])),
@@ -638,12 +629,12 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
       '<div class="li">Fällig<span class="v">Samstag, 24. Oktober</span></div>' +
       `<div class="li chrow"><span class="chip">Heute</span><span class="chip sel">Morgen</span><span class="chip">${I.cal}Datum</span><span class="chip">Ohne</span></div></div>` +
       '<div class="td-meta">Angelegt am Montag, 19. Oktober</div><div class="td-del">Löschen</div></div>'),
-    abhaken: () => dev('A', sb() + aTop() + aTitle('Zuhause', '3 offen · 10 erledigt') + aTabs('zu', { alle: 20, zu: 3 }) +
-      `<div class="sheet">${R('heiz')}${aRow(T.birne, { done: 1 })}` +
+    abhaken: () => dev('A', sb() + aTop('Ordner') + aTitle('Zuhause', '3 offen · 10 erledigt') +
+      kappe('zu', `${R('heiz')}${aRow(T.birne, { done: 1 })}` +
       `<div class="sw"><div class="acts"><span class="mv">${I.folder}Verschieben</span><span class="del">${I.trash}Löschen</span></div>${R('fenster')}</div>` +
-      `${R('monstera')}${donebar(10)}</div>` + aAdd('zu')),
-    erledigt: () => dev('A', sb() + aNav('Projekte') + aTabs('pr') +
-      `<div class="sheet">${R('steady')}${donebar(6, 1)}` +
+      `${R('monstera')}${donebar(10)}`) + aAdd('zu')),
+    erledigt: () => dev('A', sb() + aNav('Projekte') +
+      `<div class="sheet kappe" style="--k:${F.pr.A}">${R('steady')}${donebar(6, 1)}` +
       lab('Heute') + done('pr', 'Zeitkapsel-Konzept durchlesen') +
       lab('Gestern') + done('pr', 'Stash: Senden an die Inbox testen') + done('pr', 'Loci: Konstanten in Blöcken ausprobieren') +
       lab('Mittwoch, 21. Okt') + done('pr', 'Form: Trend über 7 Tage prüfen') +
@@ -662,18 +653,11 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     loeschen: () => dev('A', ordnerListe() + ordnerBlatt() +
       '<div class="scrim dark"></div><div class="as"><div class="g"><div class="hd"><b>„Papierkram“ löschen?</b>Darin liegen noch 3 offene Todos.</div>' +
       '<div class="bt">In den Eingang verschieben</div><div class="bt red">Mit allen 3 Todos löschen</div></div><div class="cancel">Abbrechen</div></div>'),
-    erststart: () => dev('A', sb() + aTop() + aTitle('Alle', 'Noch nichts offen') +
-      `<div class="a-tabs"><div class="a-tr">${tab('alle', true, 0)}<span class="tab plus">${I.plus}</span></div></div>` +
-      '<div class="sheet"><div class="fs"><h2>Was steht an?</h2><p>Ordner zum Start</p><div class="fs-c">' +
+    erststart: () => dev('A', sb() + aTop() + aTitle('Ordner', 'Nichts offen') +
+      '<div class="flaeche"><div class="fs"><h2>Was steht an?</h2><p>Ordner zum Start</p><div class="fs-c">' +
       [['Zuhause', '#2F9E5B'], ['Einkauf', '#EF7A1C'], ['Projekte', '#2E7CF6'], ['Papierkram', '#9B51E0'], ['Arbeit', '#E5484D']]
         .map(([n, c]) => `<span class="chip new" style="--o:${c}">${I.plus}${n}</span>`).join('') +
-      '</div></div></div>' + aAdd('in')),
-    uebersicht: () => dev('A', sb() +
-      `<div class="a-top"><span class="back">${I.back}Alle</span><span class="txt">Bearbeiten</span></div>` +
-      aTitle('Ordner', '5 Ordner · 21 offen') +
-      `<div class="kk">${karte('Alle', '', 21, 3)}${karte('Eingang', F.in.A, 3, 1)}${karte('Projekte', F.pr.A, 5, 2)}` +
-      `${karte('Zuhause', F.zu.A, 4, 0)}${karte('Einkauf', F.ei.A, 4, 0)}${karte('Papierkram', F.pa.A, 3, 0)}` +
-      `${karte('Geschenke', F.ge.A, 2, 0)}<div class="kt neu">${I.plus}Neuer Ordner</div></div>`),
+      '</div></div></div>' + aAdd('in', 1)),
     launcher: () => dev('L', sb() +
       `<div class="l-head"><div><div class="l-date">Freitag, 23. Oktober</div><h1>appdeck</h1></div><span class="l-gear">${I.gear}</span></div>` +
       `<div class="l-grid">${APPS.map(([n, c, svg, badge]) =>
@@ -724,7 +708,7 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
 
   // ---------- Seite füllen ----------
   const DIRS = [
-    ['A', 'Reiter', 'Gewählt', 'Hell. Die Ordner sind Karteireiter über einem weißen Blatt, der aktive geht ins Blatt über. Farbe nur an Punkten, Kreisen und dem Strich am Reiter. Schrift Figtree.', V.alle, V.ordner],
+    ['A', 'Reiter', 'Gewählt', 'Hell. Start sind die Ordner als Karten mit einem Strich in ihrer Farbe, ein Ordner ist eine eigene Seite mit demselben Strich. Farbe nur an Punkten, Kreisen und Strichen. Schrift Figtree. (Erst waren es Karteireiter über dem Blatt.)', V.start, V.ordner],
     ['B', 'Nacht', '', 'Dunkel. Ordner als Chips, „Alle“ als flache Liste nach Datum, das Datum rechts in Mono. Schrift Geist. Nah an Steady und Form, appdeck hätte dann vier dunkle Apps.', B.alle, B.ordner],
     ['C', 'Block', '', 'Farbig. Der Start ist eine Übersicht aus Farbblöcken, ein Ordner ist eine ganze Seite in seiner Farbe. Schrift Archivo, breit und fett. Ändert auch den Aufbau: „Alle“ ist der erste Block.', C.alle, C.ordner],
   ];
@@ -733,78 +717,70 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     `<div class="pg-fit">${a()}</div><div class="pg-fit">${o()}</div>`).join('');
 
   const SCREENS = [
-    ['v1', 1, 'Alle', V.alle, [
+    ['v1', 1, 'Ordner (Start)', V.start, [
+      'Tick öffnet mit allen Ordnern als Karten: Alle, Eingang (wenn darin etwas liegt), dann die Ordner, am Ende „Neuer Ordner“.',
+      'Jede Karte trägt oben den Strich in der Ordnerfarbe, dazu wie viel offen und in Rot, wie viel fällig ist.',
+      'Ein Tipp öffnet den Ordner als eigene Seite (3). Keine Reiter mehr, die Liste hat die ganze Höhe.',
+      'Das Schnellfeld legt hier in den Eingang, kurz kommt „In Eingang abgelegt“.',
+    ]],
+    ['v2', 2, 'Alle', V.alle, [
       'Oben „Fällig“: Überfälliges in Rot, dann was heute fällig ist. Hier nennt jede Zeile ihren Ordner.',
-      'Darunter ein Abschnitt pro Ordner, der Eingang zuerst. Ein Tipp auf den Kopf öffnet den Ordner.',
-      'Der Ring jedes Kreises hat die Farbe seines Ordners.',
-      'Unten das Schnellfeld, rechts darin der Ordner, in dem das neue Todo landet. In „Alle“ ist das der Eingang.',
-      'Oben rechts das Ordner-Symbol: alle Ordner als Karten (15).',
+      'Darunter ein Abschnitt pro Ordner, der Eingang zuerst. Ein Tipp auf den Kopf öffnet den Ordner, „‹ Alle“ führt zurück.',
+      'Der Ring jedes Kreises hat die Farbe seines Ordners, „Alle“ trägt oben Tinte.',
     ]],
-    ['v2', 2, 'Ordner', V.ordner, [
-      'Der Reiter „Projekte“ geht ins Blatt über, oben ein Strich in Blau.',
-      'Eigene Reihenfolge per Ziehen. „Mockups ansehen“ steht oben, weil es dorthin gezogen wurde, nicht weil es fällig ist.',
-      'Am Ende „Erledigt“ mit Anzahl, eingeklappt (8).',
-      'Das Schnellfeld legt direkt in Projekte ab.',
+    ['v3', 3, 'Ordner', V.ordner, [
+      'Eine eigene Seite: „‹ Ordner“ oder Wischen vom Rand führt zurück. Das Blatt trägt oben den Strich in Blau wie die Karte.',
+      'Eigene Reihenfolge, „Mockups ansehen“ steht oben, weil es dorthin gezogen wurde, nicht weil es fällig ist.',
+      'Am Ende „Erledigt“ mit Anzahl, eingeklappt (9). Das Schnellfeld legt direkt in Projekte ab.',
     ]],
-    ['v3', 3, 'Erfassen', V.erfassen, [
+    ['v4', 4, 'Erfassen', V.erfassen, [
       'Das Plus links oder Weiter auf der Tastatur legt an, das Feld bleibt offen. „Backpapier“ ist gerade dazugekommen und leuchtet kurz am Ende auf.',
       'Steht noch Text im Feld, bleibt es mit dem Plus offen, auch wenn die Tastatur zu ist.',
-      'Ordner und Datum bleiben für das nächste stehen. Ein Tipp auf „Einkauf“ öffnet die Ordnerauswahl (5).',
-      'Heute, Morgen und Datum sind Chips, nichts davon ist Pflicht.',
+      'Ordner und Datum bleiben für das nächste stehen. Ein Tipp auf „Einkauf“ öffnet die Ordnerauswahl (6).',
     ]],
-    ['v4', 4, '# für den Ordner', V.hash, [
+    ['v5', 5, '# für den Ordner', V.hash, [
       '„#ge“ im Titel zeigt passende Ordner über dem Feld. Ein Tipp setzt Geschenke und nimmt „#ge“ aus dem Titel.',
-      'Ohne Tipp bleibt „#ge“ einfach Text.',
-      'Landet das Todo nicht in der offenen Ansicht, kommt kurz „In Geschenke abgelegt“.',
+      'Ohne Tipp bleibt „#ge“ einfach Text. Landet das Todo nicht auf der offenen Seite, kommt kurz „In Geschenke abgelegt“.',
     ]],
-    ['v5', 5, 'Ordner wählen', V.waehlen, [
-      'Kommt vom Ordner-Chip beim Erfassen, aus dem Todo (6) und vom Wischen „Verschieben“ (7).',
-      'Der aktuelle Ordner hat den Haken, daneben steht, wie viel offen ist.',
-      '„Neuer Ordner …“ legt an und verschiebt gleich hinein.',
+    ['v6', 6, 'Ordner wählen', V.waehlen, [
+      'Kommt vom Ordner-Chip beim Erfassen, aus dem Todo (7) und vom Wischen „Verschieben“ (8).',
+      'Der aktuelle Ordner hat den Haken, daneben steht, wie viel offen ist. „Neuer Ordner …“ legt an und wählt ihn gleich.',
     ]],
-    ['v6', 6, 'Todo', V.todo, [
+    ['v7', 7, 'Todo', V.todo, [
       'Titel und Notiz direkt bearbeitbar, kein Sichern-Knopf. Fertig oder nach unten wegziehen schließt.',
-      'Fällig: Heute, Morgen, Datum oder Ohne, darüber ausgeschrieben, welcher Tag.',
-      'Der Kreis oben hakt auch hier ab.',
+      'Fällig: Heute, Morgen, Datum oder Ohne, darüber ausgeschrieben, welcher Tag. Der Kreis oben hakt auch hier ab.',
     ]],
-    ['v7', 7, 'Abhaken und Wischen', V.abhaken, [
+    ['v8', 8, 'Abhaken und Wischen', V.abhaken, [
       '„Glühbirne“ ist gerade abgehakt. Zwei Sekunden lang nimmt ein zweiter Tipp es zurück, dann rutscht es zu „Erledigt“.',
       '„Fenster putzen“ ist nach links gewischt: Verschieben oder Löschen. Ganz durchwischen löscht, mit Rückgängig in der Meldung.',
     ]],
-    ['v8', 8, 'Erledigt', V.erledigt, [
-      'Aufgeklappt nach Tagen, das Neueste zuerst. Beim Scrollen wird der Titel klein, die Reiter bleiben stehen.',
+    ['v9', 9, 'Erledigt', V.erledigt, [
+      'Aufgeklappt nach Tagen, das Neueste zuerst. Beim Scrollen wandert der Titel klein in die Kopfleiste.',
       'Ein Tipp auf den vollen Kreis macht ein Todo wieder offen, an seinem alten Platz.',
       '„Erledigte löschen“ fragt nach und gilt für diesen Ordner, in „Alle“ für alle.',
     ]],
-    ['v9', 9, 'Suche', V.suche, [
-      'Sucht in Titel und Notiz, in allen Ordnern, auch im Erledigten.',
+    ['v10', 10, 'Suche', V.suche, [
+      'Lupe oben rechts, auf jeder Seite. Sucht in Titel und Notiz, in allen Ordnern, auch im Erledigten.',
       'Steht der Treffer nur in der Notiz, zeigt die Zeile den Ausschnitt.',
     ]],
-    ['v10', 10, 'Ordner verwalten', V.ordnerliste, [
-      'Über ⋯. Die Reihenfolge hier ist die der Reiter und der Abschnitte in „Alle“.',
-      '„Einkauf“ wird gerade nach oben gezogen.',
-      'Der Eingang steht für sich: immer zuerst, kein Griff, nicht löschbar.',
+    ['v11', 11, 'Ordner bearbeiten', V.ordnerliste, [
+      'Auf dem Start über ⋯ → Ordner bearbeiten. Die Reihenfolge hier ist die der Karten und der Abschnitte in „Alle“.',
+      '„Einkauf“ wird gerade nach oben gezogen. Der Eingang steht für sich: immer zuerst, kein Griff, nicht löschbar.',
     ]],
-    ['v11', 11, 'Ordner', V.ordnerblatt, [
-      'Name und eine von zehn Farben. Die Vorschau zeigt den Reiter so, wie er oben steht.',
+    ['v12', 12, 'Ordner (Blatt)', V.ordnerblatt, [
+      'Name und eine von zehn Farben. Die Vorschau zeigt die Karte so, wie sie auf dem Start steht.',
       'Ein neuer Ordner bekommt die nächste freie Farbe.',
     ]],
-    ['v12', 12, 'Ordner löschen', V.loeschen, [
-      'Fragt nur nach, wenn noch Offenes darin liegt. Zuerst steht das Verschieben in den Eingang.',
-      'Erledigte gehen mit dem Ordner.',
+    ['v13', 13, 'Ordner löschen', V.loeschen, [
+      'Fragt nach. Liegt noch Offenes darin, steht zuerst das Verschieben in den Eingang. Erledigte gehen mit dem Ordner.',
     ]],
-    ['v13', 13, 'Erststart', V.erststart, [
-      'Nur der Reiter „Alle“ und das +. „Was steht an?“, darunter Ordner, die ein Tipp anlegt.',
+    ['v14', 14, 'Erststart', V.erststart, [
+      '„Was steht an?“, darunter Ordner, die ein Tipp anlegt. Sobald es einen Ordner oder ein Todo gibt, kommen die Karten.',
       'Das Schnellfeld ist sofort da, das erste Todo darf ohne Ordner kommen.',
     ]],
-    ['v14', 14, 'Launcher', V.launcher, [
+    ['v15', 15, 'Launcher', V.launcher, [
       'Die Plakette zählt, was heute fällig oder überfällig ist. Sie ersetzt die Mitteilung, die eine Web-App nicht schicken kann.',
       'Bei 0 keine Plakette. Gebaut als allgemeine badge()-Funktion in apps.js, die Zeitkapsel kann sie mitnutzen.',
-    ]],
-    ['v15', 15, 'Alle Ordner', V.uebersicht, [
-      'Das Ordner-Symbol oben rechts öffnet alle Ordner als Karten, mit dem Strich in der Ordnerfarbe wie am aktiven Reiter.',
-      'Jede Karte zeigt, wie viel offen und in Rot, wie viel fällig ist. Ein Tipp führt direkt in den Ordner.',
-      'Bearbeiten macht daraus die Liste mit Griffen (10).',
     ]],
   ];
 
@@ -833,16 +809,6 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     [96, 64, 40].map((px) => `<svg viewBox="0 0 180 180" width="${px}" height="${px}" role="img" aria-label="Tick-Symbol ${px} px">${TICK}</svg>`).join('') +
     `<p>Drei Listenzeilen, die oberste abgehakt, weiß auf Violett ${VIOLET}. Die Farbe hat noch keine App, und das Motiv ist nicht der einzelne Kasten von Steady.</p>`;
 
-  // Aktiver Reiter rückt ins Bild, wenn er rechts aus der Leiste fällt
-  function tabsInView() {
-    document.querySelectorAll('.a-tabs').forEach((bar) => {
-      const on = bar.querySelector('.tab.on');
-      if (!on) return;
-      const right = on.offsetLeft + on.offsetWidth;
-      bar.scrollLeft = right > bar.clientWidth - 24 ? right - bar.clientWidth + 64 : 0;
-    });
-  }
-
   // Geräte auf schmalen Schirmen verkleinern (zoom statt transform: die Höhe schrumpft mit)
   function fit() {
     document.querySelectorAll('.pg-fit').forEach((f) => {
@@ -851,8 +817,6 @@ mark { background: #FFE58A; color: inherit; border-radius: 3px; padding: 0 1px; 
     });
   }
   fit();
-  tabsInView();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(tabsInView);
   if ('ResizeObserver' in window) new ResizeObserver(fit).observe(document.body);
   else window.addEventListener('resize', fit);
 })();

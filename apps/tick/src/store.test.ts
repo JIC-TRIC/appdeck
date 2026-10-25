@@ -5,7 +5,7 @@ import {
   erledigteLoeschen,
   getEntwurf,
   getOrdner,
-  getReiter,
+  getSeite,
   getTodos,
   loesche,
   naechsteFarbe,
@@ -20,7 +20,7 @@ import {
   setzeErledigt,
   sortiere,
   speichereEntwurf,
-  speichereReiter,
+  speichereSeite,
   stelleWiederHer,
 } from './store'
 
@@ -153,7 +153,7 @@ describe('Ordner', () => {
     expect(naechsteFarbe(getOrdner())).toBe(1)
     expect(pruefeName(' projekte ', getOrdner())).toBe('„projekte“ gibt es schon.')
     expect(pruefeName('Projekte', getOrdner(), a.id)).toBeNull()
-    expect(pruefeName('Eingang', getOrdner())).toBe('„Eingang“ steht schon als Reiter oben.')
+    expect(pruefeName('Eingang', getOrdner())).toBe('„Eingang“ gibt es schon als Karte.')
     expect(pruefeName('   ', getOrdner())).toBe('Der Ordner braucht einen Namen.')
     expect(ordnerAnlegen('PROJEKTE')).toBeNull()
   })
@@ -196,13 +196,16 @@ describe('Ordner', () => {
   })
 })
 
-describe('Entwurf und Reiter', () => {
+describe('Entwurf und Seite', () => {
   it('uebersteht das Schliessen und verwirft Kaputtes', () => {
     speichereEntwurf({ titel: 'Spülm', ordner: 'ei', faellig: '2026-10-24' })
     expect(getEntwurf()).toEqual({ titel: 'Spülm', ordner: 'ei', faellig: '2026-10-24' })
     expect(normalisiereEntwurf({ titel: 3, ordner: '', faellig: 'morgen' })).toEqual({ titel: '', ordner: null, faellig: null })
-    expect(getReiter()).toBe('alle')
-    speichereReiter('ei')
-    expect(getReiter()).toBe('ei')
+    expect(getSeite()).toBe('start')
+    localStorage.setItem('tick:reiter', JSON.stringify('alle'))
+    speichereSeite('ei')
+    expect(getSeite()).toBe('ei')
+    // der alte Schluessel aus der Zeit mit Reitern geht dabei weg
+    expect(localStorage.getItem('tick:reiter')).toBeNull()
   })
 })

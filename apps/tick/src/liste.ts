@@ -73,7 +73,7 @@ export interface Zaehlung {
   faelligJe: Map<string, number>
 }
 
-/** Offene Todos je Reiter, dazu wie viele heute faellig oder ueberfaellig sind. */
+/** Offene Todos je Ordner und insgesamt, dazu wie viele heute faellig oder ueberfaellig sind. */
 export function zaehle(todos: Todo[], ordner: Ordner[], heute: string): Zaehlung {
   const ids = ordnerIds(ordner)
   const je = new Map(ordner.map((o) => [o.id, 0]))

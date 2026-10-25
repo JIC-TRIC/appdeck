@@ -11,7 +11,7 @@ import {
   erledigteLoeschen,
   getEntwurf,
   getOrdner,
-  getReiter,
+  getSeite,
   getTodos,
   loesche,
   ordnerAnlegen,
@@ -20,20 +20,22 @@ import {
   setzeErledigt,
   sortiere,
   speichereEntwurf,
-  speichereReiter,
+  speichereSeite,
   stelleWiederHer,
 } from './store'
 import { heuteTag } from './tage'
 import { Liste } from './views/Liste'
 import { OrdnerBlatt } from './views/OrdnerBlatt'
-import { OrdnerSeite } from './views/OrdnerSeite'
 import { OrdnerWahl } from './views/OrdnerWahl'
 import { TodoBlatt } from './views/TodoBlatt'
-import type { Entwurf, Ordner, Reiter, Todo, View } from './types'
+import type { Entwurf, Ordner, Todo, View } from './types'
 
 // So lange bleibt ein abgehaktes Todo an seinem Platz, die letzte Viertelsekunde rutscht es weg.
 const HAKEN_MS = 2000
 const WEG_MS = 250
+
+/** Die Startseite: alle Ordner als Karten. */
+const START = 'start'
 
 type Offen =
   | { art: 'todo'; id: string }
@@ -58,10 +60,16 @@ function useHeute() {
   return heute
 }
 
-const standardOrdner = (r: Reiter) => (r === 'alle' || r === 'eingang' ? null : r)
+/** Wohin ein neues Todo auf dieser Seite gehoert: in ihren Ordner, sonst in den Eingang. */
+const standardOrdner = (a: string) => (a === START || a === 'alle' || a === 'eingang' ? null : a)
 
-// Eine Liste als Startseite, darueber die Seite „Ordner“ (Seitenwechsel wie in
-// Kontor und Stash, lib/PageStage.tsx). Blaetter von unten fuer Todo und Ordner.
+/** Liegt ein Todo mit diesem Ordner auf der Seite sichtbar? */
+const sichtbarAuf = (a: string, ordner: string | null) => a === 'alle' || (a === 'eingang' ? ordner === null : ordner === a)
+
+// Unten die Startseite mit allen Ordnern als Karten, darueber eine Liste (Alle,
+// Eingang oder ein Ordner) ueber die ganze Hoehe. Seitenwechsel mit
+// Zurueckwischen wie in Kontor und Stash (lib/PageStage.tsx). Blaetter von
+// unten fuer Todo und Ordner.
 function Tick() {
   // Ein Zaehler statt einzelner Zustaende: nach jeder Aenderung wird alles neu
   // aus dem Speicher gelesen (wie bei den anderen Apps).
@@ -74,35 +82,47 @@ function Tick() {
   const ids = useMemo(() => ordnerIds(daten.ordner), [daten.ordner])
   const zaehlung = zaehle(daten.todos, daten.ordner, heute)
   const nameVon = (id: string | null) => daten.ordner.find((o) => o.id === id)?.name ?? 'Eingang'
+  const titelVon = (a: string) => (a === START ? 'Ordner' : a === 'alle' ? 'Alle' : nameVon(standardOrdner(a)))
 
-  const { stack, push, back } = useHistoryStack<View>(() => [])
+  // Tick oeffnet dort, wo man zuletzt war: auf der Startseite oder in einem Ordner
+  // (dann liegt die Startseite darunter, „‹ Ordner“ fuehrt hin).
+  const { stack, push, back } = useHistoryStack<View>(() => {
+    const r = getSeite()
+    return r === 'alle' || r === 'eingang' || ordnerIds(getOrdner()).has(r) ? [{ name: 'liste', ansicht: r }] : []
+  })
+  const oben = stack.length ? stack[stack.length - 1].ansicht : START
+
   const [offen, setOffen] = useState<Offen | null>(null)
-  const [sortieren, setSortieren] = useState(false)
+  const [ordnen, setOrdnen] = useState(false)
 
-  // Ein geloeschter Ordner faellt auf „Alle“ zurueck.
-  const [reiterRoh, setReiterRoh] = useState(getReiter)
-  const reiter = reiterRoh === 'alle' || reiterRoh === 'eingang' || ids.has(reiterRoh) ? reiterRoh : 'alle'
-
-  // Der Entwurf lebt hier: vorgewaehlt ist der Ordner des offenen Reiters.
+  // Der Entwurf lebt hier: vorgewaehlt ist der Ordner der offenen Seite.
   const [entwurf, setEntwurfState] = useState<Entwurf>(() => {
     const e = getEntwurf()
-    return e.titel ? e : { ...e, ordner: standardOrdner(getReiter()) }
+    return e.titel ? e : { ...e, ordner: standardOrdner(getSeite()) }
   })
   const setEntwurf = useCallback((e: Entwurf) => {
     setEntwurfState(e)
     speichereEntwurf(e)
   }, [])
 
-  const setReiter = useCallback((r: Reiter) => {
-    setReiterRoh(r)
-    speichereReiter(r)
-    setSortieren(false)
+  // Andere Seite: merken, Sortieren aus, der Ordner fuer neue Todos folgt.
+  // Beim Start nicht - da gilt der gespeicherte Entwurf.
+  const ersteSeite = useRef(true)
+  useEffect(() => {
+    speichereSeite(oben)
+    if (ersteSeite.current) {
+      ersteSeite.current = false
+      return
+    }
+    setOrdnen(false)
     setEntwurfState((e) => {
-      const n = { ...e, ordner: standardOrdner(r) }
+      const n = { ...e, ordner: standardOrdner(oben) }
       speichereEntwurf(n)
       return n
     })
-  }, [])
+  }, [oben])
+
+  const oeffne = (ansicht: string) => push({ name: 'liste', ansicht })
 
   const [zeigeToast, schliesseToast] = useIonToast()
   const melde = useCallback(
@@ -192,8 +212,8 @@ function Tick() {
     setEntwurf({ ...entwurf, titel: '' })
     refresh()
     setNeuId(t.id)
-    const hier = reiter === 'alle' || (reiter === 'eingang' ? t.ordner === null : t.ordner === reiter)
-    if (!hier) melde(`In ${nameVon(t.ordner)} abgelegt`)
+    // Auf der Startseite und in einem anderen Ordner sieht man es nicht: kurz sagen, wo es liegt.
+    if (!sichtbarAuf(oben, t.ordner)) melde(`In ${nameVon(t.ordner)} abgelegt`)
   }
 
   // ---------- Loeschen, Verschieben ----------
@@ -213,8 +233,7 @@ function Tick() {
     if (!t || t.ordner === ordner) return
     aendere(id, { ordner })
     refresh()
-    const hier = reiter === 'alle' || (reiter === 'eingang' ? ordner === null : ordner === reiter)
-    if (!hier) melde(`Nach ${nameVon(ordner)} verschoben`)
+    if (!sichtbarAuf(oben, ordner)) melde(`Nach ${nameVon(ordner)} verschoben`)
   }
 
   const erledigteLoeschenFragen = (ansicht: string | null, n: number) => {
@@ -244,7 +263,8 @@ function Tick() {
     const n = imOrdner(getTodos(), o.id, ordnerIds(getOrdner())).length
     const fertig = (mitTodos: boolean) => {
       ordnerLoeschen(o.id, mitTodos)
-      if (reiter === o.id) setReiter('alle')
+      // Steht man gerade in dem Ordner: zurueck zu allen Ordnern.
+      if (oben === o.id) back()
       refresh()
       melde(`„${o.name}“ gelöscht`)
     }
@@ -266,74 +286,61 @@ function Tick() {
   }
 
   const menue = () => {
-    const o = daten.ordner.find((x) => x.id === reiter)
     const buttons: ActionSheetButton[] = []
-    if (reiter !== 'alle' && imOrdner(daten.todos, standardOrdner(reiter), ids).length > 1)
-      buttons.push({ text: 'Reihenfolge ändern', handler: () => setSortieren(true) })
-    if (o) buttons.push({ text: `„${o.name}“ bearbeiten`, handler: () => setOffen({ art: 'ordner', id: o.id }) })
+    if (oben === START) {
+      if (daten.ordner.length) buttons.push({ text: 'Ordner bearbeiten', handler: () => setOrdnen(true) })
+    } else {
+      const o = daten.ordner.find((x) => x.id === oben)
+      if (oben !== 'alle' && imOrdner(daten.todos, standardOrdner(oben), ids).length > 1)
+        buttons.push({ text: 'Reihenfolge ändern', handler: () => setOrdnen(true) })
+      if (o) buttons.push({ text: `„${o.name}“ bearbeiten`, handler: () => setOffen({ art: 'ordner', id: o.id }) })
+    }
     buttons.push({ text: 'Neuer Ordner', handler: () => setOffen({ art: 'ordner', id: null }) })
-    buttons.push({ text: 'Ordner verwalten', handler: () => push({ name: 'ordner', bearbeiten: true }) })
     buttons.push({ text: 'Abbrechen', role: 'cancel' })
     auswahl({ cssClass: 't-as', buttons })
   }
 
-  const titelHier = reiter === 'alle' ? 'Alle' : nameVon(standardOrdner(reiter))
-
-  const seite = (view: View | null) =>
-    view ? (
-      <OrdnerSeite
-        ordner={daten.ordner}
-        zaehlung={zaehlung}
-        zurueck={titelHier}
-        bearbeiten={view.bearbeiten}
-        onZurueck={back}
-        onOeffnen={(r) => {
-          // Erst den Reiter setzen, dann zurueck: die Liste darunter zeigt ihn schon beim Hinausgleiten.
-          setReiter(r)
-          back()
-        }}
-        onBearbeiten={(id) => setOffen({ art: 'ordner', id })}
-        onNeu={() => setOffen({ art: 'ordner', id: null })}
-        onSortiert={(ids) => {
-          ordnerSortieren(ids)
-          refresh()
-        }}
-      />
-    ) : (
-      <Liste
-        todos={daten.todos}
-        ordner={daten.ordner}
-        heute={heute}
-        reiter={reiter}
-        setReiter={setReiter}
-        haken={haken}
-        gehen={gehen}
-        neu={neuId}
-        sortieren={sortieren}
-        setSortieren={setSortieren}
-        entwurf={entwurf}
-        setEntwurf={setEntwurf}
-        tastatur={sichtbar.tastatur}
-        onHaken={hake}
-        onOeffnen={(id) => setOffen({ art: 'todo', id })}
-        onVerschieben={(id) => setOffen({ art: 'wahl-todo', id })}
-        onLoeschen={loeschenJetzt}
-        onAnlegen={anlegenJetzt}
-        onOrdnerWahl={() => setOffen({ art: 'wahl-entwurf' })}
-        onNeuerOrdner={() => setOffen({ art: 'ordner', id: null })}
-        onVorschlag={(name, farbe) => {
-          ordnerAnlegen(name, farbe)
-          refresh()
-        }}
-        onMenue={menue}
-        onUebersicht={() => push({ name: 'ordner', bearbeiten: false })}
-        onSortiert={(ids) => {
-          sortiere(ids)
-          refresh()
-        }}
-        onErledigteLoeschen={erledigteLoeschenFragen}
-      />
-    )
+  const seite = (view: View | null, i: number) => (
+    <Liste
+      ansicht={view ? view.ansicht : START}
+      zurueck={i > 0 ? titelVon(stack[i - 1].ansicht) : 'Ordner'}
+      todos={daten.todos}
+      ordner={daten.ordner}
+      heute={heute}
+      haken={haken}
+      gehen={gehen}
+      neu={neuId}
+      ordnen={ordnen}
+      setOrdnen={setOrdnen}
+      entwurf={entwurf}
+      setEntwurf={setEntwurf}
+      tastatur={sichtbar.tastatur}
+      onZurueck={back}
+      onOeffnen={oeffne}
+      onHaken={hake}
+      onTodo={(id) => setOffen({ art: 'todo', id })}
+      onVerschieben={(id) => setOffen({ art: 'wahl-todo', id })}
+      onLoeschen={loeschenJetzt}
+      onAnlegen={anlegenJetzt}
+      onOrdnerWahl={() => setOffen({ art: 'wahl-entwurf' })}
+      onNeuerOrdner={() => setOffen({ art: 'ordner', id: null })}
+      onOrdnerBearbeiten={(id) => setOffen({ art: 'ordner', id })}
+      onVorschlag={(name, farbe) => {
+        ordnerAnlegen(name, farbe)
+        refresh()
+      }}
+      onMenue={menue}
+      onSortiert={(ids) => {
+        sortiere(ids)
+        refresh()
+      }}
+      onOrdnerSortiert={(ids) => {
+        ordnerSortieren(ids)
+        refresh()
+      }}
+      onErledigteLoeschen={erledigteLoeschenFragen}
+    />
+  )
 
   const blatt = () => {
     if (!offen) return null
@@ -398,13 +405,10 @@ function Tick() {
         ordner={o ?? null}
         alle={daten.ordner}
         anzahl={o ? (zaehlung.je.get(o.id) ?? 0) : 0}
+        faellig={o ? (zaehlung.faelligJe.get(o.id) ?? 0) : 0}
         onClose={() => {
           zu()
           refresh()
-        }}
-        onFertig={(x) => {
-          // Neuer Ordner vom Reiter + oder aus dem Menue: gleich hinein.
-          if (!offen.id && !stack.length) setReiter(x.id)
         }}
         onLoeschen={ordnerLoeschenFragen}
       />
@@ -416,8 +420,8 @@ function Tick() {
       <PageStage
         className="t-buehne"
         pages={stack}
-        rootKey="liste"
-        pageKey={(v, i) => `${i}:${v.name}`}
+        rootKey={START}
+        pageKey={(v, i) => `${i}:${v.ansicht}`}
         render={seite}
         onBack={back}
         swipe={!offen}
