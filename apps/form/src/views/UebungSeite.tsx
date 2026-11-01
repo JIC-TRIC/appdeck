@@ -15,15 +15,18 @@ import {
   formatSek,
   formatStrecke,
   formatTausend,
+  inMetern,
   kennwert,
   kurzSaetze,
+  streckeName,
   streckeTeile,
+  tempoEinheit,
   type Kennzahl,
 } from '../trainingCalc'
 import { Segment, Seite, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatKurz, formatZahl, relativTag, wieLange } from '../util'
 import { Zettel, useNotizAendern } from './Zettel'
-import type { Bereich, Erfassung, FormCtx, Punkt, Satz } from '../types'
+import type { Bereich, Erfassung, FormCtx, Punkt, Satz, StreckenEinheit } from '../types'
 
 const BEREICHE: { id: Bereich; label: string }[] = [
   { id: '3m', label: '3 M' },
@@ -59,20 +62,20 @@ const zeitTeile = (sek: number): [string, string] => (sek < 60 ? [String(sek), '
  * Ein Satz zum Grossschreiben: die erste Zahl, ihre Einheit und der Rest -
  * ['82,5', 'kg', '× 8'], ['5', 'km', 'in 26:30'], ['12', 'Wdh', ''].
  */
-function satzTeile(s: Satz, erf: Erfassung): [string, string, string] {
+function satzTeile(s: Satz, erf: Erfassung, einheit: StreckenEinheit): [string, string, string] {
   switch (erf) {
     case 'gewicht':
       return [formatZahl(s.kg ?? 0), 'kg', `× ${s.wdh ?? 0}`]
     case 'gewichtZeit':
       return [formatZahl(s.kg ?? 0), 'kg', `× ${formatSek(s.sek ?? 0)}`]
     case 'gewichtStrecke':
-      return [formatZahl(s.kg ?? 0), 'kg', `× ${formatStrecke(s.m ?? 0)}`]
+      return [formatZahl(s.kg ?? 0), 'kg', `× ${formatStrecke(s.m ?? 0, einheit)}`]
     case 'wdh':
       return [String(s.wdh ?? 0), 'Wdh', '']
     case 'zeit':
       return [...zeitTeile(s.sek ?? 0), '']
     case 'strecke':
-      return [...streckeTeile(s.m ?? 0), `in ${formatSek(s.sek ?? 0)}`]
+      return [...streckeTeile(s.m ?? 0, einheit), `in ${formatSek(s.sek ?? 0)}`]
   }
 }
 
@@ -100,6 +103,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
   if (!u) return <Seite links={<Zurueck label="Übungen" onClick={back} />}>{null}</Seite>
 
   const erf = u.erfassung
+  const einheit = u.einheit
   const ein = einheiten(trainings, id)
   const tagVon = (ms: number) => dateKey(new Date(ms))
   const bestJe = ein.map((e) => besterSatz(e.saetze, erf))
@@ -115,7 +119,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
 
   const arten = KENNZAHLEN[erf]
   const kenn: Kennzahl = art && arten.includes(art) ? art : arten[0]
-  const punkte: Punkt[] = ein.map((e) => ({ tag: tagVon(e.training.start), zahl: kennwert(e.saetze, kenn, erf) }))
+  const punkte: Punkt[] = ein.map((e) => ({ tag: tagVon(e.training.start), zahl: kennwert(e.saetze, kenn, erf, einheit) }))
   const sichtbar = imBereich(punkte, bereich, heute)
   // imBereich laesst nur die aeltesten weg - die sichtbaren sind das Ende der Reihe.
   const versatz = punkte.length - sichtbar.length
@@ -132,9 +136,9 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
       case 'zeit':
         return zeitTeile(v)
       case 'strecke':
-        return streckeTeile(v)
+        return streckeTeile(v, einheit)
       case 'tempo':
-        return [formatZahl(v), 'km/h']
+        return [formatZahl(v), tempoEinheit(einheit)]
       case 'volumen':
         return [formatTausend(v), 'kg']
       // Das 1RM ist geschaetzt - eine Nachkommastelle genuegt.
@@ -149,9 +153,9 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
     if (!zeigeE) return ''
     if (kenn === '1rm') {
       const s = besterE1rmSatz(zeigeE.saetze)
-      return s ? `geschätzt aus ${formatSatz(s, erf)}` : ''
+      return s ? `geschätzt aus ${formatSatz(s, erf, einheit)}` : ''
     }
-    return kurzSaetze(zeigeE.saetze, erf)
+    return kurzSaetze(zeigeE.saetze, erf, einheit)
   }
   const veraenderung = zeigeP && sichtbar.length > 1 ? zeigeP.zahl - sichtbar[0].zahl : null
 
@@ -162,8 +166,11 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
     return <em className={`f-diff${d > 0 ? ' gut' : ''}`}>{text}</em>
   }
 
-  const stand = best ? satzTeile(best, erf) : null
-  const rek = rekord ? satzTeile(rekord, erf) : null
+  const stand = best ? satzTeile(best, erf, einheit) : null
+  const rek = rekord ? satzTeile(rekord, erf, einheit) : null
+  // Bei Stueck heisst die Strecke wie ihre Einheit: 'Stockwerke', 'Meiste Stockwerke'.
+  const artLabel = (a: Kennzahl) => (a === 'strecke' ? streckeName(einheit) : ART_LABEL[a])
+  const kennText = kenn === 'strecke' && !inMetern(einheit) ? `Meiste ${streckeName(einheit)}` : KENNZAHL_TEXT[kenn]
 
   return (
     <Seite
@@ -213,7 +220,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
               {arten.length > 1 ? (
                 <Segment
                   label="Kennzahl"
-                  optionen={arten.map((a) => ({ id: a, label: ART_LABEL[a] }))}
+                  optionen={arten.map((a) => ({ id: a, label: artLabel(a) }))}
                   wert={kenn}
                   onWahl={(a) => {
                     setArt(a)
@@ -235,7 +242,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
               <div className="f-verlauf-kopf" aria-live="polite">
                 <span className="f-verlauf-wert">
                   <small>
-                    {KENNZAHL_TEXT[kenn]} · {relativTag(zeigeP.tag, heute)}
+                    {kennText} · {relativTag(zeigeP.tag, heute)}
                   </small>
                   <b>
                     {teile(zeigeP.zahl)[0]}
@@ -297,7 +304,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
                 ))}
               </div>
               <p className="f-note f-herkunft">
-                Geschätzt aus {formatSatz(basis, erf)} ({relativTag(tagVon(basisE.training.start), heute)}), abgerundet auf{' '}
+                Geschätzt aus {formatSatz(basis, erf, einheit)} ({relativTag(tagVon(basisE.training.start), heute)}), abgerundet auf{' '}
                 {formatZahl(u.schritt)} kg.
               </p>
             </>
@@ -318,7 +325,7 @@ function UebungSeite({ ctx, id }: { ctx: FormCtx; id: string }) {
                         <span>{e.saetze.map((s) => s.wdh).join(' · ')}</span>
                       </>
                     ) : (
-                      <span className={pr ? 'f-gut' : ''}>{kurzSaetze(e.saetze, erf)}</span>
+                      <span className={pr ? 'f-gut' : ''}>{kurzSaetze(e.saetze, erf, einheit)}</span>
                     )}
                     <IconRight />
                   </span>

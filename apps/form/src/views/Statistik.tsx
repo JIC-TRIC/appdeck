@@ -12,7 +12,7 @@ import {
   wochenWerte,
   type WochenArt,
 } from '../trainingCalc'
-import { REKORD_TEXT, Segment, Seite, Zurueck, zumLauncher } from '../ui'
+import { Segment, Seite, Zurueck, rekordText, zumLauncher } from '../ui'
 import { dateKey, relativTag } from '../util'
 import type { FormCtx } from '../types'
 
@@ -128,10 +128,10 @@ function Statistik({ ctx }: { ctx: FormCtx }) {
                       <span>
                         <b>{u.name}</b>
                         <small>
-                          {REKORD_TEXT[rekord.art]} · {relativTag(dateKey(new Date(training.start)), heute)}
+                          {rekordText(rekord.art, u.einheit)} · {relativTag(dateKey(new Date(training.start)), heute)}
                         </small>
                       </span>
-                      <em>{formatSatz(rekord.satz, u.erfassung)}</em>
+                      <em>{formatSatz(rekord.satz, u.erfassung, u.einheit)}</em>
                     </button>
                   )
                 })}

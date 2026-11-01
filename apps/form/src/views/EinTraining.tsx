@@ -47,7 +47,7 @@ function EinTraining({ ctx, id }: { ctx: FormCtx; id: string }) {
               {tu.saetze.map((s, si) =>
                 erledigt(s) ? (
                   <span key={si} className={`f-sc${pr.has(`${ui}:${si}`) ? ' pr' : ''}${s.aufwaermen ? ' auf' : ''}`}>
-                    {formatSatz(s, u.erfassung)}
+                    {formatSatz(s, u.erfassung, u.einheit)}
                   </span>
                 ) : null,
               )}

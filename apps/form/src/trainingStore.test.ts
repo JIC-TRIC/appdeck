@@ -20,7 +20,10 @@ import {
   speichereUebung,
   speichereVorlage,
   starteTraining,
+  trainiert,
+  wirdBenutzt,
 } from './trainingStore'
+import type { Satz } from './types'
 
 // localStorage gibt es in der Node-Testumgebung nicht - ein einfacher Ersatz.
 class Speicher {
@@ -61,6 +64,52 @@ describe('normalisiereUebungen', () => {
       stange: null,
       archiviert: false,
     })
+  })
+
+  it('Einheit der Strecke: ohne gueltige die der Erfassung', () => {
+    const u = normalisiereUebungen([
+      { id: 'a', name: 'Laufband', erfassung: 'strecke' },
+      { id: 'b', name: 'Farmer', erfassung: 'gewichtStrecke', einheit: 'meilen' },
+      { id: 'c', name: 'Stairmaster', erfassung: 'strecke', einheit: 'stockwerke' },
+    ])
+    expect(u.map((x) => x.einheit)).toEqual(['km', 'm', 'stockwerke'])
+  })
+})
+
+describe('Erfassung umstellen', () => {
+  const satz = (x: Partial<Satz>): Satz => ({ kg: null, wdh: null, sek: null, m: null, fertig: null, aufwaermen: false, ...x })
+
+  it('im laufenden Training: was nicht mehr passt, faellt weg, unvollstaendige Saetze sind nicht mehr abgehakt', () => {
+    const u = speichereUebung({ name: 'Stairmaster', erfassung: 'gewicht', pause: 120, notiz: '' })!
+    const t = starteTraining(null, 1000)
+    setzeLaufend({ ...t, uebungen: [{ uebung: u.id, saetze: [satz({ kg: 20, wdh: 10, fertig: 1100 }), satz({ kg: 20 })] }] })
+    expect(trainiert(u.id)).toBe(false)
+    expect(wirdBenutzt(u.id)).toBe(true)
+
+    speichereUebung({ name: 'Stairmaster', erfassung: 'gewichtZeit', pause: 120, notiz: '' }, u.id)
+    expect(getLaufend()!.uebungen[0].saetze).toEqual([satz({ kg: 20 }), satz({ kg: 20 })])
+
+    speichereUebung({ name: 'Stairmaster', erfassung: 'strecke', einheit: 'km', pause: 120, notiz: '' }, u.id)
+    setzeLaufend({ ...getLaufend()!, uebungen: [{ uebung: u.id, saetze: [satz({ m: 500, sek: 300, fertig: 1200 })] }] })
+    // Von km auf Stockwerke: die Meter gelten nicht als Stockwerke.
+    speichereUebung({ name: 'Stairmaster', erfassung: 'strecke', einheit: 'stockwerke', pause: 120, notiz: '' }, u.id)
+    expect(getLaufend()!.uebungen[0].saetze).toEqual([satz({ sek: 300 })])
+    expect(getUebungen()[0]).toMatchObject({ erfassung: 'strecke', einheit: 'stockwerke' })
+  })
+
+  it('km und m behalten die Strecke', () => {
+    const u = speichereUebung({ name: 'Rudern', erfassung: 'strecke', pause: 120, notiz: '' })!
+    expect(u.einheit).toBe('km')
+    const t = starteTraining(null, 1000)
+    setzeLaufend({ ...t, uebungen: [{ uebung: u.id, saetze: [satz({ m: 500, sek: 100, fertig: 1100 })] }] })
+    speichereUebung({ name: 'Rudern', erfassung: 'strecke', einheit: 'm', pause: 120, notiz: '' }, u.id)
+    expect(getLaufend()!.uebungen[0].saetze).toEqual([satz({ m: 500, sek: 100, fertig: 1100 })])
+  })
+
+  it('erst ein beendetes Training sperrt die Erfassung', () => {
+    const u = speichereUebung({ name: 'A', erfassung: 'gewicht', pause: 120, notiz: '' })!
+    speichereTraining({ id: 't', vorlage: null, name: 'T', start: 10, ende: 20, uebungen: [{ uebung: u.id, saetze: [satz({ kg: 1, wdh: 1, fertig: 15 })] }], notiz: '' })
+    expect(trainiert(u.id)).toBe(true)
   })
 })
 

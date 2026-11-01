@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useIonAlert } from '@ionic/react'
 import { NAME_MAX, sauber } from '../store'
-import { FELDER, formatStoppuhr } from '../trainingCalc'
+import { FELDER, einheitStandard, formatStoppuhr, inMetern } from '../trainingCalc'
 import { formatZahl } from '../util'
 import {
   NOTIZ_MAX,
@@ -15,42 +15,44 @@ import {
   pauseSauber,
   setzeUebung,
   speichereUebung,
+  trainiert,
   wirdBenutzt,
 } from '../trainingStore'
-import { Seite, Stepper, TextKnopf } from '../ui'
-import type { Erfassung, FormCtx } from '../types'
+import { Chips, EINHEIT_TEXT, ERFASSUNG_TEXT, Seite, Stepper, TextKnopf } from '../ui'
+import type { Erfassung, FormCtx, StreckenEinheit } from '../types'
 
-const ERFASSUNGEN: { id: Erfassung; label: string }[] = [
-  { id: 'gewicht', label: 'Gewicht × Wdh' },
-  { id: 'wdh', label: 'Nur Wdh' },
-  { id: 'zeit', label: 'Zeit' },
-  { id: 'strecke', label: 'Strecke + Zeit' },
-  { id: 'gewichtZeit', label: 'Gewicht × Zeit' },
-  { id: 'gewichtStrecke', label: 'Gewicht × Strecke' },
-]
-
-// Uebung anlegen oder bearbeiten: Name, was eingetragen wird, Pause, Notiz -
-// mit Gewicht auch der Gewichtsschritt (+/- im Tastenfeld, bei Gewicht x Wdh
-// der Vorschlag fuers naechste Gewicht), bei Gewicht x Wdh die Stange fuer den
-// Scheibenrechner.
-// Die Erfassung laesst sich nur aendern, solange die Uebung nie trainiert
-// wurde. Trainierte Uebungen werden archiviert statt geloescht - ihr Verlauf
-// bleibt.
+// Uebung anlegen oder bearbeiten: Name, was eingetragen wird, mit Strecke
+// deren Einheit (km, m, Stockwerke ...), Pause, Notiz - mit Gewicht auch der
+// Gewichtsschritt (+/- im Tastenfeld, bei Gewicht x Wdh der Vorschlag fuers
+// naechste Gewicht), bei Gewicht x Wdh die Stange fuer den Scheibenrechner.
+// Die Erfassung laesst sich nur aendern, solange die Uebung in keinem
+// beendeten Training steckt - im laufenden geht es noch (trainingStore.ts,
+// passeLaufendAn). Danach wechselt die Einheit nur noch zwischen km und m.
+// Trainierte Uebungen werden archiviert statt geloescht - ihr Verlauf bleibt.
 function UebungForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
   const { uebungById, back, toRoot, refresh, melde } = ctx
   const alt = id ? uebungById[id] : undefined
   const [name, setName] = useState(alt?.name ?? '')
   const [erfassung, setErfassung] = useState<Erfassung>(alt?.erfassung ?? 'gewicht')
+  const [einheit, setEinheit] = useState<StreckenEinheit>(alt?.einheit ?? 'm')
+  const [einheitGewaehlt, setEinheitGewaehlt] = useState(false)
   const [pause, setPause] = useState(alt?.pause ?? PAUSE_STANDARD)
   const [notiz, setNotiz] = useState(alt?.notiz ?? '')
   const [schritt, setSchritt] = useState(alt?.schritt ?? SCHRITT_STANDARD)
   const [stange, setStange] = useState<number | null>(alt?.stange ?? null)
   const [benutzt] = useState(() => (alt ? wirdBenutzt(alt.id) : false))
+  const [gesperrt] = useState(() => (alt ? trainiert(alt.id) : false))
   const [frage] = useIonAlert()
   const kannSichern = sauber(name, NAME_MAX) !== ''
 
+  // km oder m folgt der Erfassung, solange keine Einheit gewaehlt ist - Stockwerke & Co. bleiben.
+  const waehleErfassung = (e: Erfassung) => {
+    setErfassung(e)
+    if (!einheitGewaehlt && inMetern(einheit)) setEinheit(einheitStandard(e))
+  }
+
   const sichern = () => {
-    const u = speichereUebung({ name, erfassung, pause, notiz, schritt, stange }, alt?.id)
+    const u = speichereUebung({ name, erfassung, einheit, pause, notiz, schritt, stange }, alt?.id)
     if (!u) return
     refresh()
     back()
@@ -105,21 +107,23 @@ function UebungForm({ ctx, id }: { ctx: FormCtx; id?: string }) {
 
         <div className="f-feld">
           <span className="f-label">Was trägst du ein?</span>
-          <div className="f-chips">
-            {ERFASSUNGEN.map((e) => (
-              <button
-                key={e.id}
-                type="button"
-                className={`f-chip${erfassung === e.id ? ' an' : ''}`}
-                aria-pressed={erfassung === e.id}
-                disabled={benutzt && erfassung !== e.id}
-                onClick={() => setErfassung(e.id)}
-              >
-                {e.label}
-              </button>
-            ))}
-          </div>
+          <Chips optionen={ERFASSUNG_TEXT} wert={erfassung} aus={(e) => gesperrt && e !== erfassung} onWahl={waehleErfassung} />
         </div>
+
+        {FELDER[erfassung].includes('m') ? (
+          <div className="f-feld">
+            <span className="f-label">Strecke in</span>
+            <Chips
+              optionen={EINHEIT_TEXT}
+              wert={einheit}
+              aus={(e) => gesperrt && e !== einheit && !(inMetern(e) && inMetern(einheit))}
+              onWahl={(e) => {
+                setEinheit(e)
+                setEinheitGewaehlt(true)
+              }}
+            />
+          </div>
+        ) : null}
 
         {FELDER[erfassung].includes('kg') ? (
           <div className="f-feld">

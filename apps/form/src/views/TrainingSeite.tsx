@@ -52,9 +52,9 @@ import { Blatt, Schalter, Seite, Stepper, TextKnopf, Zurueck } from '../ui'
 import { dateKey, formatZahl, relativTag, wieLange } from '../util'
 import { Hinzufuegen } from './Hinzufuegen'
 import { LiveZahlen, PauseAnzeige, PauseBlatt } from './Pause'
-import { FELDNAME, Tastenfeld, trenner, type Feld } from './Tastenfeld'
+import { Tastenfeld, feldName, trenner, type Feld } from './Tastenfeld'
 import { Zettel, useNotizAendern } from './Zettel'
-import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung, Uebung, VorlagenUebung } from '../types'
+import type { Einstellungen, Erfassung, FormCtx, Satz, StreckenEinheit, Training, TrainingsUebung, Uebung, VorlagenUebung } from '../types'
 
 // Ein Training. Laufend liegt es ueber der Startseite des Tabs "Training"
 // ("< Form" fuehrt dorthin) und jeder Tipp wird sofort gesichert. Als Entwurf aendert es ein beendetes
@@ -77,8 +77,8 @@ import type { Einstellungen, Erfassung, FormCtx, Satz, Training, TrainingsUebung
 
 const NEIN = { kg: false, wdh: false, sek: false, m: false }
 
-const zeige = (f: Feld, v: number) =>
-  f === 'kg' ? formatZahl(v) : f === 'sek' ? formatSek(v) : f === 'm' ? formatStrecke(v) : String(v)
+const zeige = (f: Feld, v: number, einheit: StreckenEinheit) =>
+  f === 'kg' ? formatZahl(v) : f === 'sek' ? formatSek(v) : f === 'm' ? formatStrecke(v, einheit) : String(v)
 
 /** Aufwaermsaetze zuerst, sonst bleibt die Reihenfolge. */
 const sortiert = (saetze: Satz[]) => [...saetze.filter((s) => s.aufwaermen), ...saetze.filter((s) => !s.aufwaermen)]
@@ -155,7 +155,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
       const s = tu?.saetze[si]
       if (u && s) {
         tick(true)
-        melde(`Neuer Rekord · ${u.name} ${formatSatz(s, u.erfassung)}`, 'rekord')
+        melde(`Neuer Rekord · ${u.name} ${formatSatz(s, u.erfassung, u.einheit)}`, 'rekord')
       }
     }
     const body = seiteRef.current?.querySelector<HTMLElement>('.f-body')
@@ -532,6 +532,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                 titel={u.name}
                 untertitel={s.aufwaermen ? 'Aufwärmsatz' : `Satz ${nummer(tu.saetze, si)}`}
                 erf={u.erfassung}
+                einheit={u.einheit}
                 schritt={u.schritt}
                 stange={u.stange}
                 start={eingabe.feld}
@@ -543,7 +544,7 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                         ref.ausgelassen
                           ? `Vorgabe von ${ref.training.name} (${wieLange(dateKey(new Date(ref.training.start)), heute)})`
                           : `Zuletzt bei ${ref.training.name}`
-                      }: ${formatSatz(refSatz, u.erfassung)}`
+                      }: ${formatSatz(refSatz, u.erfassung, u.einheit)}`
                     : null
                 }
                 erledigt={erledigt(s)}
@@ -692,6 +693,14 @@ function TrainingSeite({ ctx, entwurf, neu }: { ctx: FormCtx; entwurf?: Training
                         {istLaufend ? (
                           <button type="button" className="f-zeile" onClick={dann(() => push({ name: 'uebung', id: u.id }))}>
                             <span>Verlauf ansehen</span>
+                            <span className="f-zeile-r">
+                              <IconRight />
+                            </span>
+                          </button>
+                        ) : null}
+                        {istLaufend ? (
+                          <button type="button" className="f-zeile" onClick={dann(() => push({ name: 'uebungForm', id: u.id }))}>
+                            <span>Übung bearbeiten</span>
                             <span className="f-zeile-r">
                               <IconRight />
                             </span>
@@ -880,13 +889,13 @@ function LetzteMale({ trainings, u, ohne, heute }: { trainings: Training[]; u: U
                 <span className="f-aus"> · nicht als Vorgabe</span>
               ) : null}
             </span>
-            <span className="f-zeile-r">{kurzSaetze(e.saetze, u.erfassung)}</span>
+            <span className="f-zeile-r">{kurzSaetze(e.saetze, u.erfassung, u.einheit)}</span>
           </div>
         ))}
       {rekord ? (
         <div className="f-zeile f-zeile-info">
           <span>Rekord bisher</span>
-          <span className="f-zeile-r f-gut">{formatSatz(rekord, u.erfassung)}</span>
+          <span className="f-zeile-r f-gut">{formatSatz(rekord, u.erfassung, u.einheit)}</span>
         </div>
       ) : null}
     </div>
@@ -969,6 +978,7 @@ function UebungBlock({
             s={s}
             nr={nummer(tu.saetze, si)}
             erf={u.erfassung}
+            einheit={u.einheit}
             ph={platzhalter(ref_, tu.saetze, si, plus)}
             refSatz={gleicherSatz(ref_, tu.saetze, si)}
             pr={rekorde.has(`${ui}:${si}`)}
@@ -993,6 +1003,7 @@ function SatzZeile({
   s,
   nr,
   erf,
+  einheit,
   ph,
   refSatz,
   pr,
@@ -1006,6 +1017,7 @@ function SatzZeile({
   s: Satz
   nr: number
   erf: Erfassung
+  einheit: StreckenEinheit
   ph: Zahlen | null
   refSatz: Satz | undefined
   pr: boolean
@@ -1023,14 +1035,14 @@ function SatzZeile({
   const zelle = (f: Feld) => {
     const v = s[f]
     const grau = ph?.[f] ?? null
-    const text = v !== null ? zeige(f, v) : grau !== null ? zeige(f, grau) : '–'
+    const text = v !== null ? zeige(f, v, einheit) : grau !== null ? zeige(f, grau, einheit) : '–'
     const art = fertig ? (gut[f] ? ' fest gut' : ' fest') : v === null ? ' ph' : ''
     return (
       <button
         type="button"
         className={`f-z${art}${aktivFeld === f ? ' aktiv' : ''}`}
         onClick={() => onFeld(f)}
-        aria-label={`${name}, ${FELDNAME[f]} ${text}`}
+        aria-label={`${name}, ${feldName(f, einheit)} ${text}`}
       >
         {text}
       </button>

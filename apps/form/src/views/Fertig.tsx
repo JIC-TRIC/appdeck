@@ -16,7 +16,7 @@ import {
   zumTeilen,
 } from '../trainingCalc'
 import { speichereVorlage } from '../trainingStore'
-import { REKORD_TEXT, Seite } from '../ui'
+import { Seite, rekordText } from '../ui'
 import { useAlsVorlage } from './alsVorlage'
 import { WocheKarte } from './Woche'
 import type { FormCtx } from '../types'
@@ -169,9 +169,9 @@ function Fertig({ ctx, id }: { ctx: FormCtx; id: string }) {
                 <div key={`${r.ui}:${r.si}`} className="f-rek">
                   <div>
                     <b>{u?.name ?? 'Übung'}</b>
-                    <small>{REKORD_TEXT[r.art]}</small>
+                    <small>{rekordText(r.art, u?.einheit ?? 'm')}</small>
                   </div>
-                  <em>{formatSatz(r.satz, u?.erfassung ?? 'gewicht')}</em>
+                  <em>{formatSatz(r.satz, u?.erfassung ?? 'gewicht', u?.einheit ?? 'm')}</em>
                 </div>
               )
             })}

@@ -7,6 +7,9 @@ import {
   formatStrecke,
   kennwert,
   kmh,
+  streckeName,
+  tempo,
+  tempoEinheit,
   nurNoetige,
   uhrZiffern,
   vollstaendig,
@@ -70,6 +73,7 @@ const uebung = (id: string, erfassung: Uebung['erfassung'] = 'gewicht'): Uebung 
   id,
   name: id,
   erfassung,
+  einheit: erfassung === 'strecke' ? 'km' : 'm',
   pause: 120,
   notiz: '',
   schritt: 2.5,
@@ -250,9 +254,9 @@ describe('Text', () => {
   })
 
   it('kurzSaetze fasst gleiches Gewicht zusammen', () => {
-    expect(kurzSaetze([s(82.5, 8), s(82.5, 8), s(82.5, 7)], 'gewicht')).toBe('82,5 × 8 · 8 · 7')
-    expect(kurzSaetze([s(80, 8), s(82.5, 6)], 'gewicht')).toBe('80 × 8 · 82,5 × 6')
-    expect(kurzSaetze([s(null, 12), s(null, 10)], 'wdh')).toBe('12 · 10')
+    expect(kurzSaetze([s(82.5, 8), s(82.5, 8), s(82.5, 7)], 'gewicht', 'm')).toBe('82,5 × 8 · 8 · 7')
+    expect(kurzSaetze([s(80, 8), s(82.5, 6)], 'gewicht', 'm')).toBe('80 × 8 · 82,5 × 6')
+    expect(kurzSaetze([s(null, 12), s(null, 10)], 'wdh', 'm')).toBe('12 · 10')
   })
 
   it('besterE1rmSatz und bestesE1rm: der Satz mit dem hoechsten geschaetzten 1RM', () => {
@@ -368,10 +372,23 @@ describe('Hilfen', () => {
     const start = new Date('2026-10-10T17:40:00').getTime()
     const t = tr('t', 'push', start, [{ uebung: 'bank', saetze: [auf(40, 10), s(82.5, 8), s(82.5, null, null)] }])
     expect(alsCsv([{ ...t, name: 'Push; schwer' }], byId).split('\r\n')).toEqual([
-      'Datum;Beginn;Training;Übung;Satz;kg;Wdh;Sekunden;Meter',
-      '2026-10-10;17:40;"Push; schwer";bank;A;40;10;;',
-      '2026-10-10;17:40;"Push; schwer";bank;1;82,5;8;;',
+      'Datum;Beginn;Training;Übung;Satz;kg;Wdh;Sekunden;Strecke;Einheit',
+      '2026-10-10;17:40;"Push; schwer";bank;A;40;10;;;',
+      '2026-10-10;17:40;"Push; schwer";bank;1;82,5;8;;;',
       '',
+    ])
+  })
+
+  it('CSV: Strecke in Metern, Stockwerke mit ihrer Einheit', () => {
+    const start = new Date('2026-10-30T12:00:00').getTime()
+    const ids = { ...byId, band: uebung('band', 'strecke'), stairs: { ...uebung('stairs', 'strecke'), einheit: 'stockwerke' as const } }
+    const t = tr('t', null, start, [
+      { uebung: 'band', saetze: [{ ...leer(), m: 5000, sek: 1590, fertig: 1 }] },
+      { uebung: 'stairs', saetze: [{ ...leer(), m: 42, sek: 600, fertig: 2 }] },
+    ])
+    expect(alsCsv([t], ids).split('\r\n').slice(1, 3)).toEqual([
+      '2026-10-30;12:00;t;band;1;;;1590;5000;m',
+      '2026-10-30;12:00;t;stairs;1;;;600;42;Stockwerke',
     ])
   })
 })
@@ -557,8 +574,8 @@ describe('Strecke, Zeit und Gewicht', () => {
     expect(leistung(saetze, 'strecke')).toBe(13000)
     expect(leistung([mitKg(24, null, 40), mitKg(24, null, 30)], 'gewichtStrecke')).toBe(1680)
     expect(kmh(lauf(5000, 1500))).toBe(12)
-    expect(kennwert(saetze, 'tempo', 'strecke')).toBe(12.9)
-    expect(kennwert(saetze, 'strecke', 'strecke')).toBe(5000)
+    expect(kennwert(saetze, 'tempo', 'strecke', 'km')).toBe(12.9)
+    expect(kennwert(saetze, 'strecke', 'strecke', 'km')).toBe(5000)
     expect(KENNZAHLEN.strecke).toEqual(['strecke', 'tempo'])
   })
 
@@ -569,13 +586,28 @@ describe('Strecke, Zeit und Gewicht', () => {
   })
 
   it('als Text', () => {
-    expect(formatStrecke(400)).toBe('400 m')
-    expect(formatStrecke(5250)).toBe('5,25 km')
-    expect(formatSatz(lauf(5000, 1590), 'strecke')).toBe('5 km in 26:30')
-    expect(formatSatz(mitKg(10, 45, null), 'gewichtZeit')).toBe('10 kg × 45 s')
-    expect(formatSatz(mitKg(24, null, 40), 'gewichtStrecke')).toBe('24 kg × 40 m')
-    expect(kurzSaetze([mitKg(10, 60, null), mitKg(10, 45, null)], 'gewichtZeit')).toBe('10 kg × 1:00 · 45 s')
-    expect(kurzSaetze([lauf(400, 80), lauf(400, 78)], 'strecke')).toBe('400 m in 1:20 · 400 m in 1:18')
+    expect(formatStrecke(400, 'km')).toBe('400 m')
+    expect(formatStrecke(5250, 'm')).toBe('5,25 km')
+    expect(formatSatz(lauf(5000, 1590), 'strecke', 'km')).toBe('5 km in 26:30')
+    expect(formatSatz(mitKg(10, 45, null), 'gewichtZeit', 'm')).toBe('10 kg × 45 s')
+    expect(formatSatz(mitKg(24, null, 40), 'gewichtStrecke', 'm')).toBe('24 kg × 40 m')
+    expect(kurzSaetze([mitKg(10, 60, null), mitKg(10, 45, null)], 'gewichtZeit', 'm')).toBe('10 kg × 1:00 · 45 s')
+    expect(kurzSaetze([lauf(400, 80), lauf(400, 78)], 'strecke', 'km')).toBe('400 m in 1:20 · 400 m in 1:18')
+  })
+
+  it('Stockwerke, Stufen, Runden: die Zahl mit ihrer Einheit, Tempo pro Minute', () => {
+    expect(formatStrecke(42, 'stockwerke')).toBe('42 Stockwerke')
+    expect(formatStrecke(1, 'stockwerke')).toBe('1 Stockwerk')
+    expect(formatStrecke(1500, 'stufen')).toBe('1500 Stufen')
+    expect(formatSatz(lauf(42, 600), 'strecke', 'stockwerke')).toBe('42 Stockwerke in 10:00')
+    expect(formatSatz(mitKg(20, null, 3), 'gewichtStrecke', 'runden')).toBe('20 kg × 3 Runden')
+    expect(streckeName('stockwerke')).toBe('Stockwerke')
+    expect(streckeName('km')).toBe('Strecke')
+    expect(tempo(lauf(42, 600), 'stockwerke')).toBe(4.2)
+    expect(tempo(lauf(5000, 1500), 'km')).toBe(12)
+    expect(tempoEinheit('stockwerke')).toBe('Stockwerke/min')
+    expect(tempoEinheit('m')).toBe('km/h')
+    expect(kennwert([lauf(42, 600), lauf(50, 600)], 'strecke', 'strecke', 'stockwerke')).toBe(50)
   })
 
   it('Zeiten tippt man wie an der Mikrowelle', () => {

@@ -13,8 +13,19 @@
  */
 import { NAME_MAX, lies, neueId, obj, sauber, sauberZeilen, schreibe, zahl } from './store'
 import { rund } from './util'
-import type { PausenKorrektur } from './trainingCalc'
-import type { AppBereich, Einstellungen, Erfassung, Satz, Training, TrainingsUebung, Uebung, Vorlage, VorlagenUebung } from './types'
+import { einheitStandard, inMetern, nurNoetige, vollstaendig, type PausenKorrektur } from './trainingCalc'
+import type {
+  AppBereich,
+  Einstellungen,
+  Erfassung,
+  Satz,
+  StreckenEinheit,
+  Training,
+  TrainingsUebung,
+  Uebung,
+  Vorlage,
+  VorlagenUebung,
+} from './types'
 
 /** Notiz einer Uebung - ein Zettel mit ein paar Zeilen (Geraeteeinstellung, worauf achten). */
 export const NOTIZ_MAX = 200
@@ -31,6 +42,8 @@ export const SCHRITT_STANDARD = 2.5
 /** Stangen fuer den Scheibenrechner (kg). */
 export const STANGEN = [10, 15, 20]
 const ERFASSUNGEN: Erfassung[] = ['gewicht', 'wdh', 'zeit', 'strecke', 'gewichtZeit', 'gewichtStrecke']
+/** Einheiten der Strecke, in der Reihenfolge der Auswahl. */
+const EINHEITEN: StreckenEinheit[] = ['km', 'm', 'stockwerke', 'stufen', 'runden']
 /** Laengste Strecke eines Satzes (m) - darueber ist es ein Tippfehler. */
 const STRECKE_MAX = 1_000_000
 
@@ -56,10 +69,12 @@ export function normalisiereUebungen(raw: unknown): Uebung[] {
     const name = typeof u.name === 'string' ? sauber(u.name, NAME_MAX) : ''
     if (!name) continue
     ids.add(u.id)
+    const erfassung = ERFASSUNGEN.includes(u.erfassung as Erfassung) ? (u.erfassung as Erfassung) : 'gewicht'
     out.push({
       id: u.id,
       name,
-      erfassung: ERFASSUNGEN.includes(u.erfassung as Erfassung) ? (u.erfassung as Erfassung) : 'gewicht',
+      erfassung,
+      einheit: EINHEITEN.includes(u.einheit as StreckenEinheit) ? (u.einheit as StreckenEinheit) : einheitStandard(erfassung),
       pause: zahl(u.pause) ? pauseSauber(u.pause) : PAUSE_STANDARD,
       notiz: typeof u.notiz === 'string' ? sauberZeilen(u.notiz, NOTIZ_MAX) : '',
       schritt: zahl(u.schritt) && SCHRITTE.includes(u.schritt) ? u.schritt : SCHRITT_STANDARD,
@@ -76,13 +91,17 @@ export const getUebungen = () => normalisiereUebungen(lies('uebungen'))
 export interface UebungEingabe {
   name: string
   erfassung: Erfassung
+  einheit?: StreckenEinheit
   pause: number
   notiz: string
   schritt?: number
   stange?: number | null
 }
 
-/** Legt eine Uebung an (ohne id) oder aendert sie. null, wenn der Name fehlt. */
+/**
+ * Legt eine Uebung an (ohne id) oder aendert sie. null, wenn der Name fehlt.
+ * Ohne Einheit bleibt die bisherige, bei einer neuen gilt die der Erfassung.
+ */
 export function speichereUebung(e: UebungEingabe, id?: string, jetzt = Date.now()): Uebung | null {
   const name = sauber(e.name, NAME_MAX)
   if (!name) return null
@@ -92,6 +111,7 @@ export function speichereUebung(e: UebungEingabe, id?: string, jetzt = Date.now(
     id: alt?.id ?? neueId(jetzt),
     name,
     erfassung: e.erfassung,
+    einheit: e.einheit && EINHEITEN.includes(e.einheit) ? e.einheit : (alt?.einheit ?? einheitStandard(e.erfassung)),
     pause: pauseSauber(e.pause),
     notiz: sauberZeilen(e.notiz, NOTIZ_MAX),
     schritt: e.schritt !== undefined && SCHRITTE.includes(e.schritt) ? e.schritt : (alt?.schritt ?? SCHRITT_STANDARD),
@@ -100,7 +120,26 @@ export function speichereUebung(e: UebungEingabe, id?: string, jetzt = Date.now(
     erstellt: alt?.erstellt ?? jetzt,
   }
   schreibe('uebungen', alt ? alle.map((x) => (x.id === u.id ? u : x)) : [...alle, u])
+  const andereStrecke = alt !== undefined && inMetern(alt.einheit) !== inMetern(u.einheit)
+  if (alt && (alt.erfassung !== u.erfassung || andereStrecke)) passeLaufendAn(u, andereStrecke)
   return u
+}
+
+/**
+ * Erfassung oder Einheit einer Uebung haben sich geaendert, waehrend sie im
+ * laufenden Training steckt: Zahlen, die nicht mehr dazugehoeren, fallen weg
+ * (von Metern zu Stockwerken auch die Strecke), und ein Satz bleibt nur
+ * abgehakt, wenn er noch vollstaendig ist.
+ */
+function passeLaufendAn(u: Uebung, streckeWeg: boolean) {
+  const t = getLaufend()
+  if (!t || !t.uebungen.some((tu) => tu.uebung === u.id)) return
+  const saetze = (tu: TrainingsUebung): Satz[] =>
+    tu.saetze.map((s) => {
+      const z = nurNoetige(streckeWeg ? { ...s, m: null } : s, u.erfassung)
+      return { ...z, fertig: s.fertig !== null && vollstaendig(z, u.erfassung) ? s.fertig : null, aufwaermen: s.aufwaermen }
+    })
+  setzeLaufend({ ...t, uebungen: t.uebungen.map((tu) => (tu.uebung === u.id ? { ...tu, saetze: saetze(tu) } : tu)) })
 }
 
 /** Aendert nur Pause, Notiz oder Archiv - der Rest bleibt. */
@@ -120,11 +159,18 @@ export function setzeUebung(id: string, aenderung: Partial<Pick<Uebung, 'pause' 
   )
 }
 
+const steckt = (t: Training, id: string) => t.uebungen.some((u) => u.uebung === id)
+
+/**
+ * Steckt die Uebung in einem beendeten Training? Dann bleibt ihre Erfassung -
+ * im laufenden laesst sie sich noch umstellen (passeLaufendAn).
+ */
+export const trainiert = (id: string) => getTrainings().some((t) => steckt(t, id))
+
 /** Steckt die Uebung in irgendeinem Training? Dann laesst sie sich nur archivieren. */
 export function wirdBenutzt(id: string) {
-  const drin = (t: Training) => t.uebungen.some((u) => u.uebung === id)
   const laufend = getLaufend()
-  return getTrainings().some(drin) || (laufend !== null && drin(laufend))
+  return trainiert(id) || (laufend !== null && steckt(laufend, id))
 }
 
 /** Loescht eine nie trainierte Uebung, auch aus den Vorlagen. false, wenn sie benutzt wird. */

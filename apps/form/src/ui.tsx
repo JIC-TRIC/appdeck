@@ -4,9 +4,9 @@ import { useCallback, useEffect, useRef, useState, type ReactNode, type Ref } fr
 import { IonModal } from '@ionic/react'
 import { IconLeft, IconMinus, IconPlus } from './icons'
 import { urteil } from './calc'
-import type { RekordArt } from './trainingCalc'
+import { inMetern, streckeName, type RekordArt } from './trainingCalc'
 import { formatDiff, mitEinheit } from './util'
-import type { Wert } from './types'
+import type { Erfassung, StreckenEinheit, Wert } from './types'
 
 // Zurueck zum Launcher. Ohne shell.js (z. B. einzeln geoeffnet) eine Ebene ueber apps/.
 export function zumLauncher() {
@@ -115,13 +115,66 @@ export const RICHTUNG_TEXT: Record<Wert['richtung'], string> = {
   egal: 'Ohne Richtung',
 }
 
-export const REKORD_TEXT: Record<RekordArt, string> = {
+const REKORD_TEXT: Record<RekordArt, string> = {
   gewicht: 'schwerster Satz',
   '1rm': 'bestes 1RM',
   wdh: 'meiste Wdh',
   zeit: 'längste Zeit',
   strecke: 'weiteste Strecke',
   tempo: 'schnellstes Tempo',
+}
+
+/** Wie ein Rekord heisst - bei Stueck statt der weitesten Strecke die meisten Stockwerke. */
+export const rekordText = (art: RekordArt, einheit: StreckenEinheit) =>
+  art === 'strecke' && !inMetern(einheit) ? `meiste ${streckeName(einheit)}` : REKORD_TEXT[art]
+
+/** Was pro Satz eingetragen wird, in der Reihenfolge der Auswahl. */
+export const ERFASSUNG_TEXT: { id: Erfassung; label: string }[] = [
+  { id: 'gewicht', label: 'Gewicht × Wdh' },
+  { id: 'wdh', label: 'Nur Wdh' },
+  { id: 'zeit', label: 'Zeit' },
+  { id: 'strecke', label: 'Strecke + Zeit' },
+  { id: 'gewichtZeit', label: 'Gewicht × Zeit' },
+  { id: 'gewichtStrecke', label: 'Gewicht × Strecke' },
+]
+
+/** Worin die Strecke zaehlt - Stockwerke etwa am Stairmaster. */
+export const EINHEIT_TEXT: { id: StreckenEinheit; label: string }[] = [
+  { id: 'km', label: 'km' },
+  { id: 'm', label: 'm' },
+  { id: 'stockwerke', label: 'Stockwerke' },
+  { id: 'stufen', label: 'Stufen' },
+  { id: 'runden', label: 'Runden' },
+]
+
+/** Chips, von denen genau einer gewaehlt ist - brechen um. `aus` sperrt einzelne. */
+export function Chips<T extends string>({
+  optionen,
+  wert,
+  aus,
+  onWahl,
+}: {
+  optionen: { id: T; label: string }[]
+  wert: T
+  aus?: (id: T) => boolean
+  onWahl: (id: T) => void
+}) {
+  return (
+    <div className="f-chips">
+      {optionen.map((o) => (
+        <button
+          key={o.id}
+          type="button"
+          className={`f-chip${wert === o.id ? ' an' : ''}`}
+          aria-pressed={wert === o.id}
+          disabled={aus?.(o.id)}
+          onClick={() => onWahl(o.id)}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 /** Ein- und Ausschalter wie in den iOS-Einstellungen - steht rechts in einer Zeile. */

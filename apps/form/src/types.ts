@@ -46,10 +46,19 @@ export type Bereich = '3m' | '1j' | 'alles'
  */
 export type Erfassung = 'gewicht' | 'wdh' | 'zeit' | 'strecke' | 'gewichtZeit' | 'gewichtStrecke'
 
+/**
+ * Worin die Strecke zaehlt: km oder m (beides in Metern gespeichert, nur
+ * anders getippt) oder Stueck wie Stockwerke am Stairmaster - dann steht im
+ * Satz unter `m` die Zahl der Stockwerke.
+ */
+export type StreckenEinheit = 'km' | 'm' | 'stockwerke' | 'stufen' | 'runden'
+
 export interface Uebung {
   id: string
   name: string
   erfassung: Erfassung
+  /** Einheit der Strecke - zaehlt nur bei Erfassungen mit Strecke. */
+  einheit: StreckenEinheit
   /** Pause in Sekunden - ab da wird die Zeit oben orange. */
   pause: number
   /** Steht im Training unter dem Namen ("Sitz Stufe 4"). */
@@ -91,7 +100,7 @@ export interface Satz {
   wdh: number | null
   /** Zeit in Sekunden (Erfassung 'zeit', 'strecke', 'gewichtZeit'). */
   sek: number | null
-  /** Strecke in Metern (Erfassung 'strecke', 'gewichtStrecke'). */
+  /** Strecke in Metern (Erfassung 'strecke', 'gewichtStrecke'), bei Stockwerken, Stufen und Runden die Zahl. */
   m: number | null
   fertig: number | null
   /** Aufwaermsatz: zaehlt nicht fuer Rekorde, Volumen und Vorschlag. */

@@ -3,7 +3,7 @@
 // gespeichert (konzept.md, "Training").
 
 import { addDays, dateKey, formatZahl, parseKey, rund } from './util'
-import type { Erfassung, Satz, Training, Uebung, Vorlage, VorlagenUebung } from './types'
+import type { Erfassung, Satz, StreckenEinheit, Training, Uebung, Vorlage, VorlagenUebung } from './types'
 
 /** Die Zahlen eines Satzes ohne den Haken. */
 export type Zahlen = Pick<Satz, 'kg' | 'wdh' | 'sek' | 'm'>
@@ -22,6 +22,24 @@ export const FELDER: Record<Erfassung, Feld[]> = {
 }
 
 export const LEER: Zahlen = { kg: null, wdh: null, sek: null, m: null }
+
+/** Strecke in Metern (km oder m)? Sonst zaehlt sie Stueck: Stockwerke, Stufen, Runden. */
+export const inMetern = (e: StreckenEinheit) => e === 'km' || e === 'm'
+
+/** Einheit, solange keine gewaehlt ist: bei Strecke und Zeit km, bei Gewicht und Strecke m. */
+export const einheitStandard = (erf: Erfassung): StreckenEinheit => (erf === 'strecke' ? 'km' : 'm')
+
+type Stueck = Exclude<StreckenEinheit, 'km' | 'm'>
+
+/** Einzahl und Mehrzahl der Stueck-Einheiten. */
+const STUECK: Record<Stueck, [string, string]> = {
+  stockwerke: ['Stockwerk', 'Stockwerke'],
+  stufen: ['Stufe', 'Stufen'],
+  runden: ['Runde', 'Runden'],
+}
+
+/** Wie die Strecke heisst: 'Strecke', bei Stueck die Einheit ('Stockwerke'). */
+export const streckeName = (e: StreckenEinheit) => (inMetern(e) ? 'Strecke' : STUECK[e as Stueck][1])
 
 /** Hat der Satz die Zahlen, die seine Erfassung braucht? */
 export function vollstaendig(s: Zahlen, erf: Erfassung): boolean {
@@ -542,16 +560,16 @@ export const KENNZAHLEN: Record<Erfassung, Kennzahl[]> = {
 
 /**
  * Eine Kennzahl ueber die Saetze eines Trainings: das Hoechste davon, beim
- * Volumen die Summe. Tempo in km/h (mehr ist schneller - so steigt der Verlauf
- * wie bei allen anderen).
+ * Volumen die Summe. Tempo in km/h bzw. Stueck pro Minute (mehr ist schneller
+ * - so steigt der Verlauf wie bei allen anderen).
  */
-export function kennwert(saetze: Satz[], art: Kennzahl, erf: Erfassung): number {
+export function kennwert(saetze: Satz[], art: Kennzahl, erf: Erfassung, einheit: StreckenEinheit): number {
   if (art === '1rm') return bestesE1rm(saetze)
   if (art === 'volumen') return leistung(saetze, erf)
   let best = 0
   for (const s of saetze) {
     const v =
-      art === 'gewicht' ? s.kg : art === 'wdh' ? s.wdh : art === 'zeit' ? s.sek : art === 'strecke' ? s.m : kmh(s)
+      art === 'gewicht' ? s.kg : art === 'wdh' ? s.wdh : art === 'zeit' ? s.sek : art === 'strecke' ? s.m : tempo(s, einheit)
     if (v !== null && v > best) best = v
   }
   return best
@@ -561,6 +579,15 @@ export function kennwert(saetze: Satz[], art: Kennzahl, erf: Erfassung): number 
 export function kmh(s: Pick<Satz, 'm' | 'sek'>): number | null {
   return s.m !== null && s.sek ? Math.round((s.m / s.sek) * 36) / 10 : null
 }
+
+/** Tempo in der Einheit der Strecke: km/h, bei Stueck (Stockwerke) pro Minute, auf eine Stelle. */
+export function tempo(s: Pick<Satz, 'm' | 'sek'>, einheit: StreckenEinheit): number | null {
+  if (inMetern(einheit)) return kmh(s)
+  return s.m !== null && s.sek ? Math.round((s.m / s.sek) * 600) / 10 : null
+}
+
+/** Wie das Tempo heisst: 'km/h', bei Stueck 'Stockwerke/min'. */
+export const tempoEinheit = (e: StreckenEinheit) => (inMetern(e) ? 'km/h' : `${streckeName(e)}/min`)
 
 /**
  * Bestwerte je Wdh-Zahl: das schwerste Gewicht fuer mindestens 1, 3, 5, 8, 10
@@ -695,22 +722,31 @@ export function formatBereich(v: Pick<VorlagenUebung, 'von' | 'bis'>) {
 /** Eine Zeit: '45 s', ab einer Minute '1:30'. */
 export const formatSek = (sek: number) => (sek < 60 ? `${sek} s` : formatStoppuhr(sek))
 
-/** Eine Strecke als Zahl und Einheit: ['400', 'm'], ab einem Kilometer ['5,25', 'km']. */
-export const streckeTeile = (m: number): [string, string] => (m < 1000 ? [String(m), 'm'] : [formatZahl(m / 1000), 'km'])
+/**
+ * Eine Strecke als Zahl und Einheit: ['400', 'm'], ab einem Kilometer
+ * ['5,25', 'km'] - bei Stueck die Zahl mit der Einheit ['42', 'Stockwerke'].
+ */
+export function streckeTeile(m: number, einheit: StreckenEinheit): [string, string] {
+  if (!inMetern(einheit)) return [String(m), STUECK[einheit as Stueck][m === 1 ? 0 : 1]]
+  return m < 1000 ? [String(m), 'm'] : [formatZahl(m / 1000), 'km']
+}
 
-/** '400 m', '5,25 km' */
-export const formatStrecke = (m: number) => streckeTeile(m).join(' ')
+/** '400 m', '5,25 km', '42 Stockwerke' */
+export const formatStrecke = (m: number, einheit: StreckenEinheit) => streckeTeile(m, einheit).join(' ')
 
 /** Die zweite Zahl eines Satzes mit Gewicht: Wdh, Zeit oder Strecke. */
-const nachGewicht = (s: Zahlen, erf: Erfassung) =>
-  erf === 'gewichtZeit' ? formatSek(s.sek ?? 0) : erf === 'gewichtStrecke' ? formatStrecke(s.m ?? 0) : String(s.wdh ?? 0)
+const nachGewicht = (s: Zahlen, erf: Erfassung, einheit: StreckenEinheit) =>
+  erf === 'gewichtZeit' ? formatSek(s.sek ?? 0) : erf === 'gewichtStrecke' ? formatStrecke(s.m ?? 0, einheit) : String(s.wdh ?? 0)
 
-/** Ein Satz als Text: '82,5 × 8', '12', '1:30', '5 km in 26:30', '10 kg × 45 s', '24 kg × 40 m'. */
-export function formatSatz(s: Zahlen, erf: Erfassung) {
+/**
+ * Ein Satz als Text: '82,5 × 8', '12', '1:30', '5 km in 26:30',
+ * '42 Stockwerke in 10:00', '10 kg × 45 s', '24 kg × 40 m'.
+ */
+export function formatSatz(s: Zahlen, erf: Erfassung, einheit: StreckenEinheit) {
   if (erf === 'gewicht') return `${formatZahl(s.kg ?? 0)} × ${s.wdh ?? 0}`
-  if (erf === 'gewichtZeit' || erf === 'gewichtStrecke') return `${formatZahl(s.kg ?? 0)} kg × ${nachGewicht(s, erf)}`
+  if (erf === 'gewichtZeit' || erf === 'gewichtStrecke') return `${formatZahl(s.kg ?? 0)} kg × ${nachGewicht(s, erf, einheit)}`
   if (erf === 'wdh') return String(s.wdh ?? 0)
-  if (erf === 'strecke') return `${formatStrecke(s.m ?? 0)} in ${formatSek(s.sek ?? 0)}`
+  if (erf === 'strecke') return `${formatStrecke(s.m ?? 0, einheit)} in ${formatSek(s.sek ?? 0)}`
   return formatSek(s.sek ?? 0)
 }
 
@@ -719,16 +755,16 @@ export function formatSatz(s: Zahlen, erf: Erfassung) {
  * '80 × 8 · 82,5 × 6'. Mit Gewicht und Zeit bzw. Strecke genauso
  * ('10 kg × 60 s · 45 s').
  */
-export function kurzSaetze(saetze: Zahlen[], erf: Erfassung) {
+export function kurzSaetze(saetze: Zahlen[], erf: Erfassung, einheit: StreckenEinheit) {
   if (!saetze.length) return ''
   if (FELDER[erf][0] === 'kg') {
     const kg = saetze[0].kg
     if (saetze.every((s) => s.kg === kg)) {
-      const rest = saetze.map((s) => nachGewicht(s, erf)).join(' · ')
+      const rest = saetze.map((s) => nachGewicht(s, erf, einheit)).join(' · ')
       return erf === 'gewicht' ? `${formatZahl(kg ?? 0)} × ${rest}` : `${formatZahl(kg ?? 0)} kg × ${rest}`
     }
   }
-  return saetze.map((s) => formatSatz(s, erf)).join(' · ')
+  return saetze.map((s) => formatSatz(s, erf, einheit)).join(' · ')
 }
 
 // Zeiten tippt man wie an der Mikrowelle: die letzten zwei Ziffern sind
@@ -878,10 +914,13 @@ export function zumTeilen(t: Training, byId: Record<string, Uebung>, rekorde: Re
     .map((tu) => {
       const u = byId[tu.uebung]
       const saetze = tu.saetze.filter((s) => erledigt(s) && !s.aufwaermen)
-      return u && saetze.length ? `${u.name}: ${kurzSaetze(saetze, u.erfassung)}` : ''
+      return u && saetze.length ? `${u.name}: ${kurzSaetze(saetze, u.erfassung, u.einheit)}` : ''
     })
     .filter(Boolean)
-  const pr = rekorde.map((r) => `${byId[r.uebung]?.name ?? 'Übung'} ${formatSatz(r.satz, byId[r.uebung]?.erfassung ?? 'gewicht')}`)
+  const pr = rekorde.map((r) => {
+    const u = byId[r.uebung]
+    return `${u?.name ?? 'Übung'} ${formatSatz(r.satz, u?.erfassung ?? 'gewicht', u?.einheit ?? 'm')}`
+  })
   return [...kopf, '', ...zeilen, ...(pr.length ? ['', `Rekorde: ${pr.join(', ')}`] : [])].join('\n')
 }
 
@@ -953,15 +992,21 @@ export function naechsteVorlage(vorlagen: Vorlage[], trainings: Training[]): str
   return kandidaten.reduce((a, b) => (zuletzt.get(a.id)! <= zuletzt.get(b.id)! ? a : b)).id
 }
 
-/** Alle Trainings als CSV - Semikolon und Komma, wie Excel und Numbers auf Deutsch es erwarten. */
+/**
+ * Alle Trainings als CSV - Semikolon und Komma, wie Excel und Numbers auf
+ * Deutsch es erwarten. Die Strecke steht in Metern, bei Stueck als Zahl mit
+ * der Einheit daneben.
+ */
 export function alsCsv(trainings: Training[], byId: Record<string, Uebung>): string {
   const feld = (x: string) => (/[;"\r\n]/.test(x) ? `"${x.replace(/"/g, '""')}"` : x)
-  const zeilen = [['Datum', 'Beginn', 'Training', 'Übung', 'Satz', 'kg', 'Wdh', 'Sekunden', 'Meter'].join(';')]
+  const zeilen = [['Datum', 'Beginn', 'Training', 'Übung', 'Satz', 'kg', 'Wdh', 'Sekunden', 'Strecke', 'Einheit'].join(';')]
   for (const t of trainings) {
     const tag = dateKey(new Date(t.start))
     const uhr = formatUhr(t.start)
     for (const tu of t.uebungen) {
-      const name = byId[tu.uebung]?.name ?? 'Übung'
+      const u = byId[tu.uebung]
+      const name = u?.name ?? 'Übung'
+      const einheit = !u || inMetern(u.einheit) ? 'm' : streckeName(u.einheit)
       let n = 0
       for (const s of tu.saetze) {
         if (!erledigt(s)) continue
@@ -977,6 +1022,7 @@ export function alsCsv(trainings: Training[], byId: Record<string, Uebung>): str
             s.wdh === null ? '' : String(s.wdh),
             s.sek === null ? '' : String(s.sek),
             s.m === null ? '' : String(s.m),
+            s.m === null ? '' : einheit,
           ].join(';'),
         )
       }

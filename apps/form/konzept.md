@@ -193,6 +193,11 @@ Wert.
   Standard 2:00), Notiz. Welche Zahlen eine Erfassung braucht, steht an einer Stelle (`FELDER` in
   `trainingCalc.ts`); im Satz stehen sie nebeneinander, „82,5 × 8“, „5 km in 26:30“, „10 kg × 45 s“,
   „24 kg × 40 m“. Strecken werden in Metern gespeichert und unter 1 km in m, darüber in km gezeigt.
+- [x] **Einheit der Strecke** (seit 31.10.2026): km, m, Stockwerke, Stufen oder Runden – etwa
+  Stockwerke am Stairmaster („42 Stockwerke in 10:00“). km und m sind beide Meter, sie unterscheiden sich
+  nur beim Tippen; Standard ist km bei Strecke + Zeit und m bei Gewicht × Strecke (wie vorher). Bei
+  Stockwerken, Stufen und Runden steht im Satz die Zahl selbst, das Tempo heißt dann „Stockwerke/min“
+  statt km/h, und der Rekord „meiste Stockwerke“ statt „weiteste Strecke“.
 - [x] **Notiz als Zettel** (seit 25.10.2026, vorher eine kleine graue Zeile, nur unter „Übung bearbeiten“
   zu ändern): ein paar Zeilen (200 Zeichen), etwa wie das Gerät eingestellt wird. Steht im Training immer
   unter dem Namen als Zettel (getöntes Papier mit Eselsohr, Text in Kreide) und ebenso auf „Eine Übung“.
@@ -202,11 +207,16 @@ Wert.
   Tastenfeld und bei Gewicht × Wdh den Vorschlag, dort auf Wunsch auch **Langhantel** (Stange 10 / 15 /
   20 kg) für den Scheibenrechner.
 - [x] Den **Wdh-Bereich** der Vorlage gibt es nur bei Erfassungen mit Wdh.
-- [x] Kein Startkatalog: Übungen entstehen beim Hinzufügen über die Suche („‚Facepull‘ anlegen“, mit
-  Gewicht × Wdh) oder unter Übungen.
-- [x] Die Erfassung lässt sich nur ändern, solange die Übung nie trainiert wurde. Trainierte werden
-  archiviert statt gelöscht (Verlauf bleibt, taucht beim Hinzufügen nicht mehr auf), nie trainierte
-  lassen sich löschen – auch aus den Vorlagen.
+- [x] Kein Startkatalog: Übungen entstehen beim Hinzufügen über die Suche („‚Facepull‘ anlegen“) oder
+  unter Übungen. Seit 31.10.2026 stehen unter „… anlegen“ die Erfassungen zur Wahl (vorgewählt
+  Gewicht × Wdh) und mit Strecke die Einheit – vorher war es immer Gewicht × Wdh.
+- [x] Die Erfassung lässt sich nur ändern, solange die Übung in keinem beendeten Training steckt. Im
+  laufenden geht es seit 31.10.2026 (vorher gesperrt, sobald sie im Training war – auch gleich nach dem
+  Anlegen): Zahlen, die nicht mehr dazugehören, fallen dort weg, von Metern zu Stockwerken auch die
+  Strecke, und ein Satz bleibt nur abgehakt, wenn er noch vollständig ist. Danach wechselt die Einheit
+  nur noch zwischen km und m. Im Training führt „Übung bearbeiten“ im Blatt der Übung dorthin.
+  Trainierte werden archiviert statt gelöscht (Verlauf bleibt, taucht beim Hinzufügen nicht mehr auf),
+  nie trainierte lassen sich löschen – auch aus den Vorlagen.
 
 Vorlagen:
 
@@ -255,10 +265,12 @@ Sätze:
   Zeit die Summe der Strecke (gleich weit: wie viel schneller), mit Gewicht kg × Sekunden bzw. kg × Meter
   („+6 %“, mehr in Orange; wie Strongs „Focus Metric“).
 - [x] **Tastenfeld** statt iOS-Tastatur: der erste Tastendruck ersetzt, ± Gewichtsschritt / ±1 Wdh /
-  ±5 s (bei Strecke + Zeit ±1 min) / ±100 m bzw. ±10 m, jeder Tastendruck wird sofort gesichert.
+  ±5 s (bei Strecke + Zeit ±1 min) / ±100 m bzw. ±10 m (±1 Stockwerk oder Runde, ±10 Stufen), jeder
+  Tastendruck wird sofort gesichert.
   **Zeiten tippt man wie an der Mikrowelle** (seit 25.10.2026, vorher in Sekunden): die letzten zwei
   Ziffern sind Sekunden, davor Minuten und Stunden – „2830“ ist 28:30, im Feld steht es gleich so da.
-  Strecken bei Strecke + Zeit in km mit Komma, bei Gewicht × Strecke in m. Darunter „Zuletzt bei Push: 30 × 9“ und bei Langhantel
+  Strecken in der Einheit der Übung: km mit Komma, m, Stockwerke, Stufen und Runden als ganze Zahl.
+  Darunter „Zuletzt bei Push: 30 × 9“ und bei Langhantel
   die Scheiben pro Seite („Je Seite 25 · 5 · 1,25“, aus 25 bis 1,25 kg).
 - [x] **Orange** am abgehakten Satz: mehr Gewicht als der gleiche Satz vom letzten Mal, oder mehr Wdh
   (Zeit, Strecke) bei mindestens gleichem Gewicht. Bei Strecke + Zeit weiter, oder für mindestens
@@ -329,7 +341,8 @@ Rückblick:
   bricht sie vorher nicht; ab zwei Wochen orange), Dauer im Schnitt. Die **letzten Rekorde** (fünf, pro
   Training und Übung der letzte) und die **häufigsten Übungen** (in den meisten Trainings, fünf) – ein
   Tipp öffnet die Übung. Ganz unten **Export als CSV** (Semikolon, Komma, mit BOM für Excel) über das
-  Teilen-Blatt bzw. als Download.
+  Teilen-Blatt bzw. als Download. Die Strecke steht in Metern, bei Stockwerken, Stufen und Runden als
+  Zahl, daneben die Spalte „Einheit“ (seit 31.10.2026, vorher hieß die Spalte „Meter“).
 - [x] **Eine Übung:** Bestwerte je Wdh-Zahl – schwerstes Gewicht für mindestens 1, 3, 5, 8, 10, 12 Wdh,
   was ein höherer Eintrag schon abdeckt, fällt weg. Zeiten ab einer Minute als „1:30“.
 - [x] **Gewicht je Wdh** (seit 14.10.2026, unter den Bestwerten, nur bei Gewicht × Wdh): welches Gewicht
@@ -340,12 +353,13 @@ Rückblick:
 ### Speicher
 
 ```
-form:uebungen   [{ id, name, erfassung, pause, notiz, schritt, stange, archiviert, erstellt }]
+form:uebungen   [{ id, name, erfassung, einheit, pause, notiz, schritt, stange, archiviert, erstellt }]
                 notiz mit Zeilenumbrüchen, höchstens 200 Zeichen
+                einheit 'km' | 'm' | 'stockwerke' | 'stufen' | 'runden' (fehlt: km bei Strecke + Zeit, sonst m)
 form:vorlagen   [{ id, name, rang, uebungen: [{ uebung, saetze, aufwaermen, von, bis }] }]
 form:trainings  [{ id, vorlage, name, start, ende, notiz,
                    uebungen: [{ uebung, keineVorgabe?, saetze: [{ kg, wdh, sek, m, fertig, aufwaermen }] }] }]
-                sek in Sekunden, m in Metern (Strecke)
+                sek in Sekunden, m in Metern (Strecke), bei Stockwerken, Stufen, Runden die Zahl
                 keineVorgabe nur gespeichert, wenn an (true)
 form:laufend    das laufende Training (gleiche Form, ende null) – nach jedem Tipp gesichert
 form:bereich    'werte' | 'training' – wo Form zuletzt war (Tab Werte oder Training beim Öffnen)
@@ -391,7 +405,7 @@ Nummern wie in den Mockups.
 - [x] **13 Übungen** (Tab): alphabetisch mit Suche, Archivierte ausklappbar ganz unten.
 - [x] **14 Eine Übung:** stärkster Satz des letzten Trainings, Kacheln (seit Start, seit letztem –
   seit 25.10.2026 in der Kennzahl des Verlaufs –, Rekord), Verlauf (Gewicht, 1RM oder Volumen; bei
-  Strecke + Zeit Strecke oder Tempo in km/h; mit Gewicht Gewicht oder Zeit bzw. Strecke; 3 M / 1 J /
+  Strecke + Zeit Strecke oder Tempo in km/h bzw. Stockwerke/min; mit Gewicht Gewicht oder Zeit bzw. Strecke; 3 M / 1 J /
   Alles) – darüber die Zahl selbst (seit
   11.10.2026): die jüngste oder die eines angetippten Trainings (Finger über den Verlauf ziehen geht
   auch, ein zweiter Tipp hebt die Auswahl auf), beim 1RM mit dem Satz, aus dem es geschätzt ist

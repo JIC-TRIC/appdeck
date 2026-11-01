@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { IconCheck, IconPlus, IconRight, IconSuche } from '../icons'
 import { NAME_MAX, sauber } from '../store'
+import { FELDER, einheitStandard, inMetern } from '../trainingCalc'
 import { PAUSE_STANDARD, alphabetisch, speichereUebung } from '../trainingStore'
-import { TextKnopf, Vollbild } from '../ui'
-import type { FormCtx, Uebung } from '../types'
+import { Chips, EINHEIT_TEXT, ERFASSUNG_TEXT, TextKnopf, Vollbild } from '../ui'
+import type { Erfassung, FormCtx, StreckenEinheit, Uebung } from '../types'
 
 // Uebungen auswaehlen - fuers Training und fuer Vorlagen. Mehrere auf einmal,
 // beim Tauschen genau eine (ein Tipp genuegt). Oben die zuletzt trainierten,
 // die noch nicht dabei sind. Findet die Suche nichts, legt ein Tipp die Uebung
-// an (Gewicht x Wdh, der Rest spaeter unter Uebungen).
+// an - darunter waehlt man, was sie eintraegt (Gewicht x Wdh, wenn man nichts
+// anfasst) und mit Strecke worin. Der Rest spaeter unter Uebungen.
 export function Hinzufuegen({
   ctx,
   mehrfach,
@@ -26,6 +28,8 @@ export function Hinzufuegen({
   const { uebungen, uebungById, trainings, refresh } = ctx
   const [suche, setSuche] = useState('')
   const [gewaehlt, setGewaehlt] = useState<string[]>([])
+  const [erfassung, setErfassung] = useState<Erfassung>('gewicht')
+  const [einheit, setEinheit] = useState<StreckenEinheit>('m')
 
   const aktiv = uebungen.filter((u) => !u.archiviert && !ohne.includes(u.id)).sort(alphabetisch)
   const zuletzt: Uebung[] = []
@@ -51,7 +55,7 @@ export function Hinzufuegen({
   }
 
   const anlegen = (schliessen: () => void) => {
-    const u = speichereUebung({ name, erfassung: 'gewicht', pause: PAUSE_STANDARD, notiz: '' })
+    const u = speichereUebung({ name, erfassung, einheit, pause: PAUSE_STANDARD, notiz: '' })
     if (!u) return
     refresh()
     setSuche('')
@@ -118,12 +122,26 @@ export function Hinzufuegen({
             {name ? (
               <div className="f-gruppe">
                 {!gibtEs ? (
-                  <button type="button" className="f-zeile f-anlegen" onClick={() => anlegen(schliessen)}>
-                    <span>„{name}“ anlegen</span>
-                    <span className="f-zeile-r">
-                      <IconPlus />
-                    </span>
-                  </button>
+                  <>
+                    <button type="button" className="f-zeile f-anlegen" onClick={() => anlegen(schliessen)}>
+                      <span>„{name}“ anlegen</span>
+                      <span className="f-zeile-r">
+                        <IconPlus />
+                      </span>
+                    </button>
+                    <div className="f-zeile f-anlegen-wahl">
+                      <Chips
+                        optionen={ERFASSUNG_TEXT}
+                        wert={erfassung}
+                        onWahl={(e) => {
+                          setErfassung(e)
+                          // km oder m folgt der Erfassung, Stockwerke & Co. bleiben.
+                          if (inMetern(einheit)) setEinheit(einheitStandard(e))
+                        }}
+                      />
+                      {FELDER[erfassung].includes('m') ? <Chips optionen={EINHEIT_TEXT} wert={einheit} onWahl={setEinheit} /> : null}
+                    </div>
+                  </>
                 ) : null}
                 {treffer.map((u) => zeile(u, schliessen))}
               </div>

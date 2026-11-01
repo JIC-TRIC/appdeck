@@ -1862,6 +1862,15 @@ ion-modal.f-voll-modal {
   color: var(--accent);
 }
 
+/* Unter „… anlegen“: was die neue Übung einträgt, mit Strecke worin. */
+.f-anlegen-wahl {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding-top: 4px;
+  padding-bottom: 12px;
+}
+
 /* ---------- Verlauf, ein Training, Fertig ---------- */
 
 .f-tr {
