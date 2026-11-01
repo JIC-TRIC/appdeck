@@ -12,6 +12,7 @@ import {
   perfectDays,
   progress,
   quoteIn,
+  quoteZuletzt,
   ruleAt,
   statesBetween,
   streaks,
@@ -350,6 +351,17 @@ describe('Zaehler und Quoten', () => {
   it('ignoriert ein offenes Heute in der Quote', () => {
     const h = habit({ start: '2026-09-28' })
     expect(quoteIn(h, { h: logOf('2026-09-28') }, '2026-09-01', '2026-09-30', today)).toEqual({ met: 1, due: 2 })
+  })
+
+  it('Quote der letzten 30 Tage: ein verpasster Tag kostet wenig, Aufhoeren zeigt sich schnell', () => {
+    const h = habit({ start: '2026-06-01' })
+    const alle = daysBetween('2026-06-01', today)
+    // Bis heute jeden Tag, nur einmal verpasst: 29 von 30, die Serie ist trotzdem kurz.
+    expect(quoteZuletzt(h, { h: logOf(...alle.filter((d) => d !== '2026-09-20')) }, today, today)).toEqual({ met: 29, due: 30 })
+    // Dreieinhalb Monate jeden Tag, dann zehn Tage nichts (heute noch offen): 19 von 29 statt 111 von 121.
+    expect(quoteZuletzt(h, { h: logOf(...alle.filter((d) => d < '2026-09-20')) }, today, today)).toEqual({ met: 19, due: 29 })
+    // Juenger als 30 Tage: nur seit Beginn.
+    expect(quoteZuletzt(habit({ start: '2026-09-25' }), { h: logOf('2026-09-25', '2026-09-27') }, today, today)).toEqual({ met: 2, due: 5 })
   })
 
   it('zaehlt geschaffte Wochen ohne die laufende', () => {

@@ -249,6 +249,14 @@ Nur Mi gelaufen:
 - [x] **Rekord** = längste Serie der ganzen Historie
 - [x] Anzeige in der Zeile: Flamme + Zahl direkt hinter dem Namen; bei 0
       nichts (bis 10.10.2026 eigene Spalte ganz rechts, bei 0 ein stilles „–“)
+- [x] **Daneben still die Quote der letzten 30 Tage** (seit 31.10.2026, Idee
+      vom 27.10.): Ein verpasster Tag nimmt sonst alles, was die Serie
+      aufgebaut hat – die Prozentzahl bleibt dann nah an 100 („97 %“).
+      Die Serie bleibt die Hauptzahl: Es geht darum, eine Gewohnheit einmal zu
+      festigen, nicht darum, ewig eine hohe Quote zu halten. Darum klein und
+      grau unter dem Namen, nicht in Bernstein. **30 Tage statt seit Beginn**:
+      Wer nach einem guten Jahr aufhört, soll es nach ein paar Wochen deutlich
+      sehen und nicht erst nach Monaten
 
 ### Quoten und Tageszähler
 
@@ -394,7 +402,8 @@ Erststart                       (solange es keine Gewohnheit gibt)
 
 - [x] Eine Zeile pro Gewohnheit, 56 px hoch, feine Trennlinie
 - [x] **Name in der Gewohnheitsfarbe**, einzeilig, lange Namen enden auf „…“
-      („Kein Han…“), dahinter die Serie. Darunter in Text still die
+      („Kein Han…“), dahinter die Serie. Darunter in Text still die Quote
+      der letzten 30 Tage (seit 31.10.2026, steht vorn: „97 % · 3×/Wo.“) und die
       Regel, wenn sie nicht „täglich abhaken“ ist: „3×/Wo.“,
       „≥ 150 g“, „≤ 2500 kcal“. **Ziel vor Rhythmus** („≥ 5 km · 3×/Wo.“):
       wird es eng, fällt hinten der Rhythmus ab, nicht das Ziel. Bis

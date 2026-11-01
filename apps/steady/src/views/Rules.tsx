@@ -71,6 +71,10 @@ function Rules({ ctx }: ViewProps) {
             Tage in Folge mit erledigt oder Ruhetag. Heute zählt mit, sobald es erledigt ist. Es gibt <b>keine Pausen</b>:
             krank oder Urlaub beginnt eine neue Serie, ebenso das Zurückholen aus dem Archiv. Der Rekord bleibt.
           </p>
+          <p className="s-txt">
+            Unter dem Namen steht still, wie viel der letzten 30 Tage geschafft ist. Bricht die Serie, bleibt sie
+            dort sichtbar – ein verpasster Tag macht aus 100 % etwa 97 %.
+          </p>
         </Card>
         <Card title="Ziele ändern">
           <p className="s-txt">

@@ -312,6 +312,16 @@ export function quoteIn(h: Habit, log: Log, from: string, to: string, today: str
   return tally(Object.values(statesBetween(h, log[h.id], start, end, today)))
 }
 
+export const QUOTE_TAGE = 30
+
+// Quote der letzten 30 Tage bis `end`. Steht im Raster still unter dem Namen,
+// damit ein verpasster Tag nicht alles nimmt, was die Serie aufgebaut hat.
+// Bewusst nicht seit Beginn: wer nach einem guten Jahr aufhoert, soll es nach
+// ein paar Wochen deutlich sehen, nicht erst nach Monaten.
+export function quoteZuletzt(h: Habit, log: Log, end: string, today: string) {
+  return quoteIn(h, log, addDays(end, -(QUOTE_TAGE - 1)), end, today)
+}
+
 // Geschaffte Wochen (nur x-mal pro Woche): abgeschlossene Wochen seit Beginn,
 // in denen das Wochenziel erreicht wurde. Die laufende Woche zaehlt noch nicht.
 export function weeksDone(h: Habit, log: Log, today: string) {

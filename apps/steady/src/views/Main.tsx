@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type TouchEvent } from 'react'
-import { hakenAm, isArchived, isRestToday, messwert, statesBetween, streaks, todayToEnter } from '../calc'
+import { QUOTE_TAGE, hakenAm, isArchived, isRestToday, messwert, quoteZuletzt, share, statesBetween, streaks, todayToEnter } from '../calc'
 import { IconMore, IconPlus, IconRight, IconStats } from '../icons'
 import { AppsLeiste, DayBox, Dot, Streak, hue, ruleShort } from '../ui'
 import {
@@ -8,6 +8,7 @@ import {
   formatDayLong,
   formatDayMedium,
   formatDayShort,
+  formatPercent,
   formatValue,
   parseKey,
   rangeLabel,
@@ -64,6 +65,12 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
 
   const serien = useMemo(
     () => Object.fromEntries(active.map((h) => [h.id, streaks(h, log[h.id], today).current])),
+    [active, log, today],
+  )
+  // Neben der Serie still die Quote der letzten 30 Tage - bricht die Serie,
+  // steht dort weiter, wie viel man geschafft hat.
+  const quoten = useMemo(
+    () => Object.fromEntries(active.map((h) => [h.id, share(quoteZuletzt(h, log, today, today))])),
     [active, log, today],
   )
 
@@ -284,6 +291,7 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                   {p.rows.map((r) => {
                     const rule = ruleShort(r.h, p.end)
                     const serie = serien[r.h.id] ?? 0
+                    const quote = quoten[r.h.id] ?? null
                     const pop = (d: string) => live && lastChange?.habitId === r.h.id && lastChange.day === d
                     return (
                       <div className="s-row" style={hue(r.h)} key={r.h.id}>
@@ -294,7 +302,17 @@ function Main({ ctx }: { ctx: SteadyCtx }) {
                             <b>{r.h.name}</b>
                             <Streak n={serie} tick={live && lastChange?.habitId === r.h.id} />
                           </span>
-                          {rule ? <small>{rule}</small> : null}
+                          {quote !== null || rule ? (
+                            <small>
+                              {quote !== null ? (
+                                <span title={`in den letzten ${QUOTE_TAGE} Tagen geschafft`}>
+                                  {formatPercent(quote)}
+                                </span>
+                              ) : null}
+                              {quote !== null && rule ? ' · ' : null}
+                              {rule}
+                            </small>
+                          ) : null}
                         </button>
                         {p.days.slice(0, 6).map((d, i) => (
                           <button

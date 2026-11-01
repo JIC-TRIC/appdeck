@@ -7,6 +7,7 @@ import {
   messwert,
   progress,
   quoteIn,
+  quoteZuletzt,
   share,
   statesBetween,
   streaks,
@@ -67,7 +68,7 @@ function Detail({ ctx, view }: ViewProps) {
     if (!habit) return null
     const hlog = log[habit.id]
     const s = { current: streaks(habit, hlog, end).current, best: streaks(habit, hlog, today).best }
-    const q30 = quoteIn(habit, log, addDays(end, -29), end, today)
+    const q30 = quoteZuletzt(habit, log, end, today)
     const qAll = quoteIn(habit, log, habit.start, end, today)
     // Ein Balken pro Monat seit Beginn, hoechstens sechs.
     const months: { label: string; share: number | null }[] = []
