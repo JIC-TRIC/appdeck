@@ -178,8 +178,9 @@ den anderen Apps. Konzept-Entwurf mit offenen Fragen: [ideen/zeitkapsel.md](idee
 
 Zeiterfassung für alles Produktive (Job, Side Job, Uni): Bereiche mit Tätigkeiten, ein Tipp startet den Timer,
 Vergessenes per Von–Bis nachtragen, die Tagessumme groß auf dem Start, Statistik nach Woche, Monat und Jahr.
-Look „Stundenzettel“. Konzept nach der Fragerunde: [ideen/punch.md](ideen/punch.md) (06.11.2026, noch nicht
-gebaut). Nächster Schritt: Mockups.
+Look „Stundenzettel“. Konzept nach der Fragerunde: [ideen/punch.md](ideen/punch.md), Mockups mit drei
+Richtungen: [ideen/punch-mockups.html](ideen/punch-mockups.html) (beide 06.11.2026, noch nicht gebaut). Nächster
+Schritt: Richtung, Symbol und Kachelfarbe wählen, dann bauen.
 
 ## Geht nicht / bewusst nicht
 

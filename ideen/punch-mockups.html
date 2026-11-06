@@ -1,0 +1,921 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Punch Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@400;500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Seite: Kopf, dann drei Richtungen nebeneinander, dann alle Ansichten in Richtung A im Raster.
+   Die Seite folgt hell/dunkel, die Bildschirme haben feste Farben je Richtung (.A .B .C .L). */
+:root {
+  --page: #EEF1EE;
+  --card: #FFFFFF;
+  --ink: #15191B;
+  --ink-2: #59626A;
+  --ink-3: #87909A;
+  --rule: #D8DFDC;
+  --chip: #E1E7E4;
+  --frame: #1B1D21;
+  --frame-ring: #2E3137;
+  --f-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-ios: -apple-system, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
+  --f-num: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --f-courier: "Courier Prime", "Courier New", monospace;
+  --f-plex: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0D1011; --card: #161A1B; --ink: #ECEFEE; --ink-2: #A0A9AE; --ink-3: #6D767C;
+    --rule: #263033; --chip: #1E2527; --frame: #26292E; --frame-ring: #363A41; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0D1011; --card: #161A1B; --ink: #ECEFEE; --ink-2: #A0A9AE; --ink-3: #6D767C;
+  --rule: #263033; --chip: #1E2527; --frame: #26292E; --frame-ring: #363A41; color-scheme: dark;
+}
+html, body { background: var(--page); color: var(--ink); }
+body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; }
+
+/* ---------- Seite ---------- */
+.pg { max-width: 1340px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 48px 96px; }
+.pg-intro { display: grid; gap: 24px; margin-bottom: 68px; }
+.pg-brand { display: flex; align-items: center; gap: 18px; }
+.pg-brand svg { width: 72px; height: 72px; flex: none; border-radius: 22.5%; }
+.pg-wm { font: 500 clamp(40px, 8vw, 60px)/0.9 var(--f-num); letter-spacing: .18em; text-transform: uppercase; margin: 0; }
+.pg-brand p { margin: 10px 0 0; color: var(--ink-2); font-size: 15px; }
+.pg-lede { max-width: 70ch; color: var(--ink-2); font-size: 16.5px; margin: 0; text-wrap: pretty; }
+.pg-lede strong { color: var(--ink); font-weight: 600; }
+.pg-lede code, .pg-sub code, .pg-foot code { font-family: var(--f-num); font-size: .9em; background: var(--chip); padding: 1px 6px; border-radius: 6px; color: var(--ink); }
+.pg-dec { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; max-width: 80ch; }
+.pg-dec li { position: relative; padding-left: 20px; color: var(--ink-2); text-wrap: pretty; }
+.pg-dec li::before { content: ""; position: absolute; left: 0; top: .58em; width: 8px; height: 8px; border-radius: 2px; background: var(--d); }
+.pg-dec li:nth-child(1) { --d: #17696A; } .pg-dec li:nth-child(2) { --d: #9B51E0; } .pg-dec li:nth-child(3) { --d: #2E7CF6; }
+.pg-dec li:nth-child(4) { --d: #EF7A1C; } .pg-dec li:nth-child(5) { --d: #2F9E5B; }
+.pg-dec b { color: var(--ink); font-weight: 600; }
+.pg-toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.pg-toc a { color: var(--ink-2); text-decoration: none; background: var(--card); border-radius: 999px; padding: 6px 13px; font-size: 13.5px; font-weight: 500; box-shadow: 0 0 0 1px var(--rule); }
+.pg-toc a:hover, .pg-toc a:focus-visible { color: var(--ink); box-shadow: 0 0 0 1.5px var(--ink-3); outline: none; }
+.pg-toc a b { color: var(--ink-3); font-weight: 700; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.pg-sec { margin-bottom: 84px; scroll-margin-top: 24px; }
+.pg-h2 { font: 700 32px/1.1 var(--f-ui); letter-spacing: -0.02em; margin: 0 0 8px; text-wrap: balance; }
+.pg-sub { color: var(--ink-2); margin: 0 0 28px; max-width: 70ch; text-wrap: pretty; }
+
+/* drei Richtungen: Spalte = Richtung, Zeile = Ansicht */
+.pg-dirs { display: grid; gap: 26px 36px; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto auto; grid-auto-flow: column; }
+.pg-dh { max-width: 402px; }
+.pg-dh h3 { margin: 0 0 6px; font: 700 20px/1.25 var(--f-ui); display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.pg-dh h3 span { color: var(--ink-3); font-weight: 800; }
+.pg-dh h3 em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--ink); background: var(--chip); border-radius: 999px; padding: 2px 10px; }
+.pg-dh p { margin: 0; color: var(--ink-2); font-size: 14.5px; text-wrap: pretty; }
+@media (max-width: 900px) {
+  .pg-dirs { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-flow: row; }
+  .pg-dh:not(:first-child) { margin-top: 36px; }
+}
+
+.pg-screens { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 402px), 1fr)); gap: 80px 44px; align-items: start; }
+.pg-shot { margin: 0; display: grid; gap: 22px; min-width: 0; scroll-margin-top: 24px; }
+.pg-fit { width: 100%; max-width: 402px; }
+.pg-cap { max-width: 402px; }
+.pg-cap h3 { margin: 0 0 8px; font: 700 19px/1.3 var(--f-ui); display: flex; gap: 10px; align-items: baseline; }
+.pg-cap h3 span { color: var(--ink-3); font-weight: 800; font-variant-numeric: tabular-nums; }
+.pg-cap ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 14.5px; display: grid; gap: 5px; }
+.pg-cap li { text-wrap: pretty; }
+
+/* Farben und Zeichen */
+.pg-bs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 20px; align-items: start; }
+.pg-card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 0 0 1px var(--rule); min-width: 0; }
+.pg-card h3 { margin: 0 0 14px; font: 700 16px/1.3 var(--f-ui); }
+.pg-pal { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 12px 10px; }
+.pg-sw { display: flex; gap: 10px; align-items: center; }
+.pg-sw i { flex: none; width: 28px; height: 28px; border-radius: 7px; background: var(--o); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08); }
+.pg-sw b { display: block; font-size: 13.5px; font-weight: 600; line-height: 1.2; }
+.pg-sw small { display: block; color: var(--ink-3); font: 500 11.5px/1.3 var(--f-num); }
+.pg-dt { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+.pg-dt td { padding: 8px 0; border-top: 1px solid var(--rule); vertical-align: baseline; }
+.pg-dt tr:first-child td { border-top: 0; }
+.pg-dt td:first-child { color: var(--ink-2); width: 52%; padding-right: 12px; }
+.pg-dt td:last-child { font-weight: 600; }
+.pg-dt code { font-family: var(--f-num); font-weight: 500; }
+.pg-sym { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.pg-sym svg { display: block; border-radius: 22.5%; }
+.pg-sym p { margin: 14px 0 0; color: var(--ink-2); font-size: 14px; flex-basis: 100%; }
+.pg-foot { color: var(--ink-3); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 20px; }
+
+/* ---------- Gerät ---------- */
+.device { width: 402px; border-radius: 58px; padding: 6px; background: var(--frame); box-shadow: 0 0 0 1px var(--frame-ring), 0 40px 80px -40px rgba(10, 12, 16, .55); }
+.screen { width: 390px; height: 844px; border-radius: 52px; overflow: hidden; position: relative; display: flex; flex-direction: column; background: var(--bg); color: var(--tx); font-family: var(--sf); }
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 124px; height: 36px; border-radius: 20px; background: #000; z-index: 50; }
+.sb { height: 54px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 8px 30px 0 48px; font: 600 16px/1 var(--f-ios); color: var(--tx); position: relative; z-index: 5; }
+.sb .ico { display: flex; gap: 6px; align-items: center; }
+.sb svg { display: block; }
+.homebar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 136px; height: 5px; border-radius: 3px; background: var(--tx); z-index: 60; }
+.scroll { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+
+/* ---------- Richtung A: Formular ---------- */
+.A { --bg: #EEF1EE; --sheet: #FCFCFA; --pr: #17696A; --rl: #CBD8D5; --rl2: #E3E9E7; --tx: #1B1F23; --tx2: #6E7781; --tx3: #9AA2A9; --red: #C2412D; --fill: #E3E8E5; --sf: var(--f-ios); }
+.a-top, .st-top { height: 44px; flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 14px 0 10px; }
+.back { display: flex; align-items: center; gap: 5px; font-size: 17px; color: var(--tx); }
+.back svg { width: 11px; height: 19px; }
+.wm { font: 500 14px/1 var(--f-num); letter-spacing: .34em; padding-left: .34em; color: var(--pr); }
+.icbs { display: flex; gap: 9px; justify-self: end; }
+.icb { width: 34px; height: 34px; border-radius: 50%; background: var(--sheet); box-shadow: 0 0 0 1px var(--rl); display: grid; place-items: center; color: var(--pr); }
+.icb svg { width: 18px; height: 18px; }
+.st-top b { font-size: 17px; font-weight: 600; }
+.A .st-top .back { color: var(--pr); }
+.a-date { display: flex; align-items: center; justify-content: space-between; padding: 4px 12px 0; }
+.a-date b { font-size: 16px; font-weight: 600; }
+.arr { width: 32px; height: 32px; display: grid; place-items: center; color: var(--pr); }
+.arr svg { width: 9px; height: 16px; }
+.arr.off { color: var(--rl); }
+.lbl { font: 600 10.5px/1 var(--sf); letter-spacing: .13em; text-transform: uppercase; color: var(--pr); }
+.a-sum { padding: 12px 20px 0; }
+.big { font: 400 74px/1 var(--f-num); letter-spacing: -0.045em; margin-top: 8px; }
+.big small { font-size: 22px; letter-spacing: 0; margin-left: 8px; color: var(--tx2); }
+.big.s { font-size: 56px; }
+.big.leer { color: var(--rl); }
+.segbar { display: flex; gap: 2px; height: 10px; margin: 12px 20px 0; }
+.segbar i { border-radius: 2px; background: var(--o); min-width: 3px; }
+.legend { display: flex; flex-wrap: wrap; gap: 3px 14px; padding: 9px 20px 0; font: 400 12.5px/1.35 var(--f-num); color: var(--tx2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend span::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--o); }
+.sl { padding: 20px 20px 8px; }
+
+.run { margin: 18px 16px 0; background: var(--sheet); border-radius: 14px; box-shadow: 0 0 0 1px var(--rl), inset 4px 0 0 var(--o); padding: 13px 16px 14px 20px; }
+.run-h { display: flex; align-items: center; justify-content: space-between; }
+.run-h b { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; }
+.run-h b i, .tile b i, .bt b i, .lr b i, .vh b i { width: 9px; height: 9px; border-radius: 2px; background: var(--o); flex: none; }
+.seit { font: 400 13.5px/1 var(--f-num); color: var(--pr); border-bottom: 1px dotted var(--pr); padding-bottom: 2px; }
+.run-t { font: 400 44px/1 var(--f-num); letter-spacing: -0.03em; margin: 10px 0 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip { height: 30px; padding: 0 12px; border-radius: 15px; background: var(--fill); display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: var(--tx); }
+.chip.on { background: color-mix(in srgb, var(--o, var(--pr)) 15%, var(--sheet)); box-shadow: inset 0 0 0 1.5px var(--o, var(--pr)); }
+.chip.add { color: var(--pr); background: transparent; box-shadow: inset 0 0 0 1px var(--rl); }
+.chip svg { width: 13px; height: 13px; }
+.chip i { width: 8px; height: 8px; border-radius: 2px; background: var(--o); }
+.run-f { display: flex; align-items: flex-end; gap: 14px; margin-top: 12px; }
+.note { flex: 1; min-width: 0; font-size: 15px; padding: 8px 0 6px; border-bottom: 1px solid var(--rl); }
+.note.ph { color: var(--tx3); }
+.stop { flex: none; height: 42px; padding: 0 18px; border-radius: 21px; background: var(--pr); color: #FFFFFF; display: inline-flex; align-items: center; gap: 8px; font-size: 15.5px; font-weight: 600; }
+.stop svg { width: 12px; height: 12px; }
+
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px; }
+.tile { position: relative; height: 62px; border-radius: 12px; background: var(--sheet); box-shadow: 0 0 0 1px var(--rl); padding: 10px 12px 9px; display: flex; flex-direction: column; justify-content: space-between; }
+.tile b { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
+.tile > span { font: 400 14px/1 var(--f-num); color: var(--tx2); display: flex; align-items: center; gap: 6px; }
+.tile > span svg { width: 10px; height: 10px; }
+.tile.on { background: var(--o); box-shadow: none; color: #FFFFFF; }
+.tile.on b i { background: #FFFFFF; }
+.tile.on > span { color: rgba(255, 255, 255, .9); }
+.tile.lift { z-index: 30; transform: scale(1.04); box-shadow: 0 0 0 1px var(--rl), 0 18px 34px -14px rgba(20, 30, 30, .45); }
+
+.zettel { margin: 0 16px; background: var(--sheet); border-radius: 12px; box-shadow: 0 0 0 1px var(--rl); overflow: hidden; }
+.zh, .zr, .zs { display: grid; grid-template-columns: 44px 52px minmax(0, 1fr) 44px; column-gap: 8px; padding: 0 12px; }
+.zh { padding-top: 10px; padding-bottom: 8px; border-bottom: 1.5px solid var(--pr); }
+.zh span { font: 600 10px/1 var(--sf); letter-spacing: .12em; text-transform: uppercase; color: var(--pr); white-space: nowrap; }
+.zh span:last-child, .zr .d, .zs .d { text-align: right; }
+.zr { padding-top: 10px; padding-bottom: 10px; border-top: 1px solid var(--rl2); align-items: baseline; }
+.zh + .zr { border-top: 0; }
+.zr .t, .zr .d, .zs .d { font: 400 14px/1.25 var(--f-num); white-space: nowrap; }
+.zr .d { font-weight: 500; }
+.bt { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.bt b { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.bt small { font-size: 12.5px; color: var(--tx2); }
+.bt em { font-style: normal; display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 600; color: var(--pr); margin-top: 3px; }
+.bt em svg { width: 9px; height: 9px; }
+.zr.live .t:nth-child(2) { color: var(--tx3); }
+.zr.live .d { color: var(--pr); }
+.zs { padding-top: 10px; padding-bottom: 10px; border-top: 3px double var(--pr); align-items: baseline; }
+.zs > span:first-child { grid-column: 1 / 4; font: 600 10.5px/1 var(--sf); letter-spacing: .13em; text-transform: uppercase; color: var(--pr); }
+.zs .d { font-weight: 500; font-size: 15px; }
+.zn { display: flex; align-items: center; justify-content: center; gap: 7px; height: 46px; border-top: 1px solid var(--rl2); color: var(--pr); font-size: 15px; font-weight: 600; }
+.zn svg { width: 14px; height: 14px; }
+.zr.leer { height: 40px; }
+.zettel.leer { opacity: .75; }
+
+.fade { position: absolute; left: 0; right: 0; bottom: 0; height: 110px; background: linear-gradient(to bottom, rgba(238, 241, 238, 0), var(--bg) 72%); z-index: 6; pointer-events: none; }
+.toast { position: absolute; left: 14px; right: 14px; bottom: 30px; z-index: 40; height: 52px; border-radius: 14px; background: #1E2427; color: #F2F4F3; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 15px; box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .45); }
+.toast span b { font: 500 15px/1 var(--f-num); }
+.toast > b { color: #8FD3CB; font-weight: 600; }
+
+.dim { position: absolute; inset: 0; background: rgba(18, 26, 26, .34); z-index: 20; }
+.bs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--bg); border-radius: 14px 14px 0 0; display: flex; flex-direction: column; overflow: hidden; }
+.bs-h { height: 52px; flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 16px; font-size: 17px; }
+.bs-h span { color: var(--pr); }
+.bs-h b { font-weight: 600; }
+.bs-h .ok { justify-self: end; font-weight: 600; }
+.bs-h .ok.off { color: var(--tx3); }
+.bs-q { padding: 2px 16px 8px; font-size: 20px; font-weight: 700; }
+.fg { padding: 8px 16px 6px; }
+.fg > .lbl { display: block; margin-bottom: 8px; }
+.fg .dsub { display: block; margin-top: 7px; font-size: 13.5px; color: var(--tx2); }
+.tfs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 8px 16px 0; align-items: center; }
+.tf { background: var(--sheet); border-radius: 12px; box-shadow: 0 0 0 1px var(--rl); padding: 10px 14px; }
+.tf .lbl { display: block; margin-bottom: 7px; }
+.tv { font: 400 30px/1 var(--f-num); letter-spacing: -0.02em; display: flex; align-items: center; height: 30px; }
+.tf.on { box-shadow: 0 0 0 2px var(--pr); }
+.tf.err { box-shadow: 0 0 0 2px var(--red); }
+.tf.err .tv { color: var(--red); }
+.caret { width: 2px; height: 28px; background: var(--pr); margin-left: 2px; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.prev { font-size: 13.5px; color: var(--tx2); padding-left: 4px; line-height: 1.45; }
+.prev b { font: 500 17px/1 var(--f-num); color: var(--tx); }
+.hint { padding: 10px 16px 0; font-size: 13.5px; color: var(--tx2); }
+.hint b { font-family: var(--f-num); font-weight: 500; color: var(--tx); }
+.qk { display: flex; gap: 8px; padding: 10px 16px 0; flex-wrap: wrap; }
+.q { height: 30px; padding: 0 12px; border-radius: 15px; box-shadow: inset 0 0 0 1px var(--pr); color: var(--pr); font-size: 13.5px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+.q b { font-family: var(--f-num); font-weight: 500; }
+.q.off { box-shadow: inset 0 0 0 1px var(--rl); color: var(--tx3); }
+.dur { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 16px 0; padding-top: 10px; border-top: 1px solid var(--rl); font-size: 14px; color: var(--tx2); }
+.dur b { font: 500 18px/1 var(--f-num); color: var(--tx); }
+.warn { margin: 12px 16px 0; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--red) 9%, var(--sheet)); color: var(--red); font-size: 14px; font-weight: 500; display: flex; gap: 9px; align-items: center; }
+.warn svg { width: 18px; height: 18px; flex: none; }
+.warn b { font-family: var(--f-num); font-weight: 500; }
+.kp { position: absolute; left: 0; right: 0; bottom: 0; z-index: 30; background: #D9DFDC; padding: 7px 6px 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.kp span { height: 46px; border-radius: 8px; background: #FFFFFF; box-shadow: 0 1px 0 rgba(0, 0, 0, .2); display: grid; place-items: center; font: 400 24px/1 var(--f-num); color: var(--tx); }
+.kp .fn { background: transparent; box-shadow: none; font: 600 15px/1 var(--sf); color: var(--pr); }
+.kp .fn svg { width: 24px; height: 19px; color: var(--tx); }
+.del-btn { margin: 18px 16px 0; height: 48px; border-radius: 12px; background: var(--sheet); box-shadow: 0 0 0 1px var(--rl); color: var(--red); display: grid; place-items: center; font-size: 16px; font-weight: 600; }
+
+.menu { position: absolute; top: calc(100% + 10px); right: 0; width: 232px; background: rgba(252, 252, 250, .98); border-radius: 13px; box-shadow: 0 0 0 .5px rgba(0, 0, 0, .08), 0 20px 44px -12px rgba(15, 25, 25, .45); overflow: hidden; color: var(--tx); }
+.menu .mh { padding: 10px 14px 8px; font-size: 12.5px; color: var(--tx2); }
+.menu .mi { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 16px; font-weight: 400; border-top: .5px solid var(--rl); }
+.menu .mi small { font: 400 12px/1 var(--f-num); color: var(--tx3); }
+.menu .mi.add { color: var(--pr); }
+
+.seg { margin: 6px 16px 0; background: var(--fill); border-radius: 9px; padding: 2px; display: grid; grid-template-columns: repeat(3, 1fr); flex: none; }
+.seg span { height: 30px; display: grid; place-items: center; font-size: 14px; font-weight: 500; color: var(--tx2); border-radius: 7px; }
+.seg span.on { background: var(--sheet); color: var(--tx); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, .1); }
+.facts { font: 400 13px/1.3 var(--f-num); color: var(--tx2); margin-top: 8px; }
+.vgl { margin-top: 5px; font-size: 14px; font-weight: 600; color: var(--pr); }
+.vgl b { font-family: var(--f-num); font-weight: 500; }
+.vgl.minus { color: var(--tx2); }
+.vgl.no { color: var(--tx3); font-weight: 500; }
+.card { margin: 16px 16px 0; background: var(--sheet); border-radius: 12px; box-shadow: 0 0 0 1px var(--rl); padding: 14px 12px 10px; }
+.plot { position: relative; height: 150px; display: flex; align-items: flex-end; gap: var(--g, 8px); padding-right: 24px; }
+.plot::after { content: ""; position: absolute; left: 0; right: 24px; bottom: 0; border-top: 1px solid var(--pr); }
+.gl { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--rl); }
+.gl b { position: absolute; right: 0; top: -6px; font: 400 10.5px/1 var(--f-num); color: var(--tx3); background: var(--sheet); padding-left: 3px; }
+.col { flex: 1; height: 100%; display: flex; align-items: flex-end; position: relative; z-index: 1; }
+.stk { width: 100%; display: flex; flex-direction: column-reverse; gap: 1px; border-radius: 3px 3px 1px 1px; overflow: hidden; }
+.stk i { display: block; min-height: 1px; }
+.col.fut::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--rl); }
+.xl { display: flex; gap: var(--g, 8px); padding: 7px 24px 0 0; }
+.xl span { flex: 1; text-align: center; font: 400 11px/1 var(--f-num); color: var(--tx3); white-space: nowrap; }
+.xl span.today { color: var(--tx); font-weight: 500; }
+.vt { margin: 0 16px; background: var(--sheet); border-radius: 12px; box-shadow: 0 0 0 1px var(--rl); }
+.vr { padding: 11px 12px; border-top: 1px solid var(--rl2); }
+.vr:first-child { border-top: 0; }
+.vh, .vkr { display: grid; grid-template-columns: minmax(0, 1fr) 44px 62px 14px; gap: 6px; align-items: center; }
+.vh b { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
+.vh span { font: 400 13.5px/1 var(--f-num); color: var(--tx2); text-align: right; }
+.vh .d { color: var(--tx); font-weight: 500; }
+.vh svg { width: 12px; height: 12px; color: var(--tx3); }
+.vr.open .vh svg { transform: rotate(90deg); }
+.vb { height: 4px; border-radius: 2px; background: var(--rl2); margin-top: 8px; overflow: hidden; }
+.vb i { display: block; height: 100%; background: var(--o); border-radius: 2px; }
+.vk { margin-top: 8px; padding-left: 17px; }
+.vkr { padding: 7px 0; font-size: 14px; color: var(--tx2); border-top: 1px dashed var(--rl2); }
+.vkr span:not(:first-child) { font: 400 13px/1.3 var(--f-num); text-align: right; }
+
+.list { margin: 0 16px; background: var(--sheet); border-radius: 12px; box-shadow: 0 0 0 1px var(--rl); overflow: hidden; }
+.lr { height: 50px; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 12px; border-top: 1px solid var(--rl2); }
+.lr:first-child { border-top: 0; }
+.lr .grip { color: var(--tx3); display: grid; }
+.lr .grip svg { width: 18px; height: 18px; }
+.lr b { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; font-size: 16px; font-weight: 500; }
+.lr small { font-size: 13.5px; color: var(--tx2); }
+.lr > svg { width: 13px; height: 13px; color: var(--tx3); flex: none; }
+.lr.add { color: var(--pr); font-weight: 600; font-size: 16px; gap: 8px; }
+.lr.add svg { width: 15px; height: 15px; color: var(--pr); }
+.lr .act { font-size: 14px; color: var(--pr); font-weight: 500; }
+.lr.arch b { color: var(--tx2); }
+.foot { margin: 10px 20px 0; font-size: 13px; color: var(--tx2); text-wrap: pretty; }
+.inp { background: var(--sheet); border-radius: 12px; box-shadow: 0 0 0 1px var(--rl); height: 46px; display: flex; align-items: center; padding: 0 14px; font-size: 17px; }
+.cols { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; justify-items: center; background: var(--sheet); border-radius: 12px; box-shadow: 0 0 0 1px var(--rl); padding: 14px; }
+.cols i { width: 34px; height: 34px; border-radius: 50%; background: var(--o); }
+.cols i.on { box-shadow: 0 0 0 3px var(--sheet), 0 0 0 5px var(--o); }
+.fg .list { margin: 0; }
+.outl { margin: 14px 16px 0; height: 48px; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--tx); display: grid; place-items: center; font-size: 16px; font-weight: 600; }
+.first { text-align: center; padding: 26px 26px 4px; }
+.first h2 { margin: 0; font-size: 23px; font-weight: 700; letter-spacing: -0.01em; }
+.first p { margin: 8px 0 18px; font-size: 15px; color: var(--tx2); text-wrap: pretty; }
+.cta { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 22px; border-radius: 24px; background: var(--pr); color: #FFFFFF; font-size: 16px; font-weight: 600; }
+.cta svg { width: 15px; height: 15px; }
+
+/* ---------- Richtung B: Stechkarte ---------- */
+.B { --bg: #E7DCC1; --card: #F6EFDD; --pr: #B23A2E; --rl: #DCCDAA; --tx: #24262A; --tx2: #6E6554; --tx3: #A89D80; --sf: var(--f-ios); }
+.B .icb { background: var(--card); box-shadow: 0 0 0 1px var(--rl); color: var(--pr); }
+.B .st-top .back { color: var(--pr); }
+.b-wm { font: 700 15px/1 var(--f-courier); letter-spacing: .22em; color: var(--pr); border: 2px solid var(--pr); padding: 4px 6px 3px 9px; border-radius: 3px; transform: rotate(-3deg); }
+.b-ttl { font: 700 15px/1 var(--f-courier) !important; letter-spacing: .16em; text-transform: uppercase; }
+.b-card { position: relative; margin: 10px 16px 0; background: var(--card); border-radius: 3px; padding: 20px 14px 10px; box-shadow: 0 1px 0 rgba(90, 70, 30, .12), 0 14px 28px -18px rgba(90, 60, 20, .5); }
+.hole { position: absolute; top: 7px; left: 50%; width: 22px; height: 7px; margin-left: -11px; border-radius: 4px; background: var(--bg); box-shadow: inset 0 1px 1px rgba(0, 0, 0, .18); }
+.b-hd { display: flex; justify-content: space-between; font: 700 12px/1 var(--f-courier); letter-spacing: .14em; text-transform: uppercase; color: var(--pr); padding-bottom: 8px; border-bottom: 1.5px solid var(--pr); }
+.b-sum { font: 700 64px/1 var(--f-courier); letter-spacing: -0.03em; padding: 14px 0 10px; display: flex; align-items: baseline; gap: 8px; color: var(--tx); }
+.b-sum small { font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: var(--pr); }
+.b-th, .b-tr, .b-tot { display: grid; grid-template-columns: 46px 50px minmax(0, 1fr) 72px; gap: 6px; }
+.b-th { font: 700 10.5px/1 var(--f-courier); letter-spacing: .1em; text-transform: uppercase; color: var(--pr); padding: 8px 0 6px; border-top: 1px solid var(--pr); border-bottom: 1px solid var(--pr); }
+.b-th span:last-child, .b-tr .d, .b-tot span:last-child { text-align: right; }
+.b-tr { padding: 8px 0; border-bottom: 1px solid var(--rl); align-items: baseline; }
+.st { font: 700 15px/1.2 var(--f-courier); color: var(--tx); opacity: .86; display: inline-block; transform: rotate(var(--r, 0deg)); white-space: nowrap; }
+.b-tr.live .st:nth-child(2) { color: var(--tx3); }
+.b-tr.live .d { color: var(--pr); opacity: 1; }
+.bn { min-width: 0; font: 700 13px/1.2 var(--f-courier); letter-spacing: .04em; display: flex; flex-direction: column; gap: 2px; }
+.bn i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--o); margin-right: 6px; }
+.bn small { font: 400 12px/1.25 var(--f-courier); color: var(--tx2); letter-spacing: 0; }
+.b-tot { padding: 9px 0 4px; border-top: 3px double var(--pr); margin-top: -1px; font: 700 13px/1 var(--f-courier); letter-spacing: .12em; text-transform: uppercase; color: var(--pr); align-items: baseline; }
+.b-tot span:first-child { grid-column: 1 / 4; }
+.b-tot span:last-child { font-size: 17px; color: var(--tx); letter-spacing: 0; }
+.b-lab { padding: 18px 20px 10px; font: 700 11px/1 var(--f-courier); letter-spacing: .16em; text-transform: uppercase; color: var(--pr); }
+.b-rack { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 6px 16px 0; }
+.b-slot { position: relative; height: 82px; background: var(--card); border-radius: 3px 3px 2px 2px; box-shadow: inset 0 5px 0 var(--o), 0 1px 0 rgba(90, 70, 30, .15); padding: 14px 8px 8px; display: flex; flex-direction: column; justify-content: space-between; }
+.b-slot b { font: 700 12.5px/1.15 var(--f-courier); text-transform: uppercase; letter-spacing: .03em; }
+.b-slot span { font: 700 15px/1 var(--f-courier); color: var(--tx2); }
+.b-slot.in { transform: translateY(-8px); box-shadow: inset 0 5px 0 var(--o), 0 10px 18px -10px rgba(90, 60, 20, .55); }
+.b-slot em { position: absolute; top: 12px; right: 6px; font: 700 11px/1 var(--f-courier); color: var(--pr); border: 1.5px solid var(--pr); padding: 2px 3px; transform: rotate(8deg); font-style: normal; }
+.b-out { margin: 18px 16px 0; height: 52px; border-radius: 4px; background: var(--pr); color: #FBF4E4; display: flex; align-items: center; justify-content: center; gap: 10px; font: 700 16px/1 var(--f-courier); letter-spacing: .14em; text-transform: uppercase; }
+.b-out svg { width: 13px; height: 13px; }
+.b-seg { margin: 4px 16px 0; display: grid; grid-template-columns: repeat(3, 1fr); border: 1.5px solid var(--pr); border-radius: 3px; overflow: hidden; flex: none; }
+.b-seg span { height: 30px; display: grid; place-items: center; font: 700 12px/1 var(--f-courier); letter-spacing: .14em; text-transform: uppercase; color: var(--pr); }
+.b-seg span + span { border-left: 1.5px solid var(--pr); }
+.b-seg span.on { background: var(--pr); color: var(--card); }
+.b-wr { display: grid; grid-template-columns: 70px minmax(0, 1fr) 58px; gap: 8px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rl); }
+.b-wr > span:first-child { font: 700 12px/1 var(--f-courier); letter-spacing: .06em; text-transform: uppercase; color: var(--pr); }
+.b-bar { display: flex; height: 12px; gap: 1px; }
+.b-bar i { display: block; height: 100%; opacity: .82; }
+.b-wr .st { text-align: right; }
+.b-wr.fut .st { color: var(--tx3); }
+.b-meta { font: 400 13px/1.55 var(--f-courier); color: var(--tx2); padding: 8px 0 2px; }
+.b-meta b { color: var(--pr); }
+.b-vr { display: grid; grid-template-columns: minmax(0, 1fr) 46px 64px; gap: 6px; padding: 9px 0; border-bottom: 1px solid var(--rl); font: 700 13px/1 var(--f-courier); align-items: center; }
+.b-vr span:not(:first-child) { text-align: right; }
+.b-vr i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--o); margin-right: 7px; }
+
+/* ---------- Richtung C: Beleg ---------- */
+.C { --bg: #E3E5E8; --paper: #FFFFFF; --tx: #121416; --tx2: #6A6F76; --tx3: #A4A9AF; --sf: var(--f-plex); }
+.C .back { font-family: var(--f-ios); }
+.C .icb { background: var(--paper); box-shadow: 0 0 0 1px #D3D6DA; color: var(--tx); }
+.c-ttl { font: 600 14px/1 var(--f-plex) !important; letter-spacing: .2em; }
+.rc { position: relative; margin: 6px 22px 22px; background: var(--paper); padding: 18px 16px 14px; font: 400 12.5px/1.5 var(--f-plex); color: var(--tx); box-shadow: 0 1px 2px rgba(0, 0, 0, .06); }
+.rc-c { text-align: center; display: grid; gap: 4px; padding-bottom: 8px; }
+.rc-c b { font: 700 17px/1 var(--f-plex); letter-spacing: .5em; padding-left: .5em; }
+.rc-c span { font-size: 11.5px; color: var(--tx2); letter-spacing: .06em; }
+.rc hr { border: 0; border-top: 1px dashed #9EA3A9; margin: 8px 0; }
+.rc-l { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 2px 0; white-space: pre; }
+.rc-l.live { background: var(--tx); color: var(--paper); margin: 2px -6px; padding: 4px 6px; }
+.rc-n { color: var(--tx2); padding-left: 12ch; font-size: 11.5px; }
+.rc-sum { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; padding-top: 2px; }
+.rc-sum span:last-child { font-size: 30px; letter-spacing: -0.02em; }
+.rc-dbl { border-top: 4px double var(--tx); margin: 6px 0 8px; }
+.rc-per { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 11.5px; color: var(--tx2); }
+.rc-per i, .c-sq { display: inline-block; width: 7px; height: 7px; margin-right: 5px; }
+.rc-bar { display: inline-flex; flex: 1; height: 9px; gap: 1px; margin: 0 10px; }
+.rc-bar i { display: block; height: 100%; }
+.zig { position: absolute; left: 0; right: 0; bottom: -8px; width: 100%; height: 8px; display: block; }
+.c-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 22px; }
+.cb { height: 44px; border: 1.5px solid var(--tx); display: flex; align-items: center; gap: 8px; padding: 0 12px; font: 600 13px/1 var(--f-plex); text-transform: uppercase; letter-spacing: .06em; background: var(--paper); }
+.cb i { width: 9px; height: 9px; }
+.cb.on { background: var(--tx); color: var(--paper); }
+.c-stop { margin: 10px 22px 0; height: 48px; background: var(--tx); color: var(--paper); display: flex; align-items: center; justify-content: center; gap: 10px; font: 600 14px/1 var(--f-plex); letter-spacing: .1em; }
+.c-stop svg { width: 12px; height: 12px; }
+.c-seg { margin: 4px 22px 6px; display: flex; justify-content: space-between; font: 600 13px/1 var(--f-plex); letter-spacing: .08em; color: var(--tx2); flex: none; }
+.c-seg span.on { color: var(--tx); }
+
+/* ---------- Launcher ---------- */
+.L { --bg: #000000; --tx: #FFFFFF; --sf: var(--f-ios); }
+.l-head { padding: 14px 20px 0; display: flex; justify-content: space-between; align-items: flex-end; }
+.l-date { font-size: 13px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: rgba(235, 235, 245, .6); }
+.l-head h1 { margin: 2px 0 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: .01em; }
+.l-gear { width: 36px; height: 36px; border-radius: 50%; background: rgba(118, 118, 128, .24); display: grid; place-items: center; color: #0A84FF; margin-bottom: 4px; }
+.l-gear svg { width: 20px; height: 20px; }
+.l-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 8px; padding: 26px 20px 0; }
+.l-t { display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 12px; position: relative; }
+.l-ic { width: 64px; height: 64px; border-radius: 22.5%; overflow: hidden; position: relative; box-shadow: 0 8px 18px -8px var(--tc); }
+.l-ic svg { display: block; width: 100%; height: 100%; }
+.l-ic::after { content: ""; position: absolute; inset: 0; background: linear-gradient(160deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, 0) 55%); }
+.l-t.neu span:last-child { font-weight: 600; }
+.badge { position: absolute; top: -7px; left: calc(50% + 20px); min-width: 24px; height: 24px; border-radius: 12px; background: #FF3B30; color: #FFFFFF; font: 600 15px/24px var(--f-ios); text-align: center; padding: 0 7px; z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+</style>
+
+<main class="pg">
+  <header class="pg-intro">
+    <div class="pg-brand">
+      <svg viewBox="0 0 180 180" role="img" aria-label="App-Symbol Punch" id="brand-icon"></svg>
+      <div>
+        <h1 class="pg-wm">Punch</h1>
+        <p>Zeiterfassung für appdeck · Mockups vom 06.11.2026, Richtung noch offen</p>
+      </div>
+    </div>
+    <p class="pg-lede">Wie viele produktive Stunden ein Tag hatte: Job, Uni, Side Job, eigene Projekte. Beispiel überall: <strong>Freitag, 6. November 2026</strong>, mit vier Bereichen. Alle Zeiten sind Beispiele. Woche, Monat und Jahr sind aus Zufallsdaten seit Januar gerechnet, die Woche passt zu den Tagen in den Ansichten. Regeln stehen in <code>ideen/punch.md</code>, die Nummern in Klammern verweisen auf die Ansichten unten.</p>
+    <ul class="pg-dec">
+      <li><b>Die Tagessumme ist die App.</b> Groß oben, darunter der Balken nach Bereichen und der Stundenzettel des Tages (1, 2).</li>
+      <li><b>Ein Tipp startet.</b> Der Bereich sofort, Tätigkeit und Notiz währenddessen oder danach. Ein langer Druck startet direkt mit einer Tätigkeit (3).</li>
+      <li><b>Ein Timer zur Zeit.</b> Ein anderer Bereich beendet den laufenden Block in derselben Sekunde. Stoppen, Wechseln und Löschen lassen sich 5 Sekunden lang zurücknehmen.</li>
+      <li><b>Nachtragen mit Von–Bis</b>, ohne Überschneidung. „Anschließen“ schließt Lücken genau (6, 7).</li>
+      <li><b>Gespeichert werden nur Blöcke.</b> Mitternacht, Wochen, Monate und Anteile sind daraus gerechnet (5, 8–10).</li>
+    </ul>
+    <nav class="pg-toc" id="toc" aria-label="Inhalt"></nav>
+  </header>
+
+  <section class="pg-sec" id="richtungen" aria-labelledby="h-dirs">
+    <h2 class="pg-h2" id="h-dirs">Drei Richtungen für „Stundenzettel“</h2>
+    <p class="pg-sub">Derselbe Freitag dreimal, oben der Start mit laufendem Timer um 20:14, darunter die Woche. Alle drei sind hell und tragen Farbe nur bei den Bereichen. Empfehlung ist A, so steht es auch im Konzept. Die Ansichten 1 bis 14 zeigen A.</p>
+    <div class="pg-dirs" id="dirs"></div>
+  </section>
+
+  <section class="pg-sec" id="ansichten" aria-labelledby="h-views">
+    <h2 class="pg-h2" id="h-views">Ansichten in Richtung A</h2>
+    <p class="pg-sub">Formularpapier, darauf Linien, Spaltenköpfe und Beschriftung in Petrol, als wären sie vorgedruckt. Zeiten und Summen in Spline Sans Mono, damit nichts springt, wenn der Timer läuft. Alles andere in der Systemschrift.</p>
+    <div class="pg-screens" id="screens"></div>
+  </section>
+
+  <section class="pg-sec" id="zeichen" aria-labelledby="h-signs">
+    <h2 class="pg-h2" id="h-signs">Farben und Zeichen</h2>
+    <p class="pg-sub">Die zehn Bereichsfarben sind die Ordnerfarben von Tick, schon auf hellem Grund erprobt. Statt Petrol steht Schiefer darin, weil Petrol hier die Druckfarbe ist.</p>
+    <div class="pg-bs">
+      <div class="pg-card"><h3>Bereichsfarben</h3><div class="pg-pal" id="pal"></div></div>
+      <div class="pg-card"><h3>Oberfläche (Richtung A)</h3><div class="pg-pal" id="ui"></div></div>
+      <div class="pg-card">
+        <h3>Zeiten</h3>
+        <table class="pg-dt">
+          <tr><td>Dauer</td><td><code>8:00</code> · <code>0:30</code></td></tr>
+          <tr><td>Laufender Block</td><td><code>1:12:37</code></td></tr>
+          <tr><td>Summe aus 3 Blöcken mit je 20:40 min</td><td><code>1:02</code>, nicht <code>1:00</code></td></tr>
+          <tr><td>Block von 23:00 bis 1:00</td><td><code>1:00</code> + <code>1:00</code>, gespeichert als ein Block</td></tr>
+          <tr><td>Block unter einer Minute</td><td>wird nicht gespeichert</td></tr>
+          <tr><td>Woche</td><td>Montag bis Sonntag</td></tr>
+          <tr><td>Ø pro Tag</td><td>nur Tage mit Einträgen</td></tr>
+          <tr><td>Vergleich im laufenden Zeitraum</td><td>mit dem gleichen Stück davor</td></tr>
+        </table>
+      </div>
+      <div class="pg-card">
+        <h3>Symbol</h3>
+        <div class="pg-sym" id="sym"></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="pg-foot">Punch · Mockups zu <code>ideen/punch.md</code> · 06.11.2026. Offen: Richtung (A, B oder C), Symbol und Kachelfarbe. Beim Bau ziehen beide Dateien nach <code>apps/punch/</code>.</p>
+</main>
+
+<script>
+(() => {
+  // ---------- Daten ----------
+  const BER = {
+    job: { n: 'Job', c: '#2E7CF6', t: ['Entwicklung', 'Meetings', 'Support'] },
+    uni: { n: 'Uni', c: '#9B51E0', t: ['Statistik', 'Mathe', 'BWL'] },
+    side: { n: 'Side Job', c: '#EF7A1C', t: ['Kundenprojekt', 'Rechnungen'] },
+    proj: { n: 'Projekte', c: '#2F9E5B', t: ['appdeck', 'Lesen'] },
+  };
+  const ORDER = ['job', 'uni', 'side', 'proj'];
+  const PETROL = '#17696A';
+  const PAL = [
+    ['Rot', '#E5484D'], ['Orange', '#EF7A1C'], ['Gelb', '#E2A800'], ['Grün', '#2F9E5B'], ['Schiefer', '#5E6B7A'],
+    ['Blau', '#2E7CF6'], ['Indigo', '#5B5FE0'], ['Violett', '#9B51E0'], ['Pink', '#E0457B'], ['Braun', '#A0714F'],
+  ];
+  const UI = [
+    ['Grund', '#EEF1EE'], ['Blatt', '#FCFCFA'], ['Druckfarbe', PETROL], ['Linie', '#CBD8D5'],
+    ['Tinte', '#1B1F23'], ['Tinte leise', '#6E7781'], ['Gefahr', '#C2412D'],
+  ];
+
+  // ---------- Zeit ----------
+  const pad = (n) => String(n).padStart(2, '0');
+  const sek = (hhmm) => { const [h, m, s = 0] = hhmm.split(':').map(Number); return h * 3600 + m * 60 + s; };
+  // Summen werden aus Sekunden gebildet und erst am Ende auf volle Minuten abgerundet
+  const hm = (s) => { const m = Math.floor(s / 60); return `${Math.floor(m / 60)}:${pad(m % 60)}`; };
+  const hms = (s) => `${Math.floor(s / 3600)}:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}`;
+  const hmMin = (m) => hm(m * 60);
+  const iso = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+  // Freitag, 6. November – die Blöcke des Tages zu verschiedenen Uhrzeiten
+  const FR1 = [
+    { b: 'job', t: 'Entwicklung', s: '08:12', e: '12:03' },
+    { b: 'job', t: 'Entwicklung', s: '12:41', e: '17:05' },
+    { b: 'side', t: 'Rechnungen', s: '17:50', e: '18:20' },
+    { b: 'uni', t: 'Statistik', n: 'Übungsblatt 4', s: '19:02' },
+  ];
+  const FR2 = [...FR1.slice(0, 3), { ...FR1[3], e: '21:48' }];
+  const FR3 = FR1.slice(0, 3);
+  const FR4 = [...FR3, { b: 'uni', s: '19:02' }];
+  // Mittwoch, 4. November – der letzte Block geht bis Donnerstag 1:40
+  const MI = [
+    { b: 'job', t: 'Entwicklung', s: '08:05', e: '12:00' },
+    { b: 'job', t: 'Support', s: '12:30', e: '16:40' },
+    { b: 'uni', t: 'Mathe', s: '18:30', e: '20:00' },
+    { b: 'proj', t: 'appdeck', n: 'Steady: Wischen im Kalender', s: '22:15', e: '24:00', nach: '1:40', vor: 'geht bis Do 1:40, hier bis 24:00' },
+  ];
+  function summe(blocks, jetzt) {
+    const per = {}; let tot = 0;
+    for (const x of blocks) { const d = (x.e ? sek(x.e) : sek(jetzt)) - sek(x.s); per[x.b] = (per[x.b] || 0) + d; tot += d; }
+    return { per, tot };
+  }
+
+  // Statistik: Minuten pro Tag und Bereich. 2.–6. November fest (passt zu den Tagen oben), davor Zufall seit Januar.
+  function rng(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const R = rng(45);
+  const FEST = {
+    '2026-11-01': { proj: 90 },
+    '2026-11-02': { job: 490, uni: 80, uniT: 'Statistik' },
+    '2026-11-03': { job: 475, side: 90, proj: 45 },
+    '2026-11-04': { job: 485, uni: 90, proj: 105, uniT: 'Mathe' },
+    '2026-11-05': { job: 480, proj: 100, uni: 50, uniT: null },
+    '2026-11-06': { job: 495, side: 30, uni: 4357 / 60, uniT: 'Statistik' },
+  };
+  const FREI = ['2026-01-01', '2026-01-02', '2026-04-03', '2026-04-06', '2026-05-01', '2026-05-14', '2026-05-25'];
+  const URLAUB = [['2026-03-30', '2026-04-02'], ['2026-08-10', '2026-08-21']];
+  const TAGE = {};
+  for (let d = new Date(2026, 0, 1); d <= new Date(2026, 10, 6); d.setDate(d.getDate() + 1)) {
+    const k = iso(d);
+    if (FEST[k]) { TAGE[k] = { ...FEST[k] }; continue; }
+    const we = d.getDay() === 0 || d.getDay() === 6;
+    const frei = FREI.includes(k) || URLAUB.some(([a, b]) => k >= a && k <= b);
+    const sem = k <= '2026-02-14' || (k >= '2026-04-13' && k <= '2026-07-24') || k >= '2026-10-12';
+    const pruef = (k >= '2026-02-01' && k <= '2026-02-28') || (k >= '2026-07-13' && k <= '2026-08-07');
+    const min = (a, b) => Math.round((a + R() * (b - a)) / 5) * 5;
+    const t = {};
+    if (!we && !frei) t.job = min(445, 515);
+    if (R() < (pruef ? (we ? 0.7 : 0.6) : sem ? (we ? 0.3 : 0.5) : 0.08)) t.uni = pruef ? min(90, 300) : min(45, 150);
+    if (R() < (we ? 0.25 : 0.28)) t.side = min(30, 150);
+    if (R() < (we ? 0.5 : 0.3)) t.proj = we ? min(60, 240) : min(30, 120);
+    if (t.uni) { const r = R(); t.uniT = r < 0.42 ? 'Statistik' : r < 0.72 ? 'Mathe' : r < 0.9 ? 'BWL' : null; }
+    if (Object.keys(t).length) TAGE[k] = t;
+  }
+  function zeitraum(von, bis) {
+    const per = {}, uniT = {}; let tage = 0, tot = 0;
+    for (const [k, t] of Object.entries(TAGE)) {
+      if (k < von || k > bis) continue;
+      tage++;
+      for (const b of ORDER) if (t[b]) { per[b] = (per[b] || 0) + t[b]; tot += t[b]; }
+      if (t.uni) { const n = t.uniT ?? 'ohne'; uniT[n] = (uniT[n] || 0) + t.uni; }
+    }
+    return { per, uniT, tage, tot };
+  }
+  const tageAb = (von, n) => { const out = []; const d = new Date(von + 'T12:00'); for (let i = 0; i < n; i++) { out.push(iso(d)); d.setDate(d.getDate() + 1); } return out; };
+  const tag = (k) => { const t = TAGE[k] || {}; const per = {}; let tot = 0; for (const b of ORDER) if (t[b]) { per[b] = t[b]; tot += t[b]; } return { per, tot }; };
+  const HEUTE = '2026-11-06';
+  const WOCHE = tageAb('2026-11-02', 7).map((k, i) => ({ k, ...tag(k), lab: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'][i], cls: k === HEUTE ? 'today' : k > HEUTE ? 'fut' : '' }));
+  const ZW = zeitraum('2026-11-02', '2026-11-08'), ZVW = zeitraum('2026-10-26', '2026-10-30');
+  const ZO = zeitraum('2026-10-01', '2026-10-31'), ZS = zeitraum('2026-09-01', '2026-09-30');
+  const ZJ = zeitraum('2026-01-01', '2026-12-31');
+  const MONAT = tageAb('2026-10-01', 31).map((k, i) => ({ ...tag(k), lab: [1, 8, 15, 22, 29].includes(i + 1) ? i + 1 : '' }));
+  const JAHR = [...'JFMAMJJASOND'].map((lab, m) => ({ ...zeitraum(`2026-${pad(m + 1)}-01`, `2026-${pad(m + 1)}-31`), lab, cls: m === 10 ? 'today' : m === 11 ? 'fut' : '' }));
+  const vgl = (a, b, text) => { const d = a - b; return `<div class="vgl${d < 0 ? ' minus' : ''}"><b>${d < 0 ? '−' : '+'}${hmMin(Math.abs(d))} h</b> ${text}</div>`; };
+
+  // ---------- Symbole ----------
+  const s = (vb, body, extra = '') => `<svg viewBox="${vb}" ${extra}>${body}</svg>`;
+  const ST = 'fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"';
+  const I = {
+    back: s('0 0 12 20', '<path d="M10 2 2 10l8 8"/>', `${ST} stroke-width="2.6"`),
+    left: s('0 0 10 18', '<path d="M8 2 2 9l6 7"/>', `${ST} stroke-width="2.4"`),
+    right: s('0 0 10 18', '<path d="m2 2 6 7-6 7"/>', `${ST} stroke-width="2.4"`),
+    stats: s('0 0 24 24', '<path d="M5 20v-7M12 20V5M19 20v-10"/>', `${ST} stroke-width="2.6"`),
+    layers: s('0 0 24 24', '<rect x="3.5" y="4" width="17" height="6.5" rx="2"/><rect x="3.5" y="13.5" width="17" height="6.5" rx="2"/>', `${ST} stroke-width="2"`),
+    play: s('0 0 24 24', '<path d="M7 4.5v15l12.5-7.5z"/>', 'fill="currentColor"'),
+    stop: s('0 0 24 24', '<rect x="5" y="5" width="14" height="14" rx="2.5"/>', 'fill="currentColor"'),
+    plus: s('0 0 24 24', '<path d="M12 5v14M5 12h14"/>', `${ST} stroke-width="2.4"`),
+    chev: s('0 0 24 24', '<path d="m9 5 7 7-7 7"/>', `${ST} stroke-width="2.4"`),
+    down: s('0 0 24 24', '<path d="m5 9 7 7 7-7"/>', `${ST} stroke-width="2.4"`),
+    grip: s('0 0 24 24', '<path d="M5 8h14M5 12h14M5 16h14"/>', `${ST} stroke-width="2"`),
+    more: s('0 0 24 24', '<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>', 'fill="currentColor"'),
+    del: s('0 0 26 20', '<path d="M8 2h15a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8l-7-8z"/><path d="m12 7 6 6M18 7l-6 6"/>', `${ST} stroke-width="1.8"`),
+    warn: s('0 0 24 24', '<path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.2v.3"/>', `${ST} stroke-width="2"`),
+    gear: s('0 0 24 24', '<circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="7"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>', `${ST} stroke-width="2"`),
+  };
+  const BAR = s('0 0 18 12', '<rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" width="3" height="12" rx="1"/>', 'width="18" height="12" fill="currentColor"') +
+    s('0 0 16 12', '<path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0z" fill="currentColor"/><path d="M3.3 6.8a6.6 6.6 0 0 1 9.4 0M1 4.3a9.9 9.9 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>', 'width="16" height="12"') +
+    s('0 0 27 13', '<rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="2" y="2" width="18" height="9" rx="2" fill="currentColor"/><path d="M25 4.5v4a2 2 0 0 0 0-4z" fill="currentColor" fill-opacity=".4"/>', 'width="27" height="13"');
+
+  // App-Symbole im Stil „Signal“ (Kopien aus icons/, Punch neu): Stoppuhr, ein Viertel ausgespart
+  const PUNCH = `<rect width="180" height="180" fill="${PETROL}"/>` +
+    '<rect x="76" y="30" width="28" height="12" rx="6" fill="#FFFFFF"/><rect x="85" y="40" width="10" height="16" fill="#FFFFFF"/>' +
+    '<rect x="119" y="55.5" width="16" height="11" rx="5.5" fill="#FFFFFF" fill-opacity=".6" transform="rotate(45 127 61)"/>' +
+    '<circle cx="90" cy="98" r="44" fill="#FFFFFF"/>' +
+    `<path d="M90 98V64a34 34 0 0 1 34 34z" fill="${PETROL}"/>`;
+  const VIOLET = '#7A50E0';
+  const TICK = `<rect width="180" height="180" fill="${VIOLET}"/>` +
+    '<circle cx="56" cy="56" r="16" fill="#FFFFFF"/>' +
+    `<path d="M48.5 56.5l5.5 5.5 10-11" fill="none" stroke="${VIOLET}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>` +
+    '<path d="M86 56h48" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/>' +
+    '<g fill="none" stroke="#FFFFFF" stroke-opacity=".6" stroke-linecap="round"><circle cx="56" cy="90" r="13" stroke-width="6"/><path d="M86 90h34" stroke-width="12"/>' +
+    '<circle cx="56" cy="124" r="13" stroke-width="6"/><path d="M86 124h42" stroke-width="12"/></g>';
+  const APPS = [
+    ['Kontor', '#2E9E6B', '<rect width="180" height="180" fill="#2E9E6B"/><g transform="rotate(-90 90 90)" fill="none" stroke="#FFFFFF" stroke-width="24"><circle cx="90" cy="90" r="38" stroke-dasharray="105 133.76"/><circle cx="90" cy="90" r="38" stroke-opacity="0.72" stroke-dasharray="62 176.76" stroke-dashoffset="-113"/><circle cx="90" cy="90" r="38" stroke-opacity="0.45" stroke-dasharray="47.76 191" stroke-dashoffset="-183"/></g>'],
+    ['Steady', '#F2785C', '<rect width="180" height="180" fill="#F2785C"/><rect x="44" y="44" width="92" height="92" rx="28" fill="#FFFFFF"/><path d="M68 91l15 15 30-31" fill="none" stroke="#F2785C" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>'],
+    ['Piano', '#D9A953', '<rect width="180" height="180" fill="#D9A953"/><rect x="40" y="38" width="100" height="9" rx="4.5" fill="#0E0D0B"/><g fill="#FBF6EA"><path d="M42 52h28v81a7 7 0 0 1-7 7h-14a7 7 0 0 1-7-7z"/><path d="M76 52h28v81a7 7 0 0 1-7 7h-14a7 7 0 0 1-7-7z"/><path d="M110 52h28v81a7 7 0 0 1-7 7h-14a7 7 0 0 1-7-7z"/></g><g fill="#0E0D0B"><path d="M63 52h20v47a5 5 0 0 1-5 5h-10a5 5 0 0 1-5-5z"/><path d="M97 52h20v47a5 5 0 0 1-5 5h-10a5 5 0 0 1-5-5z"/></g>'],
+    ['Loci', '#1E4DB7', '<rect width="180" height="180" fill="#1E4DB7"/><path d="M60 133V77a30 30 0 0 1 60 0v56" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round"/><path d="M42 133h96" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"/><path d="M85 98.8A11 11 0 1 1 95 98.8L98.5 116h-17z" fill="#FFFFFF"/>'],
+    ['Stash', '#1F1D1A', '<rect width="180" height="180" fill="#1F1D1A"/><rect x="46" y="48" width="88" height="86" rx="9" fill="#A79E8B" transform="rotate(-10 90 91)"/><rect x="46" y="48" width="88" height="86" rx="9" fill="#FFFDF8"/><path d="M62 72h38" stroke="#1F1D1A" stroke-width="9" stroke-linecap="round"/><path d="M62 94h56M62 114h40" stroke="#B5AC9A" stroke-width="6" stroke-linecap="round"/>'],
+    ['Form', '#FF6A00', '<rect width="180" height="180" fill="#FF6A00"/><path d="M40 44H140" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round" stroke-dasharray="11 12"/><path d="M40 136L66 110L89 121L117 86L134 70" fill="none" stroke="#FFFFFF" stroke-width="19" stroke-linecap="round" stroke-linejoin="round"/><circle cx="134" cy="70" r="17" fill="#0D0D0E" stroke="#FF6A00" stroke-width="7"/>'],
+    ['Tick', VIOLET, TICK, 2],
+    ['Punch', PETROL, PUNCH, 0, 1],
+  ];
+
+  // ---------- Bausteine ----------
+  const dev = (cls, inner) => `<div class="device"><div class="screen ${cls}"><div class="island"></div>${inner}<div class="homebar"></div></div></div>`;
+  const sb = (t) => `<div class="sb"><span>${t}</span><span class="ico">${BAR}</span></div>`;
+  const icb = (i) => `<span class="icb">${i}</span>`;
+  const sl = (t) => `<div class="sl"><span class="lbl">${t}</span></div>`;
+  const fade = '<div class="fade"></div>';
+
+  // ---------- Richtung A: Formular ----------
+  const aTop = () => `<div class="a-top"><span class="back">${I.back}Apps</span><span class="wm">PUNCH</span><span class="icbs">${icb(I.stats)}${icb(I.layers)}</span></div>`;
+  const stTop = (t) => `<div class="st-top"><span class="back">${I.back}Punch</span><b>${t}</b><span></span></div>`;
+  const aDate = (t, vor = false) => `<div class="a-date"><span class="arr">${I.left}</span><b>${t}</b><span class="arr${vor ? '' : ' off'}">${I.right}</span></div>`;
+  const aSum = (sum, leer = false) => `<div class="a-sum"><span class="lbl">Summe</span><div class="big${leer ? ' leer' : ''}">${hm(sum.tot)}<small>h</small></div></div>` +
+    `<div class="segbar">${ORDER.filter((b) => sum.per[b]).map((b) => `<i style="flex:${sum.per[b]};--o:${BER[b].c}"></i>`).join('')}</div>` +
+    `<div class="legend">${ORDER.filter((b) => sum.per[b]).map((b) => `<span style="--o:${BER[b].c}">${BER[b].n} ${hm(sum.per[b])}</span>`).join('')}</div>`;
+  const runCard = (x, jetzt) => {
+    const B = BER[x.b];
+    return `<div class="run" style="--o:${B.c}"><div class="run-h"><b><i></i>${B.n}</b><span class="seit">seit ${x.s}</span></div>` +
+      `<div class="run-t">${hms(sek(jetzt) - sek(x.s))}</div>` +
+      `<div class="chips">${B.t.map((t) => `<span class="chip${t === x.t ? ' on' : ''}">${t}</span>`).join('')}<span class="chip add">${I.plus}Neu</span></div>` +
+      `<div class="run-f"><span class="note${x.n ? '' : ' ph'}">${x.n || 'Notiz'}</span><span class="stop">${I.stop}Stopp</span></div></div>`;
+  };
+  const tiles = (sum, on, lift = '', menu = '') => `<div class="tiles">${ORDER.map((b) =>
+    `<div class="tile${b === on ? ' on' : ''}${b === lift ? ' lift' : ''}" style="--o:${BER[b].c}"><b><i></i>${BER[b].n}</b><span>${b === on ? I.play : ''}${hm(sum.per[b] || 0)}</span>${b === lift ? menu : ''}</div>`).join('')}</div>`;
+  const zettel = (blocks, jetzt, sum, weiter = false) => `<div class="zettel"><div class="zh"><span>Von</span><span>Bis</span><span>Bereich · Tätigkeit</span><span>Dauer</span></div>` +
+    blocks.map((x, i) => {
+      const d = (x.e ? sek(x.e) : sek(jetzt)) - sek(x.s);
+      const bis = x.nach ? `↦${x.nach}` : x.e && x.e !== '24:00' ? x.e : '···';
+      return `<div class="zr${x.e ? '' : ' live'}" style="--o:${BER[x.b].c}"><span class="t">${x.s}</span><span class="t">${bis}</span>` +
+        `<span class="bt"><b><i></i>${BER[x.b].n}${x.t ? ` · ${x.t}` : ''}</b>${x.n ? `<small>${x.n}</small>` : ''}${x.vor ? `<small>${x.vor}</small>` : ''}` +
+        `${weiter && i === blocks.length - 1 ? `<em>${I.play}Weiter</em>` : ''}</span><span class="d">${hm(d)}</span></div>`;
+    }).join('') +
+    `<div class="zs"><span>Summe</span><span class="d">${hm(sum.tot)}</span></div><div class="zn">${I.plus}Nachtragen</div></div>`;
+  const leererZettel = () => `<div class="zettel leer"><div class="zh"><span>Von</span><span>Bis</span><span>Bereich · Tätigkeit</span><span>Dauer</span></div>` +
+    '<div class="zr leer"></div>'.repeat(4) + '<div class="zs"><span>Summe</span><span class="d"></span></div></div>';
+  const bsHead = (l, t, r, off = false) => `<div class="bs-h"><span>${l}</span><b>${t}</b><span class="ok${off ? ' off' : ''}">${r}</span></div>`;
+  const fg = (l, inner) => `<div class="fg"><span class="lbl">${l}</span>${inner}</div>`;
+  const chipsB = (on) => `<div class="chips">${ORDER.map((b) => `<span class="chip${b === on ? ' on' : ''}" style="--o:${BER[b].c}"><i></i>${BER[b].n}</span>`).join('')}</div>`;
+  const chipsT = (b, on) => `<div class="chips" style="--o:${BER[b].c}">${BER[b].t.map((t) => `<span class="chip${t === on ? ' on' : ''}">${t}</span>`).join('')}<span class="chip add">${I.plus}Neu</span></div>`;
+  const chipsTag = (on) => `<div class="chips">${['Heute', 'Gestern', 'Anderer Tag'].map((t) => `<span class="chip${t === on ? ' on' : ''}">${t}</span>`).join('')}</div>`;
+  const kp = () => `<div class="kp">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<span>${n}</span>`).join('')}<span class="fn">Jetzt</span><span>0</span><span class="fn">${I.del}</span></div>`;
+
+  function chart(cols, step) {
+    const top = Math.ceil(Math.max(step, ...cols.map((c) => c.tot)) / step) * step;
+    const lines = [];
+    for (let v = step; v <= top; v += step) lines.push(v);
+    return `<div class="plot">${lines.map((v) => `<i class="gl" style="bottom:${v / top * 100}%"><b>${v / 60}</b></i>`).join('')}` +
+      cols.map((c) => `<div class="col ${c.cls || ''}"><div class="stk" style="height:${c.tot / top * 100}%">` +
+        ORDER.filter((b) => c.per[b]).map((b) => `<i style="flex:${c.per[b]} 1 0;background:${BER[b].c}"></i>`).join('') + '</div></div>').join('') +
+      `</div><div class="xl">${cols.map((c) => `<span class="${c.cls || ''}">${c.lab}</span>`).join('')}</div>`;
+  }
+  function vert(z, offen) {
+    const rows = ORDER.filter((b) => z.per[b]).sort((a, b) => z.per[b] - z.per[a]);
+    return `<div class="vt">${rows.map((b) => {
+      const p = z.per[b] / z.tot;
+      const kids = b !== offen ? '' : `<div class="vk">${Object.entries(z.uniT).sort((x, y) => y[1] - x[1]).map(([n, m]) =>
+        `<div class="vkr"><span>${n === 'ohne' ? 'ohne Tätigkeit' : n}</span><span>${Math.round(m / z.per[b] * 100)} %</span><span>${hmMin(m)}</span></div>`).join('')}</div>`;
+      return `<div class="vr${b === offen ? ' open' : ''}" style="--o:${BER[b].c}"><div class="vh"><b><i></i>${BER[b].n}</b><span>${Math.round(p * 100)} %</span><span class="d">${hmMin(z.per[b])}</span>${I.chev}</div>` +
+        `<div class="vb"><i style="width:${p * 100}%"></i></div>${kids}</div>`;
+    }).join('')}</div>`;
+  }
+  const statA = (seg, period, vor, z, vg, cols, step, gap, offen) => dev('A', sb('20:14') + stTop('Statistik') +
+    `<div class="seg">${['Woche', 'Monat', 'Jahr'].map((x) => `<span class="${x === seg ? 'on' : ''}">${x}</span>`).join('')}</div>` +
+    `<div class="scroll">${aDate(period, vor)}<div class="a-sum"><span class="lbl">Summe</span><div class="big s">${hmMin(z.tot)}<small>h</small></div>` +
+    `<div class="facts">an ${z.tage} Tagen · Ø ${hmMin(z.tot / z.tage)} h</div>${vg}</div>` +
+    `<div class="card" style="--g:${gap}px">${chart(cols, step)}</div>${sl('Verteilung')}${vert(z, offen)}</div>${fade}`);
+
+  const V = {
+    heute: () => {
+      const j = '20:14:37', s1 = summe(FR1, j);
+      return dev('A', sb('20:14') + aTop() + `<div class="scroll">${aDate('Freitag, 6. November')}${aSum(s1)}${runCard(FR1[3], j)}` +
+        `${sl('Bereiche')}${tiles(s1, 'uni')}${sl('Stundenzettel')}${zettel(FR1, j, s1)}</div>${fade}`);
+    },
+    abend: () => {
+      const j = '21:48', s2 = summe(FR2, j);
+      return dev('A', sb('21:48') + aTop() + `<div class="scroll">${aDate('Freitag, 6. November')}${aSum(s2)}` +
+        `${sl('Bereiche')}${tiles(s2, null)}${sl('Stundenzettel')}${zettel(FR2, j, s2, true)}</div>` +
+        `<div class="toast"><span>Uni gestoppt · <b>${hm(sek('21:48') - sek('19:02'))}</b></span><b>Rückgängig</b></div>`);
+    },
+    lang: () => {
+      const j = '19:02', s3 = summe(FR3, j);
+      const menu = `<div class="menu"><div class="mh">Uni starten mit …</div>` +
+        [['Statistik', 'gestern'], ['Mathe', 'Mi'], ['BWL', 'Do']].map(([t, z]) => `<div class="mi">${t}<small>${z}</small></div>`).join('') +
+        `<div class="mi">ohne Tätigkeit</div><div class="mi add">Neue Tätigkeit</div></div>`;
+      return dev('A', sb('19:02') + aTop() + `<div class="scroll">${aDate('Freitag, 6. November')}${aSum(s3)}` +
+        `${sl('Bereiche')}${tiles(s3, null, 'uni', menu)}${sl('Stundenzettel')}${zettel(FR3, j, s3)}</div><div class="dim"></div>`);
+    },
+    start: () => {
+      const j = '19:20:05', s4 = summe(FR4, j);
+      return dev('A', sb('19:20') + aTop() + `<div class="scroll">${aDate('Freitag, 6. November')}${aSum(s4)}${runCard(FR4[3], j)}</div>` +
+        `<div class="dim"></div><div class="bs" style="top:318px">${bsHead('Abbrechen', 'Startzeit', 'Sichern')}` +
+        `<div class="bs-q">Seit wann läuft Uni?</div><div class="tfs"><div class="tf on"><span class="lbl">Seit</span><span class="tv">18:45<i class="caret"></i></span></div>` +
+        `<div class="prev">läuft dann seit<br><b>${hms(sek(j) - sek('18:45'))}</b></div></div>` +
+        `<div class="hint">Frühestens <b>18:20</b>, da endet Side Job.</div><div class="qk"><span class="q">Anschließen · <b>18:20</b></span></div>${kp()}</div>`);
+    },
+    tag: () => {
+      const s5 = summe(MI, '24:00');
+      return dev('A', sb('20:15') + aTop() + `<div class="scroll">${aDate('Mittwoch, 4. November', true)}${aSum(s5)}` +
+        `${sl('Stundenzettel')}${zettel(MI, '24:00', s5)}</div>`);
+    },
+    nach: () => dev('A', sb('21:55') + aTop() + '<div class="scroll"></div><div class="dim"></div>' +
+      `<div class="bs" style="top:52px">${bsHead('Abbrechen', 'Nachtragen', 'Sichern')}` +
+      fg('Bereich', chipsB('side')) + fg('Tätigkeit', chipsT('side', 'Kundenprojekt')) + fg('Notiz', '<div class="note">Startseite für Kunden</div>') +
+      fg('Tag', chipsTag('Gestern') + '<span class="dsub">Donnerstag, 5. November</span>') +
+      `<div class="tfs"><div class="tf"><span class="lbl">Von</span><span class="tv">20:00</span></div><div class="tf on"><span class="lbl">Bis</span><span class="tv">22:30<i class="caret"></i></span></div></div>` +
+      `<div class="qk"><span class="q">Anschließen · <b>19:45</b></span><span class="q off">Bis zum nächsten</span></div>` +
+      `<div class="dur"><span>Dauer</span><b>2:30</b></div>${kp()}</div>`),
+    ueber: () => dev('A', sb('21:57') + aTop() + '<div class="scroll"></div><div class="dim"></div>' +
+      `<div class="bs" style="top:52px">${bsHead('Abbrechen', 'Block', 'Sichern', true)}` +
+      fg('Bereich', chipsB('side')) + fg('Tätigkeit', chipsT('side', 'Rechnungen')) + fg('Notiz', '<div class="note ph">Notiz</div>') +
+      fg('Tag', chipsTag('Heute') + '<span class="dsub">Freitag, 6. November</span>') +
+      `<div class="tfs"><div class="tf err"><span class="lbl">Von</span><span class="tv">16:50</span></div><div class="tf"><span class="lbl">Bis</span><span class="tv">18:20</span></div></div>` +
+      `<div class="warn">${I.warn}<span>Überschneidet sich mit Job <b>12:41–17:05</b></span></div>` +
+      `<div class="qk"><span class="q">Anschließen · <b>17:05</b></span><span class="q off">Bis zum nächsten</span></div>` +
+      `<div class="dur"><span>Dauer</span><b>1:30</b></div><div class="del-btn">Block löschen</div></div>`),
+    woche: () => statA('Woche', '2.–8. November', false, ZW, vgl(ZW.tot, ZVW.tot, 'zur Vorwoche bis Freitag'), WOCHE, 240, 8, 'uni'),
+    monat: () => statA('Monat', 'Oktober 2026', true, ZO, vgl(ZO.tot, ZS.tot, 'zum September'), MONAT, 240, 2, null),
+    jahr: () => statA('Jahr', '2026', false, ZJ, '<div class="vgl no">Erstes Jahr mit Punch, kein Vergleich</div>', JAHR, 3000, 5, null),
+    bereiche: () => dev('A', sb('20:16') + stTop('Bereiche') + `<div class="scroll">${sl('Auf dem Start')}<div class="list">` +
+      ORDER.map((b) => `<div class="lr" style="--o:${BER[b].c}"><span class="grip">${I.grip}</span><b><i></i>${BER[b].n}</b><small>${BER[b].t.length} Tätigkeiten</small>${I.chev}</div>`).join('') +
+      `<div class="lr add">${I.plus}Bereich</div></div>${sl('Archiviert')}<div class="list"><div class="lr arch"><b>1 Bereich</b>${I.down}</div></div>` +
+      '<p class="foot">Archivierte Bereiche fehlen auf dem Start und bleiben in der Statistik.</p></div>'),
+    bereich: () => dev('A', sb('20:17') + stTop('Bereiche') + '<div class="scroll"></div><div class="dim"></div>' +
+      `<div class="bs" style="top:52px">${bsHead('Abbrechen', 'Bereich', 'Sichern')}` +
+      fg('Name', '<div class="inp">Uni</div>') +
+      fg('Farbe', `<div class="cols">${PAL.map(([, c]) => `<i style="--o:${c}"${c === BER.uni.c ? ' class="on"' : ''}></i>`).join('')}</div>`) +
+      fg('Tätigkeiten', `<div class="list">${[['Statistik', 'heute'], ['Mathe', 'Mittwoch'], ['BWL', 'Donnerstag']].map(([t, z]) =>
+        `<div class="lr"><b>${t}</b><small>zuletzt ${z}</small>${I.more}</div>`).join('')}<div class="lr add">${I.plus}Tätigkeit</div></div>`) +
+      fg('Archiviert', '<div class="list"><div class="lr arch"><b>Analysis 1</b><span class="act">Zurückholen</span></div></div>') +
+      '<div class="outl">Bereich archivieren</div></div>'),
+    erst: () => dev('A', sb('9:41') + aTop() + `<div class="scroll">${aDate('Freitag, 6. November')}${aSum({ per: {}, tot: 0 }, true)}` +
+      `<div class="first"><h2>Was zählt für dich als produktiv?</h2><p>Job, Uni, Side Job, eigene Projekte: Leg für alles, was du erfassen willst, einen Bereich an.</p>` +
+      `<span class="cta">${I.plus}Ersten Bereich anlegen</span></div>${sl('Stundenzettel')}${leererZettel()}</div>`),
+    launcher: () => dev('L', sb('20:16') +
+      `<div class="l-head"><div><div class="l-date">Freitag, 6. November</div><h1>appdeck</h1></div><span class="l-gear">${I.gear}</span></div>` +
+      `<div class="l-grid">${APPS.map(([n, c, svg, badge, neu]) =>
+        `<div class="l-t${neu ? ' neu' : ''}"><span class="l-ic" style="--tc:${c}"><svg viewBox="0 0 180 180">${svg}</svg></span>${badge ? `<span class="badge">${badge}</span>` : ''}<span>${n}</span></div>`).join('')}</div>`),
+  };
+
+  // ---------- Richtung B: Stechkarte ----------
+  const bTop = () => `<div class="a-top"><span class="back">${I.back}Apps</span><span class="b-wm">PUNCH</span><span class="icbs">${icb(I.stats)}${icb(I.layers)}</span></div>`;
+  const B = {
+    heute: () => {
+      const j = '20:14:37', s1 = summe(FR1, j);
+      const rot = [[-0.8, 0.6], [0.5, -0.7], [-0.4, 0.4], [0.7, 0]];
+      return dev('B', sb('20:14') + bTop() + `<div class="scroll"><div class="b-card"><span class="hole"></span><div class="b-hd"><span>Zeitkarte</span><span>Fr 06.11.26</span></div>` +
+        `<div class="b-sum">${hm(s1.tot)}<small>Std.</small></div>` +
+        `<div class="b-th"><span>Kommt</span><span>Geht</span><span>Bereich</span><span>Std.</span></div>` +
+        FR1.map((x, i) => `<div class="b-tr${x.e ? '' : ' live'}" style="--o:${BER[x.b].c}"><span class="st" style="--r:${rot[i][0]}deg">${x.s}</span><span class="st" style="--r:${rot[i][1]}deg">${x.e || '· · ·'}</span>` +
+          `<span class="bn"><span><i></i>${BER[x.b].n.toUpperCase()}</span>${x.t ? `<small>${x.t}${x.n ? ' · ' + x.n : ''}</small>` : ''}</span>` +
+          `<span class="st d">${x.e ? hm(sek(x.e) - sek(x.s)) : hms(sek(j) - sek(x.s))}</span></div>`).join('') +
+        `<div class="b-tot"><span>Summe</span><span>${hm(s1.tot)}</span></div></div>` +
+        `<div class="b-lab">Fächer</div><div class="b-rack">${ORDER.map((b) =>
+          `<div class="b-slot${b === 'uni' ? ' in' : ''}" style="--o:${BER[b].c}"><b>${BER[b].n}</b><span>${hm(s1.per[b] || 0)}</span>${b === 'uni' ? '<em>IN</em>' : ''}</div>`).join('')}</div>` +
+        `<div class="b-out">${I.stop}Ausstempeln</div></div>`);
+    },
+    woche: () => dev('B', sb('20:14') + `<div class="st-top"><span class="back">${I.back}Punch</span><b class="b-ttl">Statistik</b><span></span></div>` +
+      `<div class="b-seg"><span class="on">Woche</span><span>Monat</span><span>Jahr</span></div>` +
+      `<div class="scroll"><div class="b-card"><span class="hole"></span><div class="b-hd"><span>Wochenkarte</span><span>KW 45 · 2026</span></div>` +
+      WOCHE.map((d) => `<div class="b-wr${d.cls === 'fut' ? ' fut' : ''}"><span>${d.lab} ${d.k.slice(8)}.${d.k.slice(5, 7)}</span>` +
+        `<span class="b-bar">${ORDER.filter((b) => d.per[b]).map((b) => `<i style="width:${d.per[b] / 720 * 100}%;background:${BER[b].c}"></i>`).join('')}</span>` +
+        `<span class="st">${d.tot ? hmMin(d.tot) : '—'}</span></div>`).join('') +
+      `<div class="b-tot"><span>Summe</span><span>${hmMin(ZW.tot)}</span></div>` +
+      `<div class="b-meta">Ø ${hmMin(ZW.tot / ZW.tage)} an ${ZW.tage} Tagen<br><b>${ZW.tot >= ZVW.tot ? '+' : '−'}${hmMin(Math.abs(ZW.tot - ZVW.tot))}</b> zur Vorwoche bis Fr</div></div>` +
+      `<div class="b-lab">Verteilung</div><div class="b-card" style="padding-top:4px">${ORDER.filter((b) => ZW.per[b]).sort((a, b) => ZW.per[b] - ZW.per[a]).map((b) =>
+        `<div class="b-vr" style="--o:${BER[b].c}"><span><i></i>${BER[b].n.toUpperCase()}</span><span>${Math.round(ZW.per[b] / ZW.tot * 100)} %</span><span>${hmMin(ZW.per[b])}</span></div>`).join('')}</div></div>${fade.replace('fade', 'fade" style="background:linear-gradient(to bottom, rgba(231,220,193,0), var(--bg) 72%)')}`),
+  };
+
+  // ---------- Richtung C: Beleg ----------
+  const zig = (() => { let p = '0,0'; for (let x = 0; x <= 340; x += 5) p += ` ${x},${(x / 5) % 2 ? 8 : 0}`; return `<svg class="zig" viewBox="0 0 340 8" preserveAspectRatio="none"><polygon points="${p} 340,0" fill="#FFFFFF"/></svg>`; })();
+  const cTop = () => `<div class="a-top"><span class="back">${I.back}Apps</span><span></span><span class="icbs">${icb(I.stats)}${icb(I.layers)}</span></div>`;
+  const C = {
+    heute: () => {
+      const j = '20:14:37', s1 = summe(FR1, j);
+      return dev('C', sb('20:14') + cTop() + `<div class="scroll"><div class="rc"><div class="rc-c"><b>PUNCH</b><span>FR 06.11.2026 · 20:14</span></div><hr>` +
+        FR1.map((x) => `<div class="rc-l${x.e ? '' : ' live'}"><span>${x.s}–${x.e || '     '} ${BER[x.b].n.toUpperCase()}${x.t ? '/' + x.t.toUpperCase() : ''}</span>` +
+          `<span>${x.e ? hm(sek(x.e) - sek(x.s)) : hms(sek(j) - sek(x.s))}</span></div>${x.n ? `<div class="rc-n">${x.n.toUpperCase()}</div>` : ''}`).join('') +
+        `<hr><div class="rc-sum"><span>SUMME</span><span>${hm(s1.tot)} h</span></div><div class="rc-dbl"></div>` +
+        `<div class="rc-per">${ORDER.filter((b) => s1.per[b]).map((b) => `<span><i style="background:${BER[b].c}"></i>${BER[b].n.toUpperCase()} ${hm(s1.per[b])}</span>`).join('')}</div>${zig}</div>` +
+        `<div class="c-btns">${ORDER.map((b) => `<span class="cb${b === 'uni' ? ' on' : ''}"><i style="background:${BER[b].c}"></i>${BER[b].n}</span>`).join('')}</div>` +
+        `<div class="c-stop">${I.stop}STOPP · UNI ${hms(sek(j) - sek('19:02'))}</div></div>`);
+    },
+    woche: () => dev('C', sb('20:14') + `<div class="st-top"><span class="back">${I.back}Punch</span><b class="c-ttl">STATISTIK</b><span></span></div>` +
+      '<div class="c-seg"><span class="on">[WOCHE]</span><span>MONAT</span><span>JAHR</span></div>' +
+      `<div class="scroll"><div class="rc"><div class="rc-c"><b>WOCHE</b><span>KW 45 · 02.–08.11.2026</span></div><hr>` +
+      WOCHE.map((d) => `<div class="rc-l"><span>${d.lab.toUpperCase()} ${d.k.slice(8)}.${d.k.slice(5, 7)}</span><span class="rc-bar">${ORDER.filter((b) => d.per[b]).map((b) =>
+        `<i style="width:${d.per[b] / 720 * 100}%;background:${BER[b].c}"></i>`).join('')}</span><span>${d.tot ? hmMin(d.tot) : '   -'}</span></div>`).join('') +
+      `<hr><div class="rc-sum"><span>SUMME</span><span>${hmMin(ZW.tot)} h</span></div><div class="rc-dbl"></div>` +
+      `<div class="rc-l"><span>Ø/TAG (${ZW.tage} TAGE)</span><span>${hmMin(ZW.tot / ZW.tage)}</span></div>` +
+      `<div class="rc-l"><span>VORWOCHE BIS FR</span><span>${ZW.tot >= ZVW.tot ? '+' : '−'}${hmMin(Math.abs(ZW.tot - ZVW.tot))}</span></div><hr>` +
+      ORDER.filter((b) => ZW.per[b]).sort((a, b) => ZW.per[b] - ZW.per[a]).map((b) =>
+        `<div class="rc-l"><span><i class="c-sq" style="background:${BER[b].c}"></i>${BER[b].n.toUpperCase()}</span><span>${pad(Math.round(ZW.per[b] / ZW.tot * 100))} %  ${hmMin(ZW.per[b]).padStart(5)}</span></div>`).join('') +
+      `${zig}</div></div>`),
+  };
+
+  // ---------- Seite füllen ----------
+  const DIRS = [
+    ['A', 'Formular', 'Empfehlung', 'Formularpapier mit Linien und Beschriftung in Petrol, wie vorgedruckt. Zeiten in Spline Sans Mono. Ruhig und nah an iOS, Farbe nur bei den Bereichen.', V.heute, V.woche],
+    ['B', 'Stechkarte', '', 'Manila-Karton, rot gedruckt wie eine alte Stempelkarte, die Zeiten in Courier leicht schief wie gestempelt. Die Bereiche stecken als Karten im Fach, Stoppen heißt Ausstempeln. Viel Charakter, aber laut.', B.heute, B.woche],
+    ['C', 'Beleg', '', 'Der Tag als Kassenbon: Thermopapier, alles in IBM Plex Mono (schon im Projekt), Summe mit Doppelstrich, unten abgerissen. Klar und witzig, aber eng, und ein Bon erinnert eher an Kontor.', C.heute, C.woche],
+  ];
+  document.getElementById('dirs').innerHTML = DIRS.map(([k, n, em, p, a, o]) =>
+    `<div class="pg-dh"><h3><span>${k}</span>${n}${em ? `<em>${em}</em>` : ''}</h3><p>${p}</p></div>` +
+    `<div class="pg-fit">${a()}</div><div class="pg-fit">${o()}</div>`).join('');
+
+  const SCREENS = [
+    ['v1', 1, 'Heute, Timer läuft', V.heute, [
+      'Freitag, 20:14. Oben die Summe des Tages, darunter der Balken nach Bereichen. Der laufende Block zählt sekundengenau mit, die Summe ist auf volle Minuten abgerundet.',
+      'Die Laufend-Karte: Tätigkeit als Chips, die Notiz auf einer Formularzeile, „seit 19:02“ lässt sich antippen (4).',
+      'Uni läuft und trägt seine Farbe als Fläche. Ein Tipp auf eine andere Kachel beendet Uni und startet die andere in derselben Sekunde. Ein Tipp auf Uni selbst tut nichts.',
+      'Darunter der Stundenzettel des Tages, ganz zu sehen in 2.',
+    ]],
+    ['v2', 2, 'Heute, abends', V.abend, [
+      '21:48, gerade gestoppt. Der Toast nimmt das Stoppen 5 Sekunden lang zurück, genau wie beim Wechseln und Löschen.',
+      'Der Stundenzettel: Von, Bis, Bereich · Tätigkeit, Dauer. Die Notiz klein darunter, unten die Summe mit Doppelstrich.',
+      '▶ Weiter am letzten Block startet einen neuen Block mit Uni · Statistik und derselben Notiz. So geht Pause.',
+      'Ein Tipp auf eine Zeile öffnet den Block (7), „Nachtragen“ ein leeres Blatt (6).',
+    ]],
+    ['v3', 3, 'Langer Druck', V.lang, [
+      '19:02, nichts läuft. Ein langer Druck auf Uni zeigt die Tätigkeiten, die zuletzt genutzte zuerst. Ein Tipp startet direkt mit der.',
+      'Ein kurzer Tipp auf die Kachel startet sofort ohne Tätigkeit, die kommt dann auf der Laufend-Karte dazu.',
+      'Läuft gerade Uni · Statistik, wechselt man so zu Mathe, ohne erst zu stoppen.',
+    ]],
+    ['v4', 4, 'Startzeit korrigieren', V.start, [
+      '„seit 19:02“ angetippt, eigentlich ging es um 18:45 los. Vier Ziffern über das eigene Tastenfeld, wie die Zeiten in Form.',
+      'Früher als 18:20 geht nicht, da endet Side Job. „Anschließen“ setzt genau diese Zeit.',
+      '„Jetzt“ auf dem Tastenfeld setzt die aktuelle Uhrzeit.',
+    ]],
+    ['v5', 5, 'Ein Tag davor', V.tag, [
+      '‹ blättert zurück, › wieder vor bis heute. Ohne Kacheln und ohne Laufend-Karte, sonst wie heute.',
+      'Der letzte Block geht bis Donnerstag 1:40. Hier zählen 1:45 bis Mitternacht, am Donnerstag die 1:40 danach. Gespeichert ist nur ein Block.',
+    ]],
+    ['v6', 6, 'Nachtragen', V.nach, [
+      'Ein vergessener Abend am Donnerstag: Side Job · Kundenprojekt von 20:00 bis 22:30.',
+      'Der Tag als Chips, „Anderer Tag“ öffnet einen Kalender. Von und Bis über das Tastenfeld, minutengenau. Ein zweiter Tipp auf die gewählte Tätigkeit nimmt sie wieder weg.',
+      '„Anschließen“ setzt Von auf das Ende des Blocks davor, hier Uni bis 19:45. „Bis zum nächsten“ ist aus, danach kommt an dem Tag nichts mehr.',
+      'Ist Bis früher als Von, geht der Block bis zum nächsten Tag, dann steht „+1 Tag“ daneben.',
+    ]],
+    ['v7', 7, 'Überschneidung', V.ueber, [
+      'Ein Block wird bearbeitet: Side Job soll schon um 16:50 angefangen haben. Da lief aber noch Job.',
+      'Der Hinweis nennt den anderen Block, Sichern ist aus. „Anschließen“ schlägt 17:05 vor.',
+      'Unten „Block löschen“, ohne Rückfrage, dafür mit Rückgängig im Toast.',
+    ]],
+    ['v8', 8, 'Statistik: Woche', V.woche, [
+      'Über das Balken-Symbol oben rechts. Die laufende Woche, Montag bis heute.',
+      'Ø nur über Tage mit Einträgen. Der Vergleich nimmt das gleiche Stück der Vorwoche, also Montag bis Freitag.',
+      'Gestapelt nach Bereichen, Job unten. Ein Tipp auf einen Tag öffnet ihn (5).',
+      'Darunter die Verteilung nach Stunden. Ein Tipp klappt die Tätigkeiten auf, hier bei Uni: Anteile innerhalb von Uni, Blöcke ohne Tätigkeit als eigene Zeile.',
+    ]],
+    ['v9', 9, 'Statistik: Monat', V.monat, [
+      'Oktober ist vorbei, darum vergleicht Punch mit dem ganzen September. Weniger stünde grau da, nicht rot.',
+      'Ein Balken pro Tag. Tage ohne Einträge bleiben leer und zählen nicht in den Schnitt.',
+      'Ein Tipp auf einen Tagesbalken öffnet den Tag.',
+    ]],
+    ['v10', 10, 'Statistik: Jahr', V.jahr, [
+      'Zwölf Monatsbalken: November läuft noch, Dezember ist leer. Ein Tipp öffnet den Monat.',
+      'Gibt es im Vorjahr keine Einträge, fällt der Vergleich weg.',
+      'Weniger Job im August ist Urlaub, mehr Uni im Februar und Juli sind Prüfungen.',
+    ]],
+    ['v11', 11, 'Bereiche', V.bereiche, [
+      'Über das zweite Symbol oben rechts. Reihenfolge per langem Druck und Ziehen, so stehen auch die Kacheln auf dem Start.',
+      'Archivierte Bereiche sind eingeklappt. Sie fehlen auf dem Start, bleiben aber in der Statistik.',
+    ]],
+    ['v12', 12, 'Bereich bearbeiten', V.bereich, [
+      'Name und eine von zehn Farben. Tätigkeiten stehen nach „zuletzt genutzt“, neue gibt es hier oder direkt auf der Laufend-Karte.',
+      'Uni hat schon Blöcke, darum gibt es nur Archivieren. Löschen steht nur da, solange ein Bereich leer ist. Für Tätigkeiten gilt dasselbe.',
+      'Umbenennen wirkt rückwirkend, denn Blöcke merken sich die id, nicht den Namen.',
+    ]],
+    ['v13', 13, 'Erststart', V.erst, [
+      'Noch kein Bereich. Darunter der leere Stundenzettel, damit man sieht, wohin es geht.',
+      'Keine Vorlagen, wie bei Steady und Form. Der erste Bereich ist ein Name und eine Farbe.',
+    ]],
+    ['v14', 14, 'Launcher', V.launcher, [
+      'Punch als achte Kachel: eine Stoppuhr mit einem ausgesparten Viertel, weiß auf Petrol.',
+      'Petrol neben Kontors Grün: zu unterscheiden, aber nah. Falls das stört, ginge Schiefer oder ein dunkleres Petrol.',
+      'Keine Plakette, auch nicht, solange ein Timer läuft. So wurde es in der Fragerunde gewählt.',
+    ]],
+  ];
+
+  document.getElementById('toc').innerHTML = '<a href="#richtungen"><b>A–C</b>Richtungen</a>' +
+    SCREENS.map(([id, n, t]) => `<a href="#${id}"><b>${n}</b>${t}</a>`).join('') +
+    '<a href="#zeichen">Farben und Zeichen</a>';
+
+  document.getElementById('screens').innerHTML = SCREENS.map(([id, n, t, fn, notes]) =>
+    `<figure class="pg-shot" id="${id}"><div class="pg-fit">${fn()}</div>` +
+    `<figcaption class="pg-cap"><h3><span>${n}</span>${t}</h3><ul>${notes.map((x) => `<li>${x}</li>`).join('')}</ul></figcaption></figure>`).join('');
+
+  const sw = ([n, c]) => `<div class="pg-sw" style="--o:${c}"><i></i><div><b>${n}</b><small>${c}</small></div></div>`;
+  document.getElementById('pal').innerHTML = PAL.map(sw).join('');
+  document.getElementById('ui').innerHTML = UI.map(sw).join('');
+
+  document.getElementById('brand-icon').innerHTML = PUNCH;
+  document.getElementById('sym').innerHTML =
+    [96, 64, 40].map((px) => `<svg viewBox="0 0 180 180" width="${px}" height="${px}" role="img" aria-label="Punch-Symbol ${px} px">${PUNCH}</svg>`).join('') +
+    `<p>Eine Stoppuhr mit Krone und Seitenknopf, ein Viertel ausgespart, weiß auf Petrol ${PETROL}. Petrol hatte noch keine App, und eine Uhr hat noch kein Symbol.</p>`;
+
+  // Geräte auf schmalen Schirmen verkleinern (zoom statt transform: die Höhe schrumpft mit)
+  function fit() {
+    document.querySelectorAll('.pg-fit').forEach((f) => {
+      const d = f.firstElementChild;
+      d.style.zoom = Math.min(1, f.clientWidth / 402);
+    });
+  }
+  fit();
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(document.body);
+  else window.addEventListener('resize', fit);
+})();
+</script>

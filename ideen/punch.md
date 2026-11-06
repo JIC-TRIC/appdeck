@@ -11,12 +11,14 @@ Kontor, Steady, Piano, Loci, Stash, Form und Tick. Der Name kommt von „punch i
 ausstempeln) und der Stechkarte. Er ist kurz und englisch wie Tick, Stash und Steady.
 
 `[ ]` = offen, `[x]` = gebaut. **Stand: Entwurf nach der Fragerunde (06.11.2026), noch nichts gebaut.**
-Nächster Schritt: Mockups, dann bauen. Was in der Fragerunde gewählt wurde und was danach selbst entschieden
-ist, steht ganz unten unter „Entschieden“.
+Mockups mit drei Richtungen für „Stundenzettel“ und allen Ansichten in Richtung A: [punch-mockups.html](punch-mockups.html)
+(06.11.2026). Nächster Schritt: Richtung, Symbol und Kachelfarbe wählen, dann bauen. Was in der Fragerunde gewählt
+wurde und was danach selbst entschieden ist, steht ganz unten unter „Entschieden“.
 
 Dieses Dokument liegt bewusst unter `ideen/` und noch nicht in `apps/punch/`. Ein Ordner unter `apps/` ohne
 `src/main.tsx` würde beim Build als Vanilla-App auf die Website kopiert, und `npm run new -- punch` bricht ab,
-wenn es den Ordner schon gibt. Beim Bau wird die Datei zu `apps/punch/konzept.md`.
+wenn es den Ordner schon gibt. Beim Bau wird die Datei zu `apps/punch/konzept.md` und die Mockups zu
+`apps/punch/mockups.html`.
 
 ---
 
@@ -66,7 +68,7 @@ wenn es den Ordner schon gibt. Beim Bau wird die Datei zu `apps/punch/konzept.md
   derselben Sekunde. Danach kommt ein Toast „Uni gestoppt (0:42), Job läuft“ mit **Rückgängig** (5 s). Er
   stellt den Zustand vorher wieder her.
 - [ ] **Tipp auf die laufende Kachel** tut nichts. Stoppen geht nur über **Stopp** auf der Laufend-Karte,
-  damit kein Block aus Versehen endet.
+  damit kein Block aus Versehen endet. Auch danach kommt ein Toast „Uni gestoppt · 2:46“ mit **Rückgängig**.
 - [ ] **Die Tätigkeit ändern, während der Block läuft,** benennt den ganzen Block um und teilt ihn nicht.
 - [ ] **Notiz** (optional, höchstens 200 Zeichen, eine Zeile) auf der Laufend-Karte und beim Bearbeiten.
 - [ ] **Startzeit des laufenden Blocks korrigieren:** Ein Tipp auf „seit 18:02“ öffnet die Uhrzeit, für „vor
@@ -81,6 +83,7 @@ wenn es den Ordner schon gibt. Beim Bau wird die Datei zu `apps/punch/konzept.md
 - [ ] **Nachtragen** heißt Von–Bis: ein Datum (Chips „Heute · Gestern · Anderer Tag“) und zwei Uhrzeiten,
   minutengenau. Ist Bis früher als Von, endet der Block am nächsten Tag („+1 Tag“ steht dann dabei).
 - [ ] Uhrzeiten tippt man über ein eigenes Tastenfeld wie die Zeiten in Form: vier Ziffern, „1830“ → 18:30.
+  **Jetzt** auf dem Tastenfeld setzt die aktuelle Uhrzeit.
 - [ ] **Lücken schließen:** „Anschließen“ setzt Von auf das Ende des Blocks davor, „Bis jetzt“ setzt Bis auf
   jetzt (gibt es nur am heutigen Tag), „Bis zum nächsten“ setzt Bis auf den Beginn des Blocks danach.
 - [ ] **Keine Überschneidung:** Ein Block darf keinen anderen schneiden, auch nicht den laufenden. Der Hinweis
@@ -106,7 +109,7 @@ wenn es den Ordner schon gibt. Beim Bau wird die Datei zu `apps/punch/konzept.md
 
 - [ ] Zeitraum per Segment **Woche · Monat · Jahr**, mit ‹ › zurück- und vorblättern. Der Start zeigt den
   laufenden Zeitraum.
-- [ ] **Summe** des Zeitraums groß, dazu **„an 5 von 7 Tagen · Ø 9:18 h“**. Der Durchschnitt zählt nur Tage mit
+- [ ] **Summe** des Zeitraums groß, dazu **„an 5 Tagen · Ø 10:17 h“**. Der Durchschnitt zählt nur Tage mit
   Einträgen, sonst drücken leere Wochenenden ihn nach unten.
 - [ ] **Vergleich zum Vorzeitraum:** „+4:30 h zur Vorwoche“. Im laufenden Zeitraum vergleicht Punch mit dem
   gleichen Stück davor („bis Donnerstag“), sonst wäre jede Woche bis Samstag im Minus. Mehr erscheint in der
@@ -150,7 +153,7 @@ punch:laeuft    { bereich, taetigkeit | null, notiz, start (ms) } | null
 ### 1 – Tag (Start, heute)
 
 - [ ] Kopf: ‹ Apps, Wortmarke, rechts die Symbole **Statistik** und **Bereiche**.
-- [ ] Datumszeile „Donnerstag, 6. November“ mit ‹ › für die Tage davor und danach (› endet bei heute).
+- [ ] Datumszeile „Freitag, 6. November“ mit ‹ › für die Tage davor und danach (› endet bei heute).
 - [ ] **Summe groß:** „10:45 h“, darunter ein Balken nach Bereichen und die Legende „Job 8:00 · Uni 2:15 ·
   Side Job 0:30“.
 - [ ] **Laufend-Karte** (nur solange ein Timer läuft): Farbpunkt und Bereich, Laufzeit `h:mm:ss` groß, „seit
@@ -164,12 +167,14 @@ punch:laeuft    { bereich, taetigkeit | null, notiz, start (ms) } | null
 - [ ] Unten **+ Nachtragen** (Ansicht 2, Datum vorbelegt).
 - [ ] An vergangenen Tagen gibt es keine Kacheln und keine Laufend-Karte, nur Summe, Balken, Stundenzettel und
   Nachtragen.
-- [ ] Erststart: „Was zählt für dich als produktiv?“ und **Ersten Bereich anlegen**.
+- [ ] Erststart: „Was zählt für dich als produktiv?“ und **Ersten Bereich anlegen**, darunter der leere
+  Stundenzettel.
 
 ### 2 – Block (Blatt von unten)
 
 - [ ] Kopf: Abbrechen, „Block“ bzw. „Nachtragen“, **Sichern**.
-- [ ] Bereich (Chips in Bereichsfarbe), Tätigkeit (Chips des Bereichs, „ohne“, „+ Neu“), Notiz.
+- [ ] Bereich (Chips in Bereichsfarbe), Tätigkeit (Chips des Bereichs und „+ Neu“, ein zweiter Tipp auf die
+  gewählte nimmt sie weg), Notiz.
 - [ ] Datum (Chips), Von und Bis mit eigenem Tastenfeld, darunter die Schnellknöpfe zum Lücken-Schließen und
   die berechnete Dauer.
 - [ ] Hinweis bei Überschneidung, Sichern ist dann aus.
@@ -194,9 +199,13 @@ punch:laeuft    { bereich, taetigkeit | null, notiz, start (ms) } | null
 
 ## Design (Richtung „Stundenzettel“)
 
-Ein Formular auf hellem Papier: Linien, Spaltenköpfe und Beschriftung wirken wie in einer Druckfarbe
-vorgedruckt, die Zeiten wie mit der Stechuhr hineingestempelt. Farbe tragen nur die Bereiche, die Oberfläche
-bleibt Tinte und Druckfarbe.
+Die Mockups zeigen drei Richtungen: **A Formular** (Empfehlung, hier beschrieben), **B Stechkarte**
+(Manila-Karton, rot gedruckt, Courier, „Ausstempeln“) und **C Beleg** (Kassenbon in IBM Plex Mono). Die Wahl
+steht noch aus.
+
+Ein Formular auf hellem Papier: Linien, Spaltenköpfe und Beschriftung („Summe“, „Bereiche“, „Stundenzettel“)
+wirken wie in einer Druckfarbe vorgedruckt, die Zeiten wie mit der Stechuhr hineingestempelt. Farbe tragen nur
+die Bereiche, die Oberfläche bleibt Tinte und Druckfarbe.
 
 ```
 Grund        #EEF1EE   Formularpapier, leicht grünlich-grau
@@ -205,15 +214,17 @@ Druckfarbe   #17696A   Petrol: Linien, Spaltenköpfe, Hauptknopf, „mehr als Vo
 Linie        #CBD8D5   Tabellenlinien (Druckfarbe, blass)
 Tinte        #1B1F23   Text, Zeiten, Summen
 Tinte leise  #6E7781   Notizen, „weniger als Vorwoche“, ohne Tätigkeit
-Gefahr       #C2412D   nur für Löschen
+Gefahr       #C2412D   Löschen und der Hinweis bei Überschneidung
 ```
 
 - **Bereichsfarben:** die zehn Ordnerfarben von Tick (`apps/tick/src/farben.ts`), die schon auf hellem Grund
   erprobt sind. Petrol ist dort durch Schiefer `#5E6B7A` ersetzt, weil Petrol hier die Druckfarbe ist.
-- **Schrift:** **DM Mono** für alle Zeiten und Zahlen und für die Wortmarke „PUNCH“ (Versalien, gesperrt, wie
-  ein Stempel). Monospace hält den laufenden Timer ruhig, nichts springt. Alles andere ist Systemschrift, wie
-  der Kleinkram in Stash. DM Mono nutzt noch keine App, sie wäre eine neue Abhängigkeit
-  (`@fontsource/dm-mono`).
+- **Schrift:** **Spline Sans Mono** für alle Zeiten und Zahlen und für die Wortmarke „PUNCH“ (Versalien,
+  gesperrt, wie ein Stempel). Monospace hält den laufenden Timer ruhig, nichts springt. Die kleinen Serifen an
+  der 1 wirken wie vorgedruckt. Alles andere ist Systemschrift, wie der Kleinkram in Stash. Spline Sans Mono
+  nutzt noch keine App, sie wäre eine neue Abhängigkeit (`@fontsource/spline-sans-mono`).
+- **Nicht DM Mono:** Die war zuerst geplant, hat aber nur eine durchgestrichene Null, und die sieht neben „Ø“
+  für den Durchschnitt fast gleich aus („Ø 0:30“). Spline Sans Mono hat eine glatte Null.
 - Spaltenköpfe im Stundenzettel klein, in Versalien und Druckfarbe, wie vorgedruckt. Die Summenzeile hat einen
   Doppelstrich.
 - **Symbol** im Stil „Signal“ (siehe README): eine Stoppuhr (Kreis mit Krone), ein Viertel als Fläche
@@ -259,8 +270,11 @@ Gefahr       #C2412D   nur für Löschen
 | Nachtragen | Von–Bis |
 
 **Selbst entschieden, nach dem Vorbild der anderen Apps:** langer Druck startet mit Tätigkeit, Toast mit
-Rückgängig beim Wechseln und Löschen (statt Rückfragen), Startzeit des laufenden Blocks korrigierbar, Blöcke
-unter einer Minute zählen nicht, keine Pause im Block (dafür „Weiter“), Tastenfeld für Uhrzeiten wie in Form,
-Schnellknöpfe zum Lücken-Schließen, Abrunden erst bei der Summe, Woche ab Montag, Ø nur über Tage mit
-Einträgen, Vergleich mit dem gleichen Stück des Vorzeitraums, Bereichsfarben von Tick, DM Mono, Petrol als
-Druck- und Kachelfarbe, Stoppuhr als Symbol, nur hell.
+Rückgängig beim Stoppen, Wechseln und Löschen (statt Rückfragen), Startzeit des laufenden Blocks korrigierbar,
+Blöcke unter einer Minute zählen nicht, keine Pause im Block (dafür „Weiter“), Tastenfeld für Uhrzeiten wie in
+Form mit „Jetzt“, Schnellknöpfe zum Lücken-Schließen, Abrunden erst bei der Summe, Woche ab Montag, Ø nur über
+Tage mit Einträgen, Vergleich mit dem gleichen Stück des Vorzeitraums, Bereichsfarben von Tick, Spline Sans
+Mono, Petrol als Druck- und Kachelfarbe, Stoppuhr als Symbol, nur hell.
+
+**Nach den Mockups offen:** Richtung A, B oder C, das Symbol und ob Petrol neben Kontors Grün im Launcher genug
+absticht.
