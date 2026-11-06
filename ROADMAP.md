@@ -174,6 +174,13 @@ Briefe an dich selbst, die sich erst an einem bestimmten Tag öffnen, auf Wunsch
 den anderen Apps. Konzept-Entwurf mit offenen Fragen: [ideen/zeitkapsel.md](ideen/zeitkapsel.md)
 (14.10.2026, noch nicht gebaut).
 
+### Punch
+
+Zeiterfassung für alles Produktive (Job, Side Job, Uni): Bereiche mit Tätigkeiten, ein Tipp startet den Timer,
+Vergessenes per Von–Bis nachtragen, die Tagessumme groß auf dem Start, Statistik nach Woche, Monat und Jahr.
+Look „Stundenzettel“. Konzept nach der Fragerunde: [ideen/punch.md](ideen/punch.md) (06.11.2026, noch nicht
+gebaut). Nächster Schritt: Mockups.
+
 ## Geht nicht / bewusst nicht
 
 - Erinnerung per Push (bräuchte auf iOS einen eigenen Server), Widgets (für Web-Apps nicht möglich).
