@@ -406,10 +406,10 @@ body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -
       <svg viewBox="0 0 180 180" role="img" aria-label="App-Symbol Punch" id="brand-icon"></svg>
       <div>
         <h1 class="pg-wm">Punch</h1>
-        <p>Zeiterfassung für appdeck · Mockups vom 06.11.2026, Richtung noch offen</p>
+        <p>Zeiterfassung für appdeck · Mockups vom 06.11.2026, gewählt: Richtung C</p>
       </div>
     </div>
-    <p class="pg-lede">Wie viele produktive Stunden ein Tag hatte: Job, Uni, Side Job, eigene Projekte. Beispiel überall: <strong>Freitag, 6. November 2026</strong>, mit vier Bereichen. Alle Zeiten sind Beispiele. Woche, Monat und Jahr sind aus Zufallsdaten seit Januar gerechnet, die Woche passt zu den Tagen in den Ansichten. Regeln stehen in <code>ideen/punch.md</code>, die Nummern in Klammern verweisen auf die Ansichten unten.</p>
+    <p class="pg-lede">Wie viele produktive Stunden ein Tag hatte: Job, Uni, Side Job, eigene Projekte. Beispiel überall: <strong>Freitag, 6. November 2026</strong>, mit vier Bereichen. Alle Zeiten sind Beispiele. Woche, Monat und Jahr sind aus Zufallsdaten seit Januar gerechnet, die Woche passt zu den Tagen in den Ansichten. Regeln stehen in <code>konzept.md</code>, die Nummern in Klammern verweisen auf die Ansichten unten.</p>
     <ul class="pg-dec">
       <li><b>Die Tagessumme ist die App.</b> Groß oben, darunter der Balken nach Bereichen und der Stundenzettel des Tages (1, 2).</li>
       <li><b>Ein Tipp startet.</b> Der Bereich sofort, Tätigkeit und Notiz währenddessen oder danach. Ein langer Druck startet direkt mit einer Tätigkeit (3).</li>
@@ -422,7 +422,7 @@ body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -
 
   <section class="pg-sec" id="richtungen" aria-labelledby="h-dirs">
     <h2 class="pg-h2" id="h-dirs">Drei Richtungen für „Stundenzettel“</h2>
-    <p class="pg-sub">Derselbe Freitag dreimal, oben der Start mit laufendem Timer um 20:14, darunter die Woche. Alle drei sind hell und tragen Farbe nur bei den Bereichen. Empfehlung ist A, so steht es auch im Konzept. Die Ansichten 1 bis 14 zeigen A.</p>
+    <p class="pg-sub">Derselbe Freitag dreimal, oben der Start mit laufendem Timer um 20:14, darunter die Woche. Alle drei sind hell und tragen Farbe nur bei den Bereichen. Gewählt wurde C, gebaut mit noch weniger auf dem Schirm: ohne Legende, ohne Zeiten auf den Knöpfen, die Notiz nur im Blatt (siehe „Schlanker als die Mockups“ in <code>konzept.md</code>). Die Ansichten 1 bis 14 zeigen noch A – die Regeln darin gelten weiter.</p>
     <div class="pg-dirs" id="dirs"></div>
   </section>
 
@@ -458,7 +458,7 @@ body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -
     </div>
   </section>
 
-  <p class="pg-foot">Punch · Mockups zu <code>ideen/punch.md</code> · 06.11.2026. Offen: Richtung (A, B oder C), Symbol und Kachelfarbe. Beim Bau ziehen beide Dateien nach <code>apps/punch/</code>.</p>
+  <p class="pg-foot">Punch · Mockups zu <code>konzept.md</code> · 06.11.2026. Gewählt wurden Richtung C „Beleg“, dieses Symbol und Petrol als Kachelfarbe, danach ist Punch so gebaut. Wo der Bau abweicht, steht es im Konzept.</p>
 </main>
 
 <script>
@@ -808,9 +808,9 @@ body { margin: 0; font-family: var(--f-ui); font-size: 15px; line-height: 1.5; -
 
   // ---------- Seite füllen ----------
   const DIRS = [
-    ['A', 'Formular', 'Empfehlung', 'Formularpapier mit Linien und Beschriftung in Petrol, wie vorgedruckt. Zeiten in Spline Sans Mono. Ruhig und nah an iOS, Farbe nur bei den Bereichen.', V.heute, V.woche],
+    ['A', 'Formular', '', 'Formularpapier mit Linien und Beschriftung in Petrol, wie vorgedruckt. Zeiten in Spline Sans Mono. Ruhig und nah an iOS, Farbe nur bei den Bereichen.', V.heute, V.woche],
     ['B', 'Stechkarte', '', 'Manila-Karton, rot gedruckt wie eine alte Stempelkarte, die Zeiten in Courier leicht schief wie gestempelt. Die Bereiche stecken als Karten im Fach, Stoppen heißt Ausstempeln. Viel Charakter, aber laut.', B.heute, B.woche],
-    ['C', 'Beleg', '', 'Der Tag als Kassenbon: Thermopapier, alles in IBM Plex Mono (schon im Projekt), Summe mit Doppelstrich, unten abgerissen. Klar und witzig, aber eng, und ein Bon erinnert eher an Kontor.', C.heute, C.woche],
+    ['C', 'Beleg', 'gewählt', 'Der Tag als Kassenbon: Thermopapier, alles in IBM Plex Mono (schon im Projekt), Summe mit Doppelstrich, unten abgerissen. Klar und witzig, aber eng, und ein Bon erinnert eher an Kontor.', C.heute, C.woche],
   ];
   document.getElementById('dirs').innerHTML = DIRS.map(([k, n, em, p, a, o]) =>
     `<div class="pg-dh"><h3><span>${k}</span>${n}${em ? `<em>${em}</em>` : ''}</h3><p>${p}</p></div>` +

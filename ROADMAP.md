@@ -148,6 +148,20 @@ eine `badge`-Funktion haben). Noch offen:
 - **Mehrfachauswahl** zum Aufräumen des Eingangs, **Unteraufgaben**, eigene Ansicht **Heute**, Ordner
   **archivieren**, **aus Stash übernehmen**. Siehe „Nicht im MVP“ im Konzept.
 
+## Punch
+
+Gebaut am 06.11.2026 nach Fragerunde und Mockups (`apps/punch/mockups.html`, Richtung C „Beleg“), Regeln in
+`apps/punch/konzept.md`: jeder Tag als Kassenbon, Bereiche mit Tätigkeiten als Knöpfe, ein Timer zur Zeit,
+langer Druck startet mit Tätigkeit, Nachtragen mit Von–Bis ohne Überschneidung, Mitternacht teilt, Statistik
+nach Woche, Monat und Jahr mit Vergleich und Verteilung, Rückgängig statt Rückfragen. Bewusst schlanker als die
+Mockups (siehe „Schlanker als die Mockups“ im Konzept). Noch offen:
+
+- **Am iPhone testen**: Zeitfeld (Rad) im Blatt, langer Druck auf die Knöpfe ohne Textauswahl, Haptik,
+  Ziehen in den Bereichen.
+- **Speicher**: rund 280 KB im Jahr bei 6 Blöcken am Tag – der IndexedDB-Umzug (oben) wird mit Punch
+  dringlicher.
+- **Weiter** am letzten Block, **Ø pro Tag**, **Rekorde**, **CSV-Export** – siehe „Nicht im MVP“ im Konzept.
+
 ## Ideen für neue Apps
 
 Nur festgehalten, noch nicht entschieden. Vor dem Bau wie gewohnt: Fragerunde, dann `konzept.md`
@@ -173,14 +187,6 @@ macht.
 Briefe an dich selbst, die sich erst an einem bestimmten Tag öffnen, auf Wunsch mit „damals und heute“ aus
 den anderen Apps. Konzept-Entwurf mit offenen Fragen: [ideen/zeitkapsel.md](ideen/zeitkapsel.md)
 (14.10.2026, noch nicht gebaut).
-
-### Punch
-
-Zeiterfassung für alles Produktive (Job, Side Job, Uni): Bereiche mit Tätigkeiten, ein Tipp startet den Timer,
-Vergessenes per Von–Bis nachtragen, die Tagessumme groß auf dem Start, Statistik nach Woche, Monat und Jahr.
-Look „Stundenzettel“. Konzept nach der Fragerunde: [ideen/punch.md](ideen/punch.md), Mockups mit drei
-Richtungen: [ideen/punch-mockups.html](ideen/punch-mockups.html) (beide 06.11.2026, noch nicht gebaut). Nächster
-Schritt: Richtung, Symbol und Kachelfarbe wählen, dann bauen.
 
 ## Geht nicht / bewusst nicht
 

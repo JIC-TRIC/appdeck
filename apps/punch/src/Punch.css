@@ -1,0 +1,881 @@
+/* =========================
+   Punch - Richtung "Beleg", nur hell.
+
+   Jeder Tag ist ein Kassenbon: weisses Thermopapier auf hellem Grau, alles in
+   IBM Plex Mono, gestrichelte Linien, die Summe mit Doppelstrich, unten
+   abgerissen. Schwarz fuer Knoepfe und den laufenden Block. Farbe gehoert den
+   Bereichen (kleine Quadrate, Balken), dazu nur Rot fuer Loeschen und
+   Ueberschneidungen. So wenig auf dem Schirm wie moeglich.
+   Werte und Gruende: konzept.md, Bilder: mockups.html (Richtung C).
+
+   Die Tokens haengen an :root und nicht an .punch: Ionic haengt Blaetter,
+   Rueckfragen und Meldungen direkt unter ion-app ein, ausserhalb der Huelle.
+   ========================= */
+
+:root {
+  --bg: #e3e5e8;
+  --paper: #ffffff;
+  --tx: #121416;
+  --tx2: #6a6f76;
+  --tx3: #a4a9af;
+  --ln: #9ea3a9;
+  --ln2: #d3d6da;
+  --red: #c2412d;
+
+  --f: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Was Ionic selbst zeichnet, soll nach Punch aussehen. */
+  --ion-font-family: var(--f);
+  --ion-background-color: var(--paper);
+  --ion-text-color: var(--tx);
+  --ion-color-primary: #121416;
+  --ion-color-primary-rgb: 18, 20, 22;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #101214;
+  --ion-color-primary-tint: #2a2c2e;
+  --ion-color-danger: #c2412d;
+}
+
+/* ---------- Seite ---------- */
+
+html,
+body {
+  background: var(--bg);
+  color: var(--tx);
+  color-scheme: light;
+}
+
+body {
+  overscroll-behavior: contain;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.punch {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top);
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--f);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.punch *,
+.punch *::before,
+.punch *::after,
+.p-sheet-modal *,
+.p-sheet-modal *::before,
+.p-sheet-modal *::after {
+  box-sizing: border-box;
+}
+
+/* Reset ueber :where(), damit jede p-Klasse gewinnt (wie bei den anderen Apps). */
+:where(.punch, .p-sheet-modal) :where(button) {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ionic setzt fuer jeden button line-height: 1 - diese Zeile kommt spaeter. */
+:where(.punch, .p-sheet-modal) button {
+  line-height: inherit;
+}
+
+:where(.punch, .p-sheet-modal) :where(button:disabled) {
+  cursor: default;
+}
+
+.punch p,
+.p-sheet-modal p {
+  margin: 0;
+}
+
+:where(.punch, .p-sheet-modal) :where(button:focus-visible) {
+  outline: 2px solid var(--tx);
+  outline-offset: 2px;
+}
+
+.p-i {
+  display: block;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.p-i.voll {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  stroke: none;
+}
+
+.p-buehne {
+  flex: 1;
+  min-height: 0;
+}
+
+.p-seite {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.p-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
+}
+
+/* ---------- Kopf ---------- */
+
+.p-kopf {
+  flex: none;
+  height: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 14px 0 8px;
+}
+
+.p-kopf .m {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.p-kopf .r {
+  justify-self: end;
+  display: flex;
+  gap: 10px;
+}
+
+.p-zurueck {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 44px;
+  font-size: 15px;
+}
+
+.p-ic {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--ln2);
+}
+
+.p-ic .p-i {
+  width: 18px;
+  height: 18px;
+}
+
+.p-ic:active,
+.p-taste:active,
+.p-stopp:active,
+.p-neu:active {
+  transform: scale(0.97);
+}
+
+/* ---------- Bon ---------- */
+
+.p-bon {
+  position: relative;
+  margin: 6px 20px 30px;
+  padding: 18px 16px 18px;
+  background: var(--paper);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.p-zacken {
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  width: 100%;
+  height: 7px;
+  display: block;
+  fill: var(--paper);
+}
+
+.p-bon-kopf {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.p-marke {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+  padding-left: 0.5em;
+}
+
+.p-datum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: var(--tx2);
+}
+
+.p-dat {
+  padding: 6px 4px;
+}
+
+.p-dat:disabled {
+  color: inherit;
+}
+
+.p-pfeil {
+  width: 36px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: var(--tx);
+}
+
+.p-pfeil .p-i {
+  width: 16px;
+  height: 16px;
+}
+
+.p-pfeil.weg {
+  visibility: hidden;
+}
+
+.p-strich {
+  border-top: 1px dashed var(--ln);
+  margin: 10px 0;
+}
+
+.p-posten,
+.p-zeile,
+.p-anteil {
+  display: grid;
+  align-items: center;
+  column-gap: 10px;
+  width: 100%;
+  padding: 5px 0;
+  font-size: 13px;
+  text-align: left;
+}
+
+.p-posten {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.p-posten .z {
+  white-space: pre;
+}
+
+.p-posten .n,
+.p-anteil .n {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.p-posten .n i,
+.p-anteil .n i,
+.p-taste i,
+.p-chip i,
+.p-li-knopf i {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  background: var(--o);
+}
+
+.p-posten .d,
+.p-zeile .d,
+.p-anteil .d {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.p-posten.live {
+  width: calc(100% + 12px);
+  margin: 2px -6px;
+  padding: 6px;
+  background: var(--tx);
+  color: var(--paper);
+}
+
+.p-nach {
+  display: block;
+  width: 100%;
+  padding: 6px 0;
+  font-size: 13px;
+  text-align: left;
+  text-transform: uppercase;
+  color: var(--tx3);
+}
+
+.p-summe {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 600;
+}
+
+.p-summe span {
+  text-transform: uppercase;
+}
+
+.p-summe b {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.p-doppel {
+  border-top: 4px double var(--tx);
+  margin-top: 6px;
+}
+
+/* ---------- Knoepfe der Bereiche ---------- */
+
+.p-tasten {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.p-taste {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1.5px solid var(--tx);
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+
+.p-taste span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.p-taste.an {
+  background: var(--tx);
+  color: var(--paper);
+}
+
+.p-stopp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: calc(100% - 40px);
+  height: 52px;
+  margin: 10px 20px 0;
+  background: var(--tx);
+  color: var(--paper);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.p-erst {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 6px 20px 0;
+  text-align: center;
+  color: var(--tx2);
+}
+
+.p-neu {
+  width: 100%;
+  height: 50px;
+  border: 1.5px dashed var(--tx);
+  background: var(--paper);
+  color: var(--tx);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ---------- Statistik ---------- */
+
+.p-seg {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 20px 6px;
+}
+
+.p-seg button {
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tx3);
+}
+
+.p-seg button.an {
+  color: var(--tx);
+}
+
+.p-seg button.an::before {
+  content: '[';
+}
+
+.p-seg button.an::after {
+  content: ']';
+}
+
+/* Breiten in em: eine Ziffer in IBM Plex Mono ist 0,6 em breit. */
+.p-zeile {
+  grid-template-columns: 5.8em minmax(0, 1fr) 4.4em;
+}
+
+.p-zeile span {
+  white-space: nowrap;
+}
+
+.p-zeile.zukunft {
+  color: var(--tx3);
+}
+
+.p-balken {
+  display: flex;
+  gap: 1px;
+  height: 9px;
+}
+
+.p-balken i {
+  display: block;
+  height: 100%;
+  background: var(--o);
+}
+
+.p-vgl {
+  margin-top: 8px !important;
+  font-size: 12.5px;
+  color: var(--tx2);
+}
+
+.p-anteil {
+  grid-template-columns: minmax(0, 1fr) 3.3em 4.4em;
+}
+
+.p-anteil.teilbar .n::after {
+  content: '+';
+  color: var(--tx3);
+}
+
+.p-anteil.teilbar.auf .n::after {
+  content: '−';
+}
+
+.p-anteil.kind {
+  padding-left: 15px;
+  color: var(--tx2);
+}
+
+/* ---------- Bereiche ---------- */
+
+.p-li {
+  display: flex;
+  align-items: center;
+  background: var(--paper);
+}
+
+.p-li-knopf {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 0;
+  font-size: 13.5px;
+  text-transform: uppercase;
+}
+
+.p-li.archiv .p-li-knopf {
+  color: var(--tx2);
+}
+
+.p-griff {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  color: var(--tx3);
+}
+
+.p-li.reorder-selected {
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Blaetter von unten (Ionics Sheet-Modal) ---------- */
+
+ion-modal.p-sheet-modal {
+  --height: auto;
+  --width: 100%;
+  --max-width: 640px;
+  --background: var(--paper);
+  --border-radius: 14px;
+  --box-shadow: 0 -10px 40px rgba(18, 20, 22, 0.18);
+  --backdrop-opacity: 0.32;
+  --ion-backdrop-color: #0c0e10;
+  color: var(--tx);
+  font-family: var(--f);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+ion-modal.p-sheet-modal::part(handle) {
+  width: 36px;
+  height: 5px;
+  background: var(--ln2);
+}
+
+/* Ohne das nimmt Ionics Seitenhuelle die volle Hoehe ein, und --height: auto
+   haette nichts zu messen (wie Tick und Form). */
+ion-modal.p-sheet-modal .ion-page {
+  position: relative;
+  display: block;
+  contain: none;
+}
+
+.p-sheet {
+  max-height: 92dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 0 max(20px, env(safe-area-inset-bottom));
+}
+
+.p-bs-kopf {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px 6px;
+  font-size: 15px;
+}
+
+.p-bs-kopf b {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.p-bs-kopf .l {
+  justify-self: start;
+  color: var(--tx2);
+}
+
+.p-bs-kopf .r {
+  justify-self: end;
+  font-weight: 600;
+}
+
+.p-bs-kopf .r:disabled {
+  color: var(--tx3);
+}
+
+.p-feld {
+  padding: 8px 18px 8px;
+}
+
+.p-l {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tx2);
+}
+
+.p-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.p-chip {
+  position: relative;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1.5px solid var(--tx) !important;
+  background: var(--paper);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.p-chip.an {
+  background: var(--tx);
+  color: var(--paper);
+}
+
+.p-chip.leise {
+  border-style: dashed !important;
+  color: var(--tx2);
+}
+
+.p-chip.archiv {
+  border-color: var(--ln2) !important;
+  color: var(--tx3);
+}
+
+.p-datum-chip input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.p-input {
+  display: block;
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--tx);
+  border-radius: 0;
+  background: transparent;
+  color: var(--tx);
+  font: 400 16px/1 var(--f);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.p-input::placeholder {
+  color: var(--tx3);
+}
+
+.p-zeiten {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 10px 18px 0;
+}
+
+.p-zeit {
+  display: block;
+  min-width: 0;
+  padding: 9px 12px 8px;
+  border: 1.5px solid var(--tx);
+}
+
+.p-zeit.fehler {
+  border-color: var(--red);
+}
+
+.p-zeit .p-l {
+  margin-bottom: 4px;
+}
+
+.p-zeit input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--tx);
+  font: 500 26px/1 var(--f);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+.p-zeit.fehler input {
+  color: var(--red);
+}
+
+/* iOS setzt die Uhrzeit sonst in die Mitte. */
+.p-zeit input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+/* Die Uhr daneben zeigt nur Chrome am Rechner - getippt wird trotzdem. */
+.p-zeit input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.p-zeit.still {
+  border-style: dashed;
+}
+
+.p-laeuft {
+  display: block;
+  height: 34px;
+  font: 500 20px/34px var(--f);
+  text-transform: uppercase;
+  color: var(--tx2);
+}
+
+.p-schnell {
+  padding: 10px 18px 0;
+}
+
+.p-fehler {
+  margin: 10px 18px 0 !important;
+  font-size: 13px;
+  color: var(--red);
+}
+
+.p-dauer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 14px 18px 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--ln);
+  text-transform: uppercase;
+  color: var(--tx2);
+}
+
+.p-dauer b {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--tx);
+}
+
+.p-farben {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.p-farben button {
+  height: 36px;
+  background: var(--o);
+}
+
+.p-farben button.an {
+  box-shadow: inset 0 0 0 3px var(--paper), 0 0 0 2px var(--tx);
+}
+
+.p-weg {
+  display: block;
+  width: calc(100% - 36px);
+  height: 48px;
+  margin: 18px 18px 0;
+  border: 1.5px solid var(--red) !important;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.p-weg.still {
+  border-color: var(--tx) !important;
+  color: var(--tx);
+}
+
+/* ---------- Ionic: Meldungen, Rueckfragen, Auswahl ---------- */
+
+ion-toast.p-toast {
+  --background: var(--tx);
+  --color: #ffffff;
+  --button-color: #ffffff;
+  --border-radius: 0;
+  --box-shadow: 0 10px 30px rgba(18, 20, 22, 0.28);
+  --max-width: 520px;
+}
+
+ion-toast.p-toast::part(message) {
+  font-size: 13.5px;
+}
+
+ion-toast.p-toast::part(button) {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+ion-alert.p-alert {
+  --background: var(--paper);
+  color: var(--tx);
+}
+
+ion-alert.p-alert .alert-button {
+  color: var(--tx);
+}
+
+ion-action-sheet.p-as .action-sheet-button {
+  color: var(--tx);
+}
+
+ion-action-sheet.p-as .action-sheet-destructive {
+  color: var(--red);
+}
+
+ion-action-sheet.p-as .action-sheet-cancel {
+  font-weight: 600;
+}

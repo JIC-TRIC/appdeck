@@ -33,4 +33,5 @@ self.APPS = [
   { id: 'stash', name: 'Stash', icon: 'icons/stash.svg', color: '#1F1D1A', bg: '#F3EEE3', path: 'apps/stash/' },
   { id: 'form', name: 'Form', icon: 'icons/form.svg', color: '#FF6A00', bg: '#0D0D0E', path: 'apps/form/' },
   { id: 'tick', name: 'Tick', icon: 'icons/tick.svg', color: '#7A50E0', bg: '#ECEEF1', path: 'apps/tick/', badge: tickBadge },
+  { id: 'punch', name: 'Punch', icon: 'icons/punch.svg', color: '#17696A', bg: '#E3E5E8', path: 'apps/punch/' },
 ];
