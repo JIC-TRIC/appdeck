@@ -105,12 +105,31 @@ describe('Achse', () => {
     expect(schritt(0, 3)).toBe(1)
   })
 
-  it('skala umfasst Punkte und Ziel, auf schoene Zahlen', () => {
+  it('skala nimmt ein nahes Ziel mit, Linien auf schoenen Zahlen', () => {
     const s = skala([82.4, 83.1, 81.9], 80)
+    expect(s.zielDrin).toBe(true)
     expect(s.min).toBeLessThanOrEqual(80)
     expect(s.max).toBeGreaterThanOrEqual(83.1)
-    expect(s.ticks[0]).toBe(s.min)
-    expect(s.ticks[s.ticks.length - 1]).toBe(s.max)
+    expect(s.ticks.length).toBeGreaterThanOrEqual(2)
+    for (const t of s.ticks) {
+      expect(t).toBeGreaterThanOrEqual(s.min)
+      expect(t).toBeLessThanOrEqual(s.max)
+      expect(Number.isInteger(t)).toBe(true)
+    }
+  })
+
+  it('ein fernes Ziel bleibt von der Achse, die Messungen fuellen sie', () => {
+    const zahlen = [72.8, 71.8, 73.85]
+    const s = skala(zahlen, 85)
+    expect(s.zielDrin).toBe(false)
+    expect(s.max).toBeLessThan(85)
+    // Die Messungen nehmen den groessten Teil der Hoehe ein.
+    expect((73.85 - 71.8) / (s.max - s.min)).toBeGreaterThan(0.7)
+  })
+
+  it('kleine Schwankungen werden nicht zu Spruengen', () => {
+    const s = skala([73.2, 73.4])
+    expect(s.max - s.min).toBeGreaterThanOrEqual(73.4 * 0.03)
   })
 
   it('ein einzelner Wert bekommt trotzdem eine Spanne', () => {

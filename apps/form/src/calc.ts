@@ -161,31 +161,54 @@ export interface Skala {
   min: number
   max: number
   ticks: number[]
+  /** Ob das Ziel auf der Achse liegt - sonst steht es als Pfeil am Rand. */
+  zielDrin: boolean
 }
 
-// Die senkrechte Achse eines Verlaufs: umfasst alle Punkte und das Ziel, mit
-// etwas Luft, auf schoene Zahlen gerundet. Liegt alles auf einer Zahl, gibt
-// es trotzdem eine Spanne - sonst waere die Linie nicht zu sehen.
+/** Kleinste Spanne der Achse, gemessen am Wert: 3 % (bei 73 kg gut 2 kg). */
+const MIN_SPANNE = 0.03
+
+// Die senkrechte Achse eines Verlaufs: eng um die Punkte, damit man den
+// Fortschritt sieht - 71,8 bis 73,9 kg sollen nicht als flacher Strich unter
+// einem Ziel von 85 stehen. Das Ziel kommt nur mit auf die Achse, wenn es nah
+// liegt (die Punkte nehmen dann noch mindestens die halbe Hoehe ein), sonst
+// zeigt der Verlauf es als Pfeil am Rand.
+//
+// Damit ein paar hundert Gramm nicht wie ein Sprung aussehen, ist die Spanne
+// mindestens 3 % des Werts. Liegt alles auf einer Zahl, gibt es trotzdem eine
+// Spanne - sonst waere die Linie nicht zu sehen. Die Achse endet nicht auf
+// einer runden Zahl (das kostete bis zur halben Hoehe), nur die Linien
+// stehen auf schoenen Zahlen.
 export function skala(zahlen: number[], ziel: number | null = null): Skala {
-  const alle = ziel === null ? zahlen : [...zahlen, ziel]
-  if (!alle.length) return { min: 0, max: 1, ticks: [0, 1] }
-  let lo = Math.min(...alle)
-  let hi = Math.max(...alle)
+  const basis = zahlen.length ? zahlen : ziel === null ? [] : [ziel]
+  if (!basis.length) return { min: 0, max: 1, ticks: [0, 1], zielDrin: false }
+  let lo = Math.min(...basis)
+  let hi = Math.max(...basis)
+  const groesse = Math.max(Math.abs(lo), Math.abs(hi))
   if (hi - lo < 1e-9) {
-    const luft = Math.max(1, Math.abs(hi) * 0.02)
+    const luft = Math.max(1, groesse * 0.02)
     lo -= luft
     hi += luft
   } else {
-    const luft = (hi - lo) * 0.12
-    lo -= luft
-    hi += luft
+    const fehlt = groesse * MIN_SPANNE - (hi - lo)
+    if (fehlt > 0) {
+      lo -= fehlt / 2
+      hi += fehlt / 2
+    }
   }
+  const weg = ziel === null ? Infinity : Math.max(0, ziel - hi, lo - ziel)
+  const zielDrin = ziel !== null && weg <= hi - lo
+  if (zielDrin) {
+    lo = Math.min(lo, ziel)
+    hi = Math.max(hi, ziel)
+  }
+  const luft = (hi - lo) * 0.1
   // Koerperwerte sind nicht negativ - die Achse dann auch nicht.
-  if (Math.min(...alle) >= 0) lo = Math.max(0, lo)
-  const s = schritt(hi - lo, 3)
-  const min = Math.floor(lo / s) * s
-  const max = Math.ceil(hi / s) * s
+  const kleinste = Math.min(...basis, ...(zielDrin ? [ziel] : []))
+  lo = kleinste >= 0 ? Math.max(0, lo - luft) : lo - luft
+  hi += luft
+  const s = schritt(hi - lo, 4)
   const ticks: number[] = []
-  for (let t = min; t <= max + s / 2; t += s) ticks.push(rund(t))
-  return { min: rund(min), max: rund(max), ticks }
+  for (let t = Math.ceil(lo / s - 1e-9) * s; t <= hi + 1e-9; t += s) ticks.push(rund(t))
+  return { min: lo, max: hi, ticks, zielDrin }
 }

@@ -9,8 +9,10 @@ import type { Punkt, Wert } from './types'
 // ---------- Verlauf eines Werts oder einer Uebung ----------
 
 // Waagerecht nach Zeit, nicht nach Anzahl: zwei Messungen in einer Woche und
-// dann einen Monat Pause sehen auch so aus. Der juengste Punkt ist orange,
-// das Ziel eine gestrichelte Linie (Uebungen haben keins).
+// dann einen Monat Pause sehen auch so aus. Senkrecht eng um die Messungen,
+// damit man den Fortschritt sieht. Der juengste Punkt ist orange, das Ziel
+// eine gestrichelte Linie - liegt es weit weg, nur ein Pfeil mit der Zahl am
+// oberen oder unteren Rand (Uebungen haben keins).
 //
 // Mit onAuswahl laesst sich ein Punkt antippen oder mit dem Finger ueber den
 // Verlauf ziehen - gewaehlt ist der naechste Punkt, mit einer senkrechten
@@ -59,7 +61,12 @@ export function Verlauf({
   const pfad = linie(punkte)
   const mitTrend = !!trend && trend.length > 1
   const ende = punkte[punkte.length - 1]
-  const zielY = wert.ziel === null ? null : y(wert.ziel)
+  // Weit weg liegt das Ziel nicht auf der Achse (calc.ts, skala) - dann steht
+  // es als Pfeil oben oder unten am Rand.
+  const zielY = wert.ziel === null || !s.zielDrin ? null : y(wert.ziel)
+  const zielRand = wert.ziel === null || s.zielDrin ? null : wert.ziel > s.max ? 'oben' : 'unten'
+  const randY = zielRand === 'oben' ? T : T + ph
+  const frei = (ty: number) => (zielY === null || Math.abs(ty - zielY) >= 13) && (zielRand === null || Math.abs(ty - randY) >= 13)
   const gewaehlt = auswahl !== null ? punkte[auswahl] : undefined
 
   // Der Punkt, der dem Finger waagerecht am naechsten liegt.
@@ -107,17 +114,19 @@ export function Verlauf({
       viewBox={`0 0 ${W} ${H}`}
       className={`f-chart${onAuswahl ? ' waehlbar' : ''}${mitTrend ? ' mit-trend' : ''}`}
       role="img"
-      aria-label={`Verlauf ${wert.name}, ${punkte.length} Messungen${mitTrend ? ', mit Trend' : ''}`}
+      aria-label={`Verlauf ${wert.name}, ${punkte.length} Messungen${mitTrend ? ', mit Trend' : ''}${
+        zielRand && wert.ziel !== null ? `, Ziel ${formatZahl(wert.ziel)} liegt ${zielRand === 'oben' ? 'darüber' : 'darunter'}` : ''
+      }`}
       {...fingerProps}
     >
       {s.ticks.map((t) => (
         <g key={t}>
           <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} className="grid" />
-          {zielY !== null && Math.abs(y(t) - zielY) < 13 ? null : (
+          {frei(y(t)) ? (
             <text x={L - 8} y={y(t) + 4} textAnchor="end" className="lbl">
               {formatZahl(t)}
             </text>
-          )}
+          ) : null}
         </g>
       ))}
       {zielY !== null && wert.ziel !== null ? (
@@ -127,6 +136,13 @@ export function Verlauf({
             {formatZahl(wert.ziel)}
           </text>
         </g>
+      ) : null}
+      {zielRand && wert.ziel !== null ? (
+        <text x={L - 8} y={randY + 4} textAnchor="end" className="lbl stark">
+          {zielRand === 'oben' ? '↑' : '↓'}
+          {' '}
+          {formatZahl(wert.ziel)}
+        </text>
       ) : null}
       {punkte.length > 1 ? <path d={pfad} className="linie" /> : null}
       {mitTrend && trend ? <path d={linie(trend)} className="trend" /> : null}

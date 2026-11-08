@@ -123,7 +123,8 @@ Launcher-Backup erfasst alles automatisch.
 - [x] Name, Einheit und Richtung, jüngste Zahl sehr groß.
 - [x] Drei Kacheln: seit Start, seit der letzten Messung, Ziel (nur mit Ziel).
 - [x] Verlauf über **3 Monate / 1 Jahr / Alles** (Standard: Alles). Waagerecht nach Zeit, nicht nach
-  Anzahl. Ziel als gestrichelte orange Linie, jüngster Punkt orange.
+  Anzahl. Senkrecht eng um die Messungen (Spanne mindestens 3 % des Werts), damit man den Fortschritt
+  sieht. Ziel als gestrichelte orange Linie, wenn es nah liegt, sonst „↑ 85“ am Rand; jüngster Punkt orange.
 - [x] Mit Trend (siehe Regeln): darüber „Trend · Schnitt 7 Tage“ groß, rechts „pro Woche“ und „Ziel etwa“;
   im Verlauf ist der Trend die kräftige Linie, die Messungen stehen leiser dahinter.
 - [x] Alle Einträge, neueste zuerst, mit Veränderung zum Eintrag davor. Ein Tipp öffnet den Messtag.
