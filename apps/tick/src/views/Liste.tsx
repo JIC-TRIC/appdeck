@@ -8,6 +8,7 @@ import {
   ausschnitt,
   enthaelt,
   erledigteIn,
+  heuteListe,
   imOrdner,
   nachTagen,
   ordnerIds,
@@ -32,7 +33,7 @@ const VORSCHLAEGE: [string, number][] = [
 ]
 
 export interface ListeProps {
-  /** 'start' (alle Ordner als Karten), 'alle', 'eingang' oder die id eines Ordners */
+  /** 'start' (alle Ordner als Karten), 'alle', 'heute', 'eingang' oder die id eines Ordners */
   ansicht: string
   /** Beschriftung von „‹“ auf einer Ordnerseite: die Seite darunter */
   zurueck: string
@@ -70,7 +71,7 @@ export interface ListeProps {
 }
 
 // Eine Seite von Tick: die Startseite mit allen Ordnern als Karten oder eine
-// Liste (Alle, Eingang, ein Ordner) ueber die ganze Hoehe. Unten das
+// Liste (Alle, Heute, Eingang, ein Ordner) ueber die ganze Hoehe. Unten das
 // Schnellfeld, die Lupe macht daraus die Suche. Regeln: konzept.md.
 export function Liste(p: ListeProps) {
   const { todos, ordner, heute, haken } = p
@@ -79,17 +80,25 @@ export function Liste(p: ListeProps) {
   const z = zaehle(todos, ordner, heute)
 
   const start = p.ansicht === 'start'
+  // „Heute“ geht wie „Alle“ ueber alle Ordner, zeigt aber nur das Faellige.
+  const hl = p.ansicht === 'heute' ? heuteListe(todos, ordner, heute) : null
   // Fuer die Listen: 'alle', null = Eingang, sonst die id des Ordners
-  const ansicht: string | null = start || p.ansicht === 'alle' ? 'alle' : p.ansicht === 'eingang' ? null : p.ansicht
+  const ansicht: string | null = start || hl || p.ansicht === 'alle' ? 'alle' : p.ansicht === 'eingang' ? null : p.ansicht
   const ord = ansicht && ansicht !== 'alle' ? nachId.get(ansicht) : undefined
   const imOrdnerOffen = ansicht === 'alle' ? [] : imOrdner(todos, ansicht, ids)
-  const titel = start ? 'Ordner' : ansicht === 'alle' ? 'Alle' : ansicht === null ? 'Eingang' : (ord?.name ?? 'Ordner')
+  const titel = start ? 'Ordner' : hl ? 'Heute' : ansicht === 'alle' ? 'Alle' : ansicht === null ? 'Eingang' : (ord?.name ?? 'Ordner')
   const kappe = ansicht === 'alle' ? undefined : ord ? farbe(ord.farbe) : EINGANG_FARBE
-  const erledigt = start ? [] : erledigteIn(todos, ansicht, ids)
-  const offenHier = ansicht === 'alle' ? z.alle : imOrdnerOffen.length
+  const erledigt = start ? [] : hl ? hl.erledigt : erledigteIn(todos, ansicht, ids)
+  const offenHier = hl ? hl.offen.length : ansicht === 'alle' ? z.alle : imOrdnerOffen.length
 
   const untertitel = (() => {
     if (start) return z.alle ? `${z.alle} offen${z.faellig ? ` · ${z.faellig} fällig` : ''}` : 'Nichts offen'
+    if (hl) {
+      const teile = offenHier ? [`${offenHier} fällig`] : [erledigt.length ? 'Nichts mehr fällig' : 'Nichts fällig']
+      if (z.ueberfaellig) teile.push(`${z.ueberfaellig} überfällig`)
+      if (erledigt.length) teile.push(`${erledigt.length} erledigt`)
+      return teile.join(' · ')
+    }
     if (!offenHier) return erledigt.length ? `Nichts offen · ${erledigt.length} erledigt` : 'Nichts offen'
     if (ansicht === 'alle') return `${z.alle} offen${z.faellig ? ` · ${z.faellig} fällig` : ''}`
     return `${offenHier} offen${erledigt.length ? ` · ${erledigt.length} erledigt` : ''}`
@@ -184,7 +193,7 @@ export function Liste(p: ListeProps) {
   const inhalt = () => {
     const leer = offenHier === 0 ? (
       <div className="t-leer">
-        <h2>{erledigt.length ? 'Alles erledigt' : 'Noch nichts drin'}</h2>
+        <h2>{erledigt.length ? 'Alles erledigt' : hl ? 'Heute ist nichts fällig' : 'Noch nichts drin'}</h2>
         {(() => {
           const n = erledigt.filter((t) => tagVon(new Date(t.erledigt!)) === heute).length
           return n ? <p>Heute {n === 1 ? '1 Todo' : `${n} Todos`} erledigt</p> : null
@@ -192,69 +201,75 @@ export function Liste(p: ListeProps) {
       </div>
     ) : null
 
-    const offene =
-      ansicht === 'alle' ? (
-        (() => {
-          const { faellig, abschnitte } = alleAbschnitte(todos, ordner, heute)
-          return (
-            <>
-              {faellig.length ? (
-                <section>
-                  <h2 className="t-lab">Fällig</h2>
+    const offene = hl ? (
+      // Ueberfaelliges zuerst (das Datum steht rot an der Zeile), jede Zeile nennt ihren Ordner.
+      hl.offen.length ? (
+        <IonList lines="none" className="t-liste">
+          {hl.offen.map((t) => zeile(t, { ordnerZeigen: true }))}
+        </IonList>
+      ) : null
+    ) : ansicht === 'alle' ? (
+      (() => {
+        const { faellig, abschnitte } = alleAbschnitte(todos, ordner, heute)
+        return (
+          <>
+            {faellig.length ? (
+              <section>
+                <h2 className="t-lab">Fällig</h2>
+                <IonList lines="none" className="t-liste">
+                  {faellig.map((t) => zeile(t, { ordnerZeigen: true }))}
+                </IonList>
+              </section>
+            ) : null}
+            {abschnitte.map((a) => {
+              const o = a.ordner ? nachId.get(a.ordner) : undefined
+              return (
+                <section key={a.ordner ?? 'eingang'}>
+                  <button
+                    type="button"
+                    className="t-sh"
+                    style={mitFarbe(o ? farbe(o.farbe) : EINGANG_FARBE)}
+                    onClick={() => p.onOeffnen(a.ordner ?? 'eingang')}
+                  >
+                    <i />
+                    {o?.name ?? 'Eingang'}
+                    <IconRight />
+                  </button>
                   <IonList lines="none" className="t-liste">
-                    {faellig.map((t) => zeile(t, { ordnerZeigen: true }))}
+                    {a.todos.map((t) => zeile(t))}
                   </IonList>
                 </section>
-              ) : null}
-              {abschnitte.map((a) => {
-                const o = a.ordner ? nachId.get(a.ordner) : undefined
-                return (
-                  <section key={a.ordner ?? 'eingang'}>
-                    <button
-                      type="button"
-                      className="t-sh"
-                      style={mitFarbe(o ? farbe(o.farbe) : EINGANG_FARBE)}
-                      onClick={() => p.onOeffnen(a.ordner ?? 'eingang')}
-                    >
-                      <i />
-                      {o?.name ?? 'Eingang'}
-                      <IconRight />
-                    </button>
-                    <IonList lines="none" className="t-liste">
-                      {a.todos.map((t) => zeile(t))}
-                    </IonList>
-                  </section>
-                )
-              })}
-            </>
-          )
-        })()
-      ) : p.ordnen ? (
-        // Sortieren: Griffe rechts, am Griff ziehen. Fertig steht oben rechts.
-        <IonReorderGroup
-          className="t-ordnen"
-          disabled={false}
-          onIonReorderEnd={(e) => p.onSortiert(e.detail.complete(imOrdnerOffen.map((t) => t.id)) as string[])}
-        >
-          {imOrdnerOffen.map((t) => (
-            <div key={t.id} className="t-row ordnen" style={mitFarbe(kappe ?? EINGANG_FARBE)}>
-              <span className="t-ck" aria-hidden="true" />
-              <span className="t-rt">
-                <b>{t.titel}</b>
+              )
+            })}
+          </>
+        )
+      })()
+    ) : p.ordnen ? (
+      // Sortieren: Griffe rechts, am Griff ziehen. Fertig steht oben rechts.
+      <IonReorderGroup
+        className="t-ordnen"
+        disabled={false}
+        onIonReorderEnd={(e) => p.onSortiert(e.detail.complete(imOrdnerOffen.map((t) => t.id)) as string[])}
+      >
+        {imOrdnerOffen.map((t) => (
+          <div key={t.id} className="t-row ordnen" style={mitFarbe(kappe ?? EINGANG_FARBE)}>
+            <span className="t-ck" aria-hidden="true" />
+            <span className="t-rt">
+              <b>{t.titel}</b>
+            </span>
+            <IonReorder>
+              <span className="t-griff" aria-label={`${t.titel} verschieben`}>
+                <IconGriff />
               </span>
-              <IonReorder>
-                <span className="t-griff" aria-label={`${t.titel} verschieben`}>
-                  <IconGriff />
-                </span>
-              </IonReorder>
-            </div>
-          ))}
-        </IonReorderGroup>
-      ) : (
-        <IonList lines="none" className="t-liste">
-          {imOrdnerOffen.map((t) => zeile(t))}
-        </IonList>
-      )
+            </IonReorder>
+          </div>
+        ))}
+      </IonReorderGroup>
+    ) : (
+      <IonList lines="none" className="t-liste">
+        {imOrdnerOffen.map((t) => zeile(t))}
+      </IonList>
+    )
 
     return (
       <>
@@ -274,9 +289,12 @@ export function Liste(p: ListeProps) {
                     {g.todos.map((t) => zeile(t, { ordnerZeigen: ansicht === 'alle' }))}
                   </section>
                 ))}
-                <button type="button" className="t-wipe" onClick={() => p.onErledigteLoeschen(ansicht, erledigt.length)}>
-                  Erledigte löschen
-                </button>
+                {/* In „Heute“ nicht: Erledigtes loescht man ordnerweise oder in „Alle“. */}
+                {hl ? null : (
+                  <button type="button" className="t-wipe" onClick={() => p.onErledigteLoeschen(ansicht, erledigt.length)}>
+                    Erledigte löschen
+                  </button>
+                )}
               </>
             ) : null}
           </div>

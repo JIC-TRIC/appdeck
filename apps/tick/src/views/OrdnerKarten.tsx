@@ -8,18 +8,23 @@ import type { Ordner } from '../types'
 /**
  * Eine Karte: Punkt und Name oben, unten was offen und was faellig ist. Oben
  * ein Strich in der Ordnerfarbe. Ohne onClick nur zum Ansehen (Vorschau im Blatt).
+ * „Heute“ zaehlt mit eigenen Woertern: wie viel faellig ist, rot das Ueberfaellige.
  */
 export function Karte({
   name,
   f,
   offen,
   faellig,
+  wort = 'offen',
+  rotWort = 'fällig',
   onClick,
 }: {
   name: string
   f?: string
   offen: number
   faellig: number
+  wort?: string
+  rotWort?: string
   onClick?: () => void
 }) {
   const inhalt = (
@@ -30,8 +35,12 @@ export function Karte({
       </span>
       <span className="k-zahl">
         <b>{offen}</b>
-        offen
-        {faellig ? <em>{faellig} fällig</em> : null}
+        {wort}
+        {faellig ? (
+          <em>
+            {faellig} {rotWort}
+          </em>
+        ) : null}
       </span>
     </>
   )
@@ -46,8 +55,8 @@ export function Karte({
   )
 }
 
-// Die Startseite: Alle, Eingang (wenn darin etwas liegt) und jeder Ordner als
-// Karte, zwei nebeneinander. Ein Tipp oeffnet die Liste als eigene Seite.
+// Die Startseite: Alle und Heute, Eingang (wenn darin etwas liegt) und jeder
+// Ordner als Karte, zwei nebeneinander. Ein Tipp oeffnet die Liste als eigene Seite.
 export function OrdnerKarten({
   ordner,
   zaehlung: z,
@@ -62,6 +71,14 @@ export function OrdnerKarten({
   return (
     <div className="t-karten">
       <Karte name="Alle" offen={z.alle} faellig={z.faellig} onClick={() => onOeffnen('alle')} />
+      <Karte
+        name="Heute"
+        offen={z.faellig}
+        wort="fällig"
+        faellig={z.ueberfaellig}
+        rotWort="überfällig"
+        onClick={() => onOeffnen('heute')}
+      />
       {z.eingang > 0 ? (
         <Karte name="Eingang" f={EINGANG_FARBE} offen={z.eingang} faellig={z.faelligEingang} onClick={() => onOeffnen('eingang')} />
       ) : null}

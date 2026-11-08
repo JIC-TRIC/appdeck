@@ -59,6 +59,7 @@ Die Kurzfassung, Details unter „Regeln“. Die Nummern in Klammern sind die An
 12. [x] **Plakette an der Kachel** im Launcher mit der Zahl der fälligen Todos (15)
 13. [x] **Tick öffnet dort, wo man zuletzt war**: auf dem Start oder in einem Ordner
 14. [x] **Erststart** mit Ordner-Vorschlägen (14)
+15. [x] **Heute** als Karte neben „Alle“: alles, was heute fällig oder überfällig ist, aus allen Ordnern
 
 ## Regeln
 
@@ -71,7 +72,7 @@ Die Kurzfassung, Details unter „Regeln“. Die Nummern in Klammern sind die An
 
 ### Start: alle Ordner
 
-- [x] Tick öffnet mit allen Ordnern als Karten, zwei nebeneinander: **Alle**, **Eingang** (wenn darin etwas
+- [x] Tick öffnet mit allen Ordnern als Karten, zwei nebeneinander: **Alle**, **Heute**, **Eingang** (wenn darin etwas
   liegt), dann die Ordner in ihrer Reihenfolge, am Ende **Neuer Ordner**. Titel „Ordner“, darunter
   „21 offen · 3 fällig“.
 - [x] Jede Karte trägt oben einen Strich in der Ordnerfarbe („Alle“: Tinte), dazu Name, wie viel offen ist
@@ -98,6 +99,18 @@ Die Kurzfassung, Details unter „Regeln“. Die Nummern in Klammern sind die An
   gehört.
 - [x] Ganz unten **Erledigt**, eingeklappt (siehe unten).
 
+### Heute
+
+- [x] Karte **Heute** gleich neben „Alle“, immer da (auch bei 0), Strich in Tinte wie „Alle“. Sie zählt, wie
+  viel fällig ist, und in Rot, wie viel davon überfällig ist („3 fällig · 1 überfällig“).
+- [x] Die Seite zeigt alles Überfällige und heute Fällige aus allen Ordnern als eine Liste, sortiert wie
+  „Fällig“ in „Alle“. Jede Zeile nennt ihren Ordner, Überfälliges trägt sein Datum rot. Darunter
+  „3 fällig · 1 überfällig · 2 erledigt“, ist nichts fällig: „Heute ist nichts fällig“.
+- [x] **Erledigt** am Ende enthält, was heute abgehakt wurde und bis heute fällig war. Ohne „Erledigte löschen“,
+  das geht im Ordner oder in „Alle“. Kein Sortieren, ⋯ bietet nur „Neuer Ordner“.
+- [x] Das Schnellfeld legt hier in den Eingang mit **Heute** als Fälligkeit. Beim Verlassen fällt das Datum
+  wieder weg, wenn es noch auf heute steht.
+
 ### Ordnerseite
 
 - [x] Kopf: „‹ Ordner“ (bzw. „‹ Alle“, wenn man aus „Alle“ kam), Lupe und ⋯. Darunter groß der Name und
@@ -113,8 +126,8 @@ Die Kurzfassung, Details unter „Regeln“. Die Nummern in Klammern sind die An
   (Im Entwurf hieß es „lange drücken, dann ziehen“ in einem Zug. Ionics Sortieren startet nur an einem Griff,
   und eine ganze Zeile als Griff würde das Scrollen schlucken.)
 - [x] Neu Angelegtes kommt **ans Ende**, direkt über das Schnellfeld, wie auf einem Zettel.
-- [x] Ordner = **Name** (höchstens 24 Zeichen, eindeutig, Groß- und Kleinschreibung egal, nicht „Alle“ oder
-  „Eingang“) + **Farbe** aus zehn festen Tönen. Ein neuer Ordner bekommt die erste freie Farbe. Keine Grenze
+- [x] Ordner = **Name** (höchstens 24 Zeichen, eindeutig, Groß- und Kleinschreibung egal, nicht „Alle“,
+  „Heute“ oder „Eingang“) + **Farbe** aus zehn festen Tönen. Ein neuer Ordner bekommt die erste freie Farbe. Keine Grenze
   bei der Zahl der Ordner.
 - [x] Der **Eingang** ist kein Ordner: kein eigener Name, Grau, nicht löschbar, steht immer zuerst.
 
@@ -224,7 +237,7 @@ tick:todos     [{ id, titel, notiz, ordner: id | null, faellig: 'YYYY-MM-DD' | n
                   rang: number, angelegt: ms, erledigt: ms | null }]
 tick:ordner    [{ id, name, farbe: 0–9, rang: number }]
 tick:entwurf   { titel, ordner: id | null, faellig: 'YYYY-MM-DD' | null }
-tick:seite     'start' | 'alle' | 'eingang' | ordnerId
+tick:seite     'start' | 'alle' | 'heute' | 'eingang' | ordnerId
 ```
 
 - `tick:seite` ist die zuletzt offene Seite. Bis 25.10.2026 hieß der Schlüssel `tick:reiter` (der offene Reiter).
@@ -289,7 +302,8 @@ Nummern wie in den Mockups.
 - **Mehrfachauswahl**: mehrere auf einmal verschieben, erledigen oder löschen. Praktisch, um den Eingang
   aufzuräumen.
 - **Seitlich wischen zwischen Ordnern**: beißt sich mit dem Wischen auf den Zeilen.
-- **Eigene Ansicht „Heute“ oder „Geplant“** als Karte auf dem Start.
+- **Eigene Ansicht „Geplant“** (alles mit Datum, nach Tagen) als Karte auf dem Start. „Heute“ gibt es seit
+  8.11.2026.
 - **Ordner archivieren** statt löschen.
 - **Aus Stash übernehmen**: eine Notiz aus dem Stapel als Todo.
 - Fotos und Anhänge, erst nach dem IndexedDB-Umzug (ROADMAP).

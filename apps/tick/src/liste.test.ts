@@ -5,6 +5,7 @@ import {
   erledigteIn,
   findeHash,
   hashVorschlaege,
+  heuteListe,
   imOrdner,
   nachTagen,
   ohneHash,
@@ -78,7 +79,21 @@ describe('Ansichten', () => {
     expect(z.faelligEingang).toBe(1)
     expect(z.faelligJe.get('pr')).toBe(2)
     expect(z.faelligJe.get('zu')).toBe(0)
+    expect(z.ueberfaellig).toBe(1)
     expect(plakette(alle, HEUTE)).toBe(3)
+  })
+
+  it('zeigt in „Heute“ das Faellige und was heute davon erledigt wurde', () => {
+    const mittag = new Date(2026, 9, 23, 12).getTime()
+    const gestern = new Date(2026, 9, 22, 18).getTime()
+    const heuteErledigt = todo('Rechnung bezahlen', { faellig: HEUTE, erledigt: mittag })
+    const altErledigt = todo('Paket abholen', { faellig: '2026-10-20', erledigt: mittag + 1 })
+    const ohneDatum = todo('Blumen gießen', { erledigt: mittag })
+    const vorzeitig = todo('Steuer', { faellig: '2026-10-30', erledigt: mittag })
+    const schonGestern = todo('Müll', { faellig: '2026-10-22', erledigt: gestern })
+    const h = heuteListe([...alle, heuteErledigt, altErledigt, ohneDatum, vorzeitig, schonGestern], ordner, HEUTE)
+    expect(h.offen.map((t) => t.titel)).toEqual(['Backup sichern', 'Zahnarzt anrufen', 'Mockups ansehen'])
+    expect(h.erledigt).toEqual([altErledigt, heuteErledigt])
   })
 
   it('gruppiert Erledigtes nach Tagen, neueste zuerst', () => {

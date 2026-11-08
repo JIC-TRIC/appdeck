@@ -1,6 +1,7 @@
 // Was in welcher Ansicht steht und in welcher Reihenfolge - reine Funktionen
 // ueber den gespeicherten Listen, getestet in liste.test.ts. Regeln: konzept.md.
 
+import { tagVon } from './tage'
 import type { Ordner, Todo } from './types'
 
 /** Der Ordner, in dem ein Todo steht: null = Eingang (auch, wenn sein Ordner geloescht ist). */
@@ -33,16 +34,34 @@ export interface Abschnitt {
  */
 export function alleAbschnitte(todos: Todo[], ordner: Ordner[], heute: string): { faellig: Todo[]; abschnitte: Abschnitt[] } {
   const ids = ordnerIds(ordner)
-  const lage = new Map<string | null, number>([[null, -1], ...ordner.map((o, i) => [o.id, i] as const)])
-  const pos = (t: Todo) => lage.get(ordnerVon(t, ids)) ?? -1
-  const faellig = todos
-    .filter((t) => istFaellig(t, heute))
-    .sort((a, b) => a.faellig!.localeCompare(b.faellig!) || pos(a) - pos(b) || nachRang(a, b))
+  const faellig = faelligSortiert(todos, ordner, heute)
   const oben = new Set(faellig.map((t) => t.id))
   const abschnitte = [null, ...ordner.map((o) => o.id)]
     .map((k) => ({ ordner: k, todos: imOrdner(todos, k, ids).filter((t) => !oben.has(t.id)) }))
     .filter((a) => a.todos.length > 0)
   return { faellig, abschnitte }
+}
+
+/** Alles Ueberfaellige und heute Faellige: aeltestes Datum zuerst, am selben Tag der Eingang vor den Ordnern. */
+export function faelligSortiert(todos: Todo[], ordner: Ordner[], heute: string): Todo[] {
+  const ids = ordnerIds(ordner)
+  const lage = new Map<string | null, number>([[null, -1], ...ordner.map((o, i) => [o.id, i] as const)])
+  const pos = (t: Todo) => lage.get(ordnerVon(t, ids)) ?? -1
+  return todos
+    .filter((t) => istFaellig(t, heute))
+    .sort((a, b) => a.faellig!.localeCompare(b.faellig!) || pos(a) - pos(b) || nachRang(a, b))
+}
+
+/**
+ * „Heute“: offen ist alles Faellige wie oben in „Alle“, erledigt ist, was heute
+ * abgehakt wurde und bis heute faellig war (neueste zuerst). Was ohne Datum
+ * oder vorzeitig abgehakt wurde, gehoert nicht zu heute.
+ */
+export function heuteListe(todos: Todo[], ordner: Ordner[], heute: string): { offen: Todo[]; erledigt: Todo[] } {
+  const erledigt = todos
+    .filter((t) => t.erledigt !== null && t.faellig !== null && t.faellig <= heute && tagVon(new Date(t.erledigt)) === heute)
+    .sort((a, b) => b.erledigt! - a.erledigt!)
+  return { offen: faelligSortiert(todos, ordner, heute), erledigt }
 }
 
 /** Erledigtes einer Ansicht ('alle' oder ein Ordner, null = Eingang), neueste zuerst. */
@@ -71,6 +90,8 @@ export interface Zaehlung {
   faellig: number
   faelligEingang: number
   faelligJe: Map<string, number>
+  /** davon schon vor heute faellig */
+  ueberfaellig: number
 }
 
 /** Offene Todos je Ordner und insgesamt, dazu wie viele heute faellig oder ueberfaellig sind. */
@@ -82,11 +103,13 @@ export function zaehle(todos: Todo[], ordner: Ordner[], heute: string): Zaehlung
   let eingang = 0
   let faellig = 0
   let faelligEingang = 0
+  let ueberfaellig = 0
   for (const t of todos) {
     if (!istOffen(t)) continue
     alle++
     const f = istFaellig(t, heute)
     if (f) faellig++
+    if (f && t.faellig! < heute) ueberfaellig++
     const o = ordnerVon(t, ids)
     if (o === null) {
       eingang++
@@ -96,7 +119,7 @@ export function zaehle(todos: Todo[], ordner: Ordner[], heute: string): Zaehlung
       if (f) faelligJe.set(o, (faelligJe.get(o) ?? 0) + 1)
     }
   }
-  return { alle, eingang, je, faellig, faelligEingang, faelligJe }
+  return { alle, eingang, je, faellig, faelligEingang, faelligJe, ueberfaellig }
 }
 
 /** Zahl fuer die Plakette an der Kachel - dieselbe Rechnung steht in apps.js (tickBadge). */

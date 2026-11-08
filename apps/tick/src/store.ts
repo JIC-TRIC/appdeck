@@ -6,7 +6,7 @@
  *   tick:todos     Todo[]                       alle Todos, offen und erledigt
  *   tick:ordner    Ordner[]                     nach rang
  *   tick:entwurf   { titel, ordner, faellig }   was gerade im Schnellfeld steht
- *   tick:seite     'start' | 'alle' | 'eingang' | id   die zuletzt offene Seite
+ *   tick:seite     'start' | 'alle' | 'heute' | 'eingang' | id   die zuletzt offene Seite
  *
  * Die Plakette im Launcher liest tick:todos selbst (tickBadge in apps.js).
  */
@@ -175,7 +175,7 @@ export function normalisiereOrdner(raw: unknown): Ordner[] {
   const out: Ordner[] = []
   raw.forEach((x, i) => {
     const o = obj(x)
-    if (typeof o.id !== 'string' || !o.id || o.id === 'alle' || o.id === 'eingang' || ids.has(o.id)) return
+    if (typeof o.id !== 'string' || !o.id || o.id === 'alle' || o.id === 'heute' || o.id === 'eingang' || ids.has(o.id)) return
     const name = typeof o.name === 'string' ? saubererName(o.name) : ''
     const klein = name.toLocaleLowerCase('de')
     if (!name || namen.has(klein)) return
@@ -199,7 +199,7 @@ export function pruefeName(name: string, ordner: Ordner[], selbst?: string): str
   const n = saubererName(name)
   const klein = n.toLocaleLowerCase('de')
   if (!n) return 'Der Ordner braucht einen Namen.'
-  if (klein === 'alle' || klein === 'eingang') return `„${n}“ gibt es schon als Karte.`
+  if (klein === 'alle' || klein === 'heute' || klein === 'eingang') return `„${n}“ gibt es schon als Karte.`
   if (ordner.some((o) => o.id !== selbst && o.name.toLocaleLowerCase('de') === klein)) return `„${n}“ gibt es schon.`
   return null
 }

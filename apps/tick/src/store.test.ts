@@ -154,6 +154,7 @@ describe('Ordner', () => {
     expect(pruefeName(' projekte ', getOrdner())).toBe('„projekte“ gibt es schon.')
     expect(pruefeName('Projekte', getOrdner(), a.id)).toBeNull()
     expect(pruefeName('Eingang', getOrdner())).toBe('„Eingang“ gibt es schon als Karte.')
+    expect(pruefeName('heute', getOrdner())).toBe('„heute“ gibt es schon als Karte.')
     expect(pruefeName('   ', getOrdner())).toBe('Der Ordner braucht einen Namen.')
     expect(ordnerAnlegen('PROJEKTE')).toBeNull()
   })

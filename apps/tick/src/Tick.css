@@ -1460,8 +1460,9 @@ button.t-li:active {
 
 .k-zahl {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 5px;
+  gap: 2px 5px;
   font-size: 13px;
   font-weight: 600;
   color: var(--tx2);

@@ -60,14 +60,20 @@ function useHeute() {
   return heute
 }
 
-/** Wohin ein neues Todo auf dieser Seite gehoert: in ihren Ordner, sonst in den Eingang. */
-const standardOrdner = (a: string) => (a === START || a === 'alle' || a === 'eingang' ? null : a)
+/** Seiten, die kein Ordner sind. */
+const UEBER_ALLE = new Set([START, 'alle', 'heute'])
 
-/** Liegt ein Todo mit diesem Ordner auf der Seite sichtbar? */
-const sichtbarAuf = (a: string, ordner: string | null) => a === 'alle' || (a === 'eingang' ? ordner === null : ordner === a)
+/** Wohin ein neues Todo auf dieser Seite gehoert: in ihren Ordner, sonst in den Eingang. */
+const standardOrdner = (a: string) => (UEBER_ALLE.has(a) || a === 'eingang' ? null : a)
+
+/** Liegt ein Todo auf der Seite sichtbar? „Heute“ zeigt nur Faelliges, egal aus welchem Ordner. */
+const sichtbarAuf = (a: string, t: Pick<Todo, 'ordner' | 'faellig'>, heute: string) =>
+  a === 'heute'
+    ? t.faellig !== null && t.faellig <= heute
+    : a === 'alle' || (a === 'eingang' ? t.ordner === null : t.ordner === a)
 
 // Unten die Startseite mit allen Ordnern als Karten, darueber eine Liste (Alle,
-// Eingang oder ein Ordner) ueber die ganze Hoehe. Seitenwechsel mit
+// Heute, Eingang oder ein Ordner) ueber die ganze Hoehe. Seitenwechsel mit
 // Zurueckwischen wie in Kontor und Stash (lib/PageStage.tsx). Blaetter von
 // unten fuer Todo und Ordner.
 function Tick() {
@@ -82,23 +88,26 @@ function Tick() {
   const ids = useMemo(() => ordnerIds(daten.ordner), [daten.ordner])
   const zaehlung = zaehle(daten.todos, daten.ordner, heute)
   const nameVon = (id: string | null) => daten.ordner.find((o) => o.id === id)?.name ?? 'Eingang'
-  const titelVon = (a: string) => (a === START ? 'Ordner' : a === 'alle' ? 'Alle' : nameVon(standardOrdner(a)))
+  const titelVon = (a: string) => (a === START ? 'Ordner' : a === 'alle' ? 'Alle' : a === 'heute' ? 'Heute' : nameVon(standardOrdner(a)))
 
   // Tick oeffnet dort, wo man zuletzt war: auf der Startseite oder in einem Ordner
   // (dann liegt die Startseite darunter, „‹ Ordner“ fuehrt hin).
   const { stack, push, back } = useHistoryStack<View>(() => {
     const r = getSeite()
-    return r === 'alle' || r === 'eingang' || ordnerIds(getOrdner()).has(r) ? [{ name: 'liste', ansicht: r }] : []
+    return r === 'alle' || r === 'heute' || r === 'eingang' || ordnerIds(getOrdner()).has(r) ? [{ name: 'liste', ansicht: r }] : []
   })
   const oben = stack.length ? stack[stack.length - 1].ansicht : START
 
   const [offen, setOffen] = useState<Offen | null>(null)
   const [ordnen, setOrdnen] = useState(false)
 
-  // Der Entwurf lebt hier: vorgewaehlt ist der Ordner der offenen Seite.
+  // Der Entwurf lebt hier: vorgewaehlt ist der Ordner der offenen Seite, auf
+  // „Heute“ dazu heute als Faelligkeit.
   const [entwurf, setEntwurfState] = useState<Entwurf>(() => {
     const e = getEntwurf()
-    return e.titel ? e : { ...e, ordner: standardOrdner(getSeite()) }
+    if (e.titel) return e
+    const s = getSeite()
+    return { ...e, ordner: standardOrdner(s), faellig: s === 'heute' ? heute : e.faellig }
   })
   const setEntwurf = useCallback((e: Entwurf) => {
     setEntwurfState(e)
@@ -121,6 +130,25 @@ function Tick() {
       return n
     })
   }, [oben])
+
+  // Auf „Heute“ ist ein neues Todo heute faellig. Beim Verlassen faellt das
+  // wieder weg - aber nur, wenn noch heute drinsteht (ein anderes Datum hat
+  // man selbst gewaehlt). Nach Mitternacht rueckt es auf den neuen Tag.
+  const vorher = useRef({ seite: oben, heute })
+  useEffect(() => {
+    const v = vorher.current
+    if (v.seite === oben && v.heute === heute) return
+    vorher.current = { seite: oben, heute }
+    setEntwurfState((e) => {
+      let faellig = e.faellig
+      if (v.seite === 'heute' && faellig === v.heute) faellig = null
+      if (oben === 'heute' && faellig === null) faellig = heute
+      if (faellig === e.faellig) return e
+      const n = { ...e, faellig }
+      speichereEntwurf(n)
+      return n
+    })
+  }, [oben, heute])
 
   const oeffne = (ansicht: string) => push({ name: 'liste', ansicht })
 
@@ -213,7 +241,7 @@ function Tick() {
     refresh()
     setNeuId(t.id)
     // Auf der Startseite und in einem anderen Ordner sieht man es nicht: kurz sagen, wo es liegt.
-    if (!sichtbarAuf(oben, t.ordner)) melde(`In ${nameVon(t.ordner)} abgelegt`)
+    if (!sichtbarAuf(oben, t, heute)) melde(`In ${nameVon(t.ordner)} abgelegt`)
   }
 
   // ---------- Loeschen, Verschieben ----------
@@ -233,7 +261,7 @@ function Tick() {
     if (!t || t.ordner === ordner) return
     aendere(id, { ordner })
     refresh()
-    if (!sichtbarAuf(oben, ordner)) melde(`Nach ${nameVon(ordner)} verschoben`)
+    if (!sichtbarAuf(oben, { ...t, ordner }, heute)) melde(`Nach ${nameVon(ordner)} verschoben`)
   }
 
   const erledigteLoeschenFragen = (ansicht: string | null, n: number) => {
@@ -291,7 +319,7 @@ function Tick() {
       if (daten.ordner.length) buttons.push({ text: 'Ordner bearbeiten', handler: () => setOrdnen(true) })
     } else {
       const o = daten.ordner.find((x) => x.id === oben)
-      if (oben !== 'alle' && imOrdner(daten.todos, standardOrdner(oben), ids).length > 1)
+      if (!UEBER_ALLE.has(oben) && imOrdner(daten.todos, standardOrdner(oben), ids).length > 1)
         buttons.push({ text: 'Reihenfolge ändern', handler: () => setOrdnen(true) })
       if (o) buttons.push({ text: `„${o.name}“ bearbeiten`, handler: () => setOffen({ art: 'ordner', id: o.id }) })
     }
